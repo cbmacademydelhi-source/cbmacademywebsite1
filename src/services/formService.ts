@@ -4,23 +4,15 @@ import {
   FormSubmissionResult,
 } from "../types";
 
-/**
- * CBM ACADEMY FORM SUBMISSION SERVICE
- *
- * Web3Forms handles the email delivery.
- *
- * IMPORTANT:
- * Replace the value below with the Access Key
- * generated from Web3Forms.
- */
-
 const WEB3FORMS_ACCESS_KEY =
-"a5a17fe3-707d-4a14-9893-d7f51254bd06";
+  "4a2c0a81-481c-4274-a599-cc3f97947c19";
+
 export const TARGET_NOTIFICATION_EMAIL =
   "office@cbmacademy.in";
 
 const WEB3FORMS_URL =
   "https://api.web3forms.com/submit";
+
 
 /**
  * Submit Course Application
@@ -29,7 +21,6 @@ export async function submitApplicationForm(
   data: ApplicationFormData
 ): Promise<FormSubmissionResult> {
 
-  // Honeypot spam protection
   if (data.honeypot && data.honeypot.trim() !== "") {
     return {
       success: false,
@@ -37,7 +28,6 @@ export async function submitApplicationForm(
     };
   }
 
-  // Required-field validation
   if (
     !data.fullName?.trim() ||
     !data.email?.trim() ||
@@ -48,19 +38,6 @@ export async function submitApplicationForm(
     return {
       success: false,
       message: "Please fill in all required fields.",
-    };
-  }
-
-  // Do not allow the form to pretend it was submitted
-  if (
-    !WEB3FORMS_ACCESS_KEY ||
-    WEB3FORMS_ACCESS_KEY ===
-      "PASTE_YOUR_WEB3FORMS_ACCESS_KEY_HERE"
-  ) {
-    return {
-      success: false,
-      message:
-        "The application form is not configured yet. Please try again later.",
     };
   }
 
@@ -111,10 +88,7 @@ export async function submitApplicationForm(
 
     const result = await response.json();
 
-    if (
-      response.ok &&
-      result.success
-    ) {
+    if (response.ok && result.success) {
       return {
         success: true,
         message:
@@ -152,7 +126,6 @@ export async function submitContactForm(
   data: ContactFormData
 ): Promise<FormSubmissionResult> {
 
-  // Honeypot spam protection
   if (data.honeypot && data.honeypot.trim() !== "") {
     return {
       success: false,
@@ -160,7 +133,6 @@ export async function submitContactForm(
     };
   }
 
-  // Required-field validation
   if (
     !data.fullName?.trim() ||
     !data.email?.trim() ||
@@ -171,19 +143,6 @@ export async function submitContactForm(
     return {
       success: false,
       message: "Please fill in all required fields.",
-    };
-  }
-
-  // Prevent fake success
-  if (
-    !WEB3FORMS_ACCESS_KEY ||
-    WEB3FORMS_ACCESS_KEY ===
-      "PASTE_YOUR_WEB3FORMS_ACCESS_KEY_HERE"
-  ) {
-    return {
-      success: false,
-      message:
-        "The contact form is not configured yet. Please try again later.",
     };
   }
 
@@ -231,10 +190,7 @@ export async function submitContactForm(
 
     const result = await response.json();
 
-    if (
-      response.ok &&
-      result.success
-    ) {
+    if (response.ok && result.success) {
       return {
         success: true,
         message:
