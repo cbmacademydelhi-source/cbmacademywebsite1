@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-primary: #072B57;
+    --color-accent: #FF6B00;
+    --color-bg-light: #F8FAFC;
+    --color-text-main: #1E293B;
+    --color-border: #E5E7EB;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Custom premium styling */
+.cbm-shadow {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.cbm-shadow-hover:hover {
+  box-shadow: 0 10px 30px rgba(7, 43, 87, 0.08);
+}
+
+.cbm-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
