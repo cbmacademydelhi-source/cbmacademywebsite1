@@ -15,8 +15,7 @@ import {
  */
 
 const WEB3FORMS_ACCESS_KEY =
-a5a17fe3-707d-4a14-9893-d7f51254bd06
-
+"a5a17fe3-707d-4a14-9893-d7f51254bd06";
 export const TARGET_NOTIFICATION_EMAIL =
   "office@cbmacademy.in";
 
