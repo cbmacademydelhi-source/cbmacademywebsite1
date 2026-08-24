@@ -1,15 +1,18 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    tailwindcss(),
+  ],
 
-  // GitHub Pages repository path
   base: "/cbmacademywebsite1/",
 
   build: {
     outDir: "dist",
     assetsDir: "assets",
-    sourcemap: false
-  }
+    sourcemap: false,
+  },
 });
