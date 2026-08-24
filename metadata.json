@@ -1,0 +1,6 @@
+{
+  "name": "CBM Academy",
+  "description": "Official website for CBM Academy - AI-Powered Digital Marketing Training with placement assistance, live industry projects, and certified credentials.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
