@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { WhyChooseCBM } from './components/WhyChooseCBM';
@@ -15,11 +16,55 @@ import { BrochureModal } from './components/BrochureModal';
 
 export default function App() {
   const [applyModalOpen, setApplyModalOpen] = useState(false);
-  const [selectedCourseForApply, setSelectedCourseForApply] = useState<string | undefined>(undefined);
-  const [brochureModalOpen, setBrochureModalOpen] = useState(false);
+  const [selectedCourseForApply, setSelectedCourseForApply] =
+    useState<string | undefined>(undefined);
+
+  const [brochureModalOpen, setBrochureModalOpen] =
+    useState(false);
+
+  const [currentPage, setCurrentPage] = useState('home');
+
+  useEffect(() => {
+    const updatePage = () => {
+      const hash = window.location.hash.replace('#', '');
+
+      const validPages = [
+        'home',
+        'course',
+        'about',
+        'certificate',
+        'jobs',
+        'blogs',
+        'contact',
+      ];
+
+      if (validPages.includes(hash)) {
+        setCurrentPage(hash);
+      } else {
+        setCurrentPage('home');
+      }
+
+      window.scrollTo({
+        top: 0,
+        behavior: 'instant',
+      });
+    };
+
+    updatePage();
+
+    window.addEventListener('hashchange', updatePage);
+
+    return () => {
+      window.removeEventListener('hashchange', updatePage);
+    };
+  }, []);
 
   const handleOpenApply = (courseOrJobTitle?: string) => {
-    setSelectedCourseForApply(courseOrJobTitle || 'Master in AI-Powered Digital Marketing & Performance Growth');
+    setSelectedCourseForApply(
+      courseOrJobTitle ||
+        'Master in AI-Powered Digital Marketing & Performance Growth'
+    );
+
     setApplyModalOpen(true);
   };
 
@@ -27,52 +72,68 @@ export default function App() {
     setBrochureModalOpen(true);
   };
 
+  const renderPage = () => {
+    switch (currentPage) {
+      case 'course':
+        return (
+          <>
+            <CourseSection
+              onOpenApply={handleOpenApply}
+              onOpenBrochure={handleOpenBrochure}
+            />
+
+            <AITools />
+          </>
+        );
+
+      case 'about':
+        return <About />;
+
+      case 'certificate':
+        return <CertificateVerification />;
+
+      case 'jobs':
+        return (
+          <JobBoard
+            onOpenApply={handleOpenApply}
+          />
+        );
+
+      case 'blogs':
+        return <BlogSection />;
+
+      case 'contact':
+        return <Contact />;
+
+      case 'home':
+      default:
+        return (
+          <>
+            <Hero
+              onOpenApply={() => handleOpenApply()}
+              onOpenBrochure={handleOpenBrochure}
+            />
+
+            <WhyChooseCBM
+              onOpenApply={() => handleOpenApply()}
+            />
+          </>
+        );
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white text-[#1E293B] font-['Plus_Jakarta_Sans',sans-serif] flex flex-col">
-      {/* Top Header */}
+
+      {/* Header */}
       <Header
         onOpenApply={handleOpenApply}
         onOpenBrochure={handleOpenBrochure}
       />
 
-      {/* Main Content Sections */}
+      {/* Page Content */}
       <main className="flex-grow">
-        {/* 1. Hero Section */}
-        <Hero
-          onOpenApply={() => handleOpenApply()}
-          onOpenBrochure={handleOpenBrochure}
-        />
-
-        {/* 2. Why Choose CBM */}
-        <WhyChooseCBM
-          onOpenApply={() => handleOpenApply()}
-        />
-
-        {/* 3. Course Modules (8 Modern Static Cards) */}
-        <CourseSection
-          onOpenApply={handleOpenApply}
-          onOpenBrochure={handleOpenBrochure}
-        />
-
-        {/* 4. AI Tools Minimal White-Card Grid */}
-        <AITools />
-
-        {/* 5. Job Opportunities Placement Portal */}
-        <JobBoard
-          onOpenApply={handleOpenApply}
-        />
-
-        {/* 6. Certificate Verification Portal */}
-        <CertificateVerification />
-
-        {/* 7. Blog & Resources */}
-        <BlogSection />
-
-        {/* 8. About CBM Academy */}
-        <About />
-
-        {/* 9. Contact Us & Campus Map */}
-        <Contact />
+        {renderPage()}
       </main>
 
       {/* Footer */}
@@ -81,14 +142,14 @@ export default function App() {
         onOpenBrochure={handleOpenBrochure}
       />
 
-      {/* Real Apply Now Modal */}
+      {/* Apply Modal */}
       <ApplyModal
         isOpen={applyModalOpen}
         onClose={() => setApplyModalOpen(false)}
         initialCourse={selectedCourseForApply}
       />
 
-      {/* Download Syllabus Brochure Modal */}
+      {/* Brochure Modal */}
       <BrochureModal
         isOpen={brochureModalOpen}
         onClose={() => setBrochureModalOpen(false)}
@@ -96,4 +157,3 @@ export default function App() {
     </div>
   );
 }
-
