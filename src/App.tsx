@@ -75,45 +75,42 @@ export default function App() {
 
   /*
    * HOME PAGE
-   *
-   * Home keeps the important information from all major sections.
-   * Certificate Verification is intentionally NOT shown here.
    */
   const renderHomePage = () => {
     return (
       <>
-        {/* 1. Hero */}
+        {/* Hero */}
         <Hero
           onOpenApply={() => handleOpenApply()}
           onOpenBrochure={handleOpenBrochure}
         />
 
-        {/* 2. Why Choose CBM */}
+        {/* Why Choose CBM */}
         <WhyChooseCBM
           onOpenApply={() => handleOpenApply()}
         />
 
-        {/* 3. Course Modules */}
+        {/* Course Modules */}
         <CourseSection
           onOpenApply={handleOpenApply}
           onOpenBrochure={handleOpenBrochure}
         />
 
-        {/* 4. AI Tools */}
+        {/* AI Tools */}
         <AITools />
 
-        {/* 5. Jobs */}
+        {/* Jobs */}
         <JobBoard
           onOpenApply={handleOpenApply}
         />
 
-        {/* 6. Blogs */}
+        {/* Blogs */}
         <BlogSection />
 
-        {/* 7. About */}
+        {/* About */}
         <About />
 
-        {/* 8. Contact */}
+        {/* Contact */}
         <Contact />
       </>
     );
@@ -124,24 +121,35 @@ export default function App() {
    */
   const renderPage = () => {
     switch (currentPage) {
+
+      /*
+       * COURSE PAGE
+       * Only CourseSection is shown here.
+       * AI Tools has been removed from this page.
+       */
       case 'course':
         return (
-          <>
-            <CourseSection
-              onOpenApply={handleOpenApply}
-              onOpenBrochure={handleOpenBrochure}
-            />
-
-            <AITools />
-          </>
+          <CourseSection
+            onOpenApply={handleOpenApply}
+            onOpenBrochure={handleOpenBrochure}
+          />
         );
 
+      /*
+       * ABOUT PAGE
+       */
       case 'about':
         return <About />;
 
+      /*
+       * CERTIFICATE VERIFICATION PAGE
+       */
       case 'certificate':
         return <CertificateVerification />;
 
+      /*
+       * JOBS PAGE
+       */
       case 'jobs':
         return (
           <JobBoard
@@ -149,12 +157,21 @@ export default function App() {
           />
         );
 
+      /*
+       * BLOGS PAGE
+       */
       case 'blogs':
         return <BlogSection />;
 
+      /*
+       * CONTACT PAGE
+       */
       case 'contact':
         return <Contact />;
 
+      /*
+       * HOME PAGE
+       */
       case 'home':
       default:
         return renderHomePage();
@@ -170,7 +187,7 @@ export default function App() {
         onOpenBrochure={handleOpenBrochure}
       />
 
-      {/* Main Page Content */}
+      {/* Main Content */}
       <main className="flex-grow">
         {renderPage()}
       </main>
@@ -181,7 +198,7 @@ export default function App() {
         onOpenBrochure={handleOpenBrochure}
       />
 
-      {/* Apply Now Modal */}
+      {/* Apply Modal */}
       <ApplyModal
         isOpen={applyModalOpen}
         onClose={() => setApplyModalOpen(false)}
