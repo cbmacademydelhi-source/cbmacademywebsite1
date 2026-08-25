@@ -16,6 +16,7 @@ import { BrochureModal } from './components/BrochureModal';
 
 export default function App() {
   const [applyModalOpen, setApplyModalOpen] = useState(false);
+
   const [selectedCourseForApply, setSelectedCourseForApply] =
     useState<string | undefined>(undefined);
 
@@ -72,6 +73,55 @@ export default function App() {
     setBrochureModalOpen(true);
   };
 
+  /*
+   * HOME PAGE
+   *
+   * Home keeps the important information from all major sections.
+   * Certificate Verification is intentionally NOT shown here.
+   */
+  const renderHomePage = () => {
+    return (
+      <>
+        {/* 1. Hero */}
+        <Hero
+          onOpenApply={() => handleOpenApply()}
+          onOpenBrochure={handleOpenBrochure}
+        />
+
+        {/* 2. Why Choose CBM */}
+        <WhyChooseCBM
+          onOpenApply={() => handleOpenApply()}
+        />
+
+        {/* 3. Course Modules */}
+        <CourseSection
+          onOpenApply={handleOpenApply}
+          onOpenBrochure={handleOpenBrochure}
+        />
+
+        {/* 4. AI Tools */}
+        <AITools />
+
+        {/* 5. Jobs */}
+        <JobBoard
+          onOpenApply={handleOpenApply}
+        />
+
+        {/* 6. Blogs */}
+        <BlogSection />
+
+        {/* 7. About */}
+        <About />
+
+        {/* 8. Contact */}
+        <Contact />
+      </>
+    );
+  };
+
+  /*
+   * INDIVIDUAL PAGES
+   */
   const renderPage = () => {
     switch (currentPage) {
       case 'course':
@@ -107,18 +157,7 @@ export default function App() {
 
       case 'home':
       default:
-        return (
-          <>
-            <Hero
-              onOpenApply={() => handleOpenApply()}
-              onOpenBrochure={handleOpenBrochure}
-            />
-
-            <WhyChooseCBM
-              onOpenApply={() => handleOpenApply()}
-            />
-          </>
-        );
+        return renderHomePage();
     }
   };
 
@@ -131,7 +170,7 @@ export default function App() {
         onOpenBrochure={handleOpenBrochure}
       />
 
-      {/* Page Content */}
+      {/* Main Page Content */}
       <main className="flex-grow">
         {renderPage()}
       </main>
@@ -142,7 +181,7 @@ export default function App() {
         onOpenBrochure={handleOpenBrochure}
       />
 
-      {/* Apply Modal */}
+      {/* Apply Now Modal */}
       <ApplyModal
         isOpen={applyModalOpen}
         onClose={() => setApplyModalOpen(false)}
@@ -154,6 +193,7 @@ export default function App() {
         isOpen={brochureModalOpen}
         onClose={() => setBrochureModalOpen(false)}
       />
+
     </div>
   );
 }
