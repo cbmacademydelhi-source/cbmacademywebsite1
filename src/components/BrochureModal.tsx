@@ -20,10 +20,11 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
     'idle' | 'downloading' | 'ready'
   >('idle');
 
-  // Actual CBM Academy PDF uploaded in the repository
+  // PDF uploaded in the GitHub repository
   const brochurePdf =
-    'https://raw.githubusercontent.com/cbmacademydelhi-source/cbmacademywebsite1/main/CBM_Academy_2026_Course_Brochure.pdf';
+    'https://cbmacademydelhi-source.github.io/cbmacademywebsite1/CBM_Academy_2026_Course_Brochure.pdf';
 
+  // Close modal with Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -42,7 +43,7 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
     return null;
   }
 
-  // Download the actual PDF
+  // Download PDF
   const handleDownload = () => {
     setDownloadStatus('downloading');
 
@@ -58,7 +59,7 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
 
       setTimeout(() => {
         setDownloadStatus('ready');
-      }, 500);
+      }, 700);
     } catch (error) {
       console.error('Brochure download error:', error);
       setDownloadStatus('idle');
@@ -126,7 +127,7 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
             </ul>
           </div>
 
-          {/* Download Success */}
+          {/* Download Success Message */}
           {downloadStatus === 'ready' && (
             <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-start gap-3 text-emerald-800">
               <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
@@ -146,7 +147,8 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
 
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
-          {/* DOWNLOAD */}
+
+          {/* DOWNLOAD PDF */}
           <button
             id="start-brochure-download-btn"
             onClick={handleDownload}
@@ -163,6 +165,7 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
 
           {/* VIEW PDF */}
           <a
+            id="view-brochure-pdf-btn"
             href={brochurePdf}
             target="_blank"
             rel="noopener noreferrer"
