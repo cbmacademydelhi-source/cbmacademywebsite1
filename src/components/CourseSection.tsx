@@ -28,6 +28,17 @@ const moduleIconMap: Record<string, React.ReactNode> = {
   Briefcase: <Briefcase className="w-6 h-6 text-[#FF6B00]" />,
 };
 
+const shortDescriptions: Record<number, string> = {
+  1: 'Master modern SEO, GEO and AI-powered search optimization.',
+  2: 'Learn Meta ads, campaign strategy and performance growth.',
+  3: 'Master Google Ads, Shopping and Performance Max campaigns.',
+  4: 'Create high-converting content with AI-powered tools.',
+  5: 'Learn analytics, GA4 and data-driven marketing decisions.',
+  6: 'Build organic social growth and engaging communities.',
+  7: 'Master email marketing, CRM and customer automation.',
+  8: 'Learn freelancing, affiliate marketing and agency growth.',
+};
+
 export const CourseSection: React.FC<CourseSectionProps> = () => {
   return (
     <section
@@ -83,9 +94,10 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
                 {module.title}
               </h3>
 
-              {/* Short Module Details */}
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed line-clamp-3">
-                {module.shortDescription}
+              {/* Short Details */}
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                {shortDescriptions[module.number] ||
+                  'Practical training focused on modern digital marketing skills.'}
               </p>
 
             </div>
