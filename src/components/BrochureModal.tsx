@@ -20,6 +20,7 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
     'idle' | 'downloading' | 'ready'
   >('idle');
 
+  // Actual CBM Academy PDF uploaded in the repository
   const brochurePdf =
     'https://raw.githubusercontent.com/cbmacademydelhi-source/cbmacademywebsite1/main/CBM_Academy_2026_Course_Brochure.pdf';
 
@@ -41,26 +42,27 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
     return null;
   }
 
+  // Download the actual PDF
   const handleDownload = () => {
     setDownloadStatus('downloading');
 
-    const link = document.createElement('a');
-    link.href = brochurePdf;
-    link.download = 'CBM_Academy_2026_Course_Brochure.pdf';
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
+    try {
+      const link = document.createElement('a');
 
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+      link.href = brochurePdf;
+      link.download = 'CBM_Academy_2026_Course_Brochure.pdf';
 
-    setTimeout(() => {
-      setDownloadStatus('ready');
-    }, 500);
-  };
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
 
-  const handleViewPdf = () => {
-    window.open(brochurePdf, '_blank', 'noopener,noreferrer');
+      setTimeout(() => {
+        setDownloadStatus('ready');
+      }, 500);
+    } catch (error) {
+      console.error('Brochure download error:', error);
+      setDownloadStatus('idle');
+    }
   };
 
   return (
@@ -76,6 +78,7 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
         className="relative w-full max-w-lg overflow-hidden rounded-2xl bg-white p-6 sm:p-8 shadow-2xl border border-slate-100"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Close Button */}
         <button
           id="close-brochure-modal-btn"
           onClick={onClose}
@@ -86,6 +89,7 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
           <X className="w-5 h-5" />
         </button>
 
+        {/* Header */}
         <div className="flex items-center gap-3 mb-5">
           <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center text-orange-600">
             <FileText className="w-6 h-6" />
@@ -105,6 +109,7 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
           </div>
         </div>
 
+        {/* Brochure Information */}
         <div className="space-y-4 my-6 text-sm text-slate-600">
           <div className="p-4 bg-orange-50 border border-orange-100 rounded-xl">
             <div className="flex items-center gap-2 text-orange-950 font-semibold text-sm mb-2">
@@ -121,6 +126,7 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
             </ul>
           </div>
 
+          {/* Download Success */}
           {downloadStatus === 'ready' && (
             <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-start gap-3 text-emerald-800">
               <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
@@ -138,7 +144,9 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
           )}
         </div>
 
+        {/* Buttons */}
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
+          {/* DOWNLOAD */}
           <button
             id="start-brochure-download-btn"
             onClick={handleDownload}
@@ -153,15 +161,18 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
               : 'Download PDF Brochure'}
           </button>
 
-          <button
-            type="button"
-            onClick={handleViewPdf}
+          {/* VIEW PDF */}
+          <a
+            href={brochurePdf}
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center justify-center px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-sm transition-colors cursor-pointer"
           >
             View PDF
-          </button>
+          </a>
         </div>
 
+        {/* Footer */}
         <p className="text-center text-xs text-slate-400 mt-4">
           CBM Academy • Your Digital Marketing Journey Begins Here
         </p>
