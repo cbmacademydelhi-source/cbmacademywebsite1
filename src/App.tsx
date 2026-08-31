@@ -4,7 +4,6 @@ import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { WhyChooseCBM } from './components/WhyChooseCBM';
 import { CourseSection } from './components/CourseSection';
-import { AITools } from './components/AITools';
 import { JobBoard } from './components/JobBoard';
 import { CertificateVerification } from './components/CertificateVerification';
 import { BlogSection } from './components/BlogSection';
@@ -13,7 +12,7 @@ import { Contact } from './components/Contact';
 import { Footer } from './components/Footer';
 import { ApplyModal } from './components/ApplyModal';
 import { BrochureModal } from './components/BrochureModal';
-import { AIBot } from './components/AIBot';
+import { AI Bot } from './components/AIBot';
 
 import { MessageCircle } from 'lucide-react';
 
@@ -76,38 +75,49 @@ export default function App() {
     setBrochureModalOpen(true);
   };
 
+  /*
+   * HOME PAGE
+   */
   const renderHomePage = () => {
     return (
       <>
+        {/* Hero */}
         <Hero
           onOpenApply={() => handleOpenApply()}
           onOpenBrochure={handleOpenBrochure}
         />
 
+        {/* Why Choose CBM */}
         <WhyChooseCBM
           onOpenApply={() => handleOpenApply()}
         />
 
+        {/* Course Modules */}
         <CourseSection
           onOpenApply={handleOpenApply}
           onOpenBrochure={handleOpenBrochure}
         />
 
-        <AITools />
-
+        {/* Jobs */}
         <JobBoard
           onOpenApply={handleOpenApply}
         />
 
+        {/* Blogs */}
         <BlogSection />
 
+        {/* About */}
         <About />
 
+        {/* Contact */}
         <Contact />
       </>
     );
   };
 
+  /*
+   * INDIVIDUAL PAGES
+   */
   const renderPage = () => {
     switch (currentPage) {
       case 'course':
@@ -146,26 +156,31 @@ export default function App() {
   return (
     <div className="min-h-screen bg-white text-[#1E293B] font-['Plus_Jakarta_Sans',sans-serif] flex flex-col">
 
+      {/* Header */}
       <Header
         onOpenApply={handleOpenApply}
         onOpenBrochure={handleOpenBrochure}
       />
 
+      {/* Main Content */}
       <main className="flex-grow">
         {renderPage()}
       </main>
 
+      {/* Footer */}
       <Footer
         onOpenApply={() => handleOpenApply()}
         onOpenBrochure={handleOpenBrochure}
       />
 
+      {/* Apply Modal */}
       <ApplyModal
         isOpen={applyModalOpen}
         onClose={() => setApplyModalOpen(false)}
         initialCourse={selectedCourseForApply}
       />
 
+      {/* Brochure Modal */}
       <BrochureModal
         isOpen={brochureModalOpen}
         onClose={() => setBrochureModalOpen(false)}
