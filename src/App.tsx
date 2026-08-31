@@ -12,7 +12,7 @@ import { Contact } from './components/Contact';
 import { Footer } from './components/Footer';
 import { ApplyModal } from './components/ApplyModal';
 import { BrochureModal } from './components/BrochureModal';
-import { AI Bot } from './components/AIBot';
+import { AIBot } from './components/AIBot';
 
 import { MessageCircle } from 'lucide-react';
 
