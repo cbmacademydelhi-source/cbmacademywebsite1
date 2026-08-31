@@ -5,6 +5,7 @@ import {
   CheckCircle2,
   X,
   Sparkles,
+  Eye,
 } from 'lucide-react';
 
 interface BrochureModalProps {
@@ -20,9 +21,12 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
     'idle' | 'downloading' | 'ready'
   >('idle');
 
-  // PDF is stored inside the public folder
-  const brochurePdf =
-    '/cbmacademywebsite1/CBM_Academy_2026_Course_Brochure.pdf';
+  /*
+   * PDF is inside the public folder.
+   * import.meta.env.BASE_URL automatically uses the
+   * correct path for the current Vite deployment.
+   */
+  const brochurePdf = `${import.meta.env.BASE_URL}CBM_Academy_2026_Course_Brochure.pdf`;
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -50,6 +54,8 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
 
       link.href = brochurePdf;
       link.download = 'CBM_Academy_2026_Course_Brochure.pdf';
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
 
       document.body.appendChild(link);
       link.click();
@@ -62,6 +68,10 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
       console.error('Brochure download error:', error);
       setDownloadStatus('idle');
     }
+  };
+
+  const handleViewPdf = () => {
+    window.open(brochurePdf, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -162,15 +172,15 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
           </button>
 
           {/* View PDF */}
-          <a
+          <button
             id="view-brochure-pdf-btn"
-            href={brochurePdf}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-sm transition-colors cursor-pointer"
+            onClick={handleViewPdf}
+            type="button"
+            className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-sm transition-colors cursor-pointer"
           >
+            <Eye className="w-4 h-4" />
             View PDF
-          </a>
+          </button>
         </div>
 
         {/* Footer */}
