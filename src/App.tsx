@@ -76,52 +76,38 @@ export default function App() {
     setBrochureModalOpen(true);
   };
 
-  /*
-   * HOME PAGE
-   */
   const renderHomePage = () => {
     return (
       <>
-        {/* Hero */}
         <Hero
           onOpenApply={() => handleOpenApply()}
           onOpenBrochure={handleOpenBrochure}
         />
 
-        {/* Why Choose CBM */}
         <WhyChooseCBM
           onOpenApply={() => handleOpenApply()}
         />
 
-        {/* Course Modules */}
         <CourseSection
           onOpenApply={handleOpenApply}
           onOpenBrochure={handleOpenBrochure}
         />
 
-        {/* AI Tools */}
         <AITools />
 
-        {/* Jobs */}
         <JobBoard
           onOpenApply={handleOpenApply}
         />
 
-        {/* Blogs */}
         <BlogSection />
 
-        {/* About */}
         <About />
 
-        {/* Contact */}
         <Contact />
       </>
     );
   };
 
-  /*
-   * INDIVIDUAL PAGES
-   */
   const renderPage = () => {
     switch (currentPage) {
       case 'course':
@@ -160,31 +146,26 @@ export default function App() {
   return (
     <div className="min-h-screen bg-white text-[#1E293B] font-['Plus_Jakarta_Sans',sans-serif] flex flex-col">
 
-      {/* Header */}
       <Header
         onOpenApply={handleOpenApply}
         onOpenBrochure={handleOpenBrochure}
       />
 
-      {/* Main Content */}
       <main className="flex-grow">
         {renderPage()}
       </main>
 
-      {/* Footer */}
       <Footer
         onOpenApply={() => handleOpenApply()}
         onOpenBrochure={handleOpenBrochure}
       />
 
-      {/* Apply Modal */}
       <ApplyModal
         isOpen={applyModalOpen}
         onClose={() => setApplyModalOpen(false)}
         initialCourse={selectedCourseForApply}
       />
 
-      {/* Brochure Modal */}
       <BrochureModal
         isOpen={brochureModalOpen}
         onClose={() => setBrochureModalOpen(false)}
@@ -196,12 +177,12 @@ export default function App() {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Chat with CBM Academy on WhatsApp"
-        className="fixed bottom-5 right-24 z-50 w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
+        className="fixed bottom-5 right-5 z-50 w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
       >
         <MessageCircle className="w-7 h-7" />
       </a>
 
-      {/* Floating AI Assistant */}
+      {/* AI Assistant */}
       <AIBot />
 
     </div>
