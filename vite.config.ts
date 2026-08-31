@@ -8,7 +8,8 @@ export default defineConfig({
     tailwindcss(),
   ],
 
-  base: "/cbmacademywebsite1/",
+  // Works with both the custom domain and GitHub Pages path
+  base: "./",
 
   build: {
     outDir: "dist",
