@@ -13,6 +13,7 @@ import { Contact } from './components/Contact';
 import { Footer } from './components/Footer';
 import { ApplyModal } from './components/ApplyModal';
 import { BrochureModal } from './components/BrochureModal';
+import { AIBot } from './components/AIBot';
 
 import { MessageCircle } from 'lucide-react';
 
@@ -195,10 +196,13 @@ export default function App() {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Chat with CBM Academy on WhatsApp"
-        className="fixed bottom-5 right-5 z-50 w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
+        className="fixed bottom-5 right-24 z-50 w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
       >
         <MessageCircle className="w-7 h-7" />
       </a>
+
+      {/* Floating AI Assistant */}
+      <AIBot />
 
     </div>
   );
