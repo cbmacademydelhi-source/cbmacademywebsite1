@@ -14,6 +14,8 @@ import { Footer } from './components/Footer';
 import { ApplyModal } from './components/ApplyModal';
 import { BrochureModal } from './components/BrochureModal';
 
+import { MessageCircle } from 'lucide-react';
+
 export default function App() {
   const [applyModalOpen, setApplyModalOpen] = useState(false);
 
@@ -121,12 +123,6 @@ export default function App() {
    */
   const renderPage = () => {
     switch (currentPage) {
-
-      /*
-       * COURSE PAGE
-       * Only CourseSection is shown here.
-       * AI Tools has been removed from this page.
-       */
       case 'course':
         return (
           <CourseSection
@@ -135,21 +131,12 @@ export default function App() {
           />
         );
 
-      /*
-       * ABOUT PAGE
-       */
       case 'about':
         return <About />;
 
-      /*
-       * CERTIFICATE VERIFICATION PAGE
-       */
       case 'certificate':
         return <CertificateVerification />;
 
-      /*
-       * JOBS PAGE
-       */
       case 'jobs':
         return (
           <JobBoard
@@ -157,21 +144,12 @@ export default function App() {
           />
         );
 
-      /*
-       * BLOGS PAGE
-       */
       case 'blogs':
         return <BlogSection />;
 
-      /*
-       * CONTACT PAGE
-       */
       case 'contact':
         return <Contact />;
 
-      /*
-       * HOME PAGE
-       */
       case 'home':
       default:
         return renderHomePage();
@@ -210,6 +188,17 @@ export default function App() {
         isOpen={brochureModalOpen}
         onClose={() => setBrochureModalOpen(false)}
       />
+
+      {/* Floating WhatsApp Button */}
+      <a
+        href="https://wa.me/919211583150?text=Hi%20CBM%20Academy%2C%20I%20want%20to%20know%20more%20about%20your%20Digital%20Marketing%20course."
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Chat with CBM Academy on WhatsApp"
+        className="fixed bottom-5 right-5 z-50 w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
+      >
+        <MessageCircle className="w-7 h-7" />
+      </a>
 
     </div>
   );
