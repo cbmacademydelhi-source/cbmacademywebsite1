@@ -14,8 +14,6 @@ import { ApplyModal } from './components/ApplyModal';
 import { BrochureModal } from './components/BrochureModal';
 import { AIBot } from './components/AIBot';
 
-import { MessageCircle } from 'lucide-react';
-
 export default function App() {
   const [applyModalOpen, setApplyModalOpen] = useState(false);
 
@@ -81,35 +79,28 @@ export default function App() {
   const renderHomePage = () => {
     return (
       <>
-        {/* Hero */}
         <Hero
           onOpenApply={() => handleOpenApply()}
           onOpenBrochure={handleOpenBrochure}
         />
 
-        {/* Why Choose CBM */}
         <WhyChooseCBM
           onOpenApply={() => handleOpenApply()}
         />
 
-        {/* Course Modules */}
         <CourseSection
           onOpenApply={handleOpenApply}
           onOpenBrochure={handleOpenBrochure}
         />
 
-        {/* Jobs */}
         <JobBoard
           onOpenApply={handleOpenApply}
         />
 
-        {/* Blogs */}
         <BlogSection />
 
-        {/* About */}
         <About />
 
-        {/* Contact */}
         <Contact />
       </>
     );
@@ -186,19 +177,67 @@ export default function App() {
         onClose={() => setBrochureModalOpen(false)}
       />
 
-      {/* Floating WhatsApp Button */}
-      <a
-        href="https://wa.me/919211583150?text=Hi%20CBM%20Academy%2C%20I%20want%20to%20know%20more%20about%20your%20Digital%20Marketing%20course."
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Chat with CBM Academy on WhatsApp"
-        className="fixed bottom-5 right-5 z-50 w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
-      >
-        <MessageCircle className="w-7 h-7" />
-      </a>
+      {/* =====================================================
+          FLOATING WHATSAPP + CBM AI BOT
+      ===================================================== */}
 
-      {/* AI Assistant */}
-      <AIBot />
+      <div className="fixed bottom-5 right-5 z-[60] flex items-end gap-3">
+
+        {/* CBM AI BOT */}
+        <div className="flex flex-col items-center gap-1.5">
+
+          <span className="rounded-full bg-white px-3 py-1 text-[11px] font-extrabold text-[#072B57] border border-slate-200 shadow-sm whitespace-nowrap">
+            CBM AI Bot
+          </span>
+
+          <div className="transition-transform duration-200 hover:scale-110">
+            <AIBot />
+          </div>
+
+        </div>
+
+        {/* WHATSAPP */}
+        <a
+          href="https://wa.me/919211583150?text=Hi%20CBM%20Academy%2C%20I%20want%20to%20know%20more%20about%20your%20Digital%20Marketing%20course."
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="WhatsApp"
+          className="flex flex-col items-center gap-1.5"
+        >
+
+          <span className="rounded-full bg-white px-3 py-1 text-[11px] font-extrabold text-[#072B57] border border-slate-200 shadow-sm whitespace-nowrap">
+            WhatsApp
+          </span>
+
+          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] shadow-lg transition-all duration-200 hover:scale-110 hover:shadow-xl">
+
+            {/* WhatsApp Logo */}
+            <svg
+              viewBox="0 0 48 48"
+              className="h-8 w-8"
+              aria-hidden="true"
+            >
+              <path
+                fill="white"
+                d="M24 4C12.95 4 4 12.95 4 24c0 3.52.91 6.82 2.51 9.69L4 44l10.63-2.79A19.91 19.91 0 0 0 24 44c11.05 0 20-8.95 20-20S35.05 4 24 4Z"
+              />
+
+              <path
+                fill="#25D366"
+                d="M24 8.5C15.45 8.5 8.5 15.45 8.5 24c0 3.02.88 5.84 2.39 8.21l-1.56 5.72 5.9-1.54A15.42 15.42 0 0 0 24 39.5c8.55 0 15.5-6.95 15.5-15.5S32.55 8.5 24 8.5Z"
+              />
+
+              <path
+                fill="white"
+                d="M31.1 27.55c-.39-.2-2.3-1.13-2.66-1.26-.36-.13-.62-.2-.89.2-.26.39-1 1.26-1.23 1.52-.23.26-.46.3-.85.1-.39-.2-1.65-.61-3.14-1.95-1.16-1.03-1.94-2.3-2.17-2.69-.23-.39-.02-.6.18-.8.18-.18.39-.46.59-.69.2-.23.26-.39.39-.65.13-.26.07-.49-.03-.69-.1-.2-.89-2.14-1.22-2.93-.32-.77-.65-.67-.89-.68h-.76c-.26 0-.69.1-1.05.49-.36.39-1.38 1.35-1.38 3.29s1.41 3.81 1.61 4.08c.2.26 2.77 4.23 6.71 5.93.94.4 1.67.64 2.24.82.94.3 1.79.26 2.46.16.75-.11 2.3-.94 2.62-1.84.33-.91.33-1.68.23-1.84-.1-.16-.36-.26-.75-.46Z"
+              />
+            </svg>
+
+          </span>
+
+        </a>
+
+      </div>
 
     </div>
   );
