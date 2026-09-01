@@ -778,7 +778,7 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
             HEADER
         ================================================= */}
 
-        <div className="mx-auto mb-10 max-w-[1250px] text-center sm:mb-12 lg:mb-14">
+      <div className="mx-auto max-w-[1600px] px-2 sm:px-4 lg:px-5">
 
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-5 py-2 text-[11px] font-extrabold uppercase tracking-[0.14em] text-orange-600">
             <Sparkles className="h-3.5 w-3.5" />
