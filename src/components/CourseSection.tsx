@@ -784,8 +784,7 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
             <Sparkles className="h-3.5 w-3.5" />
             MASTER CURRICULUM
           </div>
-
-          <h2 className="mx-auto max-w-[1200px] text-3xl font-extrabold leading-[1.1] tracking-tight text-[#071B41] sm:text-4xl md:text-[46px] lg:text-[50px]">
+<h2 className="mx-auto w-full max-w-[1400px] text-center text-3xl font-extrabold leading-[1.1] tracking-tight text-[#071B41] sm:text-4xl md:text-[46px] lg:text-[50px]">
             AI-Powered{' '}
             <span className="bg-gradient-to-r from-[#FF6B00] via-[#F59E0B] to-[#F6D7A7] bg-clip-text text-transparent">
   Digital Marketing
@@ -798,7 +797,7 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
             you.
           </p>
 
-          <div className="mt-5 flex justify-center gap-2">
+          <div className="mt-5 flex justify-center gap-5">
             <span className="h-[3px] w-9 rounded-full bg-blue-500" />
             <span className="h-[3px] w-16 rounded-full bg-gradient-to-r from-blue-500 to-purple-500" />
             <span className="h-[3px] w-9 rounded-full bg-purple-500" />
