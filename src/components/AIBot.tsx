@@ -167,32 +167,40 @@ export const AIBot: React.FC = () => {
 
   return (
     <>
-      {/* Floating AI Button */}
+      {/* =====================================================
+          AI BOT BUTTON
+          Position is controlled by App.tsx
+      ===================================================== */}
+
       {!open && (
         <button
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Open CBM Academy AI Assistant"
-          className="fixed bottom-5 right-24 z-50 w-14 h-14 rounded-full bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center shadow-xl transition-all duration-200 hover:scale-105"
+          className="flex h-14 w-14 items-center justify-center rounded-full bg-orange-500 text-white shadow-xl transition-all duration-200 hover:scale-110 hover:bg-orange-600 hover:shadow-2xl"
         >
-          <Bot className="w-7 h-7" />
+          <Bot className="h-7 w-7" />
         </button>
       )}
 
-      {/* AI Chat Window */}
+      {/* =====================================================
+          AI CHAT WINDOW
+      ===================================================== */}
+
       {open && (
-        <div className="fixed bottom-5 right-5 z-50 w-[calc(100vw-2rem)] max-w-[390px] h-[560px] max-h-[calc(100vh-2rem)] bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
+        <div className="fixed bottom-5 right-5 z-[70] flex h-[560px] max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-[390px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
 
           {/* Header */}
-          <div className="bg-orange-500 text-white px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center justify-between bg-orange-500 px-4 py-4 text-white">
+
             <div className="flex items-center gap-3">
 
-              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                <Bot className="w-5 h-5" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20">
+                <Bot className="h-5 w-5" />
               </div>
 
               <div>
-                <h3 className="font-bold text-sm">
+                <h3 className="text-sm font-bold">
                   CBM Academy AI Assistant
                 </h3>
 
@@ -207,14 +215,15 @@ export const AIBot: React.FC = () => {
               type="button"
               onClick={() => setOpen(false)}
               aria-label="Close AI Assistant"
-              className="p-2 rounded-full hover:bg-white/20 transition-colors"
+              className="rounded-full p-2 transition-colors hover:bg-white/20"
             >
-              <X className="w-5 h-5" />
+              <X className="h-5 w-5" />
             </button>
+
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50">
+          <div className="flex-1 space-y-3 overflow-y-auto bg-slate-50 p-4">
 
             {messages.map((message, index) => (
               <div
@@ -225,34 +234,39 @@ export const AIBot: React.FC = () => {
                     : "flex justify-start"
                 }
               >
+
                 <div
                   className={
                     message.role === "user"
-                      ? "max-w-[82%] px-4 py-3 rounded-2xl rounded-br-md bg-orange-500 text-white text-sm leading-relaxed whitespace-pre-wrap"
-                      : "max-w-[82%] px-4 py-3 rounded-2xl rounded-bl-md bg-white text-slate-700 border border-slate-200 text-sm leading-relaxed whitespace-pre-wrap shadow-sm"
+                      ? "max-w-[82%] rounded-2xl rounded-br-md bg-orange-500 px-4 py-3 text-sm leading-relaxed text-white whitespace-pre-wrap"
+                      : "max-w-[82%] rounded-2xl rounded-bl-md border border-slate-200 bg-white px-4 py-3 text-sm leading-relaxed text-slate-700 shadow-sm whitespace-pre-wrap"
                   }
                 >
                   {message.content ||
-                    (loading && index === messages.length - 1
+                    (loading &&
+                    index === messages.length - 1
                       ? "Thinking..."
                       : "")}
                 </div>
+
               </div>
             ))}
 
             {loading &&
               messages[messages.length - 1]?.role === "user" && (
                 <div className="flex justify-start">
-                  <div className="bg-white border border-slate-200 px-4 py-3 rounded-2xl rounded-bl-md text-sm text-slate-500">
+
+                  <div className="rounded-2xl rounded-bl-md border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500">
                     Thinking...
                   </div>
+
                 </div>
               )}
 
           </div>
 
           {/* Input */}
-          <div className="p-3 bg-white border-t border-slate-200">
+          <div className="border-t border-slate-200 bg-white p-3">
 
             <div className="flex items-center gap-2">
 
@@ -265,7 +279,7 @@ export const AIBot: React.FC = () => {
                 onKeyDown={handleKeyDown}
                 placeholder="Ask your question..."
                 disabled={loading}
-                className="flex-1 min-w-0 px-4 py-3 rounded-xl border border-slate-200 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 text-sm text-slate-800 disabled:bg-slate-100"
+                className="min-w-0 flex-1 rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 disabled:bg-slate-100"
               />
 
               <button
@@ -273,14 +287,14 @@ export const AIBot: React.FC = () => {
                 onClick={sendMessage}
                 disabled={loading || !input.trim()}
                 aria-label="Send message"
-                className="w-11 h-11 shrink-0 rounded-xl bg-orange-500 hover:bg-orange-600 disabled:bg-slate-300 text-white flex items-center justify-center transition-colors"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-orange-500 text-white transition-colors hover:bg-orange-600 disabled:bg-slate-300"
               >
-                <Send className="w-5 h-5" />
+                <Send className="h-5 w-5" />
               </button>
 
             </div>
 
-            <p className="text-[10px] text-slate-400 text-center mt-2">
+            <p className="mt-2 text-center text-[10px] text-slate-400">
               Powered by CBM Academy AI
             </p>
 
