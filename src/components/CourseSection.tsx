@@ -787,9 +787,9 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
 
           <h2 className="mx-auto max-w-[1200px] text-3xl font-extrabold leading-[1.1] tracking-tight text-[#071B41] sm:text-4xl md:text-[46px] lg:text-[50px]">
             AI-Powered{' '}
-            <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              Digital Marketing
-            </span>{' '}
+            <span className="bg-gradient-to-r from-[#FF6B00] via-[#F59E0B] to-[#F6D7A7] bg-clip-text text-transparent">
+  Digital Marketing
+            </span>
             Curriculum
           </h2>
 
