@@ -219,3 +219,164 @@ export async function submitContactForm(
     };
   }
 }
+
+
+/**
+ * Submit Job Posting for Admin Review
+ *
+ * This sends the complete employer/job information
+ * to CBM Academy's office email for manual review.
+ *
+ * It does NOT use Supabase.
+ */
+export interface JobPostingFormData {
+  companyName: string;
+  hrName: string;
+  hrEmail: string;
+  hrPhone: string;
+  jobTitle: string;
+  jobDescription: string;
+  location: string;
+  salary: string;
+  experience: string;
+  skills: string;
+  workType: string;
+  honeypot?: string;
+}
+
+export async function submitJobPosting(
+  data: JobPostingFormData
+): Promise<FormSubmissionResult> {
+
+  if (data.honeypot && data.honeypot.trim() !== "") {
+    return {
+      success: false,
+      message: "Spam detected. Submission blocked.",
+    };
+  }
+
+  if (
+    !data.companyName?.trim() ||
+    !data.hrName?.trim() ||
+    !data.hrEmail?.trim() ||
+    !data.hrPhone?.trim() ||
+    !data.jobTitle?.trim() ||
+    !data.jobDescription?.trim() ||
+    !data.location?.trim() ||
+    !data.workType?.trim()
+  ) {
+    return {
+      success: false,
+      message: "Please fill in all required fields.",
+    };
+  }
+
+  const payload = {
+    access_key: WEB3FORMS_ACCESS_KEY,
+
+    subject:
+      `New Job Posting for Review - ${data.jobTitle.trim()} - ${data.companyName.trim()}`,
+
+    from_name:
+      "CBM Academy Job Portal",
+
+    name:
+      data.hrName.trim(),
+
+    email:
+      data.hrEmail.trim(),
+
+    phone:
+      data.hrPhone.trim(),
+
+    company_name:
+      data.companyName.trim(),
+
+    hr_name:
+      data.hrName.trim(),
+
+    hr_email:
+      data.hrEmail.trim(),
+
+    hr_phone:
+      data.hrPhone.trim(),
+
+    job_title:
+      data.jobTitle.trim(),
+
+    job_description:
+      data.jobDescription.trim(),
+
+    location:
+      data.location.trim(),
+
+    salary:
+      data.salary?.trim() || "Not provided",
+
+    experience:
+      data.experience?.trim() || "Not provided",
+
+    skills:
+      data.skills?.trim() || "Not provided",
+
+    work_type:
+      data.workType.trim(),
+
+    status:
+      "PENDING ADMIN REVIEW",
+
+    submission_source:
+      "CBM Academy Official Website - Post a Job",
+
+    submitted_at:
+      new Date().toLocaleString("en-IN", {
+        timeZone: "Asia/Kolkata",
+      }),
+
+    botcheck: "",
+  };
+
+  try {
+    const response = await fetch(
+      WEB3FORMS_URL,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const result = await response.json();
+
+    if (response.ok && result.success) {
+      return {
+        success: true,
+        message:
+          "Your job has been submitted successfully for CBM Academy's review. We will review the details before publishing the job.",
+      };
+    }
+
+    return {
+      success: false,
+      message:
+        result.message ||
+        "We couldn't submit the job right now. Please try again.",
+    };
+
+  } catch (error) {
+
+    console.error(
+      "Job posting submission error:",
+      error
+    );
+
+    return {
+      success: false,
+      message:
+        "We couldn't submit the job right now. Please check your internet connection and try again.",
+    };
+  }
+}
