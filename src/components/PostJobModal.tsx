@@ -1,18 +1,18 @@
 import React, { FormEvent, useState } from 'react';
 import {
-  X,
+  AlertCircle,
   Building2,
-  User,
-  Mail,
-  Phone,
+  CheckCircle2,
   Briefcase,
-  MapPin,
-  IndianRupee,
   Clock,
   Code2,
+  IndianRupee,
+  Mail,
+  MapPin,
+  Phone,
   Send,
-  CheckCircle2,
-  AlertCircle,
+  User,
+  X,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -54,7 +54,7 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
   onClose,
 }) => {
   const [form, setForm] = useState<JobForm>(initialForm);
-  const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
 
@@ -66,10 +66,21 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
     field: keyof JobForm,
     value: string
   ) => {
-    setForm((previous) => ({
-      ...previous,
+    setForm((current) => ({
+      ...current,
       [field]: value,
     }));
+  };
+
+  const closeModal = () => {
+    if (loading) {
+      return;
+    }
+
+    setForm(initialForm);
+    setSuccess(false);
+    setError('');
+    onClose();
   };
 
   const handleSubmit = async (
@@ -78,7 +89,6 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
     event.preventDefault();
 
     setError('');
-    setSuccess(false);
 
     if (
       !form.companyName.trim() ||
@@ -89,21 +99,19 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
       !form.jobDescription.trim() ||
       !form.location.trim()
     ) {
-      setError(
-        'Please fill in all required fields.'
-      );
+      setError('Please fill in all required fields.');
       return;
     }
 
-    setSubmitting(true);
+    setLoading(true);
 
     try {
-      const skillsArray = form.skills
+      const skills = form.skills
         .split(',')
         .map((skill) => skill.trim())
-        .filter(Boolean);
+        .filter((skill) => skill.length > 0);
 
-      const { error: insertError } = await supabase
+      const { error: databaseError } = await supabase
         .from('job_listings')
         .insert({
           company_name: form.companyName.trim(),
@@ -115,90 +123,66 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
           location: form.location.trim(),
           salary: form.salary.trim() || null,
           experience: form.experience.trim() || null,
-          skills: skillsArray,
+          skills,
           work_type: form.workType,
           status: 'pending',
         });
 
-      if (insertError) {
-        console.error(
-          'Post job error:',
-          insertError
-        );
-
-        throw new Error(
-          insertError.message ||
-            'Unable to submit job.'
-        );
+      if (databaseError) {
+        throw new Error(databaseError.message);
       }
 
       setSuccess(true);
       setForm(initialForm);
     } catch (submitError) {
-      console.error(
-        'Employer job submission error:',
-        submitError
-      );
+      console.error('Post job submission error:', submitError);
 
       setError(
         submitError instanceof Error
           ? submitError.message
-          : 'Something went wrong. Please try again.'
+          : 'Unable to submit the job. Please try again.'
       );
     } finally {
-      setSubmitting(false);
+      setLoading(false);
     }
-  };
-
-  const handleClose = () => {
-    if (submitting) {
-      return;
-    }
-
-    setError('');
-    setSuccess(false);
-    onClose();
   };
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) {
-          handleClose();
+          closeModal();
         }
       }}
     >
-      <div className="relative w-full max-w-3xl max-h-[92vh] overflow-hidden rounded-2xl bg-white shadow-2xl">
+      <div className="w-full max-w-3xl overflow-hidden rounded-2xl bg-white shadow-2xl">
 
         {/* Header */}
         <div className="flex items-center justify-between bg-[#072B57] px-5 py-4 sm:px-7">
-
           <div>
             <div className="flex items-center gap-2">
               <Building2 className="h-5 w-5 text-[#FF6B00]" />
 
-              <h2 className="text-lg sm:text-xl font-extrabold text-white">
+              <h2 className="text-lg font-extrabold text-white sm:text-xl">
                 Post a Job
               </h2>
             </div>
 
-            <p className="mt-1 text-xs sm:text-sm text-blue-100">
-              Share your opening with CBM Academy students and
-              job seekers.
+            <p className="mt-1 text-xs text-blue-100 sm:text-sm">
+              Submit your job opening to CBM Academy.
             </p>
           </div>
 
           <button
             type="button"
-            onClick={handleClose}
-            disabled={submitting}
+            onClick={closeModal}
+            disabled={loading}
+            className="rounded-full p-2 text-white hover:bg-white/10 disabled:opacity-50"
             aria-label="Close"
-            className="rounded-full p-2 text-white transition hover:bg-white/10 disabled:opacity-50"
           >
             <X className="h-5 w-5" />
           </button>
-
         </div>
 
         {/* Content */}
@@ -216,20 +200,19 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
               </h3>
 
               <p className="mt-3 max-w-lg text-sm leading-relaxed text-slate-600">
-                Thank you for submitting your job opening.
-                Our team will review the details. Once approved,
-                the job will appear publicly on the CBM Academy
-                Jobs page.
+                Your job opening has been submitted successfully.
+                CBM Academy will review it before publishing it
+                on the Jobs page.
               </p>
 
-              <div className="mt-6 rounded-xl border border-orange-100 bg-orange-50 px-5 py-3 text-sm font-semibold text-orange-700">
-                Status: Pending Admin Approval
+              <div className="mt-5 rounded-xl border border-orange-100 bg-orange-50 px-5 py-3 text-sm font-bold text-orange-700">
+                Status: Pending Approval
               </div>
 
               <button
                 type="button"
-                onClick={handleClose}
-                className="mt-7 rounded-xl bg-[#072B57] px-7 py-3 text-sm font-bold text-white transition hover:bg-[#0c3c78]"
+                onClick={closeModal}
+                className="mt-7 rounded-xl bg-[#072B57] px-7 py-3 text-sm font-bold text-white hover:bg-[#0c3c78]"
               >
                 Done
               </button>
@@ -251,7 +234,7 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                       Submission failed
                     </p>
 
-                    <p className="mt-0.5">
+                    <p className="mt-1">
                       {error}
                     </p>
                   </div>
@@ -259,163 +242,88 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
               )}
 
               {/* Company Details */}
-              <div>
+              <section>
+                <h3 className="text-base font-extrabold text-[#072B57]">
+                  Company & HR Details
+                </h3>
 
-                <div className="mb-4">
-                  <h3 className="text-base font-extrabold text-[#072B57]">
-                    Company & HR Details
-                  </h3>
+                <p className="mt-1 text-xs text-slate-500">
+                  Enter the company and recruitment contact details.
+                </p>
 
-                  <p className="mt-1 text-xs text-slate-500">
-                    These details will be used for verification
-                    and recruitment communication.
-                  </p>
-                </div>
+                <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <FormInput
+                    label="Company Name *"
+                    icon={<Building2 />}
+                    value={form.companyName}
+                    onChange={(value) =>
+                      updateField('companyName', value)
+                    }
+                    placeholder="ABC Digital Pvt. Ltd."
+                    required
+                  />
 
-                  {/* Company */}
-                  <div>
-                    <label className="mb-1.5 block text-xs font-bold text-slate-700">
-                      Company Name *
-                    </label>
+                  <FormInput
+                    label="HR / Recruiter Name *"
+                    icon={<User />}
+                    value={form.hrName}
+                    onChange={(value) =>
+                      updateField('hrName', value)
+                    }
+                    placeholder="Priya Sharma"
+                    required
+                  />
 
-                    <div className="relative">
-                      <Building2 className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-slate-400" />
+                  <FormInput
+                    label="HR Email *"
+                    icon={<Mail />}
+                    type="email"
+                    value={form.hrEmail}
+                    onChange={(value) =>
+                      updateField('hrEmail', value)
+                    }
+                    placeholder="hr@company.com"
+                    required
+                  />
 
-                      <input
-                        type="text"
-                        value={form.companyName}
-                        onChange={(event) =>
-                          updateField(
-                            'companyName',
-                            event.target.value
-                          )
-                        }
-                        placeholder="e.g. ABC Digital Pvt. Ltd."
-                        className="w-full rounded-xl border border-slate-200 py-3 pl-10 pr-3 text-sm text-slate-800 outline-none transition focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  {/* HR Name */}
-                  <div>
-                    <label className="mb-1.5 block text-xs font-bold text-slate-700">
-                      HR / Recruiter Name *
-                    </label>
-
-                    <div className="relative">
-                      <User className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-slate-400" />
-
-                      <input
-                        type="text"
-                        value={form.hrName}
-                        onChange={(event) =>
-                          updateField(
-                            'hrName',
-                            event.target.value
-                          )
-                        }
-                        placeholder="e.g. Priya Sharma"
-                        className="w-full rounded-xl border border-slate-200 py-3 pl-10 pr-3 text-sm text-slate-800 outline-none transition focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  {/* HR Email */}
-                  <div>
-                    <label className="mb-1.5 block text-xs font-bold text-slate-700">
-                      HR Email *
-                    </label>
-
-                    <div className="relative">
-                      <Mail className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-slate-400" />
-
-                      <input
-                        type="email"
-                        value={form.hrEmail}
-                        onChange={(event) =>
-                          updateField(
-                            'hrEmail',
-                            event.target.value
-                          )
-                        }
-                        placeholder="hr@company.com"
-                        className="w-full rounded-xl border border-slate-200 py-3 pl-10 pr-3 text-sm text-slate-800 outline-none transition focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  {/* HR Phone */}
-                  <div>
-                    <label className="mb-1.5 block text-xs font-bold text-slate-700">
-                      HR Phone *
-                    </label>
-
-                    <div className="relative">
-                      <Phone className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-slate-400" />
-
-                      <input
-                        type="tel"
-                        value={form.hrPhone}
-                        onChange={(event) =>
-                          updateField(
-                            'hrPhone',
-                            event.target.value
-                          )
-                        }
-                        placeholder="+91 98765 43210"
-                        className="w-full rounded-xl border border-slate-200 py-3 pl-10 pr-3 text-sm text-slate-800 outline-none transition focus:border-[#FF6B00] focus:ring-2 ring-orange-100"
-                        required
-                      />
-                    </div>
-                  </div>
+                  <FormInput
+                    label="HR Phone *"
+                    icon={<Phone />}
+                    type="tel"
+                    value={form.hrPhone}
+                    onChange={(value) =>
+                      updateField('hrPhone', value)
+                    }
+                    placeholder="+91 98765 43210"
+                    required
+                  />
 
                 </div>
-              </div>
+              </section>
 
               {/* Job Details */}
-              <div>
+              <section>
+                <h3 className="text-base font-extrabold text-[#072B57]">
+                  Job Details
+                </h3>
 
-                <div className="mb-4">
-                  <h3 className="text-base font-extrabold text-[#072B57]">
-                    Job Details
-                  </h3>
+                <p className="mt-1 text-xs text-slate-500">
+                  Tell candidates about the job opportunity.
+                </p>
 
-                  <p className="mt-1 text-xs text-slate-500">
-                    Tell candidates about the opportunity.
-                  </p>
-                </div>
+                <div className="mt-4 space-y-4">
 
-                <div className="space-y-4">
-
-                  {/* Job Title */}
-                  <div>
-                    <label className="mb-1.5 block text-xs font-bold text-slate-700">
-                      Job Title *
-                    </label>
-
-                    <div className="relative">
-                      <Briefcase className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-slate-400" />
-
-                      <input
-                        type="text"
-                        value={form.jobTitle}
-                        onChange={(event) =>
-                          updateField(
-                            'jobTitle',
-                            event.target.value
-                          )
-                        }
-                        placeholder="e.g. Performance Marketing Executive"
-                        className="w-full rounded-xl border border-slate-200 py-3 pl-10 pr-3 text-sm text-slate-800 outline-none transition focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
-                        required
-                      />
-                    </div>
-                  </div>
+                  <FormInput
+                    label="Job Title *"
+                    icon={<Briefcase />}
+                    value={form.jobTitle}
+                    onChange={(value) =>
+                      updateField('jobTitle', value)
+                    }
+                    placeholder="Performance Marketing Executive"
+                    required
+                  />
 
                   {/* Description */}
                   <div>
@@ -431,90 +339,45 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                           event.target.value
                         )
                       }
-                      placeholder="Describe responsibilities, requirements and other important details..."
                       rows={5}
-                      className="w-full resize-none rounded-xl border border-slate-200 px-3 py-3 text-sm text-slate-800 outline-none transition focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
+                      placeholder="Describe responsibilities, requirements and important details..."
+                      className="w-full resize-none rounded-xl border border-slate-200 px-3 py-3 text-sm text-slate-800 outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
                       required
                     />
                   </div>
 
-                  {/* Location / Salary */}
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
 
-                    <div>
-                      <label className="mb-1.5 block text-xs font-bold text-slate-700">
-                        Location *
-                      </label>
+                    <FormInput
+                      label="Location *"
+                      icon={<MapPin />}
+                      value={form.location}
+                      onChange={(value) =>
+                        updateField('location', value)
+                      }
+                      placeholder="Delhi NCR / Remote"
+                      required
+                    />
 
-                      <div className="relative">
-                        <MapPin className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-slate-400" />
+                    <FormInput
+                      label="Salary"
+                      icon={<IndianRupee />}
+                      value={form.salary}
+                      onChange={(value) =>
+                        updateField('salary', value)
+                      }
+                      placeholder="₹4–6 LPA"
+                    />
 
-                        <input
-                          type="text"
-                          value={form.location}
-                          onChange={(event) =>
-                            updateField(
-                              'location',
-                              event.target.value
-                            )
-                          }
-                          placeholder="e.g. Delhi NCR / Remote"
-                          className="w-full rounded-xl border border-slate-200 py-3 pl-10 pr-3 text-sm text-slate-800 outline-none transition focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="mb-1.5 block text-xs font-bold text-slate-700">
-                        Salary
-                      </label>
-
-                      <div className="relative">
-                        <IndianRupee className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-slate-400" />
-
-                        <input
-                          type="text"
-                          value={form.salary}
-                          onChange={(event) =>
-                            updateField(
-                              'salary',
-                              event.target.value
-                            )
-                          }
-                          placeholder="e.g. ₹4–6 LPA"
-                          className="w-full rounded-xl border border-slate-200 py-3 pl-10 pr-3 text-sm text-slate-800 outline-none transition focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
-                        />
-                      </div>
-                    </div>
-
-                  </div>
-
-                  {/* Experience / Work Type */}
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-
-                    <div>
-                      <label className="mb-1.5 block text-xs font-bold text-slate-700">
-                        Experience
-                      </label>
-
-                      <div className="relative">
-                        <Clock className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-slate-400" />
-
-                        <input
-                          type="text"
-                          value={form.experience}
-                          onChange={(event) =>
-                            updateField(
-                              'experience',
-                              event.target.value
-                            )
-                          }
-                          placeholder="e.g. 0–2 years"
-                          className="w-full rounded-xl border border-slate-200 py-3 pl-10 pr-3 text-sm text-slate-800 outline-none transition focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
-                        />
-                      </div>
-                    </div>
+                    <FormInput
+                      label="Experience"
+                      icon={<Clock />}
+                      value={form.experience}
+                      onChange={(value) =>
+                        updateField('experience', value)
+                      }
+                      placeholder="0–2 years"
+                    />
 
                     <div>
                       <label className="mb-1.5 block text-xs font-bold text-slate-700">
@@ -529,7 +392,7 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                             event.target.value
                           )
                         }
-                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-800 outline-none transition focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
+                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-800 outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
                       >
                         <option value="Full-time">
                           Full-time
@@ -555,28 +418,118 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
 
                   </div>
 
-                  {/* Skills */}
-                  <div>
-                    <label className="mb-1.5 block text-xs font-bold text-slate-700">
-                      Required Skills
-                    </label>
+                  <FormInput
+                    label="Required Skills"
+                    icon={<Code2 />}
+                    value={form.skills}
+                    onChange={(value) =>
+                      updateField('skills', value)
+                    }
+                    placeholder="Google Ads, Meta Ads, SEO, Analytics"
+                  />
 
-                    <div className="relative">
-                      <Code2 className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-slate-400" />
+                  <p className="text-[11px] text-slate-400">
+                    Separate multiple skills with commas.
+                  </p>
 
-                      <input
-                        type="text"
-                        value={form.skills}
-                        onChange={(event) =>
-                          updateField(
-                            'skills',
-                            event.target.value
-                          )
-                        }
-                        placeholder="Google Ads, Meta Ads, SEO, Analytics"
-                        className="w-full rounded-xl border border-slate-200 py-3 pl-10 pr-3 text-sm text-slate-800 outline-none transition focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
-                      />
-                    </div>
+                </div>
+              </section>
 
-                    <p className="mt-1.5 text-[11px] text-slate-400">
-                      Separate multiple skills with commas.
+              {/* Approval Notice */}
+              <div className="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3">
+                <p className="text-xs leading-relaxed text-[#072B57]">
+                  <strong>Review process:</strong> Your job will
+                  first be reviewed by CBM Academy. Only approved
+                  jobs will appear publicly.
+                </p>
+              </div>
+
+              {/* Buttons */}
+              <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  disabled={loading}
+                  className="rounded-xl border border-slate-200 px-6 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#FF6B00] px-7 py-3 text-sm font-extrabold text-white shadow-md hover:bg-[#e85f00] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {loading ? (
+                    <>
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+                      Submitting...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="h-4 w-4" />
+                      Submit Job for Review
+                    </>
+                  )}
+                </button>
+
+              </div>
+
+            </form>
+          )}
+
+        </div>
+      </div>
+    </div>
+  );
+};
+
+interface FormInputProps {
+  label: string;
+  icon: React.ReactNode;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+  type?: string;
+  required?: boolean;
+}
+
+const FormInput: React.FC<FormInputProps> = ({
+  label,
+  icon,
+  value,
+  onChange,
+  placeholder,
+  type = 'text',
+  required = false,
+}) => {
+  return (
+    <div>
+      <label className="mb-1.5 block text-xs font-bold text-slate-700">
+        {label}
+      </label>
+
+      <div className="relative">
+        <span className="pointer-events-none absolute left-3 top-3.5 text-slate-400">
+          {React.isValidElement(icon)
+            ? React.cloneElement(icon, {
+                className: 'h-4 w-4',
+              })
+            : icon}
+        </span>
+
+        <input
+          type={type}
+          value={value}
+          onChange={(event) =>
+            onChange(event.target.value)
+          }
+          placeholder={placeholder}
+          required={required}
+          className="w-full rounded-xl border border-slate-200 py-3 pl-10 pr-3 text-sm text-slate-800 outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
+        />
+      </div>
+    </div>
+  );
+};
