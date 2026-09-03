@@ -12,6 +12,7 @@ import { Contact } from './components/Contact';
 import { Footer } from './components/Footer';
 import { ApplyModal } from './components/ApplyModal';
 import { BrochureModal } from './components/BrochureModal';
+import { PostJobModal } from './components/PostJobModal';
 import { AIBot } from './components/AIBot';
 
 export default function App() {
@@ -21,6 +22,9 @@ export default function App() {
     useState<string | undefined>(undefined);
 
   const [brochureModalOpen, setBrochureModalOpen] =
+    useState(false);
+
+  const [postJobModalOpen, setPostJobModalOpen] =
     useState(false);
 
   const [currentPage, setCurrentPage] = useState('home');
@@ -73,6 +77,10 @@ export default function App() {
     setBrochureModalOpen(true);
   };
 
+  const handleOpenPostJob = () => {
+    setPostJobModalOpen(true);
+  };
+
   /*
    * HOME PAGE
    */
@@ -95,6 +103,7 @@ export default function App() {
 
         <JobBoard
           onOpenApply={handleOpenApply}
+          onPostJob={handleOpenPostJob}
         />
 
         <BlogSection />
@@ -129,6 +138,7 @@ export default function App() {
         return (
           <JobBoard
             onOpenApply={handleOpenApply}
+            onPostJob={handleOpenPostJob}
           />
         );
 
@@ -175,6 +185,12 @@ export default function App() {
       <BrochureModal
         isOpen={brochureModalOpen}
         onClose={() => setBrochureModalOpen(false)}
+      />
+
+      {/* Post a Job Modal */}
+      <PostJobModal
+        isOpen={postJobModalOpen}
+        onClose={() => setPostJobModalOpen(false)}
       />
 
       {/* =====================================================
