@@ -1,534 +1,254 @@
-import React, { FormEvent, useState } from 'react';
-import {
-  AlertCircle,
-  Building2,
-  CheckCircle2,
-  Clock,
-  Code2,
-  IndianRupee,
-  Mail,
-  MapPin,
-  Phone,
-  Send,
-  User,
-  X,
-} from 'lucide-react';
-interface PostJobModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
+import React, { useEffect, useState } from 'react';
 
-interface JobForm {
-  companyName: string;
-  hrName: string;
-  hrEmail: string;
-  hrPhone: string;
-  jobTitle: string;
-  jobDescription: string;
-  location: string;
-  salary: string;
-  experience: string;
-  skills: string;
-  workType: string;
-}
+import { Header } from './components/Header';
+import { Hero } from './components/Hero';
+import { WhyChooseCBM } from './components/WhyChooseCBM';
+import { CourseSection } from './components/CourseSection';
+import { JobBoard } from './components/JobBoard';
+import { CertificateVerification } from './components/CertificateVerification';
+import { BlogSection } from './components/BlogSection';
+import { About } from './components/About';
+import { Contact } from './components/Contact';
+import { Footer } from './components/Footer';
+import { ApplyModal } from './components/ApplyModal';
+import { BrochureModal } from './components/BrochureModal';
+import { PostJobModal } from './components/PostJobModal';
+import { AIBot } from './components/AIBot';
 
-const emptyForm: JobForm = {
-  companyName: '',
-  hrName: '',
-  hrEmail: '',
-  hrPhone: '',
-  jobTitle: '',
-  jobDescription: '',
-  location: '',
-  salary: '',
-  experience: '',
-  skills: '',
-  workType: 'Full-time',
-};
+export default function App() {
+  const [applyModalOpen, setApplyModalOpen] = useState(false);
 
-export const PostJobModal: React.FC<PostJobModalProps> = ({
-  isOpen,
-  onClose,
-}) => {
-  const [form, setForm] = useState<JobForm>(emptyForm);
-  const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState('');
+  const [selectedCourseForApply, setSelectedCourseForApply] =
+    useState<string | undefined>(undefined);
 
-  if (!isOpen) return null;
+  const [brochureModalOpen, setBrochureModalOpen] =
+    useState(false);
 
-  const updateField = (
-    field: keyof JobForm,
-    value: string
-  ) => {
-    setForm((previous) => ({
-      ...previous,
-      [field]: value,
-    }));
-  };
+  const [postJobModalOpen, setPostJobModalOpen] =
+    useState(false);
 
-  const closeModal = () => {
-    if (submitting) return;
+  const [currentPage, setCurrentPage] = useState('home');
 
-    setForm(emptyForm);
-    setError('');
-    setSuccess(false);
-    onClose();
-  };
+  useEffect(() => {
+    const updatePage = () => {
+      const hash = window.location.hash.replace('#', '');
 
-  const handleSubmit = async (
-    event: FormEvent<HTMLFormElement>
-  ) => {
-    event.preventDefault();
+      const validPages = [
+        'home',
+        'course',
+        'about',
+        'certificate',
+        'jobs',
+        'blogs',
+        'contact',
+      ];
 
-    setError('');
-    setSuccess(false);
-
-    if (
-      !form.companyName.trim() ||
-      !form.hrName.trim() ||
-      !form.hrEmail.trim() ||
-      !form.hrPhone.trim() ||
-      !form.jobTitle.trim() ||
-      !form.jobDescription.trim() ||
-      !form.location.trim()
-    ) {
-      setError('Please fill in all required fields.');
-      return;
-    }
-
-    setSubmitting(true);
-
-    try {
-      const skills = form.skills
-        .split(',')
-        .map((skill) => skill.trim())
-        .filter(Boolean);
-
-      const { error: insertError } = await supabase
-        .from('job_listings')
-        .insert({
-          company_name: form.companyName.trim(),
-          hr_name: form.hrName.trim(),
-          hr_email: form.hrEmail.trim(),
-          hr_phone: form.hrPhone.trim(),
-          job_title: form.jobTitle.trim(),
-          job_description: form.jobDescription.trim(),
-          location: form.location.trim(),
-          salary: form.salary.trim() || null,
-          experience: form.experience.trim() || null,
-          skills,
-          work_type: form.workType,
-          status: 'pending',
-        });
-
-      if (insertError) {
-        throw new Error(insertError.message);
+      if (validPages.includes(hash)) {
+        setCurrentPage(hash);
+      } else {
+        setCurrentPage('home');
       }
 
-      setSuccess(true);
-      setForm(emptyForm);
-    } catch (submitError) {
-      console.error('Post job error:', submitError);
+      window.scrollTo({
+        top: 0,
+        behavior: 'instant',
+      });
+    };
 
-      setError(
-        submitError instanceof Error
-          ? submitError.message
-          : 'Something went wrong. Please try again.'
-      );
-    } finally {
-      setSubmitting(false);
+    updatePage();
+
+    window.addEventListener('hashchange', updatePage);
+
+    return () => {
+      window.removeEventListener('hashchange', updatePage);
+    };
+  }, []);
+
+  const handleOpenApply = (courseOrJobTitle?: string) => {
+    setSelectedCourseForApply(
+      courseOrJobTitle ||
+        'Master in AI-Powered Digital Marketing & Performance Growth'
+    );
+
+    setApplyModalOpen(true);
+  };
+
+  const handleOpenBrochure = () => {
+    setBrochureModalOpen(true);
+  };
+
+  const handleOpenPostJob = () => {
+    setPostJobModalOpen(true);
+  };
+
+  const renderHomePage = () => {
+    return (
+      <>
+        <Hero
+          onOpenApply={() => handleOpenApply()}
+          onOpenBrochure={handleOpenBrochure}
+        />
+
+        <WhyChooseCBM
+          onOpenApply={() => handleOpenApply()}
+        />
+
+        <CourseSection
+          onOpenApply={handleOpenApply}
+          onOpenBrochure={handleOpenBrochure}
+        />
+
+        <JobBoard
+          onOpenApply={handleOpenApply}
+          onPostJob={handleOpenPostJob}
+        />
+
+        <BlogSection />
+
+        <About />
+
+        <Contact />
+      </>
+    );
+  };
+
+  const renderPage = () => {
+    switch (currentPage) {
+      case 'course':
+        return (
+          <CourseSection
+            onOpenApply={handleOpenApply}
+            onOpenBrochure={handleOpenBrochure}
+          />
+        );
+
+      case 'about':
+        return <About />;
+
+      case 'certificate':
+        return <CertificateVerification />;
+
+      case 'jobs':
+        return (
+          <JobBoard
+            onOpenApply={handleOpenApply}
+            onPostJob={handleOpenPostJob}
+          />
+        );
+
+      case 'blogs':
+        return <BlogSection />;
+
+      case 'contact':
+        return <Contact />;
+
+      case 'home':
+      default:
+        return renderHomePage();
     }
   };
 
   return (
-    <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4"
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget) {
-          closeModal();
-        }
-      }}
-    >
-      <div className="w-full max-w-3xl max-h-[92vh] overflow-hidden rounded-2xl bg-white shadow-2xl">
+    <div className="min-h-screen bg-white text-[#1E293B] font-['Plus_Jakarta_Sans',sans-serif] flex flex-col">
 
-        {/* Header */}
-        <div className="flex items-center justify-between bg-[#072B57] px-5 py-4 sm:px-7">
-          <div>
-            <div className="flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-[#FF6B00]" />
+      {/* Header */}
+      <Header
+        onOpenApply={handleOpenApply}
+        onOpenBrochure={handleOpenBrochure}
+      />
 
-              <h2 className="text-lg sm:text-xl font-extrabold text-white">
-                Post a Job
-              </h2>
-            </div>
+      {/* Main Content */}
+      <main className="flex-grow">
+        {renderPage()}
+      </main>
 
-            <p className="mt-1 text-xs sm:text-sm text-blue-100">
-              Submit your opening to CBM Academy for review.
-            </p>
+      {/* Footer */}
+      <Footer
+        onOpenApply={() => handleOpenApply()}
+        onOpenBrochure={handleOpenBrochure}
+      />
+
+      {/* Course / Job Apply Modal */}
+      <ApplyModal
+        isOpen={applyModalOpen}
+        onClose={() => setApplyModalOpen(false)}
+        initialCourse={selectedCourseForApply}
+      />
+
+      {/* Brochure Modal */}
+      <BrochureModal
+        isOpen={brochureModalOpen}
+        onClose={() => setBrochureModalOpen(false)}
+      />
+
+      {/* Employer Post Job Modal */}
+      <PostJobModal
+        isOpen={postJobModalOpen}
+        onClose={() => setPostJobModalOpen(false)}
+      />
+
+      {/* =====================================================
+          FLOATING WHATSAPP + CBM AI BOT
+      ===================================================== */}
+
+      <div className="fixed bottom-5 right-5 z-[60] flex items-end gap-3">
+
+        {/* CBM AI BOT */}
+        <div className="flex flex-col items-center gap-1.5">
+
+          <span className="rounded-full bg-white px-3 py-1 text-[11px] font-extrabold text-[#072B57] border border-slate-200 shadow-sm whitespace-nowrap">
+            CBM AI Bot
+          </span>
+
+          <div className="transition-transform duration-200 hover:scale-110">
+            <AIBot />
           </div>
 
-          <button
-            type="button"
-            onClick={closeModal}
-            disabled={submitting}
-            className="rounded-full p-2 text-white hover:bg-white/10 disabled:opacity-50"
-            aria-label="Close"
-          >
-            <X className="h-5 w-5" />
-          </button>
         </div>
 
-        {/* Body */}
-        <div className="max-h-[calc(92vh-76px)] overflow-y-auto">
+        {/* WHATSAPP */}
+        <a
+          href="https://wa.me/919211583150?text=Hi%20CBM%20Academy%2C%20I%20want%20to%20know%20more%20about%20your%20Digital%20Marketing%20course."
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="WhatsApp"
+          className="flex flex-col items-center gap-1.5"
+        >
 
-          {success ? (
-            <div className="flex min-h-[420px] flex-col items-center justify-center px-6 py-12 text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50">
-                <CheckCircle2 className="h-9 w-9 text-emerald-600" />
-              </div>
+          <span className="rounded-full bg-white px-3 py-1 text-[11px] font-extrabold text-[#072B57] border border-slate-200 shadow-sm whitespace-nowrap">
+            WhatsApp
+          </span>
 
-              <h3 className="mt-5 text-2xl font-extrabold text-[#072B57]">
-                Job Submitted Successfully!
-              </h3>
+          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] shadow-lg transition-all duration-200 hover:scale-110 hover:shadow-xl">
 
-              <p className="mt-3 max-w-lg text-sm leading-relaxed text-slate-600">
-                Your job has been submitted to CBM Academy.
-                Our team will review it before publishing.
-              </p>
-
-              <div className="mt-5 rounded-xl border border-orange-100 bg-orange-50 px-5 py-3 text-sm font-bold text-orange-700">
-                Status: Pending Admin Approval
-              </div>
-
-              <button
-                type="button"
-                onClick={closeModal}
-                className="mt-7 rounded-xl bg-[#072B57] px-7 py-3 text-sm font-bold text-white hover:bg-[#0c3c78]"
-              >
-                Done
-              </button>
-            </div>
-          ) : (
-            <form
-              onSubmit={handleSubmit}
-              className="space-y-7 p-5 sm:p-7"
+            {/* WhatsApp Logo */}
+            <svg
+              viewBox="0 0 48 48"
+              className="h-8 w-8"
+              aria-hidden="true"
             >
+              <path
+                fill="white"
+                d="M24 4C12.95 4 4 12.95 4 24c0 3.52.91 6.82 2.51 9.69L4 44l10.63-2.79A19.91 19.91 0 0 0 24 44c11.05 0 20-8.95 20-20S35.05 4 24 4Z"
+              />
 
-              {/* Error */}
-              {error && (
-                <div className="flex gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                  <AlertCircle className="h-5 w-5 shrink-0" />
+              <path
+                fill="#25D366"
+                d="M24 8.5C15.45 8.5 8.5 15.45 8.5 24c0 3.02.88 5.84 2.39 8.21l-1.56 5.72 5.9-1.54A15.42 15.42 0 0 0 24 39.5c8.55 0 15.5-6.95 15.5-15.5S32.55 8.5 24 8.5Z"
+              />
 
-                  <div>
-                    <p className="font-bold">
-                      Submission failed
-                    </p>
+              <path
+                fill="white"
+                d="M31.1 27.55c-.39-.2-2.3-1.13-2.66-1.26-.36-.13-.62-.2-.89.2-.26.39-1 1.26-1.23 1.52-.23.26-.46.3-.85.1-.39-.2-1.65-.61-3.14-1.95-1.16-1.03-1.94-2.3-2.17-2.69-.23-.39-.02-.6.18-.8.18-.18.39-.46.59-.69.2-.23.26-.39.39-.65.13-.26.07-.49-.03-.69-.1-.2-.89-2.14-1.22-2.93-.32-.77-.65-.67-.89-.68h-.76c-.26 0-.69.1-1.05.49-.36.39-1.38 1.35-1.38 3.29s1.41 3.81 1.61 4.08c.2.26 2.77 4.23 6.71 5.93.94.4 1.67.64 2.24.82.94.3 1.79.26 2.46.16.75-.11 2.3-.94 2.62-1.84.33-.91.33-1.68.23-1.84-.1-.16-.36-.26-.75-.46Z"
+              />
+            </svg>
 
-                    <p className="mt-1">
-                      {error}
-                    </p>
-                  </div>
-                </div>
-              )}
+          </span>
 
-              {/* Company Details */}
-              <div>
-                <h3 className="text-base font-extrabold text-[#072B57]">
-                  Company & HR Details
-                </h3>
+        </a>
 
-                <p className="mt-1 text-xs text-slate-500">
-                  Enter the company and recruitment contact details.
-                </p>
-
-                <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-
-                  <Input
-                    label="Company Name *"
-                    icon={<Building2 />}
-                    value={form.companyName}
-                    onChange={(value) =>
-                      updateField('companyName', value)
-                    }
-                    placeholder="ABC Digital Pvt. Ltd."
-                    required
-                  />
-
-                  <Input
-                    label="HR / Recruiter Name *"
-                    icon={<User />}
-                    value={form.hrName}
-                    onChange={(value) =>
-                      updateField('hrName', value)
-                    }
-                    placeholder="Priya Sharma"
-                    required
-                  />
-
-                  <Input
-                    label="HR Email *"
-                    icon={<Mail />}
-                    type="email"
-                    value={form.hrEmail}
-                    onChange={(value) =>
-                      updateField('hrEmail', value)
-                    }
-                    placeholder="hr@company.com"
-                    required
-                  />
-
-                  <Input
-                    label="HR Phone *"
-                    icon={<Phone />}
-                    type="tel"
-                    value={form.hrPhone}
-                    onChange={(value) =>
-                      updateField('hrPhone', value)
-                    }
-                    placeholder="+91 98765 43210"
-                    required
-                  />
-
-                </div>
-              </div>
-
-              {/* Job Details */}
-              <div>
-                <h3 className="text-base font-extrabold text-[#072B57]">
-                  Job Details
-                </h3>
-
-                <p className="mt-1 text-xs text-slate-500">
-                  Tell candidates about the opportunity.
-                </p>
-
-                <div className="mt-4 space-y-4">
-
-                  <Input
-                    label="Job Title *"
-                    icon={<BriefcaseIcon />}
-                    value={form.jobTitle}
-                    onChange={(value) =>
-                      updateField('jobTitle', value)
-                    }
-                    placeholder="Performance Marketing Executive"
-                    required
-                  />
-
-                  <div>
-                    <label className="mb-1.5 block text-xs font-bold text-slate-700">
-                      Job Description *
-                    </label>
-
-                    <textarea
-                      value={form.jobDescription}
-                      onChange={(event) =>
-                        updateField(
-                          'jobDescription',
-                          event.target.value
-                        )
-                      }
-                      rows={5}
-                      placeholder="Describe responsibilities, requirements and other important details..."
-                      className="w-full resize-none rounded-xl border border-slate-200 px-3 py-3 text-sm text-slate-800 outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
-                      required
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-
-                    <Input
-                      label="Location *"
-                      icon={<MapPin />}
-                      value={form.location}
-                      onChange={(value) =>
-                        updateField('location', value)
-                      }
-                      placeholder="Delhi NCR / Remote"
-                      required
-                    />
-
-                    <Input
-                      label="Salary"
-                      icon={<IndianRupee />}
-                      value={form.salary}
-                      onChange={(value) =>
-                        updateField('salary', value)
-                      }
-                      placeholder="₹4–6 LPA"
-                    />
-
-                    <Input
-                      label="Experience"
-                      icon={<Clock />}
-                      value={form.experience}
-                      onChange={(value) =>
-                        updateField('experience', value)
-                      }
-                      placeholder="0–2 years"
-                    />
-
-                    <div>
-                      <label className="mb-1.5 block text-xs font-bold text-slate-700">
-                        Work Type
-                      </label>
-
-                      <select
-                        value={form.workType}
-                        onChange={(event) =>
-                          updateField(
-                            'workType',
-                            event.target.value
-                          )
-                        }
-                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-800 outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
-                      >
-                        <option>Full-time</option>
-                        <option>Part-time</option>
-                        <option>Internship</option>
-                        <option>Contract</option>
-                        <option>Freelance</option>
-                      </select>
-                    </div>
-
-                  </div>
-
-                  <Input
-                    label="Required Skills"
-                    icon={<Code2 />}
-                    value={form.skills}
-                    onChange={(value) =>
-                      updateField('skills', value)
-                    }
-                    placeholder="Google Ads, Meta Ads, SEO, Analytics"
-                  />
-
-                  <p className="text-[11px] text-slate-400">
-                    Separate multiple skills with commas.
-                  </p>
-
-                </div>
-              </div>
-
-              {/* Approval Notice */}
-              <div className="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3">
-                <p className="text-xs leading-relaxed text-[#072B57]">
-                  <strong>Review process:</strong> Every job is
-                  submitted as Pending and must be approved by CBM
-                  Academy before appearing publicly.
-                </p>
-              </div>
-
-              {/* Buttons */}
-              <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  disabled={submitting}
-                  className="rounded-xl border border-slate-200 px-6 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-50"
-                >
-                  Cancel
-                </button>
-
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#FF6B00] px-7 py-3 text-sm font-extrabold text-white shadow-md hover:bg-[#e85f00] disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {submitting ? (
-                    <>
-                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
-                      Submitting...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="h-4 w-4" />
-                      Submit Job for Review
-                    </>
-                  )}
-                </button>
-
-              </div>
-
-            </form>
-          )}
-
-        </div>
       </div>
+
     </div>
   );
-};
-
-interface InputProps {
-  label: string;
-  icon: React.ReactNode;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder: string;
-  type?: string;
-  required?: boolean;
 }
-
-const Input: React.FC<InputProps> = ({
-  label,
-  icon,
-  value,
-  onChange,
-  placeholder,
-  type = 'text',
-  required = false,
-}) => {
-  return (
-    <div>
-      <label className="mb-1.5 block text-xs font-bold text-slate-700">
-        {label}
-      </label>
-
-      <div className="relative">
-        <span className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-slate-400">
-          {React.cloneElement(
-            icon as React.ReactElement,
-            {
-              className: 'h-4 w-4',
-            }
-          )}
-        </span>
-
-        <input
-          type={type}
-          value={value}
-          onChange={(event) =>
-            onChange(event.target.value)
-          }
-          placeholder={placeholder}
-          required={required}
-          className="w-full rounded-xl border border-slate-200 py-3 pl-10 pr-3 text-sm text-slate-800 outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
-        />
-      </div>
-    </div>
-  );
-};
-
-const BriefcaseIcon = () => {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      className="h-4 w-4"
-    >
-      <rect
-        x="3"
-        y="7"
-        width="18"
-        height="13"
-        rx="2"
-      />
-      <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-      <path d="M3 12h18" />
-    </svg>
-  );
-};
