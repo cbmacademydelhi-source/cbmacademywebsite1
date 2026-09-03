@@ -1,27 +1,31 @@
 import React, { useState } from 'react';
 import { JOB_OPPORTUNITIES } from '../data/cbmData';
 import {
-  Briefcase,
-  MapPin,
-  IndianRupee,
   ArrowRight,
   Building2,
   Clock,
   Globe,
+  IndianRupee,
   Mail,
+  MapPin,
+  PlusCircle,
 } from 'lucide-react';
 
 interface JobBoardProps {
   onOpenApply: (jobRole?: string, hrEmail?: string) => void;
+  onPostJob?: () => void;
 }
 
 export const JobBoard: React.FC<JobBoardProps> = ({
   onOpenApply,
+  onPostJob,
 }) => {
   const [filter, setFilter] = useState<'ALL' | 'REMOTE' | 'DELHI'>('ALL');
 
   const filteredJobs = JOB_OPPORTUNITIES.filter((job) => {
-    if (filter === 'REMOTE') return job.isRemote;
+    if (filter === 'REMOTE') {
+      return job.isRemote;
+    }
 
     if (filter === 'DELHI') {
       return (
@@ -42,7 +46,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12">
 
           <div className="space-y-3 max-w-2xl">
 
@@ -55,14 +59,27 @@ export const JobBoard: React.FC<JobBoardProps> = ({
             </h2>
 
             <p className="text-slate-600 text-base leading-relaxed">
-              Direct interview calls and placement drives across top agencies
-              and brands.
+              Find your next opportunity or post a job with CBM Academy.
             </p>
 
           </div>
 
-          {/* Filters */}
-          <div className="inline-flex p-1 rounded-xl bg-slate-100 border border-slate-200 self-start md:self-auto">
+          {/* Employer CTA */}
+          <button
+            type="button"
+            onClick={onPostJob}
+            className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#FF6B00] hover:bg-[#e85f00] text-white font-extrabold text-sm shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 whitespace-nowrap"
+          >
+            <PlusCircle className="w-5 h-5" />
+            <span>Post a Job</span>
+          </button>
+
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+
+          <div className="inline-flex p-1 rounded-xl bg-slate-100 border border-slate-200">
 
             <button
               onClick={() => setFilter('ALL')}
@@ -101,6 +118,18 @@ export const JobBoard: React.FC<JobBoardProps> = ({
             </button>
 
           </div>
+
+          <p className="text-xs text-slate-500">
+            Are you an employer?{' '}
+            <button
+              type="button"
+              onClick={onPostJob}
+              className="font-bold text-[#FF6B00] hover:underline"
+            >
+              Post your opening
+            </button>
+          </p>
+
         </div>
 
         {/* Job Cards */}
@@ -115,7 +144,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({
               <div className="space-y-4">
 
                 {/* Badge */}
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
 
                   <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded">
                     {job.type}
@@ -153,7 +182,6 @@ export const JobBoard: React.FC<JobBoardProps> = ({
                       ) : (
                         <MapPin className="w-4 h-4 text-rose-500" />
                       )}
-
                       Location:
                     </span>
 
@@ -247,11 +275,8 @@ export const JobBoard: React.FC<JobBoardProps> = ({
                   id={`apply-job-${job.id}`}
                   className="w-full inline-flex items-center justify-center gap-2 bg-[#072B57] hover:bg-[#0c3c78] text-white font-bold text-sm py-2.5 rounded-xl transition-all shadow-sm active:scale-95 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#072B57]"
                 >
-
                   <span>Apply for Role</span>
-
                   <ArrowRight className="w-4 h-4 text-[#FF6B00]" />
-
                 </button>
 
               </div>
@@ -260,6 +285,19 @@ export const JobBoard: React.FC<JobBoardProps> = ({
           ))}
 
         </div>
+
+        {/* Empty State */}
+        {filteredJobs.length === 0 && (
+          <div className="text-center py-16 border border-dashed border-slate-300 rounded-2xl">
+            <Briefcase className="w-10 h-10 mx-auto text-slate-300 mb-3" />
+            <h3 className="font-bold text-[#072B57]">
+              No jobs found
+            </h3>
+            <p className="text-sm text-slate-500 mt-1">
+              Try another filter.
+            </p>
+          </div>
+        )}
 
         {/* Partners */}
         <div className="mt-14 pt-8 border-t border-slate-200 text-center">
