@@ -14,28 +14,18 @@ import {
   User,
   X,
 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+
+import {
+  submitJobPosting,
+  JobPostingFormData,
+} from '../services/formService';
 
 interface PostJobModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-interface JobForm {
-  companyName: string;
-  hrName: string;
-  hrEmail: string;
-  hrPhone: string;
-  jobTitle: string;
-  jobDescription: string;
-  location: string;
-  salary: string;
-  experience: string;
-  skills: string;
-  workType: string;
-}
-
-const initialForm: JobForm = {
+const initialForm: JobPostingFormData = {
   companyName: '',
   hrName: '',
   hrEmail: '',
@@ -47,13 +37,16 @@ const initialForm: JobForm = {
   experience: '',
   skills: '',
   workType: 'Full-time',
+  honeypot: '',
 };
 
 export const PostJobModal: React.FC<PostJobModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const [form, setForm] = useState<JobForm>(initialForm);
+  const [form, setForm] =
+    useState<JobPostingFormData>(initialForm);
+
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
@@ -63,13 +56,15 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
   }
 
   const updateField = (
-    field: keyof JobForm,
+    field: keyof JobPostingFormData,
     value: string
   ) => {
     setForm((current) => ({
       ...current,
       [field]: value,
     }));
+
+    setError('');
   };
 
   const closeModal = () => {
@@ -89,58 +84,52 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
     event.preventDefault();
 
     setError('');
+    setSuccess(false);
+
+    const requiredFields = [
+      form.companyName,
+      form.hrName,
+      form.hrEmail,
+      form.hrPhone,
+      form.jobTitle,
+      form.jobDescription,
+      form.location,
+      form.workType,
+    ];
 
     if (
-      !form.companyName.trim() ||
-      !form.hrName.trim() ||
-      !form.hrEmail.trim() ||
-      !form.hrPhone.trim() ||
-      !form.jobTitle.trim() ||
-      !form.jobDescription.trim() ||
-      !form.location.trim()
+      requiredFields.some(
+        (field) => !field || !field.trim()
+      )
     ) {
-      setError('Please fill in all required fields.');
+      setError(
+        'Please fill in all required fields.'
+      );
       return;
     }
 
     setLoading(true);
 
     try {
-      const skills = form.skills
-        .split(',')
-        .map((skill) => skill.trim())
-        .filter((skill) => skill.length > 0);
+      const result = await submitJobPosting(form);
 
-      const { error: databaseError } = await supabase
-        .from('job_listings')
-        .insert({
-          company_name: form.companyName.trim(),
-          hr_name: form.hrName.trim(),
-          hr_email: form.hrEmail.trim(),
-          hr_phone: form.hrPhone.trim(),
-          job_title: form.jobTitle.trim(),
-          job_description: form.jobDescription.trim(),
-          location: form.location.trim(),
-          salary: form.salary.trim() || null,
-          experience: form.experience.trim() || null,
-          skills,
-          work_type: form.workType,
-          status: 'pending',
-        });
-
-      if (databaseError) {
-        throw new Error(databaseError.message);
+      if (result.success) {
+        setSuccess(true);
+        setForm(initialForm);
+      } else {
+        setError(
+          result.message ||
+            'We could not submit the job right now. Please try again.'
+        );
       }
-
-      setSuccess(true);
-      setForm(initialForm);
     } catch (submitError) {
-      console.error('Post job submission error:', submitError);
+      console.error(
+        'Post job submission error:',
+        submitError
+      );
 
       setError(
-        submitError instanceof Error
-          ? submitError.message
-          : 'Unable to submit the job. Please try again.'
+        'We could not submit the job right now. Please try again.'
       );
     } finally {
       setLoading(false);
@@ -188,6 +177,7 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
         {/* Content */}
         <div className="max-h-[calc(92vh-80px)] overflow-y-auto">
 
+          {/* SUCCESS SCREEN */}
           {success ? (
             <div className="flex min-h-[420px] flex-col items-center justify-center px-6 py-12 text-center">
 
@@ -219,14 +209,32 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
 
             </div>
           ) : (
+
+            /* FORM */
             <form
               onSubmit={handleSubmit}
               className="space-y-7 p-5 sm:p-7"
             >
 
+              {/* Hidden honeypot */}
+              <input
+                type="text"
+                value={form.honeypot || ''}
+                onChange={(event) =>
+                  updateField(
+                    'honeypot',
+                    event.target.value
+                  )
+                }
+                tabIndex={-1}
+                autoComplete="off"
+                className="hidden"
+              />
+
               {/* Error */}
               {error && (
                 <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+
                   <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
 
                   <div>
@@ -238,11 +246,13 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                       {error}
                     </p>
                   </div>
+
                 </div>
               )}
 
               {/* Company Details */}
               <section>
+
                 <h3 className="text-base font-extrabold text-[#072B57]">
                   Company & HR Details
                 </h3>
@@ -258,7 +268,10 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                     icon={<Building2 />}
                     value={form.companyName}
                     onChange={(value) =>
-                      updateField('companyName', value)
+                      updateField(
+                        'companyName',
+                        value
+                      )
                     }
                     placeholder="ABC Digital Pvt. Ltd."
                     required
@@ -269,7 +282,10 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                     icon={<User />}
                     value={form.hrName}
                     onChange={(value) =>
-                      updateField('hrName', value)
+                      updateField(
+                        'hrName',
+                        value
+                      )
                     }
                     placeholder="Priya Sharma"
                     required
@@ -281,7 +297,10 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                     type="email"
                     value={form.hrEmail}
                     onChange={(value) =>
-                      updateField('hrEmail', value)
+                      updateField(
+                        'hrEmail',
+                        value
+                      )
                     }
                     placeholder="hr@company.com"
                     required
@@ -293,7 +312,10 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                     type="tel"
                     value={form.hrPhone}
                     onChange={(value) =>
-                      updateField('hrPhone', value)
+                      updateField(
+                        'hrPhone',
+                        value
+                      )
                     }
                     placeholder="+91 98765 43210"
                     required
@@ -304,6 +326,7 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
 
               {/* Job Details */}
               <section>
+
                 <h3 className="text-base font-extrabold text-[#072B57]">
                   Job Details
                 </h3>
@@ -314,12 +337,16 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
 
                 <div className="mt-4 space-y-4">
 
+                  {/* Job Title */}
                   <FormInput
                     label="Job Title *"
                     icon={<Briefcase />}
                     value={form.jobTitle}
                     onChange={(value) =>
-                      updateField('jobTitle', value)
+                      updateField(
+                        'jobTitle',
+                        value
+                      )
                     }
                     placeholder="Performance Marketing Executive"
                     required
@@ -327,6 +354,7 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
 
                   {/* Description */}
                   <div>
+
                     <label className="mb-1.5 block text-xs font-bold text-slate-700">
                       Job Description *
                     </label>
@@ -344,42 +372,57 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                       className="w-full resize-none rounded-xl border border-slate-200 px-3 py-3 text-sm text-slate-800 outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
                       required
                     />
+
                   </div>
 
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
 
+                    {/* Location */}
                     <FormInput
                       label="Location *"
                       icon={<MapPin />}
                       value={form.location}
                       onChange={(value) =>
-                        updateField('location', value)
+                        updateField(
+                          'location',
+                          value
+                        )
                       }
                       placeholder="Delhi NCR / Remote"
                       required
                     />
 
+                    {/* Salary */}
                     <FormInput
                       label="Salary"
                       icon={<IndianRupee />}
                       value={form.salary}
                       onChange={(value) =>
-                        updateField('salary', value)
+                        updateField(
+                          'salary',
+                          value
+                        )
                       }
                       placeholder="₹4–6 LPA"
                     />
 
+                    {/* Experience */}
                     <FormInput
                       label="Experience"
                       icon={<Clock />}
                       value={form.experience}
                       onChange={(value) =>
-                        updateField('experience', value)
+                        updateField(
+                          'experience',
+                          value
+                        )
                       }
                       placeholder="0–2 years"
                     />
 
+                    {/* Work Type */}
                     <div>
+
                       <label className="mb-1.5 block text-xs font-bold text-slate-700">
                         Work Type
                       </label>
@@ -394,6 +437,7 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                         }
                         className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-800 outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
                       >
+
                         <option value="Full-time">
                           Full-time
                         </option>
@@ -413,17 +457,31 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                         <option value="Freelance">
                           Freelance
                         </option>
+
+                        <option value="Remote">
+                          Remote
+                        </option>
+
+                        <option value="Hybrid">
+                          Hybrid
+                        </option>
+
                       </select>
+
                     </div>
 
                   </div>
 
+                  {/* Skills */}
                   <FormInput
                     label="Required Skills"
                     icon={<Code2 />}
                     value={form.skills}
                     onChange={(value) =>
-                      updateField('skills', value)
+                      updateField(
+                        'skills',
+                        value
+                      )
                     }
                     placeholder="Google Ads, Meta Ads, SEO, Analytics"
                   />
@@ -437,11 +495,13 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
 
               {/* Approval Notice */}
               <div className="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3">
+
                 <p className="text-xs leading-relaxed text-[#072B57]">
                   <strong>Review process:</strong> Your job will
                   first be reviewed by CBM Academy. Only approved
                   jobs will appear publicly.
                 </p>
+
               </div>
 
               {/* Buttons */}
@@ -461,6 +521,7 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                   disabled={loading}
                   className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#FF6B00] px-7 py-3 text-sm font-extrabold text-white shadow-md hover:bg-[#e85f00] disabled:cursor-not-allowed disabled:opacity-60"
                 >
+
                   {loading ? (
                     <>
                       <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
@@ -472,6 +533,7 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                       Submit Job for Review
                     </>
                   )}
+
                 </button>
 
               </div>
@@ -484,6 +546,11 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
     </div>
   );
 };
+
+
+/* =========================
+   FORM INPUT COMPONENT
+========================= */
 
 interface FormInputProps {
   label: string;
@@ -506,11 +573,13 @@ const FormInput: React.FC<FormInputProps> = ({
 }) => {
   return (
     <div>
+
       <label className="mb-1.5 block text-xs font-bold text-slate-700">
         {label}
       </label>
 
       <div className="relative">
+
         <span className="pointer-events-none absolute left-3 top-3.5 text-slate-400">
           {React.isValidElement(icon)
             ? React.cloneElement(icon, {
@@ -529,7 +598,9 @@ const FormInput: React.FC<FormInputProps> = ({
           required={required}
           className="w-full rounded-xl border border-slate-200 py-3 pl-10 pr-3 text-sm text-slate-800 outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
         />
+
       </div>
+
     </div>
   );
 };
