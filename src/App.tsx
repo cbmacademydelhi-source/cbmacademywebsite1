@@ -13,8 +13,6 @@ import {
   User,
   X,
 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
-
 interface PostJobModalProps {
   isOpen: boolean;
   onClose: () => void;
