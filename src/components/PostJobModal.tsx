@@ -25,6 +25,9 @@ interface PostJobModalProps {
   onClose: () => void;
 }
 
+const JOBS_API =
+  'https://cbm-jobs-api.cbmacademydelhi.workers.dev';
+
 const initialForm: JobPostingFormData = {
   companyName: '',
   hrName: '',
@@ -78,6 +81,65 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
     onClose();
   };
 
+  const submitToJobsApi = async () => {
+    const skillsArray = form.skills
+      ? form.skills
+          .split(',')
+          .map((skill) => skill.trim())
+          .filter(Boolean)
+      : [];
+
+    const response = await fetch(
+      `${JOBS_API}/jobs`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          company_name: form.companyName.trim(),
+          hr_name: form.hrName.trim(),
+          hr_email: form.hrEmail.trim(),
+          hr_phone: form.hrPhone.trim(),
+          job_title: form.jobTitle.trim(),
+          job_description:
+            form.jobDescription.trim(),
+          location: form.location.trim(),
+          salary: form.salary.trim(),
+          experience:
+            form.experience.trim(),
+          skills: skillsArray,
+          work_type: form.workType,
+        }),
+      }
+    );
+
+    let data: any = null;
+
+    try {
+      data = await response.json();
+    } catch {
+      data = null;
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        data?.error ||
+          data?.message ||
+          `Job API failed (${response.status}).`
+      );
+    }
+
+    if (!data?.success) {
+      throw new Error(
+        data?.error ||
+          'The job could not be saved for admin review.'
+      );
+    }
+
+    return data;
+  };
+
   const handleSubmit = async (
     event: FormEvent<HTMLFormElement>
   ) => {
@@ -108,29 +170,66 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
       return;
     }
 
+    if (
+      form.honeypot &&
+      form.honeypot.trim()
+    ) {
+      setError(
+        'We could not submit this form.'
+      );
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const result = await submitJobPosting(form);
+      /*
+        STEP 1:
+        Save the job through CBM Jobs API.
 
-      if (result.success) {
-        setSuccess(true);
-        setForm(initialForm);
-      } else {
-        setError(
-          result.message ||
-            'We could not submit the job right now. Please try again.'
+        This creates the job with:
+        status = pending
+      */
+
+      await submitToJobsApi();
+
+      /*
+        STEP 2:
+        Keep the existing Web3Forms notification.
+
+        This sends the admin email as before.
+      */
+
+      const emailResult =
+        await submitJobPosting(form);
+
+      if (!emailResult.success) {
+        console.warn(
+          'Job was saved but notification email failed:',
+          emailResult.message
         );
+
+        /*
+          Important:
+          The job has already been saved to the
+          admin system, so we still show success.
+        */
       }
+
+      setSuccess(true);
+      setForm(initialForm);
     } catch (submitError) {
       console.error(
         'Post job submission error:',
         submitError
       );
 
-      setError(
-        'We could not submit the job right now. Please try again.'
-      );
+      const message =
+        submitError instanceof Error
+          ? submitError.message
+          : 'We could not submit the job right now. Please try again.';
+
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -190,9 +289,9 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
               </h3>
 
               <p className="mt-3 max-w-lg text-sm leading-relaxed text-slate-600">
-                Your job opening has been submitted successfully.
-                CBM Academy will review it before publishing it
-                on the Jobs page.
+                Your job opening has been submitted
+                successfully. CBM Academy will review it
+                before publishing it on the Jobs page.
               </p>
 
               <div className="mt-5 rounded-xl border border-orange-100 bg-orange-50 px-5 py-3 text-sm font-bold text-orange-700">
