@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { supabase } from "../lib/supabase";
 
 interface Job {
   id: string;
@@ -20,55 +19,30 @@ interface Job {
 
 const ADMIN_EMAIL = "office@cbmacademy.in";
 
+const JOBS_API =
+  "https://cbm-jobs-api.cbmacademydelhi.workers.dev";
+
 const AdminDashboard: React.FC = () => {
-  const [session, setSession] = useState<any>(null);
-  const [email, setEmail] = useState("");
+  const [accessToken, setAccessToken] = useState<string | null>(
+    () => localStorage.getItem("cbm_admin_access_token")
+  );
+
+  const [email, setEmail] = useState(ADMIN_EMAIL);
   const [password, setPassword] = useState("");
+
   const [jobs, setJobs] = useState<Job[]>([]);
+
   const [loading, setLoading] = useState(false);
   const [jobsLoading, setJobsLoading] = useState(false);
+
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
-    checkSession();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, currentSession) => {
-      setSession(currentSession);
-
-      if (currentSession) {
-        loadJobs();
-      } else {
-        setJobs([]);
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  const checkSession = async () => {
-    const {
-      data: { session: currentSession },
-    } = await supabase.auth.getSession();
-
-    setSession(currentSession);
-
-    if (currentSession) {
-      const userEmail = currentSession.user.email?.toLowerCase();
-
-      if (userEmail !== ADMIN_EMAIL) {
-        await supabase.auth.signOut();
-        setError("You are not authorized to access the admin panel.");
-        return;
-      }
-
-      loadJobs();
+    if (accessToken) {
+      loadJobs(accessToken);
     }
-  };
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,80 +52,167 @@ const AdminDashboard: React.FC = () => {
     setMessage("");
 
     if (email.trim().toLowerCase() !== ADMIN_EMAIL) {
-      setError("Only the CBM Academy admin account can login here.");
+      setError(
+        "Only the CBM Academy admin account can login here."
+      );
       setLoading(false);
       return;
     }
 
-    const { data, error: loginError } =
-      await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password,
+    try {
+      const response = await fetch(`${JOBS_API}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          password,
+        }),
       });
 
-    if (loginError) {
-      setError(loginError.message);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data?.error || "Unable to login."
+        );
+      }
+
+      if (!data.access_token) {
+        throw new Error(
+          "Login succeeded but no access token was returned."
+        );
+      }
+
+      localStorage.setItem(
+        "cbm_admin_access_token",
+        data.access_token
+      );
+
+      setAccessToken(data.access_token);
+      setPassword("");
+
+      setMessage("Login successful.");
+
+      await loadJobs(data.access_token);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Unable to connect to the admin server."
+      );
+    } finally {
       setLoading(false);
-      return;
     }
-
-    setSession(data.session);
-    setPassword("");
-    setLoading(false);
-
-    await loadJobs();
   };
 
-  const loadJobs = async () => {
+  const loadJobs = async (token: string) => {
     setJobsLoading(true);
     setError("");
 
-    const { data, error: jobsError } = await supabase
-      .from("job_listings")
-      .select("*")
-      .order("created_at", { ascending: false });
+    try {
+      const response = await fetch(`${JOBS_API}/jobs`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    if (jobsError) {
-      setError(jobsError.message);
+      const data = await response.json();
+
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem("cbm_admin_access_token");
+        setAccessToken(null);
+        setJobs([]);
+        setError("Admin session expired. Please login again.");
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data?.error || "Unable to load jobs."
+        );
+      }
+
+      setJobs(data.jobs || []);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Unable to load jobs."
+      );
+    } finally {
       setJobsLoading(false);
-      return;
     }
-
-    setJobs(data || []);
-    setJobsLoading(false);
   };
 
   const updateJobStatus = async (
     jobId: string,
     newStatus: "approved" | "rejected"
   ) => {
-    setError("");
-    setMessage("");
-
-    const { error: updateError } = await supabase
-      .from("job_listings")
-      .update({ status: newStatus })
-      .eq("id", jobId);
-
-    if (updateError) {
-      setError(updateError.message);
+    if (!accessToken) {
+      setError("Please login again.");
       return;
     }
 
-    setMessage(
-      newStatus === "approved"
-        ? "Job approved successfully."
-        : "Job rejected successfully."
-    );
+    setError("");
+    setMessage("");
 
-    await loadJobs();
+    try {
+      const response = await fetch(
+        `${JOBS_API}/jobs/${encodeURIComponent(jobId)}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            status: newStatus,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem("cbm_admin_access_token");
+        setAccessToken(null);
+        setJobs([]);
+        setError("Admin session expired. Please login again.");
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data?.error || "Unable to update job."
+        );
+      }
+
+      setMessage(
+        newStatus === "approved"
+          ? "Job approved successfully."
+          : "Job rejected successfully."
+      );
+
+      await loadJobs(accessToken);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Unable to update job."
+      );
+    }
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setSession(null);
+  const handleLogout = () => {
+    localStorage.removeItem("cbm_admin_access_token");
+    setAccessToken(null);
     setJobs([]);
+    setPassword("");
     setMessage("");
+    setError("");
   };
 
   const pendingJobs = jobs.filter(
@@ -166,7 +227,7 @@ const AdminDashboard: React.FC = () => {
     (job) => job.status === "rejected"
   );
 
-  if (!session) {
+  if (!accessToken) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4 py-10">
         <div className="w-full max-w-md">
@@ -191,7 +252,10 @@ const AdminDashboard: React.FC = () => {
               </div>
             )}
 
-            <form onSubmit={handleLogin} className="space-y-5">
+            <form
+              onSubmit={handleLogin}
+              className="space-y-5"
+            >
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
                   Admin Email
@@ -200,8 +264,9 @@ const AdminDashboard: React.FC = () => {
                 <input
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="office@cbmacademy.in"
+                  onChange={(e) =>
+                    setEmail(e.target.value)
+                  }
                   className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 />
@@ -215,7 +280,9 @@ const AdminDashboard: React.FC = () => {
                 <input
                   type="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) =>
+                    setPassword(e.target.value)
+                  }
                   placeholder="Enter admin password"
                   className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
                   required
@@ -227,7 +294,9 @@ const AdminDashboard: React.FC = () => {
                 disabled={loading}
                 className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold py-3.5 transition"
               >
-                {loading ? "Logging in..." : "Login to Admin Panel"}
+                {loading
+                  ? "Connecting..."
+                  : "Login to Admin Panel"}
               </button>
             </form>
 
@@ -285,6 +354,7 @@ const AdminDashboard: React.FC = () => {
             <p className="text-slate-500 text-sm font-medium">
               Pending Review
             </p>
+
             <p className="text-3xl font-bold text-amber-600 mt-2">
               {pendingJobs.length}
             </p>
@@ -294,6 +364,7 @@ const AdminDashboard: React.FC = () => {
             <p className="text-slate-500 text-sm font-medium">
               Approved Jobs
             </p>
+
             <p className="text-3xl font-bold text-green-600 mt-2">
               {approvedJobs.length}
             </p>
@@ -303,6 +374,7 @@ const AdminDashboard: React.FC = () => {
             <p className="text-slate-500 text-sm font-medium">
               Rejected Jobs
             </p>
+
             <p className="text-3xl font-bold text-red-600 mt-2">
               {rejectedJobs.length}
             </p>
@@ -314,13 +386,16 @@ const AdminDashboard: React.FC = () => {
             <h2 className="text-2xl font-bold text-slate-900">
               Job Postings
             </h2>
+
             <p className="text-slate-500 mt-1">
               Review and manage employer submissions.
             </p>
           </div>
 
           <button
-            onClick={loadJobs}
+            onClick={() =>
+              accessToken && loadJobs(accessToken)
+            }
             disabled={jobsLoading}
             className="rounded-xl bg-white border border-slate-300 px-4 py-2.5 font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60"
           >
@@ -336,10 +411,14 @@ const AdminDashboard: React.FC = () => {
           </div>
         ) : jobs.length === 0 ? (
           <div className="bg-white rounded-2xl p-10 text-center shadow-sm border border-slate-200">
-            <div className="text-4xl mb-3">📋</div>
+            <div className="text-4xl mb-3">
+              📋
+            </div>
+
             <h3 className="text-xl font-bold text-slate-900">
               No job postings yet
             </h3>
+
             <p className="text-slate-500 mt-2">
               New employer submissions will appear here.
             </p>
@@ -368,7 +447,9 @@ const AdminDashboard: React.FC = () => {
                         </span>
 
                         <span className="text-xs text-slate-400">
-                          {new Date(job.created_at).toLocaleString("en-IN")}
+                          {new Date(
+                            job.created_at
+                          ).toLocaleString("en-IN")}
                         </span>
                       </div>
 
@@ -385,7 +466,10 @@ const AdminDashboard: React.FC = () => {
                       <div className="flex gap-3">
                         <button
                           onClick={() =>
-                            updateJobStatus(job.id, "approved")
+                            updateJobStatus(
+                              job.id,
+                              "approved"
+                            )
                           }
                           className="rounded-xl bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 font-bold transition"
                         >
@@ -394,7 +478,10 @@ const AdminDashboard: React.FC = () => {
 
                         <button
                           onClick={() =>
-                            updateJobStatus(job.id, "rejected")
+                            updateJobStatus(
+                              job.id,
+                              "rejected"
+                            )
                           }
                           className="rounded-xl bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 font-bold transition"
                         >
