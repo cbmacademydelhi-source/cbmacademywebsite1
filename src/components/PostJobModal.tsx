@@ -25,9 +25,6 @@ interface PostJobModalProps {
   onClose: () => void;
 }
 
-const JOBS_API =
-  'https://cbm-jobs-api.cbmacademydelhi.workers.dev';
-
 const initialForm: JobPostingFormData = {
   companyName: '',
   hrName: '',
@@ -81,65 +78,6 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
     onClose();
   };
 
-  const submitToJobsApi = async () => {
-    const skillsArray = form.skills
-      ? form.skills
-          .split(',')
-          .map((skill) => skill.trim())
-          .filter(Boolean)
-      : [];
-
-    const response = await fetch(
-      `${JOBS_API}/jobs`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          company_name: form.companyName.trim(),
-          hr_name: form.hrName.trim(),
-          hr_email: form.hrEmail.trim(),
-          hr_phone: form.hrPhone.trim(),
-          job_title: form.jobTitle.trim(),
-          job_description:
-            form.jobDescription.trim(),
-          location: form.location.trim(),
-          salary: form.salary.trim(),
-          experience:
-            form.experience.trim(),
-          skills: skillsArray,
-          work_type: form.workType,
-        }),
-      }
-    );
-
-    let data: any = null;
-
-    try {
-      data = await response.json();
-    } catch {
-      data = null;
-    }
-
-    if (!response.ok) {
-      throw new Error(
-        data?.error ||
-          data?.message ||
-          `Job API failed (${response.status}).`
-      );
-    }
-
-    if (!data?.success) {
-      throw new Error(
-        data?.error ||
-          'The job could not be saved for admin review.'
-      );
-    }
-
-    return data;
-  };
-
   const handleSubmit = async (
     event: FormEvent<HTMLFormElement>
   ) => {
@@ -184,36 +122,23 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
 
     try {
       /*
-        STEP 1:
-        Save the job through CBM Jobs API.
+        FINAL SUBMISSION METHOD
 
-        This creates the job with:
-        status = pending
+        The job is submitted directly through
+        the existing Web3Forms service.
+
+        No Cloudflare Jobs API.
+        No Supabase request.
       */
 
-      await submitToJobsApi();
-
-      /*
-        STEP 2:
-        Keep the existing Web3Forms notification.
-
-        This sends the admin email as before.
-      */
-
-      const emailResult =
+      const result =
         await submitJobPosting(form);
 
-      if (!emailResult.success) {
-        console.warn(
-          'Job was saved but notification email failed:',
-          emailResult.message
+      if (!result.success) {
+        throw new Error(
+          result.message ||
+            'We could not submit the job right now. Please try again.'
         );
-
-        /*
-          Important:
-          The job has already been saved to the
-          admin system, so we still show success.
-        */
       }
 
       setSuccess(true);
