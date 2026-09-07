@@ -62,7 +62,8 @@ export async function submitApplicationForm(
     qualification:
       data.qualification.trim(),
 
-    course: data.course.trim(),
+    course:
+      data.course.trim(),
 
     message:
       data.message?.trim() ||
@@ -132,6 +133,7 @@ export async function submitApplicationForm(
     };
   }
 }
+
 
 /**
  * Submit Contact Inquiry
@@ -251,6 +253,7 @@ export async function submitContactForm(
   }
 }
 
+
 /**
  * Job Posting Form Data
  */
@@ -269,14 +272,17 @@ export interface JobPostingFormData {
   honeypot?: string;
 }
 
+
 /**
  * Submit Job Posting
  *
- * Flow:
+ * FLOW:
  *
- * 1. Save job to Cloudflare KV
- * 2. Send notification through Web3Forms
- * 3. Show success only after KV save succeeds
+ * 1. Save job to Cloudflare KV through CBM Jobs API
+ * 2. Send notification email through Web3Forms
+ * 3. Show success
+ *
+ * The job MUST be successfully saved first.
  */
 export async function submitJobPosting(
   data: JobPostingFormData
@@ -307,9 +313,11 @@ export async function submitJobPosting(
     };
   }
 
+
   /*
   ========================================
-  STEP 1 — SAVE JOB TO CLOUDFLARE KV
+  STEP 1
+  SAVE JOB TO CLOUDFLARE KV
   ========================================
   */
 
@@ -323,7 +331,7 @@ export async function submitJobPosting(
           .filter(Boolean)
       : [];
 
-  const databasePayload = {
+  const jobPayload = {
     company_name:
       data.companyName.trim(),
 
@@ -361,7 +369,7 @@ export async function submitJobPosting(
   };
 
   try {
-    const databaseResponse =
+    const response =
       await fetch(
         `${JOBS_API}/jobs`,
         {
@@ -375,83 +383,82 @@ export async function submitJobPosting(
               "application/json",
           },
 
-          cache: "no-store",
-
           body:
             JSON.stringify(
-              databasePayload
+              jobPayload
             ),
         }
       );
 
     const responseText =
-      await databaseResponse.text();
+      await response.text();
 
-    let responseData: any = {};
+    let result: any = {};
 
     try {
-      responseData =
+      result =
         responseText
           ? JSON.parse(
               responseText
             )
           : {};
     } catch {
-      responseData = {};
+      result = {};
     }
 
-    if (
-      !databaseResponse.ok
-    ) {
+    if (!response.ok) {
       console.error(
-        "KV job save failed:",
-        databaseResponse.status,
+        "CBM Jobs API error:",
+        response.status,
         responseText
       );
 
       return {
         success: false,
         message:
-          responseData.error ||
-          `Job could not be saved. Server returned ${databaseResponse.status}.`,
+          result.error ||
+          `Unable to save job. Server error ${response.status}.`,
       };
     }
 
     if (
-      !responseData.success
+      result.success !== true
     ) {
       console.error(
-        "KV job save returned an unsuccessful response:",
-        responseData
+        "CBM Jobs API unsuccessful response:",
+        result
       );
 
       return {
         success: false,
         message:
-          responseData.error ||
-          "Job could not be saved to the job portal.",
+          result.error ||
+          "Unable to save the job posting.",
       };
     }
 
     console.log(
-      "Job successfully saved to Cloudflare KV."
+      "CBM job saved successfully:",
+      result.job
     );
   } catch (error) {
     console.error(
-      "Cloudflare KV job save error:",
+      "CBM Jobs API request failed:",
       error
     );
 
     return {
       success: false,
       message:
-        "Job could not be saved to the job portal. Please check your internet connection and try again.",
+        "Unable to save the job posting right now. Please check your internet connection and try again.",
     };
   }
 
+
   /*
   ========================================
-  STEP 2 — WEB3FORMS EMAIL
+  STEP 2
+  SEND ADMIN EMAIL
   ========================================
   */
 
@@ -561,11 +568,11 @@ export async function submitJobPosting(
         result
       );
 
-      return {
-        success: true,
-        message:
-          "Your job has been saved successfully and is now pending admin approval. The notification email could not be sent, but your job posting is safe.",
-      };
+      /*
+       * IMPORTANT:
+       * Job is already safely stored in KV.
+       * Therefore we still report success.
+       */
     }
   } catch (error) {
     console.warn(
@@ -573,12 +580,12 @@ export async function submitJobPosting(
       error
     );
 
-    return {
-      success: true,
-      message:
-        "Your job has been saved successfully and is now pending admin approval. The notification email could not be sent, but your job posting is safe.",
-    };
+    /*
+     * Job is already safely stored in KV.
+     * Do not make the employer submit again.
+     */
   }
+
 
   /*
   ========================================
