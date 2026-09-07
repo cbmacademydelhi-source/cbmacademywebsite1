@@ -729,9 +729,7 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
         </div>
 
         {/* MODULE GRID */}
-
-        <div className="mt-6 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4 lg:gap-3">
-
+<div className="mx-auto mt-6 grid w-[90%] grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4 lg:gap-3">
           {modules.map((module) => (
             <article
               key={module.number}
