@@ -697,7 +697,7 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
     >
       {/* VERY SMALL OUTER MARGINS */}
 
-      <div className="mx-auto max-w-[1500px] px-1 sm:px-2 lg:px-3">
+      <div className="mx-auto max-w-[1500px] px-0">
 
         {/* HEADER */}
 
