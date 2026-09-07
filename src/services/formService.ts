@@ -16,15 +16,16 @@ const WEB3FORMS_URL =
 const JOBS_API =
   "https://cbm-jobs-api.cbmacademydelhi.workers.dev";
 
-
 /**
  * Submit Course Application
  */
 export async function submitApplicationForm(
   data: ApplicationFormData
 ): Promise<FormSubmissionResult> {
-
-  if (data.honeypot && data.honeypot.trim() !== "") {
+  if (
+    data.honeypot &&
+    data.honeypot.trim() !== ""
+  ) {
     return {
       success: false,
       message: "Spam detected. Submission blocked.",
@@ -58,40 +59,53 @@ export async function submitApplicationForm(
 
     phone: data.phone.trim(),
 
-    qualification: data.qualification.trim(),
+    qualification:
+      data.qualification.trim(),
 
     course: data.course.trim(),
 
     message:
-      data.message?.trim() || "None provided",
+      data.message?.trim() ||
+      "None provided",
 
     submission_source:
       "CBM Academy Official Website - Apply Now",
 
     submitted_at:
-      new Date().toLocaleString("en-IN", {
-        timeZone: "Asia/Kolkata",
-      }),
+      new Date().toLocaleString(
+        "en-IN",
+        {
+          timeZone: "Asia/Kolkata",
+        }
+      ),
 
     botcheck: "",
   };
 
   try {
-    const response = await fetch(
-      WEB3FORMS_URL,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(payload),
-      }
-    );
+    const response =
+      await fetch(
+        WEB3FORMS_URL,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+            Accept:
+              "application/json",
+          },
+          body:
+            JSON.stringify(payload),
+        }
+      );
 
-    const result = await response.json();
+    const result =
+      await response.json();
 
-    if (response.ok && result.success) {
+    if (
+      response.ok &&
+      result.success
+    ) {
       return {
         success: true,
         message:
@@ -105,9 +119,7 @@ export async function submitApplicationForm(
         result.message ||
         "We couldn't send your application right now. Please try again.",
     };
-
   } catch (error) {
-
     console.error(
       "Application form submission error:",
       error
@@ -121,15 +133,16 @@ export async function submitApplicationForm(
   }
 }
 
-
 /**
  * Submit Contact Inquiry
  */
 export async function submitContactForm(
   data: ContactFormData
 ): Promise<FormSubmissionResult> {
-
-  if (data.honeypot && data.honeypot.trim() !== "") {
+  if (
+    data.honeypot &&
+    data.honeypot.trim() !== ""
+  ) {
     return {
       success: false,
       message: "Spam detected. Submission blocked.",
@@ -155,45 +168,62 @@ export async function submitContactForm(
     subject:
       `New CBM Academy Website Inquiry - ${data.subject.trim()}`,
 
-    from_name: "CBM Academy Website",
+    from_name:
+      "CBM Academy Website",
 
-    name: data.fullName.trim(),
+    name:
+      data.fullName.trim(),
 
-    email: data.email.trim(),
+    email:
+      data.email.trim(),
 
-    phone: data.phone.trim(),
+    phone:
+      data.phone.trim(),
 
-    inquiry_subject: data.subject.trim(),
+    inquiry_subject:
+      data.subject.trim(),
 
-    message: data.message.trim(),
+    message:
+      data.message.trim(),
 
     submission_source:
       "CBM Academy Official Website - Contact",
 
     submitted_at:
-      new Date().toLocaleString("en-IN", {
-        timeZone: "Asia/Kolkata",
-      }),
+      new Date().toLocaleString(
+        "en-IN",
+        {
+          timeZone: "Asia/Kolkata",
+        }
+      ),
 
     botcheck: "",
   };
 
   try {
-    const response = await fetch(
-      WEB3FORMS_URL,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(payload),
-      }
-    );
+    const response =
+      await fetch(
+        WEB3FORMS_URL,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+            Accept:
+              "application/json",
+          },
+          body:
+            JSON.stringify(payload),
+        }
+      );
 
-    const result = await response.json();
+    const result =
+      await response.json();
 
-    if (response.ok && result.success) {
+    if (
+      response.ok &&
+      result.success
+    ) {
       return {
         success: true,
         message:
@@ -207,9 +237,7 @@ export async function submitContactForm(
         result.message ||
         "We couldn't send your message right now. Please try again.",
     };
-
   } catch (error) {
-
     console.error(
       "Contact form submission error:",
       error
@@ -222,7 +250,6 @@ export async function submitContactForm(
     };
   }
 }
-
 
 /**
  * Job Posting Form Data
@@ -242,23 +269,22 @@ export interface JobPostingFormData {
   honeypot?: string;
 }
 
-
 /**
  * Submit Job Posting
  *
- * IMPORTANT:
+ * Flow:
  *
- * 1. Web3Forms remains the PRIMARY submission.
- * 2. After successful email submission,
- *    the job is also sent to the CBM Jobs API.
- * 3. Database failure will NOT make the
- *    employer submission fail.
+ * 1. Save job to Cloudflare KV
+ * 2. Send notification through Web3Forms
+ * 3. Show success only after KV save succeeds
  */
 export async function submitJobPosting(
   data: JobPostingFormData
 ): Promise<FormSubmissionResult> {
-
-  if (data.honeypot && data.honeypot.trim() !== "") {
+  if (
+    data.honeypot &&
+    data.honeypot.trim() !== ""
+  ) {
     return {
       success: false,
       message: "Spam detected. Submission blocked.",
@@ -283,12 +309,155 @@ export async function submitJobPosting(
 
   /*
   ========================================
-  STEP 1 — WEB3FORMS
+  STEP 1 — SAVE JOB TO CLOUDFLARE KV
+  ========================================
+  */
+
+  const skillsArray =
+    data.skills
+      ? data.skills
+          .split(",")
+          .map((skill) =>
+            skill.trim()
+          )
+          .filter(Boolean)
+      : [];
+
+  const databasePayload = {
+    company_name:
+      data.companyName.trim(),
+
+    hr_name:
+      data.hrName.trim(),
+
+    hr_email:
+      data.hrEmail.trim(),
+
+    hr_phone:
+      data.hrPhone.trim(),
+
+    job_title:
+      data.jobTitle.trim(),
+
+    job_description:
+      data.jobDescription.trim(),
+
+    location:
+      data.location.trim(),
+
+    salary:
+      data.salary?.trim() ||
+      null,
+
+    experience:
+      data.experience?.trim() ||
+      null,
+
+    skills:
+      skillsArray,
+
+    work_type:
+      data.workType.trim(),
+  };
+
+  try {
+    const databaseResponse =
+      await fetch(
+        `${JOBS_API}/jobs`,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+
+            Accept:
+              "application/json",
+          },
+
+          cache: "no-store",
+
+          body:
+            JSON.stringify(
+              databasePayload
+            ),
+        }
+      );
+
+    const responseText =
+      await databaseResponse.text();
+
+    let responseData: any = {};
+
+    try {
+      responseData =
+        responseText
+          ? JSON.parse(
+              responseText
+            )
+          : {};
+    } catch {
+      responseData = {};
+    }
+
+    if (
+      !databaseResponse.ok
+    ) {
+      console.error(
+        "KV job save failed:",
+        databaseResponse.status,
+        responseText
+      );
+
+      return {
+        success: false,
+        message:
+          responseData.error ||
+          `Job could not be saved. Server returned ${databaseResponse.status}.`,
+      };
+    }
+
+    if (
+      !responseData.success
+    ) {
+      console.error(
+        "KV job save returned an unsuccessful response:",
+        responseData
+      );
+
+      return {
+        success: false,
+        message:
+          responseData.error ||
+          "Job could not be saved to the job portal.",
+      };
+    }
+
+    console.log(
+      "Job successfully saved to Cloudflare KV."
+    );
+  } catch (error) {
+    console.error(
+      "Cloudflare KV job save error:",
+      error
+    );
+
+    return {
+      success: false,
+      message:
+        "Job could not be saved to the job portal. Please check your internet connection and try again.",
+    };
+  }
+
+  /*
+  ========================================
+  STEP 2 — WEB3FORMS EMAIL
   ========================================
   */
 
   const emailPayload = {
-    access_key: WEB3FORMS_ACCESS_KEY,
+    access_key:
+      WEB3FORMS_ACCESS_KEY,
 
     subject:
       `New Job Posting for Review - ${data.jobTitle.trim()} - ${data.companyName.trim()}`,
@@ -327,13 +496,16 @@ export async function submitJobPosting(
       data.location.trim(),
 
     salary:
-      data.salary?.trim() || "Not provided",
+      data.salary?.trim() ||
+      "Not provided",
 
     experience:
-      data.experience?.trim() || "Not provided",
+      data.experience?.trim() ||
+      "Not provided",
 
     skills:
-      data.skills?.trim() || "Not provided",
+      data.skills?.trim() ||
+      "Not provided",
 
     work_type:
       data.workType.trim(),
@@ -345,185 +517,68 @@ export async function submitJobPosting(
       "CBM Academy Official Website - Post a Job",
 
     submitted_at:
-      new Date().toLocaleString("en-IN", {
-        timeZone: "Asia/Kolkata",
-      }),
+      new Date().toLocaleString(
+        "en-IN",
+        {
+          timeZone: "Asia/Kolkata",
+        }
+      ),
 
     botcheck: "",
   };
 
   try {
-
-    const response = await fetch(
-      WEB3FORMS_URL,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(
-          emailPayload
-        ),
-      }
-    );
-
-    const result =
-      await response.json();
-
-    /*
-    If Web3Forms itself fails,
-    we DO show an error because this
-    is the primary submission.
-    */
-
-    if (
-      !response.ok ||
-      !result.success
-    ) {
-      return {
-        success: false,
-        message:
-          result.message ||
-          "We couldn't submit the job right now. Please try again.",
-      };
-    }
-
-  } catch (error) {
-
-    console.error(
-      "Web3Forms job submission error:",
-      error
-    );
-
-    return {
-      success: false,
-      message:
-        "We couldn't submit the job right now. Please check your internet connection and try again.",
-    };
-  }
-
-
-  /*
-  ========================================
-  STEP 2 — SAVE JOB TO DATABASE
-  ========================================
-
-  This is intentionally BEST-EFFORT.
-
-  If Supabase/Worker is temporarily down,
-  the Web3Forms submission above has already
-  succeeded, so we still report success.
-
-  This prevents the working Post a Job
-  form from breaking because of a database
-  outage.
-  */
-
-  try {
-
-    const skillsArray =
-      data.skills
-        ? data.skills
-            .split(",")
-            .map((skill) =>
-              skill.trim()
-            )
-            .filter(Boolean)
-        : [];
-
-    const databasePayload = {
-      company_name:
-        data.companyName.trim(),
-
-      hr_name:
-        data.hrName.trim(),
-
-      hr_email:
-        data.hrEmail.trim(),
-
-      hr_phone:
-        data.hrPhone.trim(),
-
-      job_title:
-        data.jobTitle.trim(),
-
-      job_description:
-        data.jobDescription.trim(),
-
-      location:
-        data.location.trim(),
-
-      salary:
-        data.salary?.trim() || null,
-
-      experience:
-        data.experience?.trim() || null,
-
-      skills:
-        skillsArray,
-
-      work_type:
-        data.workType.trim(),
-    };
-
-    const databaseResponse =
+    const response =
       await fetch(
-        `${JOBS_API}/jobs`,
+        WEB3FORMS_URL,
         {
           method: "POST",
 
           headers: {
             "Content-Type":
               "application/json",
+
             Accept:
               "application/json",
           },
 
           body:
             JSON.stringify(
-              databasePayload
+              emailPayload
             ),
         }
       );
 
-    if (!databaseResponse.ok) {
+    const result =
+      await response.json();
 
-      const errorText =
-        await databaseResponse.text();
-
+    if (
+      !response.ok ||
+      !result.success
+    ) {
       console.warn(
-        "Job database save failed:",
-        databaseResponse.status,
-        errorText
+        "Web3Forms notification failed:",
+        result
       );
 
-    } else {
-
-      console.log(
-        "Job saved to CBM Jobs database successfully."
-      );
-
+      return {
+        success: true,
+        message:
+          "Your job has been saved successfully and is now pending admin approval. The notification email could not be sent, but your job posting is safe.",
+      };
     }
-
   } catch (error) {
-
-    /*
-    IMPORTANT:
-
-    Do NOT throw here.
-
-    Web3Forms already succeeded.
-    Therefore employer submission
-    must remain successful.
-    */
-
     console.warn(
-      "Job database save temporarily unavailable:",
+      "Web3Forms notification error:",
       error
     );
-  }
 
+    return {
+      success: true,
+      message:
+        "Your job has been saved successfully and is now pending admin approval. The notification email could not be sent, but your job posting is safe.",
+    };
+  }
 
   /*
   ========================================
