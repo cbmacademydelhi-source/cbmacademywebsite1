@@ -175,7 +175,6 @@ const LinkedInLogo = () => (
       <rect x="7" y="7" width="36" height="36" rx="5" fill="#0A66C2" />
       <circle cx="16" cy="18" r="3" fill="white" />
       <rect x="13.5" y="23" width="5" height="14" fill="white" />
-
       <path
         d="M23 37V23h5v2c1-2 3-3 6-3 5 0 7 3 7 9v6h-5v-6c0-3-1-5-4-5-3 0-4 2-4 5v6Z"
         fill="white"
@@ -204,32 +203,9 @@ const SEOIllustration = ({ color }: { color: string }) => (
       )}
     </g>
 
-    <rect
-      x="22"
-      y="91"
-      width="65"
-      height="7"
-      rx="3"
-      fill="#CBD5E1"
-    />
-
-    <rect
-      x="22"
-      y="105"
-      width="48"
-      height="6"
-      rx="3"
-      fill="#E2E8F0"
-    />
-
-    <rect
-      x="22"
-      y="119"
-      width="35"
-      height="6"
-      rx="3"
-      fill="#E2E8F0"
-    />
+    <rect x="22" y="91" width="65" height="7" rx="3" fill="#CBD5E1" />
+    <rect x="22" y="105" width="48" height="6" rx="3" fill="#E2E8F0" />
+    <rect x="22" y="119" width="35" height="6" rx="3" fill="#E2E8F0" />
 
     <circle
       cx="105"
@@ -271,7 +247,7 @@ const SEOIllustration = ({ color }: { color: string }) => (
 );
 
 /* =========================================================
-   ILLUSTRATION 02 - PERFORMANCE MARKETING
+   ILLUSTRATION 02
 ========================================================= */
 
 const PerformanceIllustration = () => (
@@ -282,41 +258,10 @@ const PerformanceIllustration = () => (
     </div>
 
     <svg viewBox="0 0 240 180" className="h-full w-full">
-      <rect
-        x="30"
-        y="113"
-        width="27"
-        height="38"
-        rx="5"
-        fill="#DCFCE7"
-      />
-
-      <rect
-        x="67"
-        y="94"
-        width="27"
-        height="57"
-        rx="5"
-        fill="#BBF7D0"
-      />
-
-      <rect
-        x="104"
-        y="70"
-        width="27"
-        height="81"
-        rx="5"
-        fill="#86EFAC"
-      />
-
-      <rect
-        x="141"
-        y="43"
-        width="27"
-        height="108"
-        rx="5"
-        fill="#4ADE80"
-      />
+      <rect x="30" y="113" width="27" height="38" rx="5" fill="#DCFCE7" />
+      <rect x="67" y="94" width="27" height="57" rx="5" fill="#BBF7D0" />
+      <rect x="104" y="70" width="27" height="81" rx="5" fill="#86EFAC" />
+      <rect x="141" y="43" width="27" height="108" rx="5" fill="#4ADE80" />
 
       <path
         d="M27 106L65 84L90 94L121 60L158 28"
@@ -343,7 +288,7 @@ const PerformanceIllustration = () => (
 );
 
 /* =========================================================
-   ILLUSTRATION 03 - GOOGLE ADS
+   ILLUSTRATION 03
 ========================================================= */
 
 const TargetIllustration = () => (
@@ -412,7 +357,7 @@ const TargetIllustration = () => (
 );
 
 /* =========================================================
-   ILLUSTRATION 04 - AI CONTENT
+   ILLUSTRATION 04
 ========================================================= */
 
 const AIContentIllustration = () => (
@@ -490,7 +435,7 @@ const AIContentIllustration = () => (
 );
 
 /* =========================================================
-   ILLUSTRATION 05 - ANALYTICS
+   ILLUSTRATION 05
 ========================================================= */
 
 const AnalyticsIllustration = () => (
@@ -506,23 +451,8 @@ const AnalyticsIllustration = () => (
       strokeWidth="4"
     />
 
-    <rect
-      x="43"
-      y="45"
-      width="48"
-      height="7"
-      rx="3"
-      fill="#FEF3C7"
-    />
-
-    <rect
-      x="43"
-      y="59"
-      width="32"
-      height="5"
-      rx="2"
-      fill="#E2E8F0"
-    />
+    <rect x="43" y="45" width="48" height="7" rx="3" fill="#FEF3C7" />
+    <rect x="43" y="59" width="32" height="5" rx="2" fill="#E2E8F0" />
 
     <path
       d="M45 105L66 84L86 92L105 68L127 77L151 48"
@@ -551,18 +481,15 @@ const AnalyticsIllustration = () => (
 );
 
 /* =========================================================
-   ILLUSTRATION 06 - SOCIAL MEDIA
+   ILLUSTRATION 06
 ========================================================= */
 
 const SocialIllustration = () => (
   <div className="relative h-full w-full">
     <svg viewBox="0 0 240 180" className="h-full w-full">
       <circle cx="105" cy="88" r="48" fill="#FDF2F8" />
-
       <circle cx="99" cy="88" r="32" fill="#EC4899" />
-
       <circle cx="99" cy="88" r="13" fill="white" />
-
       <circle cx="99" cy="88" r="6" fill="#EC4899" />
 
       <circle cx="45" cy="135" r="5" fill="#F9A8D4" />
@@ -601,7 +528,7 @@ const SocialIllustration = () => (
 );
 
 /* =========================================================
-   ILLUSTRATION 07 - EMAIL CRM
+   ILLUSTRATION 07
 ========================================================= */
 
 const EmailIllustration = () => (
@@ -664,7 +591,7 @@ const EmailIllustration = () => (
 );
 
 /* =========================================================
-   ILLUSTRATION 08 - BUSINESS
+   ILLUSTRATION 08
 ========================================================= */
 
 const BusinessIllustration = () => (
@@ -739,28 +666,20 @@ const Illustration = ({
   switch (number) {
     case '01':
       return <SEOIllustration color={color} />;
-
     case '02':
       return <PerformanceIllustration />;
-
     case '03':
       return <TargetIllustration />;
-
     case '04':
       return <AIContentIllustration />;
-
     case '05':
       return <AnalyticsIllustration />;
-
     case '06':
       return <SocialIllustration />;
-
     case '07':
       return <EmailIllustration />;
-
     case '08':
       return <BusinessIllustration />;
-
     default:
       return null;
   }
@@ -774,15 +693,15 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
   return (
     <section
       id="course"
-      className="relative overflow-hidden bg-white py-10 sm:py-12 lg:py-14"
+      className="relative overflow-hidden bg-white py-8 sm:py-10 lg:py-12"
     >
-      <div className="mx-auto max-w-[1500px] px-3 sm:px-5 lg:px-6">
+      {/* VERY SMALL OUTER MARGINS */}
 
-        {/* =================================================
-            HEADER
-        ================================================= */}
+      <div className="mx-auto max-w-[1500px] px-1 sm:px-2 lg:px-3">
 
-        <div className="mx-auto max-w-[1600px] px-1 sm:px-2 lg:px-3">
+        {/* HEADER */}
+
+        <div className="mx-auto max-w-[1600px] px-0">
 
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-5 py-2 text-[11px] font-extrabold uppercase tracking-[0.14em] text-orange-600">
             <Sparkles className="h-3.5 w-3.5" />
@@ -809,11 +728,9 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
           </div>
         </div>
 
-        {/* =================================================
-            MODULE GRID
-        ================================================= */}
+        {/* MODULE GRID */}
 
-        <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4">
+        <div className="mt-6 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4 lg:gap-3">
 
           {modules.map((module) => (
             <article
@@ -860,57 +777,100 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
                 style={{
                   backgroundColor: module.color,
                 }}
-              /></article>
-          ))}
+              />
 
-        </div>
+              {/* Illustration */}
 
-        {/* =================================================
-            BENEFITS STRIP
-        ================================================= */}
+              <div className="absolute right-0 top-[42px] z-10 h-[160px] w-[220px] transition-all duration-500 group-hover:-translate-y-1 group-hover:scale-[1.04]">
+                <Illustration
+                  number={module.number}
+                  color={module.color}
+                />
+              </div>
 
-        <div className="mx-auto mt-6 max-w-[1160px] rounded-full border border-slate-200 bg-white px-4 py-3 shadow-[0_5px_20px_rgba(15,23,42,0.04)] sm:px-6">
+              {/* Text */}
 
-          <div className="flex flex-col items-center justify-center gap-4 text-center sm:flex-row sm:gap-0">
+              <div className="absolute bottom-8 left-5 z-30 w-[64%] pr-2">
 
-            {/* Benefit 1 */}
+                <div
+                  className="mb-2 text-[9px] font-extrabold uppercase tracking-[0.14em]"
+                  style={{
+                    color: module.color,
+                  }}
+                >
+                  MODULE {module.number}
+                </div>
 
-            <div className="flex flex-1 items-center justify-center gap-2 text-xs font-semibold text-slate-700">
-              <Zap className="h-5 w-5 text-purple-500" />
-              <span>AI-Powered Learning</span>
-            </div>
+                <h3 className="text-[15px] font-extrabold leading-[1.25] text-[#071B41] sm:text-[16px]">
+  {module.title}
+</h3>
 
-            <div className="hidden h-6 w-px bg-slate-200 sm:block" />
+<p className="mt-2 text-[11px] leading-[1.45] text-slate-500 sm:text-xs">
+  {module.description}
+</p>
 
-            {/* Benefit 2 */}
+</div>
 
-            <div className="flex flex-1 items-center justify-center gap-2 text-xs font-semibold text-slate-700">
-              <Trophy className="h-5 w-5 text-orange-500" />
-              <span>Industry-Relevant Projects</span>
-            </div>
+{/* Bottom accent line */}
 
-            <div className="hidden h-6 w-px bg-slate-200 sm:block" />
+<div
+  className="absolute bottom-0 left-0 h-[3px] w-full opacity-80 transition-all duration-300 group-hover:h-[5px]"
+  style={{
+    backgroundColor: module.color,
+  }}
+/>
 
-            {/* Benefit 3 */}
+</article>
+))}
 
-            <div className="flex flex-1 items-center justify-center gap-2 text-xs font-semibold text-slate-700">
-              <GraduationCap className="h-5 w-5 text-pink-500" />
-              <span>Certification &amp; Career Support</span>
-            </div>
+</div>
 
-            <div className="hidden h-6 w-px bg-slate-200 sm:block" />
+{/* =================================================
+    BENEFITS STRIP
+================================================= */}
 
-            {/* Benefit 4 */}
+<div className="mx-auto mt-5 max-w-[1160px] rounded-full border border-slate-200 bg-white px-4 py-3 shadow-[0_5px_20px_rgba(15,23,42,0.04)] sm:px-6">
 
-            <div className="flex flex-1 items-center justify-center gap-2 text-xs font-semibold text-slate-700">
-              <Users className="h-5 w-5 text-blue-500" />
-              <span>Lifetime Access &amp; Community</span>
-            </div>
+  <div className="flex flex-col items-center justify-center gap-4 text-center sm:flex-row sm:gap-0">
 
-          </div>
-        </div>
+    {/* Benefit 1 */}
 
-      </div>
-    </section>
-  );
+    <div className="flex flex-1 items-center justify-center gap-2 text-xs font-semibold text-slate-700">
+      <Zap className="h-5 w-5 text-purple-500" />
+      <span>AI-Powered Learning</span>
+    </div>
+
+    <div className="hidden h-6 w-px bg-slate-200 sm:block" />
+
+    {/* Benefit 2 */}
+
+    <div className="flex flex-1 items-center justify-center gap-2 text-xs font-semibold text-slate-700">
+      <Trophy className="h-5 w-5 text-orange-500" />
+      <span>Industry-Relevant Projects</span>
+    </div>
+
+    <div className="hidden h-6 w-px bg-slate-200 sm:block" />
+
+    {/* Benefit 3 */}
+
+    <div className="flex flex-1 items-center justify-center gap-2 text-xs font-semibold text-slate-700">
+      <GraduationCap className="h-5 w-5 text-pink-500" />
+      <span>Certification &amp; Career Support</span>
+    </div>
+
+    <div className="hidden h-6 w-px bg-slate-200 sm:block" />
+
+    {/* Benefit 4 */}
+
+    <div className="flex flex-1 items-center justify-center gap-2 text-xs font-semibold text-slate-700">
+      <Users className="h-5 w-5 text-blue-500" />
+      <span>Lifetime Access &amp; Community</span>
+    </div>
+
+  </div>
+</div>
+
+</div>
+</section>
+);
 };
