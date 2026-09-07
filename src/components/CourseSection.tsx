@@ -145,6 +145,7 @@ const InstagramLogo = () => (
           <stop offset="100%" stopColor="#8134AF" />
         </linearGradient>
       </defs>
+
       <rect
         x="7"
         y="7"
@@ -153,6 +154,7 @@ const InstagramLogo = () => (
         rx="10"
         fill="url(#igGradientCBM)"
       />
+
       <circle
         cx="25"
         cy="25"
@@ -161,6 +163,7 @@ const InstagramLogo = () => (
         stroke="white"
         strokeWidth="3"
       />
+
       <circle cx="35" cy="15" r="2.5" fill="white" />
     </svg>
   </div>
@@ -172,6 +175,7 @@ const LinkedInLogo = () => (
       <rect x="7" y="7" width="36" height="36" rx="5" fill="#0A66C2" />
       <circle cx="16" cy="18" r="3" fill="white" />
       <rect x="13.5" y="23" width="5" height="14" fill="white" />
+
       <path
         d="M23 37V23h5v2c1-2 3-3 6-3 5 0 7 3 7 9v6h-5v-6c0-3-1-5-4-5-3 0-4 2-4 5v6Z"
         fill="white"
@@ -770,34 +774,35 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
   return (
     <section
       id="course"
-      className="relative overflow-hidden bg-white py-14 sm:py-16 lg:py-20"
+      className="relative overflow-hidden bg-white py-10 sm:py-12 lg:py-14"
     >
-      <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1500px] px-3 sm:px-5 lg:px-6">
 
         {/* =================================================
             HEADER
         ================================================= */}
 
-      <div className="mx-auto max-w-[1600px] px-2 sm:px-4 lg:px-5">
+        <div className="mx-auto max-w-[1600px] px-1 sm:px-2 lg:px-3">
 
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-5 py-2 text-[11px] font-extrabold uppercase tracking-[0.14em] text-orange-600">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-5 py-2 text-[11px] font-extrabold uppercase tracking-[0.14em] text-orange-600">
             <Sparkles className="h-3.5 w-3.5" />
             MASTER CURRICULUM
           </div>
-<h2 className="mx-auto w-full max-w-[1400px] text-center text-3xl font-extrabold leading-[1.1] tracking-tight text-[#071B41] sm:text-4xl md:text-[46px] lg:text-[50px]">
+
+          <h2 className="mx-auto w-full max-w-[1400px] text-center text-3xl font-extrabold leading-[1.1] tracking-tight text-[#071B41] sm:text-4xl md:text-[46px] lg:text-[50px]">
             AI-Powered{' '}
             <span className="bg-gradient-to-r from-[#FF6B00] via-[#F59E0B] to-[#F6D7A7] bg-clip-text text-transparent">
-  Digital Marketing
-            </span>
+              Digital Marketing
+            </span>{' '}
             Curriculum
           </h2>
 
-          <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-slate-500 sm:text-base">
+          <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-slate-500 sm:text-base">
             8 power-packed modules. Real-world skills. AI tools. Career-ready
             you.
           </p>
 
-          <div className="mt-5 flex justify-center gap-5">
+          <div className="mt-4 flex justify-center gap-4">
             <span className="h-[3px] w-9 rounded-full bg-blue-500" />
             <span className="h-[3px] w-16 rounded-full bg-gradient-to-r from-blue-500 to-purple-500" />
             <span className="h-[3px] w-9 rounded-full bg-purple-500" />
@@ -808,7 +813,7 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
             MODULE GRID
         ================================================= */}
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
+        <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4">
 
           {modules.map((module) => (
             <article
@@ -855,49 +860,7 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
                 style={{
                   backgroundColor: module.color,
                 }}
-              />
-
-                            {/* Illustration */}
-
-              <div className="absolute right-0 top-[42px] z-10 h-[160px] w-[220px] transition-all duration-500 group-hover:-translate-y-1 group-hover:scale-[1.04]">
-                <Illustration
-                  number={module.number}
-                  color={module.color}
-                />
-              </div>
-
-              {/* Text */}
-
-              <div className="absolute bottom-8 left-5 z-30 w-[64%] pr-2">
-
-                <div
-                  className="mb-2 text-[9px] font-extrabold uppercase tracking-[0.14em]"
-                  style={{
-                    color: module.color,
-                  }}
-                >
-                  MODULE {module.number}
-                </div>
-
-                <h3 className="text-[15px] font-extrabold leading-[1.25] text-[#071B41] sm:text-[16px]">
-                  {module.title}
-                </h3>
-
-                <p className="mt-2 text-[11px] leading-[1.45] text-slate-500 sm:text-xs">
-                  {module.description}
-                </p>
-              </div>
-
-              {/* Bottom accent line */}
-
-              <div
-                className="absolute bottom-0 left-0 h-[3px] w-full opacity-80 transition-all duration-300 group-hover:h-[5px]"
-                style={{
-                  backgroundColor: module.color,
-                }}
-              />
-
-            </article>
+              /></article>
           ))}
 
         </div>
@@ -906,7 +869,7 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
             BENEFITS STRIP
         ================================================= */}
 
-        <div className="mx-auto mt-7 max-w-[1160px] rounded-full border border-slate-200 bg-white px-4 py-3 shadow-[0_5px_20px_rgba(15,23,42,0.04)] sm:px-6">
+        <div className="mx-auto mt-6 max-w-[1160px] rounded-full border border-slate-200 bg-white px-4 py-3 shadow-[0_5px_20px_rgba(15,23,42,0.04)] sm:px-6">
 
           <div className="flex flex-col items-center justify-center gap-4 text-center sm:flex-row sm:gap-0">
 
