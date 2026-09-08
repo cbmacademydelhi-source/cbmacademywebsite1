@@ -25,7 +25,7 @@ const aiTools = [
   },
   {
     name: 'ChatGPT',
-    logo: 'https://cdn.simpleicons.org/chatgpt',
+    logo: https://commons.wikimedia.org/wiki/Special:Redirect/file/ChatGPT-Logo.svg
   },
   {
     name: 'Claude',
@@ -33,7 +33,7 @@ const aiTools = [
   },
   {
     name: 'Midjourney',
-    logo: 'https://cdn.simpleicons.org/midjourney/000000',
+    logo: https://commons.wikimedia.org/wiki/Special:Redirect/file/Midjourney_Emblem_(in-colour).svg
   },
   {
     name: 'Notion',
@@ -49,7 +49,7 @@ const aiTools = [
   },
   {
     name: 'Canva',
-    logo: 'https://cdn.simpleicons.org/canva/00C4CC',
+    logo: https://commons.wikimedia.org/wiki/Special:Redirect/file/Canva_logo.svg
   },
   {
     name: 'Google Analytics',
