@@ -9,63 +9,63 @@ import {
 const aiTools = [
   {
     name: 'GitHub',
-    logo: 'https://cdn.simpleicons.org/github',
+    logo: 'https://cdn.simpleicons.org/github/181717',
   },
   {
     name: 'Supabase',
-    logo: 'https://cdn.simpleicons.org/supabase',
+    logo: 'https://cdn.simpleicons.org/supabase/3ECF8E',
   },
   {
     name: 'Google AI',
-    logo: 'https://cdn.simpleicons.org/google',
+    logo: 'https://cdn.simpleicons.org/google/4285F4',
   },
   {
     name: 'Gemini',
-    logo: 'https://cdn.simpleicons.org/googlegemini',
+    logo: 'https://cdn.simpleicons.org/googlegemini/8E75B2',
   },
   {
     name: 'ChatGPT',
-    logo: https://commons.wikimedia.org/wiki/Special:Redirect/file/ChatGPT-Logo.svg
+    logo: 'https://api.iconify.design/logos:openai-icon.svg',
   },
   {
     name: 'Claude',
-    logo: 'https://cdn.simpleicons.org/anthropic',
+    logo: 'https://cdn.simpleicons.org/anthropic/D97757',
   },
   {
     name: 'Midjourney',
-    logo: https://commons.wikimedia.org/wiki/Special:Redirect/file/Midjourney_Emblem_(in-colour).svg
+    logo: 'https://api.iconify.design/logos:midjourney.svg',
   },
   {
     name: 'Notion',
-    logo: 'https://cdn.simpleicons.org/notion',
+    logo: 'https://cdn.simpleicons.org/notion/000000',
   },
   {
     name: 'Semrush',
-    logo: 'https://cdn.simpleicons.org/semrush',
+    logo: 'https://cdn.simpleicons.org/semrush/FF642D',
   },
   {
     name: 'Meta AI',
-    logo: 'https://cdn.simpleicons.org/meta',
+    logo: 'https://cdn.simpleicons.org/meta/0668E1',
   },
   {
     name: 'Canva',
-    logo: https://commons.wikimedia.org/wiki/Special:Redirect/file/Canva_logo.svg
+    logo: 'https://api.iconify.design/bxl:canva.svg',
   },
   {
     name: 'Google Analytics',
-    logo: 'https://cdn.simpleicons.org/googleanalytics',
+    logo: 'https://cdn.simpleicons.org/googleanalytics/E37400',
   },
   {
     name: 'Shopify',
-    logo: 'https://cdn.simpleicons.org/shopify',
+    logo: 'https://cdn.simpleicons.org/shopify/7AB55C',
   },
   {
     name: 'Google Search Console',
-    logo: 'https://cdn.simpleicons.org/googlesearchconsole',
+    logo: 'https://cdn.simpleicons.org/googlesearchconsole/458CF5',
   },
   {
     name: 'WordPress',
-    logo: 'https://cdn.simpleicons.org/wordpress',
+    logo: 'https://cdn.simpleicons.org/wordpress/21759B',
   },
 ];
 
@@ -91,6 +91,7 @@ export const About: React.FC = () => {
                 className="w-full h-80 sm:h-96 object-cover"
               />
 
+              {/* Overlay Badge */}
               <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md p-4 rounded-xl border border-slate-200 shadow-lg">
                 <div className="flex items-center gap-3">
 
@@ -254,26 +255,27 @@ export const About: React.FC = () => {
           </div>
 
           {/* 15 Tools — 5 per row on desktop */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
 
             {aiTools.map((tool) => (
               <div
                 key={tool.name}
-                className="bg-white border border-slate-200 rounded-xl px-3 py-4 flex flex-col items-center justify-center text-center min-h-[120px] shadow-sm hover:border-orange-200 hover:-translate-y-1 hover:shadow-md transition-all duration-200 group"
+                className="bg-white border border-slate-200 rounded-xl px-4 py-5 flex flex-col items-center justify-center text-center min-h-[130px] shadow-sm hover:border-orange-200 hover:-translate-y-1 transition-all duration-200"
               >
 
-                {/* Real Tool Logo */}
-                <div className="w-12 h-12 rounded-xl bg-white border border-slate-100 flex items-center justify-center mb-2.5 p-2 group-hover:scale-105 transition-transform duration-200">
+                {/* Tool Logo */}
+                <div className="w-14 h-14 rounded-xl bg-white border border-slate-100 flex items-center justify-center mb-3 p-2.5">
                   <img
                     src={tool.logo}
                     alt={`${tool.name} logo`}
                     className="w-full h-full object-contain"
                     loading="lazy"
+                    referrerPolicy="no-referrer"
                   />
                 </div>
 
                 {/* Tool Name */}
-                <span className="text-xs sm:text-sm font-bold text-[#072B57] leading-tight">
+                <span className="text-sm font-bold text-[#072B57] leading-tight">
                   {tool.name}
                 </span>
 
