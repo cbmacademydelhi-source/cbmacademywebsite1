@@ -96,8 +96,8 @@ const modules = [
 ========================================================= */
 
 const MetaLogo = () => (
-  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-sm">
-    <svg viewBox="0 0 50 35" className="h-7 w-8">
+  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white shadow-sm">
+    <svg viewBox="0 0 50 35" className="h-5 w-6">
       <path
         d="M5 27C5 17 10 8 17 8c5 0 8 5 11 10 3-5 6-10 11-10 7 0 11 9 11 19"
         fill="none"
@@ -117,8 +117,8 @@ const MetaLogo = () => (
 );
 
 const GoogleAdsLogo = () => (
-  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-sm">
-    <svg viewBox="0 0 50 50" className="h-7 w-7">
+  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white shadow-sm">
+    <svg viewBox="0 0 50 50" className="h-5 w-5">
       <path
         d="M17 7c-3-1-6 1-8 4L27 43c2 4 7 5 10 2 3-2 4-6 2-10L24 12c-2-3-4-5-7-5Z"
         fill="#34A853"
@@ -136,8 +136,8 @@ const GoogleAdsLogo = () => (
 );
 
 const InstagramLogo = () => (
-  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-sm">
-    <svg viewBox="0 0 50 50" className="h-7 w-7">
+  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white shadow-sm">
+    <svg viewBox="0 0 50 50" className="h-5 w-5">
       <defs>
         <linearGradient id="igGradientCBM" x1="0" y1="1" x2="1" y2="0">
           <stop offset="0%" stopColor="#F58529" />
@@ -170,8 +170,8 @@ const InstagramLogo = () => (
 );
 
 const LinkedInLogo = () => (
-  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-sm">
-    <svg viewBox="0 0 50 50" className="h-7 w-7">
+  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white shadow-sm">
+    <svg viewBox="0 0 50 50" className="h-5 w-5">
       <rect x="7" y="7" width="36" height="36" rx="5" fill="#0A66C2" />
       <circle cx="16" cy="18" r="3" fill="white" />
       <rect x="13.5" y="23" width="5" height="14" fill="white" />
@@ -252,7 +252,7 @@ const SEOIllustration = ({ color }: { color: string }) => (
 
 const PerformanceIllustration = () => (
   <div className="relative h-full w-full">
-    <div className="absolute right-1 top-1 flex gap-2">
+    <div className="absolute right-0 top-0 flex gap-1.5">
       <MetaLogo />
       <GoogleAdsLogo />
     </div>
@@ -350,7 +350,7 @@ const TargetIllustration = () => (
       />
     </svg>
 
-    <div className="absolute right-0 top-1">
+    <div className="absolute right-0 top-0">
       <GoogleAdsLogo />
     </div>
   </div>
@@ -520,7 +520,7 @@ const SocialIllustration = () => (
       />
     </svg>
 
-    <div className="absolute right-0 top-0 flex flex-col gap-2">
+    <div className="absolute right-0 top-0 flex flex-col gap-1.5">
       <InstagramLogo />
       <LinkedInLogo />
     </div>
@@ -693,22 +693,20 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
   return (
     <section
       id="course"
-      className="relative overflow-hidden bg-white py-8 sm:py-10 lg:py-12"
+      className="relative overflow-hidden bg-white py-4 sm:py-5 lg:py-6"
     >
-      {/* VERY SMALL OUTER MARGINS */}
-
-      <div className="mx-auto max-w-[1500px] px-0">
+      <div className="mx-auto max-w-[1500px] px-2 sm:px-3 lg:px-4">
 
         {/* HEADER */}
 
-        <div className="mx-auto max-w-[1600px] px-0">
+        <div className="mx-auto max-w-[1400px]">
 
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-5 py-2 text-[11px] font-extrabold uppercase tracking-[0.14em] text-orange-600">
-            <Sparkles className="h-3.5 w-3.5" />
+          <div className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-orange-200 bg-orange-50 px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.12em] text-orange-600">
+            <Sparkles className="h-3 w-3" />
             MASTER CURRICULUM
           </div>
 
-          <h2 className="mx-auto w-full max-w-[1400px] text-center text-3xl font-extrabold leading-[1.1] tracking-tight text-[#071B41] sm:text-4xl md:text-[46px] lg:text-[50px]">
+          <h2 className="mx-auto w-full text-center text-2xl font-extrabold leading-[1.05] tracking-tight text-[#071B41] sm:text-3xl md:text-4xl lg:text-[42px]">
             AI-Powered{' '}
             <span className="bg-gradient-to-r from-[#FF6B00] via-[#F59E0B] to-[#F6D7A7] bg-clip-text text-transparent">
               Digital Marketing
@@ -716,30 +714,31 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
             Curriculum
           </h2>
 
-          <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-slate-500 sm:text-base">
+          <p className="mx-auto mt-1.5 max-w-2xl text-[11px] leading-relaxed text-slate-500 sm:text-xs">
             8 power-packed modules. Real-world skills. AI tools. Career-ready
             you.
           </p>
 
-          <div className="mt-4 flex justify-center gap-4">
-            <span className="h-[3px] w-9 rounded-full bg-blue-500" />
-            <span className="h-[3px] w-16 rounded-full bg-gradient-to-r from-blue-500 to-purple-500" />
-            <span className="h-[3px] w-9 rounded-full bg-purple-500" />
+          <div className="mt-2 flex justify-center gap-2">
+            <span className="h-[2px] w-6 rounded-full bg-blue-500" />
+            <span className="h-[2px] w-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500" />
+            <span className="h-[2px] w-6 rounded-full bg-purple-500" />
           </div>
         </div>
 
         {/* MODULE GRID */}
-<div className="mx-auto mt-6 grid w-[90%] grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4 lg:gap-3">
+
+        <div className="mx-auto mt-3 grid w-full grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4 lg:gap-2.5">
           {modules.map((module) => (
             <article
               key={module.number}
-              className="group relative h-[270px] overflow-hidden rounded-[22px] border border-[#E5EAF2] bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(15,23,42,0.10)]"
+              className="group relative h-[190px] overflow-hidden rounded-[16px] border border-[#E5EAF2] bg-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_10px_25px_rgba(15,23,42,0.08)]"
             >
 
               {/* Pastel glow */}
 
               <div
-                className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full opacity-70 blur-3xl transition-transform duration-500 group-hover:scale-125"
+                className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full opacity-70 blur-2xl transition-transform duration-500 group-hover:scale-125"
                 style={{
                   backgroundColor: module.soft,
                 }}
@@ -748,17 +747,17 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
               {/* Dotted decoration */}
 
               <div
-                className="pointer-events-none absolute right-5 top-5 h-16 w-16 opacity-40"
+                className="pointer-events-none absolute right-3 top-3 h-11 w-11 opacity-40"
                 style={{
-                  backgroundImage: `radial-gradient(${module.color} 1.2px, transparent 1.2px)`,
-                  backgroundSize: '8px 8px',
+                  backgroundImage: `radial-gradient(${module.color} 1px, transparent 1px)`,
+                  backgroundSize: '6px 6px',
                 }}
               />
 
               {/* Module number */}
 
               <div
-                className="absolute left-5 top-5 z-30 flex h-11 w-11 items-center justify-center rounded-xl border text-sm font-extrabold"
+                className="absolute left-3 top-3 z-30 flex h-7 w-7 items-center justify-center rounded-lg border text-[10px] font-extrabold"
                 style={{
                   backgroundColor: module.soft,
                   borderColor: module.border,
@@ -771,7 +770,7 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
               {/* Small decorative dot */}
 
               <div
-                className="absolute left-[70px] top-[116px] z-20 h-2 w-2 rounded-full"
+                className="absolute left-[46px] top-[76px] z-20 h-1.5 w-1.5 rounded-full"
                 style={{
                   backgroundColor: module.color,
                 }}
@@ -779,7 +778,7 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
 
               {/* Illustration */}
 
-              <div className="absolute right-0 top-[42px] z-10 h-[160px] w-[220px] transition-all duration-500 group-hover:-translate-y-1 group-hover:scale-[1.04]">
+              <div className="absolute right-0 top-[28px] z-10 h-[105px] w-[145px] transition-all duration-500 group-hover:-translate-y-0.5 group-hover:scale-[1.02]">
                 <Illustration
                   number={module.number}
                   color={module.color}
@@ -788,10 +787,10 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
 
               {/* Text */}
 
-              <div className="absolute bottom-8 left-5 z-30 w-[64%] pr-2">
+              <div className="absolute bottom-5 left-3 z-30 w-[67%] pr-1">
 
                 <div
-                  className="mb-2 text-[9px] font-extrabold uppercase tracking-[0.14em]"
+                  className="mb-1 text-[7px] font-extrabold uppercase tracking-[0.12em]"
                   style={{
                     color: module.color,
                   }}
@@ -799,76 +798,68 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
                   MODULE {module.number}
                 </div>
 
-                <h3 className="text-[15px] font-extrabold leading-[1.25] text-[#071B41] sm:text-[16px]">
-  {module.title}
-</h3>
+                <h3 className="text-[11px] font-extrabold leading-[1.18]text-[#071B41] sm:text-xs"
+                >
+                  {module.title}
+                </h3>
 
-<p className="mt-2 text-[11px] leading-[1.45] text-slate-500 sm:text-xs">
-  {module.description}
-</p>
+                <p className="mt-1 text-[8px] leading-[1.3] text-slate-500 sm:text-[9px]">
+                  {module.description}
+                </p>
 
-</div>
+              </div>
 
-{/* Bottom accent line */}
+              {/* Bottom accent line */}
 
-<div
-  className="absolute bottom-0 left-0 h-[3px] w-full opacity-80 transition-all duration-300 group-hover:h-[5px]"
-  style={{
-    backgroundColor: module.color,
-  }}
-/>
+              <div
+                className="absolute bottom-0 left-0 h-[2px] w-full opacity-80 transition-all duration-300 group-hover:h-[3px]"
+                style={{
+                  backgroundColor: module.color,
+                }}
+              />
 
-</article>
-))}
+            </article>
+          ))}
+        </div>
 
-</div>
+        {/* =================================================
+            BENEFITS STRIP
+        ================================================= */}
 
-{/* =================================================
-    BENEFITS STRIP
-================================================= */}
+        <div className="mx-auto mt-3 max-w-[1100px] rounded-full border border-slate-200 bg-white px-3 py-2 shadow-[0_4px_15px_rgba(15,23,42,0.04)]">
 
-<div className="mx-auto mt-5 max-w-[1160px] rounded-full border border-slate-200 bg-white px-4 py-3 shadow-[0_5px_20px_rgba(15,23,42,0.04)] sm:px-6">
+          <div className="flex flex-row items-center justify-center gap-0 text-center">
 
-  <div className="flex flex-col items-center justify-center gap-4 text-center sm:flex-row sm:gap-0">
+            <div className="flex flex-1 items-center justify-center gap-1.5 text-[8px] font-semibold text-slate-700 sm:text-[9px]">
+              <Zap className="h-3.5 w-3.5 text-purple-500" />
+              <span>AI-Powered Learning</span>
+            </div>
 
-    {/* Benefit 1 */}
+            <div className="h-4 w-px bg-slate-200" />
 
-    <div className="flex flex-1 items-center justify-center gap-2 text-xs font-semibold text-slate-700">
-      <Zap className="h-5 w-5 text-purple-500" />
-      <span>AI-Powered Learning</span>
-    </div>
+            <div className="flex flex-1 items-center justify-center gap-1.5 text-[8px] font-semibold text-slate-700 sm:text-[9px]">
+              <Trophy className="h-3.5 w-3.5 text-orange-500" />
+              <span>Industry-Relevant Projects</span>
+            </div>
 
-    <div className="hidden h-6 w-px bg-slate-200 sm:block" />
+            <div className="h-4 w-px bg-slate-200" />
 
-    {/* Benefit 2 */}
+            <div className="flex flex-1 items-center justify-center gap-1.5 text-[8px] font-semibold text-slate-700 sm:text-[9px]">
+              <GraduationCap className="h-3.5 w-3.5 text-pink-500" />
+              <span>Certification &amp; Career Support</span>
+            </div>
 
-    <div className="flex flex-1 items-center justify-center gap-2 text-xs font-semibold text-slate-700">
-      <Trophy className="h-5 w-5 text-orange-500" />
-      <span>Industry-Relevant Projects</span>
-    </div>
+            <div className="h-4 w-px bg-slate-200" />
 
-    <div className="hidden h-6 w-px bg-slate-200 sm:block" />
+            <div className="flex flex-1 items-center justify-center gap-1.5 text-[8px] font-semibold text-slate-700 sm:text-[9px]">
+              <Users className="h-3.5 w-3.5 text-blue-500" />
+              <span>Lifetime Access &amp; Community</span>
+            </div>
 
-    {/* Benefit 3 */}
+          </div>
+        </div>
 
-    <div className="flex flex-1 items-center justify-center gap-2 text-xs font-semibold text-slate-700">
-      <GraduationCap className="h-5 w-5 text-pink-500" />
-      <span>Certification &amp; Career Support</span>
-    </div>
-
-    <div className="hidden h-6 w-px bg-slate-200 sm:block" />
-
-    {/* Benefit 4 */}
-
-    <div className="flex flex-1 items-center justify-center gap-2 text-xs font-semibold text-slate-700">
-      <Users className="h-5 w-5 text-blue-500" />
-      <span>Lifetime Access &amp; Community</span>
-    </div>
-
-  </div>
-</div>
-
-</div>
-</section>
-);
+      </div>
+    </section>
+  );
 };
