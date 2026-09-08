@@ -4,38 +4,68 @@ import {
   Compass,
   Sparkles,
   Award,
-  Bot,
-  Image as ImageIcon,
-  LineChart,
-  Search,
-  Layers,
-  Cpu,
 } from 'lucide-react';
 
 const aiTools = [
   {
+    name: 'GitHub',
+    logo: 'https://cdn.simpleicons.org/github',
+  },
+  {
+    name: 'Supabase',
+    logo: 'https://cdn.simpleicons.org/supabase',
+  },
+  {
+    name: 'Google AI',
+    logo: 'https://cdn.simpleicons.org/google',
+  },
+  {
+    name: 'Gemini',
+    logo: 'https://cdn.simpleicons.org/googlegemini',
+  },
+  {
     name: 'ChatGPT',
-    icon: <Bot className="w-5 h-5 text-[#FF6B00]" />,
+    logo: 'https://cdn.simpleicons.org/openai',
+  },
+  {
+    name: 'Claude',
+    logo: 'https://cdn.simpleicons.org/anthropic',
   },
   {
     name: 'Midjourney',
-    icon: <ImageIcon className="w-5 h-5 text-[#FF6B00]" />,
+    logo: 'https://cdn.simpleicons.org/midjourney',
   },
   {
-    name: 'Google Analytics 4',
-    icon: <LineChart className="w-5 h-5 text-[#FF6B00]" />,
+    name: 'Notion',
+    logo: 'https://cdn.simpleicons.org/notion',
   },
   {
     name: 'Semrush',
-    icon: <Search className="w-5 h-5 text-[#FF6B00]" />,
+    logo: 'https://cdn.simpleicons.org/semrush',
   },
   {
-    name: 'Meta Ads Manager',
-    icon: <Layers className="w-5 h-5 text-[#FF6B00]" />,
+    name: 'Meta AI',
+    logo: 'https://cdn.simpleicons.org/meta',
   },
   {
-    name: 'HubSpot',
-    icon: <Cpu className="w-5 h-5 text-[#FF6B00]" />,
+    name: 'Canva',
+    logo: 'https://cdn.simpleicons.org/canva',
+  },
+  {
+    name: 'Google Analytics',
+    logo: 'https://cdn.simpleicons.org/googleanalytics',
+  },
+  {
+    name: 'Shopify',
+    logo: 'https://cdn.simpleicons.org/shopify',
+  },
+  {
+    name: 'Google Search Console',
+    logo: 'https://cdn.simpleicons.org/googlesearchconsole',
+  },
+  {
+    name: 'WordPress',
+    logo: 'https://cdn.simpleicons.org/wordpress',
   },
 ];
 
@@ -61,7 +91,6 @@ export const About: React.FC = () => {
                 className="w-full h-80 sm:h-96 object-cover"
               />
 
-              {/* Overlay Badge */}
               <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md p-4 rounded-xl border border-slate-200 shadow-lg">
                 <div className="flex items-center gap-3">
 
@@ -224,20 +253,27 @@ export const About: React.FC = () => {
 
           </div>
 
-          {/* Small Equal Tool Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+          {/* 15 Tools — 5 per row on desktop */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
 
             {aiTools.map((tool) => (
               <div
                 key={tool.name}
-                className="bg-white border border-slate-200 rounded-xl px-3 py-4 flex flex-col items-center justify-center text-center min-h-[105px] shadow-sm hover:border-orange-200 hover:-translate-y-0.5 transition-all duration-200"
+                className="bg-white border border-slate-200 rounded-xl px-3 py-4 flex flex-col items-center justify-center text-center min-h-[120px] shadow-sm hover:border-orange-200 hover:-translate-y-1 hover:shadow-md transition-all duration-200 group"
               >
 
-                <div className="w-10 h-10 rounded-lg bg-orange-50 border border-orange-100 flex items-center justify-center mb-2.5">
-                  {tool.icon}
+                {/* Real Tool Logo */}
+                <div className="w-12 h-12 rounded-xl bg-white border border-slate-100 flex items-center justify-center mb-2.5 p-2 group-hover:scale-105 transition-transform duration-200">
+                  <img
+                    src={tool.logo}
+                    alt={`${tool.name} logo`}
+                    className="w-full h-full object-contain"
+                    loading="lazy"
+                  />
                 </div>
 
-                <span className="text-xs font-bold text-[#072B57] leading-tight">
+                {/* Tool Name */}
+                <span className="text-xs sm:text-sm font-bold text-[#072B57] leading-tight">
                   {tool.name}
                 </span>
 
