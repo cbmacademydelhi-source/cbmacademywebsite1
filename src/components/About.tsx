@@ -25,7 +25,7 @@ const aiTools = [
   },
   {
     name: 'ChatGPT',
-    logo: 'https://api.iconify.design/logos:openai-icon.svg',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/e/ef/ChatGPT-Logo.svg',
   },
   {
     name: 'Claude',
@@ -33,7 +33,7 @@ const aiTools = [
   },
   {
     name: 'Midjourney',
-    logo: 'https://api.iconify.design/logos:midjourney.svg',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a7/Midjourney_Emblem_%28in-colour%29.svg',
   },
   {
     name: 'Notion',
@@ -49,7 +49,7 @@ const aiTools = [
   },
   {
     name: 'Canva',
-    logo: 'https://api.iconify.design/bxl:canva.svg',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/b/b8/Canva_logo.svg',
   },
   {
     name: 'Google Analytics',
@@ -263,18 +263,15 @@ export const About: React.FC = () => {
                 className="bg-white border border-slate-200 rounded-xl px-4 py-5 flex flex-col items-center justify-center text-center min-h-[130px] shadow-sm hover:border-orange-200 hover:-translate-y-1 transition-all duration-200"
               >
 
-                {/* Tool Logo */}
                 <div className="w-14 h-14 rounded-xl bg-white border border-slate-100 flex items-center justify-center mb-3 p-2.5">
                   <img
                     src={tool.logo}
                     alt={`${tool.name} logo`}
                     className="w-full h-full object-contain"
                     loading="lazy"
-                    referrerPolicy="no-referrer"
                   />
                 </div>
 
-                {/* Tool Name */}
                 <span className="text-sm font-bold text-[#072B57] leading-tight">
                   {tool.name}
                 </span>
