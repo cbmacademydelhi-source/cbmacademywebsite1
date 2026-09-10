@@ -803,28 +803,27 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
 
             <div className="flex flex-1 items-center justify-center gap-1 text-[6px] font-semibold text-slate-700 sm:text-[7px]">
               <Trophy className="h-2.5 w-2.5 text-orange-500" />
-                         <span>Industry-Relevant Projects</span>
-                </div>
+              <span>Industry-Relevant Projects</span>
+            </div>
 
-                <div className="h-3 w-px bg-slate-200" />
+            <div className="h-3 w-px bg-slate-200" />
 
-                <div className="flex flex-1 items-center justify-center gap-1 text-[6px] font-semibold text-slate-700 sm:text-[7px]">
-                  <GraduationCap className="h-2.5 w-2.5 text-pink-500" />
-                  <span>Certification &amp; Career Support</span>
-                </div>
+            <div className="flex flex-1 items-center justify-center gap-1 text-[6px] font-semibold text-slate-700 sm:text-[7px]">
+              <GraduationCap className="h-2.5 w-2.5 text-pink-500" />
+              <span>Certification &amp; Career Support</span>
+            </div>
 
-                <div className="h-3 w-px bg-slate-200" />
+            <div className="h-3 w-px bg-slate-200" />
 
-                <div className="flex flex-1 items-center justify-center gap-1 text-[6px] font-semibold text-slate-700 sm:text-[7px]">
-                  <Users className="h-2.5 w-2.5 text-blue-500" />
-                  <span>Lifetime Access &amp; Community</span>
-                </div>
-
-              </div>
+            <div className="flex flex-1 items-center justify-center gap-1 text-[6px] font-semibold text-slate-700 sm:text-[7px]">
+              <Users className="h-2.5 w-2.5 text-blue-500" />
+              <span>Lifetime Access &amp; Community</span>
             </div>
 
           </div>
         </div>
-      </section>
-    );
+
+      </div>
+    </section>
+  );
 };
