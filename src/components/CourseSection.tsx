@@ -756,7 +756,7 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
               <div className="absolute bottom-4 left-2.5 z-30 w-[72%] pr-1">
 
                 <div
-                  className="mb-1 text-[6px] font-extrabold uppercase tracking-[0.1em]"
+                  className="mb-1.5 text-[8px] font-extrabold uppercase tracking-[0.1em]"
                   style={{
                     color: module.color,
                   }}
@@ -764,11 +764,11 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
                   MODULE {module.number}
                 </div>
 
-                <h3 className="text-[9px] font-extrabold leading-[1.15] text-[#071B41]">
+                <h3 className="text-[13px] font-extrabold leading-[1.2] text-[#071B41]">
                   {module.title}
                 </h3>
 
-                <p className="mt-1 text-[7px] leading-[1.25] text-slate-500">
+                <p className="mt-1.5 text-[10px] leading-[1.35] text-slate-500">
                   {module.description}
                 </p>
 
