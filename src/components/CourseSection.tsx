@@ -693,12 +693,12 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
 
         {/* MODULE GRID */}
 
-        <div className="mx-auto mt-2.5 grid w-full max-w-[760px] grid-cols-2 gap-2 lg:grid-cols-4 lg:gap-2">
+       <div className="mx-auto mt-4 grid w-[92%] grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
 
           {modules.map((module) => (
             <article
               key={module.number}
-              className="group relative aspect-square overflow-hidden rounded-[13px] border border-[#E5EAF2] bg-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(15,23,42,0.08)]"
+              className="group relative h-[230px] overflow-hidden rounded-[18px] border border-[#E5EAF2] bg-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_10px_25px_rgba(15,23,42,0.08)]"
             >
 
               {/* Pastel glow */}
