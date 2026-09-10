@@ -12,10 +12,6 @@ interface CourseSectionProps {
   onOpenBrochure?: () => void;
 }
 
-/* =========================================================
-   MODULE DATA
-========================================================= */
-
 const modules = [
   {
     number: '01',
@@ -96,8 +92,8 @@ const modules = [
 ========================================================= */
 
 const MetaLogo = () => (
-  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white shadow-sm">
-    <svg viewBox="0 0 50 35" className="h-5 w-6">
+  <div className="flex h-6 w-6 items-center justify-center rounded-md bg-white shadow-sm">
+    <svg viewBox="0 0 50 35" className="h-4 w-5">
       <path
         d="M5 27C5 17 10 8 17 8c5 0 8 5 11 10 3-5 6-10 11-10 7 0 11 9 11 19"
         fill="none"
@@ -117,8 +113,8 @@ const MetaLogo = () => (
 );
 
 const GoogleAdsLogo = () => (
-  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white shadow-sm">
-    <svg viewBox="0 0 50 50" className="h-5 w-5">
+  <div className="flex h-6 w-6 items-center justify-center rounded-md bg-white shadow-sm">
+    <svg viewBox="0 0 50 50" className="h-4 w-4">
       <path
         d="M17 7c-3-1-6 1-8 4L27 43c2 4 7 5 10 2 3-2 4-6 2-10L24 12c-2-3-4-5-7-5Z"
         fill="#34A853"
@@ -136,8 +132,8 @@ const GoogleAdsLogo = () => (
 );
 
 const InstagramLogo = () => (
-  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white shadow-sm">
-    <svg viewBox="0 0 50 50" className="h-5 w-5">
+  <div className="flex h-6 w-6 items-center justify-center rounded-md bg-white shadow-sm">
+    <svg viewBox="0 0 50 50" className="h-4 w-4">
       <defs>
         <linearGradient id="igGradientCBM" x1="0" y1="1" x2="1" y2="0">
           <stop offset="0%" stopColor="#F58529" />
@@ -145,7 +141,6 @@ const InstagramLogo = () => (
           <stop offset="100%" stopColor="#8134AF" />
         </linearGradient>
       </defs>
-
       <rect
         x="7"
         y="7"
@@ -154,7 +149,6 @@ const InstagramLogo = () => (
         rx="10"
         fill="url(#igGradientCBM)"
       />
-
       <circle
         cx="25"
         cy="25"
@@ -163,15 +157,14 @@ const InstagramLogo = () => (
         stroke="white"
         strokeWidth="3"
       />
-
       <circle cx="35" cy="15" r="2.5" fill="white" />
     </svg>
   </div>
 );
 
 const LinkedInLogo = () => (
-  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white shadow-sm">
-    <svg viewBox="0 0 50 50" className="h-5 w-5">
+  <div className="flex h-6 w-6 items-center justify-center rounded-md bg-white shadow-sm">
+    <svg viewBox="0 0 50 50" className="h-4 w-4">
       <rect x="7" y="7" width="36" height="36" rx="5" fill="#0A66C2" />
       <circle cx="16" cy="18" r="3" fill="white" />
       <rect x="13.5" y="23" width="5" height="14" fill="white" />
@@ -184,7 +177,7 @@ const LinkedInLogo = () => (
 );
 
 /* =========================================================
-   ILLUSTRATION 01 - SEO
+   ILLUSTRATIONS
 ========================================================= */
 
 const SEOIllustration = ({ color }: { color: string }) => (
@@ -246,13 +239,9 @@ const SEOIllustration = ({ color }: { color: string }) => (
   </svg>
 );
 
-/* =========================================================
-   ILLUSTRATION 02
-========================================================= */
-
 const PerformanceIllustration = () => (
   <div className="relative h-full w-full">
-    <div className="absolute right-0 top-0 flex gap-1.5">
+    <div className="absolute right-0 top-0 flex gap-1">
       <MetaLogo />
       <GoogleAdsLogo />
     </div>
@@ -286,10 +275,6 @@ const PerformanceIllustration = () => (
     </svg>
   </div>
 );
-
-/* =========================================================
-   ILLUSTRATION 03
-========================================================= */
 
 const TargetIllustration = () => (
   <div className="relative h-full w-full">
@@ -355,10 +340,6 @@ const TargetIllustration = () => (
     </div>
   </div>
 );
-
-/* =========================================================
-   ILLUSTRATION 04
-========================================================= */
 
 const AIContentIllustration = () => (
   <svg viewBox="0 0 240 180" className="h-full w-full">
@@ -434,10 +415,6 @@ const AIContentIllustration = () => (
   </svg>
 );
 
-/* =========================================================
-   ILLUSTRATION 05
-========================================================= */
-
 const AnalyticsIllustration = () => (
   <svg viewBox="0 0 240 180" className="h-full w-full">
     <rect
@@ -480,10 +457,6 @@ const AnalyticsIllustration = () => (
   </svg>
 );
 
-/* =========================================================
-   ILLUSTRATION 06
-========================================================= */
-
 const SocialIllustration = () => (
   <div className="relative h-full w-full">
     <svg viewBox="0 0 240 180" className="h-full w-full">
@@ -520,16 +493,12 @@ const SocialIllustration = () => (
       />
     </svg>
 
-    <div className="absolute right-0 top-0 flex flex-col gap-1.5">
+    <div className="absolute right-0 top-0 flex flex-col gap-1">
       <InstagramLogo />
       <LinkedInLogo />
     </div>
   </div>
 );
-
-/* =========================================================
-   ILLUSTRATION 07
-========================================================= */
 
 const EmailIllustration = () => (
   <svg viewBox="0 0 240 180" className="h-full w-full">
@@ -589,10 +558,6 @@ const EmailIllustration = () => (
     />
   </svg>
 );
-
-/* =========================================================
-   ILLUSTRATION 08
-========================================================= */
 
 const BusinessIllustration = () => (
   <svg viewBox="0 0 240 180" className="h-full w-full">
@@ -693,20 +658,20 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
   return (
     <section
       id="course"
-      className="relative overflow-hidden bg-white py-4 sm:py-5 lg:py-6"
+      className="relative overflow-hidden bg-white py-3 sm:py-4 lg:py-5"
     >
-      <div className="mx-auto max-w-[1500px] px-2 sm:px-3 lg:px-4">
+      <div className="mx-auto max-w-[1200px] px-2 sm:px-3">
 
         {/* HEADER */}
 
-        <div className="mx-auto max-w-[1400px]">
+        <div className="mx-auto max-w-[1000px]">
 
-          <div className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-orange-200 bg-orange-50 px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.12em] text-orange-600">
-            <Sparkles className="h-3 w-3" />
+          <div className="mb-1.5 inline-flex items-center gap-1 rounded-full border border-orange-200 bg-orange-50 px-2.5 py-1 text-[8px] font-extrabold uppercase tracking-[0.1em] text-orange-600">
+            <Sparkles className="h-2.5 w-2.5" />
             MASTER CURRICULUM
           </div>
 
-          <h2 className="mx-auto w-full text-center text-2xl font-extrabold leading-[1.05] tracking-tight text-[#071B41] sm:text-3xl md:text-4xl lg:text-[42px]">
+          <h2 className="mx-auto text-center text-2xl font-extrabold leading-none tracking-tight text-[#071B41] sm:text-3xl lg:text-[38px]">
             AI-Powered{' '}
             <span className="bg-gradient-to-r from-[#FF6B00] via-[#F59E0B] to-[#F6D7A7] bg-clip-text text-transparent">
               Digital Marketing
@@ -714,31 +679,32 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
             Curriculum
           </h2>
 
-          <p className="mx-auto mt-1.5 max-w-2xl text-[11px] leading-relaxed text-slate-500 sm:text-xs">
+          <p className="mx-auto mt-1 max-w-xl text-center text-[9px] leading-tight text-slate-500 sm:text-[10px]">
             8 power-packed modules. Real-world skills. AI tools. Career-ready
             you.
           </p>
 
-          <div className="mt-2 flex justify-center gap-2">
-            <span className="h-[2px] w-6 rounded-full bg-blue-500" />
-            <span className="h-[2px] w-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500" />
-            <span className="h-[2px] w-6 rounded-full bg-purple-500" />
+          <div className="mt-1.5 flex justify-center gap-1.5">
+            <span className="h-[2px] w-5 rounded-full bg-blue-500" />
+            <span className="h-[2px] w-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500" />
+            <span className="h-[2px] w-5 rounded-full bg-purple-500" />
           </div>
         </div>
 
         {/* MODULE GRID */}
 
-        <div className="mx-auto mt-3 grid w-full grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4 lg:gap-2.5">
+        <div className="mx-auto mt-2.5 grid w-full max-w-[760px] grid-cols-2 gap-2 lg:grid-cols-4 lg:gap-2">
+
           {modules.map((module) => (
             <article
               key={module.number}
-           className="group relative aspect-square overflow-hidden rounded-[16px] border border-[#E5EAF2] bg-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_10px_25px_rgba(15,23,42,0.08)]"
+              className="group relative aspect-square overflow-hidden rounded-[13px] border border-[#E5EAF2] bg-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(15,23,42,0.08)]"
             >
 
               {/* Pastel glow */}
 
               <div
-                className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full opacity-70 blur-2xl transition-transform duration-500 group-hover:scale-125"
+                className="pointer-events-none absolute -right-5 -top-5 h-20 w-20 rounded-full opacity-60 blur-2xl"
                 style={{
                   backgroundColor: module.soft,
                 }}
@@ -747,17 +713,17 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
               {/* Dotted decoration */}
 
               <div
-                className="pointer-events-none absolute right-3 top-3 h-11 w-11 opacity-40"
+                className="pointer-events-none absolute right-2 top-2 h-9 w-9 opacity-35"
                 style={{
                   backgroundImage: `radial-gradient(${module.color} 1px, transparent 1px)`,
-                  backgroundSize: '6px 6px',
+                  backgroundSize: '5px 5px',
                 }}
               />
 
               {/* Module number */}
 
               <div
-                className="absolute left-3 top-3 z-30 flex h-7 w-7 items-center justify-center rounded-lg border text-[10px] font-extrabold"
+                className="absolute left-2.5 top-2.5 z-30 flex h-6 w-6 items-center justify-center rounded-md border text-[8px] font-extrabold"
                 style={{
                   backgroundColor: module.soft,
                   borderColor: module.border,
@@ -767,10 +733,10 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
                 {module.number}
               </div>
 
-              {/* Small decorative dot */}
+              {/* Decorative dot */}
 
               <div
-                className="absolute left-[46px] top-[76px] z-20 h-1.5 w-1.5 rounded-full"
+                className="absolute left-[34px] top-[43%] z-20 h-1.5 w-1.5 rounded-full"
                 style={{
                   backgroundColor: module.color,
                 }}
@@ -778,7 +744,7 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
 
               {/* Illustration */}
 
-              <div className="absolute right-0 top-[28px] z-10 h-[105px] w-[145px] transition-all duration-500 group-hover:-translate-y-0.5 group-hover:scale-[1.02]">
+              <div className="absolute right-0 top-[14%] z-10 h-[82px] w-[105px]">
                 <Illustration
                   number={module.number}
                   color={module.color}
@@ -787,10 +753,10 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
 
               {/* Text */}
 
-              <div className="absolute bottom-5 left-3 z-30 w-[67%] pr-1">
+              <div className="absolute bottom-4 left-2.5 z-30 w-[72%] pr-1">
 
                 <div
-                  className="mb-1 text-[7px] font-extrabold uppercase tracking-[0.12em]"
+                  className="mb-1 text-[6px] font-extrabold uppercase tracking-[0.1em]"
                   style={{
                     color: module.color,
                   }}
@@ -798,12 +764,11 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
                   MODULE {module.number}
                 </div>
 
-                <h3 className="text-[11px] font-extrabold leading-[1.18]text-[#071B41] sm:text-xs"
-                >
+                <h3 className="text-[9px] font-extrabold leading-[1.15] text-[#071B41]">
                   {module.title}
                 </h3>
 
-                <p className="mt-1 text-[8px] leading-[1.3] text-slate-500 sm:text-[9px]">
+                <p className="mt-1 text-[7px] leading-[1.25] text-slate-500">
                   {module.description}
                 </p>
 
@@ -812,7 +777,7 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
               {/* Bottom accent line */}
 
               <div
-                className="absolute bottom-0 left-0 h-[2px] w-full opacity-80 transition-all duration-300 group-hover:h-[3px]"
+                className="absolute bottom-0 left-0 h-[2px] w-full opacity-80"
                 style={{
                   backgroundColor: module.color,
                 }}
@@ -820,46 +785,46 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
 
             </article>
           ))}
+
         </div>
 
-        {/* =================================================
-            BENEFITS STRIP
-        ================================================= */}
+        {/* BENEFITS STRIP */}
 
-        <div className="mx-auto mt-3 max-w-[1100px] rounded-full border border-slate-200 bg-white px-3 py-2 shadow-[0_4px_15px_rgba(15,23,42,0.04)]">
+        <div className="mx-auto mt-2.5 max-w-[760px] rounded-full border border-slate-200 bg-white px-2 py-1.5 shadow-[0_3px_12px_rgba(15,23,42,0.04)]">
 
-          <div className="flex flex-row items-center justify-center gap-0 text-center">
+          <div className="flex items-center justify-center">
 
-            <div className="flex flex-1 items-center justify-center gap-1.5 text-[8px] font-semibold text-slate-700 sm:text-[9px]">
-              <Zap className="h-3.5 w-3.5 text-purple-500" />
+            <div className="flex flex-1 items-center justify-center gap-1 text-[6px] font-semibold text-slate-700 sm:text-[7px]">
+              <Zap className="h-2.5 w-2.5 text-purple-500" />
               <span>AI-Powered Learning</span>
             </div>
 
-            <div className="h-4 w-px bg-slate-200" />
+            <div className="h-3 w-px bg-slate-200" />
 
-            <div className="flex flex-1 items-center justify-center gap-1.5 text-[8px] font-semibold text-slate-700 sm:text-[9px]">
-              <Trophy className="h-3.5 w-3.5 text-orange-500" />
-              <span>Industry-Relevant Projects</span>
-            </div>
+            <div className="flex flex-1 items-center justify-center gap-1 text-[6px] font-semibold text-slate-700 sm:text-[7px]">
+              <Trophy className="h-2.5 w-2.5 text-orange-500" />
+                         <span>Industry-Relevant Projects</span>
+                </div>
 
-            <div className="h-4 w-px bg-slate-200" />
+                <div className="h-3 w-px bg-slate-200" />
 
-            <div className="flex flex-1 items-center justify-center gap-1.5 text-[8px] font-semibold text-slate-700 sm:text-[9px]">
-              <GraduationCap className="h-3.5 w-3.5 text-pink-500" />
-              <span>Certification &amp; Career Support</span>
-            </div>
+                <div className="flex flex-1 items-center justify-center gap-1 text-[6px] font-semibold text-slate-700 sm:text-[7px]">
+                  <GraduationCap className="h-2.5 w-2.5 text-pink-500" />
+                  <span>Certification &amp; Career Support</span>
+                </div>
 
-            <div className="h-4 w-px bg-slate-200" />
+                <div className="h-3 w-px bg-slate-200" />
 
-            <div className="flex flex-1 items-center justify-center gap-1.5 text-[8px] font-semibold text-slate-700 sm:text-[9px]">
-              <Users className="h-3.5 w-3.5 text-blue-500" />
-              <span>Lifetime Access &amp; Community</span>
+                <div className="flex flex-1 items-center justify-center gap-1 text-[6px] font-semibold text-slate-700 sm:text-[7px]">
+                  <Users className="h-2.5 w-2.5 text-blue-500" />
+                  <span>Lifetime Access &amp; Community</span>
+                </div>
+
+              </div>
             </div>
 
           </div>
         </div>
-
-      </div>
-    </section>
-  );
+      </section>
+    );
 };
