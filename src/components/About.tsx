@@ -255,15 +255,14 @@ export const About: React.FC = () => {
           </div>
 
           {/* 15 Tools — 5 per row on desktop */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+   <div className="mx-auto grid max-w-[900px] grid-cols-5 gap-2">
 
             {aiTools.map((tool) => (
               <div
                 key={tool.name}
-                className="bg-white border border-slate-200 rounded-xl px-4 py-5 flex flex-col items-center justify-center text-center min-h-[130px] shadow-sm hover:border-orange-200 hover:-translate-y-1 transition-all duration-200"
+               className="bg-white border border-slate-200 rounded-lg px-2 py-2 flex flex-col items-center justify-center text-center min-h-[78px] shadow-sm hover:border-orange-200 hover:-translate-y-0.5 transition-all duration-200"
               >
-
-                <div className="w-14 h-14 rounded-xl bg-white border border-slate-100 flex items-center justify-center mb-3 p-2.5">
+<div className="w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center mb-1.5">
                   <img
                     src={tool.logo}
                     alt={`${tool.name} logo`}
@@ -272,7 +271,7 @@ export const About: React.FC = () => {
                   />
                 </div>
 
-                <span className="text-sm font-bold text-[#072B57] leading-tight">
+              <span className="text-[10px] font-bold text-[#072B57] leading-tight">
                   {tool.name}
                 </span>
 
