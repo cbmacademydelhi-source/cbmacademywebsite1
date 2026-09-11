@@ -83,36 +83,29 @@ export default function App() {
     setPostJobModalOpen(true);
   };
 
-  const renderHomePage = () => {
-    return (
-      <>
-        <Hero
-          onOpenApply={() => handleOpenApply()}
-          onOpenBrochure={handleOpenBrochure}
-        />
+ const renderHomePage = () => {
+  return (
+    <>
+      <Hero
+        onOpenApply={() => handleOpenApply()}
+        onOpenBrochure={handleOpenBrochure}
+      />
 
-        <WhyChooseCBM
-          onOpenApply={() => handleOpenApply()}
-        />
+      <WhyChooseCBM
+        onOpenApply={() => handleOpenApply()}
+      />
 
-        <CourseSection
-          onOpenApply={handleOpenApply}
-          onOpenBrochure={handleOpenBrochure}
-        />
+      <CourseSection
+        onOpenApply={handleOpenApply}
+        onOpenBrochure={handleOpenBrochure}
+      />
 
-        <JobBoard
-          onOpenApply={handleOpenApply}
-          onPostJob={handleOpenPostJob}
-        />
+      <BlogSection />
 
-        <BlogSection />
-
-        <About />
-
-        <Contact />
-      </>
-    );
-  };
+      <Contact />
+    </>
+  );
+};
 
   const renderPage = () => {
     switch (currentPage) {
