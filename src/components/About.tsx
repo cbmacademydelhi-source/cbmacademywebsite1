@@ -6,69 +6,6 @@ import {
   Award,
 } from 'lucide-react';
 
-const aiTools = [
-  {
-    name: 'GitHub',
-    logo: 'https://cdn.simpleicons.org/github/181717',
-  },
-  {
-    name: 'Supabase',
-    logo: 'https://cdn.simpleicons.org/supabase/3ECF8E',
-  },
-  {
-    name: 'Google AI',
-    logo: 'https://cdn.simpleicons.org/google/4285F4',
-  },
-  {
-    name: 'Gemini',
-    logo: 'https://cdn.simpleicons.org/googlegemini/8E75B2',
-  },
-  {
-    name: 'ChatGPT',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/e/ef/ChatGPT-Logo.svg',
-  },
-  {
-    name: 'Claude',
-    logo: 'https://cdn.simpleicons.org/anthropic/D97757',
-  },
-  {
-    name: 'Midjourney',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a7/Midjourney_Emblem_%28in-colour%29.svg',
-  },
-  {
-    name: 'Notion',
-    logo: 'https://cdn.simpleicons.org/notion/000000',
-  },
-  {
-    name: 'Semrush',
-    logo: 'https://cdn.simpleicons.org/semrush/FF642D',
-  },
-  {
-    name: 'Meta AI',
-    logo: 'https://cdn.simpleicons.org/meta/0668E1',
-  },
-  {
-    name: 'Canva',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/b/b8/Canva_logo.svg',
-  },
-  {
-    name: 'Google Analytics',
-    logo: 'https://cdn.simpleicons.org/googleanalytics/E37400',
-  },
-  {
-    name: 'Shopify',
-    logo: 'https://cdn.simpleicons.org/shopify/7AB55C',
-  },
-  {
-    name: 'Google Search Console',
-    logo: 'https://cdn.simpleicons.org/googlesearchconsole/458CF5',
-  },
-  {
-    name: 'WordPress',
-    logo: 'https://cdn.simpleicons.org/wordpress/21759B',
-  },
-];
-
 export const About: React.FC = () => {
   return (
     <section
@@ -233,53 +170,6 @@ export const About: React.FC = () => {
             </div>
 
           </div>
-        </div>
-
-        {/* AI & Marketing Tools */}
-        <div className="mt-16 lg:mt-20">
-
-          <div className="text-center mb-8">
-
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 text-[#FF6B00] text-xs font-bold uppercase tracking-wider border border-orange-100">
-              Tools We Teach
-            </div>
-
-            <h3 className="mt-3 text-2xl sm:text-3xl font-extrabold text-[#072B57]">
-              AI & Marketing Tools
-            </h3>
-
-            <p className="mt-2 text-sm text-slate-600">
-              Learn with industry-standard tools used by modern marketing teams.
-            </p>
-
-          </div>
-
-          {/* 15 Tools — 5 per row on desktop */}
-   <div className="mx-auto grid max-w-[900px] grid-cols-5 gap-2">
-
-            {aiTools.map((tool) => (
-              <div
-                key={tool.name}
-               className="bg-white border border-slate-200 rounded-lg px-2 py-2 flex flex-col items-center justify-center text-center min-h-[78px] shadow-sm hover:border-orange-200 hover:-translate-y-0.5 transition-all duration-200"
-              >
-<div className="w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center mb-1.5">
-                  <img
-                    src={tool.logo}
-                    alt={`${tool.name} logo`}
-                    className="w-full h-full object-contain"
-                    loading="lazy"
-                  />
-                </div>
-
-              <span className="text-[10px] font-bold text-[#072B57] leading-tight">
-                  {tool.name}
-                </span>
-
-              </div>
-            ))}
-
-          </div>
-
         </div>
 
       </div>
