@@ -880,7 +880,7 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
 
           {/* 15 TOOLS — 5 PER ROW */}
 
-          <div className="mx-auto grid max-w-[900px] grid-cols-5 gap-2">
+          <div className="mx-auto grid w-full grid-cols-5 gap-2">
 
             {aiTools.map((tool) => (
               <div

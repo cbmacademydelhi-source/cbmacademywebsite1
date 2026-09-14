@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { JOB_OPPORTUNITIES } from '../data/cbmData';
 import {
   ArrowRight,
+  Briefcase,
   Building2,
   Clock,
   Globe,

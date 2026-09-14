@@ -11,6 +11,11 @@ export default defineConfig({
   // Works with both the custom domain and GitHub Pages path
   base: "./",
 
+  server: {
+    port: 3000,
+    host: "0.0.0.0",
+  },
+
   build: {
     outDir: "dist",
     assetsDir: "assets",
