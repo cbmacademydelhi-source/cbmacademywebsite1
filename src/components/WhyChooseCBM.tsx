@@ -139,7 +139,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
           ------------------------------------------------------- */}
           <div
             onClick={onOpenApply}
-            className="group relative bg-white rounded-[26px] border border-[#E9EEF5] shadow-[0_8px_24px_-6px_rgba(15,23,42,0.06)] hover:shadow-[0_16px_36px_-8px_rgba(37,99,235,0.12)] hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-pointer"
+            className="group relative bg-white rounded-[26px] border border-[#E9EEF5] shadow-[0_8px_24px_-6px_rgba(15,23,42,0.06)] hover:shadow-[0_16px_36px_-8px_rgba(234,88,12,0.12)] hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-pointer"
           >
             {/* Top Visual Area with Organic Wave Background */}
             <div className="relative w-full h-[180px] p-4 sm:p-5 flex items-start justify-between">
@@ -150,12 +150,12 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
                 preserveAspectRatio="none"
                 fill="none"
               >
-                {/* Upper soft sky tint */}
+                {/* Upper soft peach tint */}
                 <rect width="280" height="180" fill="url(#card1TopGrad)" />
                 {/* Secondary smooth wave */}
                 <path
                   d="M0,110 C80,85 160,145 280,105 L280,180 L0,180 Z"
-                  fill="#E0F2FE"
+                  fill="#FFEDD5"
                   fillOpacity="0.8"
                 />
                 {/* Front white wave transition */}
@@ -165,8 +165,8 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
                 />
                 <defs>
                   <linearGradient id="card1TopGrad" x1="140" y1="0" x2="140" y2="180" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#F0F9FF" />
-                    <stop offset="0.7" stopColor="#E0F2FE" stopOpacity="0.6" />
+                    <stop stopColor="#FFF7ED" />
+                    <stop offset="0.7" stopColor="#FFEDD5" stopOpacity="0.6" />
                     <stop offset="1" stopColor="#FFFFFF" />
                   </linearGradient>
                 </defs>
@@ -327,11 +327,11 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
               </div>
 
               {/* Metric Badge Pill (Top-Right) */}
-              <div className="relative z-10 px-3 py-1.5 rounded-[14px] bg-[#E0F2FE] border border-sky-100/80 text-center shadow-2xs">
-                <span className="block text-[15px] font-black text-[#0369A1] leading-none">
+              <div className="relative z-10 px-3 py-1.5 rounded-[14px] bg-[#FFEDD5] border border-orange-100/80 text-center shadow-2xs">
+                <span className="block text-[15px] font-black text-[#C2410C] leading-none">
                   10+
                 </span>
-                <span className="block text-[11px] font-bold text-[#0284C7] mt-0.5 leading-none">
+                <span className="block text-[11px] font-bold text-[#EA580C] mt-0.5 leading-none">
                   Years
                 </span>
               </div>
@@ -346,18 +346,6 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
                 <p className="text-[13px] sm:text-[13.5px] text-slate-500 font-normal leading-[1.65]">
                   {WHY_CHOOSE_CBM_CARDS[0].description}
                 </p>
-              </div>
-
-              {/* Verified Curriculum Standard Pill */}
-              <div className="mt-5">
-                <div className="w-full py-2 px-3.5 rounded-full bg-[#EFF6FF] border border-blue-100/70 flex items-center justify-center gap-2 text-xs font-semibold text-[#1D4ED8] shadow-2xs">
-                  <span className="w-4 h-4 rounded-full bg-[#2563EB] text-white flex items-center justify-center shrink-0">
-                    <svg viewBox="0 0 16 16" className="w-2.5 h-2.5 fill-current">
-                      <path d="M13.485 3.515a.75.75 0 0 1 0 1.06l-6.5 6.5a.75.75 0 0 1-1.06 0l-3-3a.75.75 0 0 1 1.06-1.06L6.455 9.47l5.97-5.955a.75.75 0 0 1 1.06 0z" />
-                    </svg>
-                  </span>
-                  <span className="truncate">Verified Curriculum Standard</span>
-                </div>
               </div>
             </div>
           </div>
@@ -566,18 +554,6 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
                   {WHY_CHOOSE_CBM_CARDS[1].description}
                 </p>
               </div>
-
-              {/* Verified Curriculum Standard Pill */}
-              <div className="mt-5">
-                <div className="w-full py-2 px-3.5 rounded-full bg-[#FFF7ED] border border-orange-100/70 flex items-center justify-center gap-2 text-xs font-semibold text-[#C2410C] shadow-2xs">
-                  <span className="w-4 h-4 rounded-full bg-[#EA580C] text-white flex items-center justify-center shrink-0">
-                    <svg viewBox="0 0 16 16" className="w-2.5 h-2.5 fill-current">
-                      <path d="M13.485 3.515a.75.75 0 0 1 0 1.06l-6.5 6.5a.75.75 0 0 1-1.06 0l-3-3a.75.75 0 0 1 1.06-1.06L6.455 9.47l5.97-5.955a.75.75 0 0 1 1.06 0z" />
-                    </svg>
-                  </span>
-                  <span className="truncate">Verified Curriculum Standard</span>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -586,7 +562,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
           ------------------------------------------------------- */}
           <div
             onClick={onOpenApply}
-            className="group relative bg-white rounded-[26px] border border-[#E9EEF5] shadow-[0_8px_24px_-6px_rgba(15,23,42,0.06)] hover:shadow-[0_16px_36px_-8px_rgba(22,163,74,0.12)] hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-pointer"
+            className="group relative bg-white rounded-[26px] border border-[#E9EEF5] shadow-[0_8px_24px_-6px_rgba(15,23,42,0.06)] hover:shadow-[0_16px_36px_-8px_rgba(234,88,12,0.12)] hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-pointer"
           >
             {/* Top Visual Area with Organic Wave Background */}
             <div className="relative w-full h-[180px] p-4 sm:p-5 flex items-start justify-between">
@@ -597,12 +573,12 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
                 preserveAspectRatio="none"
                 fill="none"
               >
-                {/* Upper soft mint tint */}
+                {/* Upper soft peach tint */}
                 <rect width="280" height="180" fill="url(#card3TopGrad)" />
                 {/* Secondary smooth wave */}
                 <path
                   d="M0,110 C80,85 160,140 280,105 L280,180 L0,180 Z"
-                  fill="#DCFCE7"
+                  fill="#FFEDD5"
                   fillOpacity="0.8"
                 />
                 {/* Front white wave transition */}
@@ -612,8 +588,8 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
                 />
                 <defs>
                   <linearGradient id="card3TopGrad" x1="140" y1="0" x2="140" y2="180" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#F0FDF4" />
-                    <stop offset="0.7" stopColor="#DCFCE7" stopOpacity="0.6" />
+                    <stop stopColor="#FFF7ED" />
+                    <stop offset="0.7" stopColor="#FFEDD5" stopOpacity="0.6" />
                     <stop offset="1" stopColor="#FFFFFF" />
                   </linearGradient>
                 </defs>
@@ -756,11 +732,11 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
               </div>
 
               {/* Metric Badge Pill (Top-Right) */}
-              <div className="relative z-10 px-3 py-1.5 rounded-[14px] bg-[#DCFCE7] border border-emerald-100/80 text-center shadow-2xs">
-                <span className="block text-[15px] font-black text-[#15803D] leading-none">
+              <div className="relative z-10 px-3 py-1.5 rounded-[14px] bg-[#FFEDD5] border border-orange-100/80 text-center shadow-2xs">
+                <span className="block text-[15px] font-black text-[#C2410C] leading-none">
                   15+
                 </span>
-                <span className="block text-[11px] font-bold text-[#16A34A] mt-0.5 leading-none">
+                <span className="block text-[11px] font-bold text-[#EA580C] mt-0.5 leading-none">
                   Projects
                 </span>
               </div>
@@ -776,18 +752,6 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
                   {WHY_CHOOSE_CBM_CARDS[2].description}
                 </p>
               </div>
-
-              {/* Verified Curriculum Standard Pill */}
-              <div className="mt-5">
-                <div className="w-full py-2 px-3.5 rounded-full bg-[#F0FDF4] border border-emerald-100/70 flex items-center justify-center gap-2 text-xs font-semibold text-[#15803D] shadow-2xs">
-                  <span className="w-4 h-4 rounded-full bg-[#16A34A] text-white flex items-center justify-center shrink-0">
-                    <svg viewBox="0 0 16 16" className="w-2.5 h-2.5 fill-current">
-                      <path d="M13.485 3.515a.75.75 0 0 1 0 1.06l-6.5 6.5a.75.75 0 0 1-1.06 0l-3-3a.75.75 0 0 1 1.06-1.06L6.455 9.47l5.97-5.955a.75.75 0 0 1 1.06 0z" />
-                    </svg>
-                  </span>
-                  <span className="truncate">Verified Curriculum Standard</span>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -796,7 +760,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
           ------------------------------------------------------- */}
           <div
             onClick={onOpenApply}
-            className="group relative bg-white rounded-[26px] border border-[#E9EEF5] shadow-[0_8px_24px_-6px_rgba(15,23,42,0.06)] hover:shadow-[0_16px_36px_-8px_rgba(124,58,237,0.12)] hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-pointer"
+            className="group relative bg-white rounded-[26px] border border-[#E9EEF5] shadow-[0_8px_24px_-6px_rgba(15,23,42,0.06)] hover:shadow-[0_16px_36px_-8px_rgba(234,88,12,0.12)] hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-pointer"
           >
             {/* Top Visual Area with Organic Wave Background */}
             <div className="relative w-full h-[180px] p-4 sm:p-5 flex items-start justify-between">
@@ -807,12 +771,12 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
                 preserveAspectRatio="none"
                 fill="none"
               >
-                {/* Upper soft lilac tint */}
+                {/* Upper soft peach tint */}
                 <rect width="280" height="180" fill="url(#card4TopGrad)" />
                 {/* Secondary smooth wave */}
                 <path
                   d="M0,115 C85,90 175,135 280,110 L280,180 L0,180 Z"
-                  fill="#F3E8FF"
+                  fill="#FFEDD5"
                   fillOpacity="0.8"
                 />
                 {/* Front white wave transition */}
@@ -822,8 +786,8 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
                 />
                 <defs>
                   <linearGradient id="card4TopGrad" x1="140" y1="0" x2="140" y2="180" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#FAF5FF" />
-                    <stop offset="0.7" stopColor="#F3E8FF" stopOpacity="0.6" />
+                    <stop stopColor="#FFF7ED" />
+                    <stop offset="0.7" stopColor="#FFEDD5" stopOpacity="0.6" />
                     <stop offset="1" stopColor="#FFFFFF" />
                   </linearGradient>
                 </defs>
@@ -989,11 +953,11 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
               </div>
 
               {/* Metric Badge Pill (Top-Right) */}
-              <div className="relative z-10 px-3 py-1.5 rounded-[14px] bg-[#F3E8FF] border border-purple-100/80 text-center shadow-2xs">
-                <span className="block text-[15px] font-black text-[#7E22CE] leading-none">
+              <div className="relative z-10 px-3 py-1.5 rounded-[14px] bg-[#FFEDD5] border border-orange-100/80 text-center shadow-2xs">
+                <span className="block text-[15px] font-black text-[#C2410C] leading-none">
                   100%
                 </span>
-                <span className="block text-[11px] font-bold text-[#9333EA] mt-0.5 leading-none">
+                <span className="block text-[11px] font-bold text-[#EA580C] mt-0.5 leading-none">
                   Help
                 </span>
               </div>
@@ -1008,18 +972,6 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
                 <p className="text-[13px] sm:text-[13.5px] text-slate-500 font-normal leading-[1.65]">
                   {WHY_CHOOSE_CBM_CARDS[3].description}
                 </p>
-              </div>
-
-              {/* Verified Curriculum Standard Pill */}
-              <div className="mt-5">
-                <div className="w-full py-2 px-3.5 rounded-full bg-[#FAF5FF] border border-purple-100/70 flex items-center justify-center gap-2 text-xs font-semibold text-[#7E22CE] shadow-2xs">
-                  <span className="w-4 h-4 rounded-full bg-[#9333EA] text-white flex items-center justify-center shrink-0">
-                    <svg viewBox="0 0 16 16" className="w-2.5 h-2.5 fill-current">
-                      <path d="M13.485 3.515a.75.75 0 0 1 0 1.06l-6.5 6.5a.75.75 0 0 1-1.06 0l-3-3a.75.75 0 0 1 1.06-1.06L6.455 9.47l5.97-5.955a.75.75 0 0 1 1.06 0z" />
-                    </svg>
-                  </span>
-                  <span className="truncate">Verified Curriculum Standard</span>
-                </div>
               </div>
             </div>
           </div>
