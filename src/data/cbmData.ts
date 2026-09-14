@@ -675,11 +675,6 @@ export const TRUST_STATS = [
   },
 
   {
-    label: 'Hiring Partners',
-    value: '500+',
-  },
-
-  {
     label: 'Average Salary Hike',
     value: '72%',
   },
