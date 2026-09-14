@@ -57,7 +57,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
               height="22"
               viewBox="0 0 24 24"
               fill="none"
-              className="text-[#2563EB]"
+              className="text-[#FF6B00]"
               aria-hidden="true"
             >
               <path
@@ -81,7 +81,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
             </svg>
 
             {/* Pill Container */}
-            <span className="px-4 py-1.5 rounded-full bg-[#EEF2FF] text-[#312E81] text-[11px] sm:text-xs font-black uppercase tracking-wider border border-indigo-100/80 shadow-2xs">
+            <span className="px-4 py-1.5 rounded-full bg-orange-50 text-orange-600 text-[11px] sm:text-xs font-black uppercase tracking-wider border border-orange-200 shadow-2xs">
               Why CBM Academy
             </span>
 
@@ -91,7 +91,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
               height="22"
               viewBox="0 0 24 24"
               fill="none"
-              className="text-[#7C3AED]"
+              className="text-[#FF6B00]"
               aria-hidden="true"
             >
               <path
@@ -118,7 +118,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
           {/* Main Title */}
           <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-black text-slate-900 tracking-tight leading-[1.15]">
             Built for{' '}
-            <span className="bg-gradient-to-r from-[#2563EB] via-[#4F46E5] to-[#7C3AED] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#FF6B00] via-[#F59E0B] to-[#F6D7A7] bg-clip-text text-transparent">
               High-Growth Careers
             </span>
           </h2>
