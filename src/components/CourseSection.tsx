@@ -738,7 +738,7 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
             MASTER CURRICULUM
           </div>
 
-          <h2 className="mx-auto text-center text-2xl font-extrabold leading-none tracking-tight text-[#071B41] sm:text-3xl lg:text-[38px]">
+          <h2 className="mx-auto text-center text-3xl font-extrabold leading-none tracking-tight text-[#071B41] sm:text-4xl lg:text-[42px]">
             AI-Powered{' '}
             <span className="bg-gradient-to-r from-[#FF6B00] via-[#F59E0B] to-[#F6D7A7] bg-clip-text text-transparent">
               Digital Marketing

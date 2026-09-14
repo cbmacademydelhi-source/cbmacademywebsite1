@@ -1,6 +1,5 @@
 import React from 'react';
 import { ArrowRight, Download, Star, CheckCircle2, Award, Briefcase, Users, Sparkles, TrendingUp } from 'lucide-react';
-import { TRUST_STATS } from '../data/cbmData';
 
 interface HeroProps {
   onOpenApply: () => void;
@@ -153,16 +152,6 @@ export const Hero: React.FC<HeroProps> = ({ onOpenApply, onOpenBrochure }) => {
             </div>
           </div>
 
-        </div>
-
-        {/* Bottom Trust Metrics Strip */}
-        <div className="mt-14 pt-8 border-t border-slate-200 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-          {TRUST_STATS.map((stat, index) => (
-            <div key={index} className="p-3 rounded-xl bg-[#F8FAFC] border border-slate-100">
-              <div className="text-xl sm:text-2xl font-extrabold text-[#072B57]">{stat.value}</div>
-              <div className="text-xs font-medium text-slate-600 mt-0.5">{stat.label}</div>
-            </div>
-          ))}
         </div>
 
       </div>

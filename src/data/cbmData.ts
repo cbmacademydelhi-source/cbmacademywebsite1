@@ -668,24 +668,4 @@ export const WHY_CHOOSE_CBM_CARDS = [
    TRUST STATS
 ========================================================= */
 
-export const TRUST_STATS = [
-  {
-    label: 'Learners Trained',
-    value: '4,500+',
-  },
-
-  {
-    label: 'Average Salary Hike',
-    value: '72%',
-  },
-
-  {
-    label: 'Highest Package',
-    value: '₹14.5 LPA',
-  },
-
-  {
-    label: 'Student Rating',
-    value: '4.9/5',
-  },
-];
+export const TRUST_STATS: Array<{ label: string; value: string }> = [];
