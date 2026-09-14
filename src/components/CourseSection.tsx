@@ -760,7 +760,7 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
 
         {/* MODULE GRID */}
 
-        <div className="mx-auto mt-4 grid w-[92%] grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+        <div className="mx-auto mt-4 grid w-full grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
 
           {modules.map((module) => (
             <article
