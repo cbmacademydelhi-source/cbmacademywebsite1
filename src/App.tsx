@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { motion, useReducedMotion } from 'motion/react';
 
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
@@ -84,15 +83,6 @@ export default function App() {
     setPostJobModalOpen(true);
   };
 
-  const shouldReduceMotion = useReducedMotion();
-
-  const sectionReveal = {
-    initial: shouldReduceMotion ? false : { opacity: 0, y: 16 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, margin: '-60px' },
-    transition: { duration: 0.6, ease: 'easeOut' },
-  };
-
   const renderHomePage = () => {
     return (
       <>
@@ -101,26 +91,18 @@ export default function App() {
           onOpenBrochure={handleOpenBrochure}
         />
 
-        <motion.div {...sectionReveal}>
-          <WhyChooseCBM
-            onOpenApply={() => handleOpenApply()}
-          />
-        </motion.div>
+        <WhyChooseCBM
+          onOpenApply={() => handleOpenApply()}
+        />
 
-        <motion.div {...sectionReveal}>
-          <CourseSection
-            onOpenApply={handleOpenApply}
-            onOpenBrochure={handleOpenBrochure}
-          />
-        </motion.div>
+        <CourseSection
+          onOpenApply={handleOpenApply}
+          onOpenBrochure={handleOpenBrochure}
+        />
 
-        <motion.div {...sectionReveal}>
-          <BlogSection />
-        </motion.div>
+        <BlogSection />
 
-        <motion.div {...sectionReveal}>
-          <Contact />
-        </motion.div>
+        <Contact />
       </>
     );
   };

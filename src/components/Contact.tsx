@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { motion, useReducedMotion } from 'motion/react';
 import { ContactFormData } from '../types';
 import { submitContactForm, TARGET_NOTIFICATION_EMAIL } from '../services/formService';
 import { MapPin, Mail, Phone, Clock, Send, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react';
+import { SMOOTH_EASE_OUT, VIEWPORT_ONCE } from '../lib/animations';
 
 export const Contact: React.FC = () => {
   const [formData, setFormData] = useState<ContactFormData>({
@@ -105,28 +107,54 @@ export const Contact: React.FC = () => {
     }
   };
 
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <section id="contact" className="py-16 lg:py-24 bg-white border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="max-w-3xl mx-auto text-center space-y-3 mb-12">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 text-[#FF6B00] text-xs font-bold uppercase tracking-wider border border-orange-100">
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT_ONCE}
+            transition={{ duration: 0.6, ease: SMOOTH_EASE_OUT }}
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 text-[#FF6B00] text-xs font-bold uppercase tracking-wider border border-orange-100"
+          >
             Get In Touch
-          </div>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#072B57] tracking-tight">
+          </motion.div>
+          <motion.h2
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT_ONCE}
+            transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
+            className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#072B57] tracking-tight"
+          >
             Contact CBM Academy
-          </h2>
-          <p className="text-slate-600 text-base leading-relaxed">
+          </motion.h2>
+          <motion.p
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT_ONCE}
+            transition={{ duration: 0.6, delay: 0.16, ease: SMOOTH_EASE_OUT }}
+            className="text-slate-600 text-base leading-relaxed"
+          >
             Have questions about upcoming batches, syllabus, or corporate training? Reach out below.
-          </p>
+          </motion.p>
         </div>
 
         {/* Two-Column Section */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           
           {/* Left Column: Institute Contact Details & Google Map Container */}
-          <div className="lg:col-span-5 space-y-6">
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT_ONCE}
+            transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
+            className="lg:col-span-5 space-y-6"
+          >
             <div className="bg-[#F8FAFC] p-6 sm:p-8 rounded-2xl border border-slate-200 space-y-6">
               
               <h3 className="text-xl font-bold text-[#072B57] pb-3 border-b border-slate-200">
@@ -213,10 +241,16 @@ export const Contact: React.FC = () => {
               </div>
             </div>
 
-          </div>
+          </motion.div>
 
           {/* Right Column: Contact Inquiry Form */}
-          <div className="lg:col-span-7">
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT_ONCE}
+            transition={{ duration: 0.6, delay: 0.16, ease: SMOOTH_EASE_OUT }}
+            className="lg:col-span-7"
+          >
             <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-md">
               
               <div className="mb-6">
@@ -399,7 +433,7 @@ export const Contact: React.FC = () => {
               </form>
 
             </div>
-          </div>
+          </motion.div>
 
         </div>
 

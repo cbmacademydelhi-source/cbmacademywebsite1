@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion, useReducedMotion } from 'motion/react';
 import {
   Sparkles,
   BarChart3,
@@ -6,6 +7,7 @@ import {
   Globe,
   ArrowUpRight,
 } from 'lucide-react';
+import { SMOOTH_EASE_OUT, VIEWPORT_ONCE } from '../lib/animations';
 
 /* ==========================================================================
    AUTHENTIC LOGO ICONS (Official Brand Geometry & Authentic Colors)
@@ -361,6 +363,8 @@ interface AIToolsProps {
 }
 
 export const AITools: React.FC<AIToolsProps> = ({ onOpenApply }) => {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <section
       id="ai-tools"
@@ -389,28 +393,46 @@ export const AITools: React.FC<AIToolsProps> = ({ onOpenApply }) => {
         <div className="max-w-2xl mx-auto text-center">
 
           {/* Top Pill / Badge */}
-          <div className="inline-flex items-center justify-center gap-2 px-3 py-1 rounded-full bg-orange-50/90 border border-orange-200/70 shadow-2xs">
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT_ONCE}
+            transition={{ duration: 0.6, ease: SMOOTH_EASE_OUT }}
+            className="inline-flex items-center justify-center gap-2 px-3 py-1 rounded-full bg-orange-50/90 border border-orange-200/70 shadow-2xs"
+          >
             <span className="w-3.5 sm:w-4 h-[1.5px] bg-[#FF6B00] rounded-full" />
             <span className="text-[11px] sm:text-xs font-black uppercase tracking-[0.14em] text-[#FF6B00]">
               INDUSTRY TOOLKIT
             </span>
             <span className="w-3.5 sm:w-4 h-[1.5px] bg-[#FF6B00] rounded-full" />
-          </div>
+          </motion.div>
 
           {/* Main Headline - Balanced Font Size (42px desktop) */}
-          <h2 className="mt-3.5 sm:mt-4 text-2xl sm:text-3xl lg:text-[42px] font-extrabold text-[#072B57] tracking-tight leading-[1.18]">
+          <motion.h2
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT_ONCE}
+            transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
+            className="mt-3.5 sm:mt-4 text-2xl sm:text-3xl lg:text-[42px] font-extrabold text-[#072B57] tracking-tight leading-[1.18]"
+          >
             Master the tools modern teams{' '}
             <br className="hidden sm:inline" />
             <span className="bg-gradient-to-r from-[#FF6B00] via-[#FF7E24] to-[#F59E0B] bg-clip-text text-transparent">
               actually use.
             </span>
-          </h2>
+          </motion.h2>
 
           {/* Subtitle */}
-          <p className="mt-2.5 sm:mt-3 text-sm sm:text-[15px] text-slate-500 font-medium leading-relaxed max-w-xl mx-auto">
+          <motion.p
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT_ONCE}
+            transition={{ duration: 0.6, delay: 0.16, ease: SMOOTH_EASE_OUT }}
+            className="mt-2.5 sm:mt-3 text-sm sm:text-[15px] text-slate-500 font-medium leading-relaxed max-w-xl mx-auto"
+          >
             Build practical skills with the platforms powering today’s AI, marketing
             and digital businesses.
-          </p>
+          </motion.p>
 
         </div>
 
@@ -418,10 +440,14 @@ export const AITools: React.FC<AIToolsProps> = ({ onOpenApply }) => {
             MAIN CONTENT: 2-COLUMN × 2-ROW GRID (Compact & Proportional)
             ========================================================= */}
         <div className="mt-8 sm:mt-10 lg:mt-10 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
-          {categoryCards.map((category) => (
-            <div
+          {categoryCards.map((category, index) => (
+            <motion.div
               key={category.id}
-              className={`group relative rounded-[20px] sm:rounded-[22px] ${category.colorClasses.cardBg} border ${category.colorClasses.cardBorder} ${category.colorClasses.cardBorderHover} p-5 sm:p-6 shadow-[0_2px_16px_-3px_rgba(15,23,42,0.04)] hover:shadow-[0_12px_28px_-4px_rgba(15,23,42,0.06)] transition-all duration-300 flex flex-col justify-between`}
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={VIEWPORT_ONCE}
+              transition={{ duration: 0.6, delay: index * 0.1, ease: SMOOTH_EASE_OUT }}
+              className={`group relative rounded-[20px] sm:rounded-[22px] ${category.colorClasses.cardBg} border ${category.colorClasses.cardBorder} ${category.colorClasses.cardBorderHover} p-5 sm:p-6 shadow-[0_2px_16px_-3px_rgba(15,23,42,0.04)] hover:shadow-[0_12px_28px_-4px_rgba(15,23,42,0.06)] hover:-translate-y-[2.5px] transition-all duration-300 flex flex-col justify-between`}
             >
               {/* Category Card Header */}
               <div>
@@ -489,7 +515,7 @@ export const AITools: React.FC<AIToolsProps> = ({ onOpenApply }) => {
                 ))}
               </div>
 
-            </div>
+            </motion.div>
           ))}
         </div>
 

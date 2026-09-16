@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import { motion, useReducedMotion } from 'motion/react';
 import { BLOG_POSTS } from '../data/cbmData';
 import { BlogPost } from '../types';
 import { Calendar, Clock, ArrowRight, User, X, BookOpen, Share2 } from 'lucide-react';
+import { SMOOTH_EASE_OUT, VIEWPORT_ONCE } from '../lib/animations';
 
 export const BlogSection: React.FC = () => {
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
+  const shouldReduceMotion = useReducedMotion();
 
   return (
     <section id="blogs" className="py-16 lg:py-24 bg-white border-b border-slate-200">
@@ -13,24 +16,46 @@ export const BlogSection: React.FC = () => {
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div className="space-y-3 max-w-2xl">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 text-[#FF6B00] text-xs font-bold uppercase tracking-wider border border-orange-100">
+            <motion.div
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={VIEWPORT_ONCE}
+              transition={{ duration: 0.6, ease: SMOOTH_EASE_OUT }}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 text-[#FF6B00] text-xs font-bold uppercase tracking-wider border border-orange-100"
+            >
               Insights & Articles
-            </div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#072B57] tracking-tight">
+            </motion.div>
+            <motion.h2
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={VIEWPORT_ONCE}
+              transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
+              className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#072B57] tracking-tight"
+            >
               Digital Marketing & AI Insights
-            </h2>
-            <p className="text-slate-600 text-base leading-relaxed">
+            </motion.h2>
+            <motion.p
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={VIEWPORT_ONCE}
+              transition={{ duration: 0.6, delay: 0.16, ease: SMOOTH_EASE_OUT }}
+              className="text-slate-600 text-base leading-relaxed"
+            >
               Algorithmic updates, paid advertising strategies, and AI workflows curated by CBM mentors.
-            </p>
+            </motion.p>
           </div>
         </div>
 
         {/* Responsive 3-Column Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {BLOG_POSTS.map((post) => (
-            <article
+          {BLOG_POSTS.map((post, index) => (
+            <motion.article
               key={post.id}
-              className="bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col justify-between cbm-shadow cbm-shadow-hover transition-all duration-200 hover:border-slate-300 group"
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={VIEWPORT_ONCE}
+              transition={{ duration: 0.6, delay: index * 0.1, ease: SMOOTH_EASE_OUT }}
+              className="bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col justify-between cbm-shadow hover:shadow-[0_12px_28px_-4px_rgba(15,23,42,0.08)] hover:-translate-y-[2.5px] transition-all duration-300 hover:border-slate-300 group"
             >
               <div>
                 {/* Featured Image */}
@@ -93,7 +118,7 @@ export const BlogSection: React.FC = () => {
                 </button>
               </div>
 
-            </article>
+            </motion.article>
           ))}
         </div>
 

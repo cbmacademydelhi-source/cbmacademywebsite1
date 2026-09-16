@@ -1,11 +1,14 @@
 import React from 'react';
+import { motion, useReducedMotion } from 'motion/react';
 import { WHY_CHOOSE_CBM_CARDS } from '../data/cbmData';
+import { SMOOTH_EASE_OUT, VIEWPORT_ONCE } from '../lib/animations';
 
 interface WhyChooseCBMProps {
   onOpenApply: () => void;
 }
 
 export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
+  const shouldReduceMotion = useReducedMotion();
   return (
     <section
       id="why-cbm"
@@ -50,7 +53,13 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
         ========================================================= */}
         <div className="max-w-3xl mx-auto text-center mb-12 sm:mb-14">
           {/* Top Pill Badge with 3 Radiating Sparks on Each Side */}
-          <div className="inline-flex items-center justify-center gap-2.5 mb-3.5">
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT_ONCE}
+            transition={{ duration: 0.6, ease: SMOOTH_EASE_OUT }}
+            className="inline-flex items-center justify-center gap-2.5 mb-3.5"
+          >
             {/* Left Spark Rays */}
             <svg
               width="22"
@@ -113,21 +122,33 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
                 strokeLinecap="round"
               />
             </svg>
-          </div>
+          </motion.div>
 
           {/* Main Title */}
-          <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-black text-slate-900 tracking-tight leading-[1.15]">
+          <motion.h2
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT_ONCE}
+            transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
+            className="text-3xl sm:text-4xl lg:text-[42px] font-black text-slate-900 tracking-tight leading-[1.15]"
+          >
             Built for{' '}
             <span className="bg-gradient-to-r from-[#FF6B00] via-[#F59E0B] to-[#F6D7A7] bg-clip-text text-transparent">
               High-Growth Careers
             </span>
-          </h2>
+          </motion.h2>
 
           {/* Subtitle */}
-          <p className="mt-3 text-slate-500 text-sm sm:text-[15px] leading-relaxed max-w-2xl mx-auto font-normal">
+          <motion.p
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT_ONCE}
+            transition={{ duration: 0.6, delay: 0.16, ease: SMOOTH_EASE_OUT }}
+            className="mt-3 text-slate-500 text-sm sm:text-[15px] leading-relaxed max-w-2xl mx-auto font-normal"
+          >
             Outcome-driven training with live ad budgets, modern AI tools, and
             direct placement support.
-          </p>
+          </motion.p>
         </div>
 
         {/* =========================================================
@@ -137,9 +158,13 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
           {/* -------------------------------------------------------
               CARD 1: EXPERIENCED TRAINERS (BLUE THEME)
           ------------------------------------------------------- */}
-          <div
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT_ONCE}
+            transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
             onClick={onOpenApply}
-            className="group relative bg-white rounded-[26px] border border-[#E9EEF5] shadow-[0_8px_24px_-6px_rgba(15,23,42,0.06)] hover:shadow-[0_16px_36px_-8px_rgba(234,88,12,0.12)] hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-pointer"
+            className="group relative bg-white rounded-[26px] border border-[#E9EEF5] shadow-[0_8px_24px_-6px_rgba(15,23,42,0.06)] hover:shadow-[0_16px_36px_-8px_rgba(234,88,12,0.12)] hover:-translate-y-[3px] transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-pointer"
           >
             {/* Top Visual Area with Organic Wave Background */}
             <div className="relative w-full h-[180px] p-4 sm:p-5 flex items-start justify-between">
@@ -348,14 +373,18 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
                 </p>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* -------------------------------------------------------
               CARD 2: PRACTICAL LEARNING (ORANGE THEME)
           ------------------------------------------------------- */}
-          <div
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT_ONCE}
+            transition={{ duration: 0.6, delay: 0.16, ease: SMOOTH_EASE_OUT }}
             onClick={onOpenApply}
-            className="group relative bg-white rounded-[26px] border border-[#E9EEF5] shadow-[0_8px_24px_-6px_rgba(15,23,42,0.06)] hover:shadow-[0_16px_36px_-8px_rgba(234,88,12,0.12)] hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-pointer"
+            className="group relative bg-white rounded-[26px] border border-[#E9EEF5] shadow-[0_8px_24px_-6px_rgba(15,23,42,0.06)] hover:shadow-[0_16px_36px_-8px_rgba(234,88,12,0.12)] hover:-translate-y-[3px] transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-pointer"
           >
             {/* Top Visual Area with Organic Wave Background */}
             <div className="relative w-full h-[180px] p-4 sm:p-5 flex items-start justify-between">
@@ -555,14 +584,18 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
                 </p>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* -------------------------------------------------------
               CARD 3: INDUSTRY PROJECTS (GREEN THEME)
           ------------------------------------------------------- */}
-          <div
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT_ONCE}
+            transition={{ duration: 0.6, delay: 0.24, ease: SMOOTH_EASE_OUT }}
             onClick={onOpenApply}
-            className="group relative bg-white rounded-[26px] border border-[#E9EEF5] shadow-[0_8px_24px_-6px_rgba(15,23,42,0.06)] hover:shadow-[0_16px_36px_-8px_rgba(234,88,12,0.12)] hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-pointer"
+            className="group relative bg-white rounded-[26px] border border-[#E9EEF5] shadow-[0_8px_24px_-6px_rgba(15,23,42,0.06)] hover:shadow-[0_16px_36px_-8px_rgba(234,88,12,0.12)] hover:-translate-y-[3px] transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-pointer"
           >
             {/* Top Visual Area with Organic Wave Background */}
             <div className="relative w-full h-[180px] p-4 sm:p-5 flex items-start justify-between">
@@ -753,14 +786,18 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
                 </p>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* -------------------------------------------------------
               CARD 4: PLACEMENT SUPPORT (PURPLE THEME)
           ------------------------------------------------------- */}
-          <div
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT_ONCE}
+            transition={{ duration: 0.6, delay: 0.32, ease: SMOOTH_EASE_OUT }}
             onClick={onOpenApply}
-            className="group relative bg-white rounded-[26px] border border-[#E9EEF5] shadow-[0_8px_24px_-6px_rgba(15,23,42,0.06)] hover:shadow-[0_16px_36px_-8px_rgba(234,88,12,0.12)] hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-pointer"
+            className="group relative bg-white rounded-[26px] border border-[#E9EEF5] shadow-[0_8px_24px_-6px_rgba(15,23,42,0.06)] hover:shadow-[0_16px_36px_-8px_rgba(234,88,12,0.12)] hover:-translate-y-[3px] transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-pointer"
           >
             {/* Top Visual Area with Organic Wave Background */}
             <div className="relative w-full h-[180px] p-4 sm:p-5 flex items-start justify-between">
@@ -974,7 +1011,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
                 </p>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

@@ -1,8 +1,10 @@
 import React from 'react';
+import { motion, useReducedMotion } from 'motion/react';
 import {
   Sparkles,
 } from 'lucide-react';
 import { AITools } from './AITools';
+import { SMOOTH_EASE_OUT, VIEWPORT_ONCE } from '../lib/animations';
 
 interface CourseSectionProps {
   onOpenApply?: (courseName?: string) => void;
@@ -656,6 +658,8 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
   onOpenApply,
   onOpenBrochure,
 }) => {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <>
       <section
@@ -668,39 +672,71 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
 
         <div className="mx-auto max-w-[1000px]">
 
-          <div className="mb-1.5 inline-flex items-center gap-1 rounded-full border border-orange-200 bg-orange-50 px-2.5 py-1 text-[8px] font-extrabold uppercase tracking-[0.1em] text-orange-600">
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT_ONCE}
+            transition={{ duration: 0.6, ease: SMOOTH_EASE_OUT }}
+            className="mb-1.5 inline-flex items-center gap-1 rounded-full border border-orange-200 bg-orange-50 px-2.5 py-1 text-[8px] font-extrabold uppercase tracking-[0.1em] text-orange-600"
+          >
             <Sparkles className="h-2.5 w-2.5" />
             MASTER CURRICULUM
-          </div>
+          </motion.div>
 
-          <h2 className="mx-auto text-center text-3xl sm:text-4xl lg:text-[42px] font-extrabold leading-none tracking-tight text-[#071B41]">
+          <motion.h2
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT_ONCE}
+            transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
+            className="mx-auto text-center text-3xl sm:text-4xl lg:text-[42px] font-extrabold leading-none tracking-tight text-[#071B41]"
+          >
             AI-Powered{' '}
             <span className="bg-gradient-to-r from-[#FF6B00] via-[#F59E0B] to-[#F6D7A7] bg-clip-text text-transparent">
               Digital Marketing
             </span>{' '}
             Curriculum
-          </h2>
+          </motion.h2>
 
-          <p className="mx-auto mt-1 max-w-xl text-center text-[9px] leading-tight text-slate-500 sm:text-[10px]">
+          <motion.p
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT_ONCE}
+            transition={{ duration: 0.6, delay: 0.16, ease: SMOOTH_EASE_OUT }}
+            className="mx-auto mt-1 max-w-xl text-center text-[9px] leading-tight text-slate-500 sm:text-[10px]"
+          >
             8 power-packed modules. Real-world skills. AI tools. Career-ready
             you.
-          </p>
+          </motion.p>
 
-          <div className="mt-1.5 flex justify-center gap-1.5">
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT_ONCE}
+            transition={{ duration: 0.6, delay: 0.22, ease: SMOOTH_EASE_OUT }}
+            className="mt-1.5 flex justify-center gap-1.5"
+          >
             <span className="h-[2px] w-5 rounded-full bg-blue-500" />
             <span className="h-[2px] w-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500" />
             <span className="h-[2px] w-5 rounded-full bg-purple-500" />
-          </div>
+          </motion.div>
         </div>
 
         {/* MODULE GRID */}
 
         <div className="mx-auto mt-4 grid w-full grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
 
-          {modules.map((module) => (
-            <article
+          {modules.map((module, index) => (
+            <motion.article
               key={module.number}
-              className="group relative h-[230px] overflow-hidden rounded-[18px] border border-[#E5EAF2] bg-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_10px_25px_rgba(15,23,42,0.08)]"
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={VIEWPORT_ONCE}
+              transition={{
+                duration: 0.6,
+                delay: (index % 4) * 0.08,
+                ease: SMOOTH_EASE_OUT,
+              }}
+              className="group relative h-[230px] overflow-hidden rounded-[18px] border border-[#E5EAF2] bg-white transition-all duration-300 hover:-translate-y-[2.5px] hover:shadow-[0_10px_25px_rgba(15,23,42,0.08)]"
             >
 
               {/* Pastel glow */}
@@ -785,7 +821,7 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
                 }}
               />
 
-            </article>
+            </motion.article>
           ))}
 
         </div>
