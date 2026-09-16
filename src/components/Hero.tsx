@@ -11,9 +11,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenApply, onOpenBrochure }) => {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <section id="home" className="relative overflow-hidden bg-white pt-6 pb-16 lg:pt-12 lg:pb-24 border-b border-slate-100">
-      {/* Background Subtle Grid Texture */}
-      <div className="absolute inset-0 bg-[radial-gradient(#E2E8F0_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none" />
+    <section id="home" className="relative overflow-hidden bg-transparent pt-6 pb-16 lg:pt-12 lg:pb-24 border-b border-slate-100/80">
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
@@ -120,7 +118,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenApply, onOpenBrochure }) => {
                 ))}
               </div>
               <div className="text-xs text-slate-600">
-                <strong className="text-slate-900 font-bold">4.9/5 Rating</strong> from 4,500+ alumni across Google, Amazon & top agency roles
+                <strong className="text-[#072B57] font-bold">4.9/5 Rating</strong> from 4,500+ alumni across Google, Amazon & top agency roles
               </div>
             </motion.div>
 

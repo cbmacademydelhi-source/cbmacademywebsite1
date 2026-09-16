@@ -180,7 +180,7 @@ export const CertificateVerification: React.FC = () => {
                           <span className="text-xs font-bold text-emerald-800 tracking-wide uppercase block">
                             Status: Officially Authenticated
                           </span>
-                          <span className="text-xs font-mono font-bold text-slate-700">
+                          <span className="text-xs font-mono font-bold text-[#072B57]">
                             ID: {verificationResult.data.id}
                           </span>
                         </div>
@@ -216,7 +216,7 @@ export const CertificateVerification: React.FC = () => {
                         <span className="text-slate-500 font-medium flex items-center gap-1.5">
                           <Calendar className="w-4 h-4 text-slate-400" /> Issue Date:
                         </span>
-                        <span className="font-semibold text-slate-800">
+                        <span className="font-semibold text-[#072B57]">
                           {verificationResult.data.issueDate}
                         </span>
                       </div>

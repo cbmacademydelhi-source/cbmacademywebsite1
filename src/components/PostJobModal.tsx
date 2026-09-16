@@ -379,7 +379,7 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                   {/* Description */}
                   <div>
 
-                    <label className="mb-1.5 block text-xs font-bold text-slate-700">
+                    <label className="mb-1.5 block text-xs font-bold text-[#072B57]">
                       Job Description *
                     </label>
 
@@ -393,7 +393,7 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                       }
                       rows={5}
                       placeholder="Describe responsibilities, requirements and important details..."
-                      className="w-full resize-none rounded-xl border border-slate-200 px-3 py-3 text-sm text-slate-800 outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
+                      className="w-full resize-none rounded-xl border border-slate-200 px-3 py-3 text-sm text-[#072B57] outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
                       required
                     />
 
@@ -447,7 +447,7 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                     {/* Work Type */}
                     <div>
 
-                      <label className="mb-1.5 block text-xs font-bold text-slate-700">
+                      <label className="mb-1.5 block text-xs font-bold text-[#072B57]">
                         Work Type
                       </label>
 
@@ -459,7 +459,7 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                             event.target.value
                           )
                         }
-                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-800 outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
+                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-[#072B57] outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
                       >
 
                         <option value="Full-time">
@@ -598,7 +598,7 @@ const FormInput: React.FC<FormInputProps> = ({
   return (
     <div>
 
-      <label className="mb-1.5 block text-xs font-bold text-slate-700">
+      <label className="mb-1.5 block text-xs font-bold text-[#072B57]">
         {label}
       </label>
 
@@ -620,7 +620,7 @@ const FormInput: React.FC<FormInputProps> = ({
           }
           placeholder={placeholder}
           required={required}
-          className="w-full rounded-xl border border-slate-200 py-3 pl-10 pr-3 text-sm text-slate-800 outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
+          className="w-full rounded-xl border border-slate-200 py-3 pl-10 pr-3 text-sm text-[#072B57] outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
         />
 
       </div>

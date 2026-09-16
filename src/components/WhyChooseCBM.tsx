@@ -12,7 +12,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
   return (
     <section
       id="why-cbm"
-      className="relative py-16 sm:py-20 lg:py-24 bg-white overflow-hidden border-b border-slate-100"
+      className="relative py-16 sm:py-20 lg:py-24 bg-transparent overflow-hidden border-b border-slate-100/80"
     >
       {/* =========================================================
           AMBIENT BACKGROUND CURVES (MATCHING REFERENCE IMAGE)
@@ -130,7 +130,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={VIEWPORT_ONCE}
             transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
-            className="text-3xl sm:text-4xl lg:text-[42px] font-black text-slate-900 tracking-tight leading-[1.15]"
+            className="text-3xl sm:text-4xl lg:text-[42px] font-black text-[#072B57] tracking-tight leading-[1.15]"
           >
             Built for{' '}
             <span className="bg-gradient-to-r from-[#FF6B00] via-[#F59E0B] to-[#F6D7A7] bg-clip-text text-transparent">
@@ -365,7 +365,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
             {/* Bottom Content Area */}
             <div className="p-5 sm:p-6 pt-2 flex flex-col flex-1 justify-between">
               <div>
-                <h3 className="text-[19px] sm:text-[20px] font-black text-slate-900 tracking-tight leading-snug mb-2">
+                <h3 className="text-[19px] sm:text-[20px] font-black text-[#072B57] tracking-tight leading-snug mb-2">
                   {WHY_CHOOSE_CBM_CARDS[0].title}
                 </h3>
                 <p className="text-[13px] sm:text-[13.5px] text-slate-500 font-normal leading-[1.65]">
@@ -576,7 +576,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
             {/* Bottom Content Area */}
             <div className="p-5 sm:p-6 pt-2 flex flex-col flex-1 justify-between">
               <div>
-                <h3 className="text-[19px] sm:text-[20px] font-black text-slate-900 tracking-tight leading-snug mb-2">
+                <h3 className="text-[19px] sm:text-[20px] font-black text-[#072B57] tracking-tight leading-snug mb-2">
                   {WHY_CHOOSE_CBM_CARDS[1].title}
                 </h3>
                 <p className="text-[13px] sm:text-[13.5px] text-slate-500 font-normal leading-[1.65]">
@@ -778,7 +778,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
             {/* Bottom Content Area */}
             <div className="p-5 sm:p-6 pt-2 flex flex-col flex-1 justify-between">
               <div>
-                <h3 className="text-[19px] sm:text-[20px] font-black text-slate-900 tracking-tight leading-snug mb-2">
+                <h3 className="text-[19px] sm:text-[20px] font-black text-[#072B57] tracking-tight leading-snug mb-2">
                   {WHY_CHOOSE_CBM_CARDS[2].title}
                 </h3>
                 <p className="text-[13px] sm:text-[13.5px] text-slate-500 font-normal leading-[1.65]">
@@ -1003,7 +1003,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
             {/* Bottom Content Area */}
             <div className="p-5 sm:p-6 pt-2 flex flex-col flex-1 justify-between">
               <div>
-                <h3 className="text-[19px] sm:text-[20px] font-black text-slate-900 tracking-tight leading-snug mb-2">
+                <h3 className="text-[19px] sm:text-[20px] font-black text-[#072B57] tracking-tight leading-snug mb-2">
                   {WHY_CHOOSE_CBM_CARDS[3].title}
                 </h3>
                 <p className="text-[13px] sm:text-[13.5px] text-slate-500 font-normal leading-[1.65]">

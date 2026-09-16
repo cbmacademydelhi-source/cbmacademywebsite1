@@ -10,7 +10,7 @@ export const BlogSection: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <section id="blogs" className="py-16 lg:py-24 bg-white border-b border-slate-200">
+    <section id="blogs" className="py-16 lg:py-24 bg-transparent border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
@@ -104,7 +104,7 @@ export const BlogSection: React.FC = () => {
                   <div className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
                     <User className="w-4 h-4" />
                   </div>
-                  <span className="text-xs font-semibold text-slate-700">{post.author.name}</span>
+                  <span className="text-xs font-semibold text-[#072B57]">{post.author.name}</span>
                 </div>
 
                 <button
@@ -147,7 +147,7 @@ export const BlogSection: React.FC = () => {
                 {selectedPost.title}
               </h2>
               <div className="flex items-center gap-4 text-xs text-slate-500 pb-4 border-b border-slate-100">
-                <span className="font-semibold text-slate-700">{selectedPost.author.name} ({selectedPost.author.role})</span>
+                <span className="font-semibold text-[#072B57]">{selectedPost.author.name} ({selectedPost.author.role})</span>
                 <span>&bull;</span>
                 <span>{selectedPost.date}</span>
                 <span>&bull;</span>
@@ -167,7 +167,7 @@ export const BlogSection: React.FC = () => {
 
             {/* Content text */}
             <div className="prose prose-slate max-w-none text-sm text-slate-700 leading-relaxed space-y-4">
-              <p className="font-medium text-slate-800 text-base">
+              <p className="font-medium text-[#072B57] text-base">
                 {selectedPost.excerpt}
               </p>
               <p>
@@ -182,7 +182,7 @@ export const BlogSection: React.FC = () => {
             <div className="mt-6 pt-4 border-t border-slate-100 flex flex-wrap items-center gap-1.5">
               <span className="text-xs font-bold text-slate-400 mr-1">Topics:</span>
               {selectedPost.tags.map((tag, i) => (
-                <span key={i} className="text-xs bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md">
+                <span key={i} className="text-xs bg-slate-100 text-[#072B57] px-2.5 py-1 rounded-md">
                   #{tag}
                 </span>
               ))}

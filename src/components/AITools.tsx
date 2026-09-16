@@ -175,6 +175,32 @@ const SupabaseLogo: React.FC<{ className?: string }> = ({ className = 'w-6 h-6' 
   </svg>
 );
 
+// 15. Figma - Official 5-Shape Color Mark
+const FigmaLogo: React.FC<{ className?: string }> = ({ className = 'w-4 h-6' }) => (
+  <svg className={className} viewBox="0 0 38 57" fill="none">
+    <path
+      d="M19 0H9.5C4.25329 0 0 4.25329 0 9.5C0 14.7467 4.25329 19 9.5 19H19V0Z"
+      fill="#F24E1E"
+    />
+    <path
+      d="M19 0H28.5C33.7467 0 38 4.25329 38 9.5C38 14.7467 33.7467 19 28.5 19H19V0Z"
+      fill="#FF7262"
+    />
+    <path
+      d="M0 28.5C0 23.2533 4.25329 19 9.5 19H19V38H9.5C4.25329 38 0 33.7467 0 28.5Z"
+      fill="#A259FF"
+    />
+    <path
+      d="M38 28.5C38 33.7467 33.7467 38 28.5 38C23.2533 38 19 33.7467 19 28.5C19 23.2533 23.2533 19 28.5 19C33.7467 19 38 23.2533 38 28.5Z"
+      fill="#1ABCFE"
+    />
+    <path
+      d="M0 47.5C0 42.2533 4.25329 38 9.5 38H19V47.5C19 52.7467 14.7467 57 9.5 57C4.25329 57 0 52.7467 0 47.5Z"
+      fill="#0ACF83"
+    />
+  </svg>
+);
+
 /* ==========================================================================
    CATEGORY & TOOLS DATA STRUCTURE
    ========================================================================== */
@@ -315,6 +341,11 @@ const categoryCards: CategoryCard[] = [
         description: 'AI Image Generation',
         logo: <MidjourneyLogo />,
       },
+      {
+        name: 'Figma',
+        description: 'UI/UX Design',
+        logo: <FigmaLogo />,
+      },
     ],
   },
   {
@@ -368,7 +399,7 @@ export const AITools: React.FC<AIToolsProps> = ({ onOpenApply }) => {
   return (
     <section
       id="ai-tools"
-      className="relative overflow-hidden bg-[#FFFCF8] py-12 sm:py-16 lg:py-16 border-t border-b border-orange-100/50"
+      className="relative overflow-hidden bg-transparent py-12 sm:py-16 lg:py-16 border-t border-b border-orange-100/50"
     >
       {/* Subtle Warm Ambient Glow on Page Edges */}
       <div

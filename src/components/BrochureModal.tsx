@@ -107,7 +107,7 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
           <div>
             <h3
               id="brochure-modal-title"
-              className="text-xl font-bold text-slate-900"
+              className="text-xl font-bold text-[#072B57]"
             >
               Download 2026 Course Brochure
             </h3>
@@ -176,7 +176,7 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
             id="view-brochure-pdf-btn"
             onClick={handleViewPdf}
             type="button"
-            className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-sm transition-colors cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#072B57] font-semibold text-sm transition-colors cursor-pointer"
           >
             <Eye className="w-4 h-4" />
             View PDF

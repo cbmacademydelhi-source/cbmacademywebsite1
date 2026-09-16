@@ -239,7 +239,7 @@ export const AIBot: React.FC = () => {
                   className={
                     message.role === "user"
                       ? "max-w-[82%] rounded-2xl rounded-br-md bg-orange-500 px-4 py-3 text-sm leading-relaxed text-white whitespace-pre-wrap"
-                      : "max-w-[82%] rounded-2xl rounded-bl-md border border-slate-200 bg-white px-4 py-3 text-sm leading-relaxed text-slate-700 shadow-sm whitespace-pre-wrap"
+                      : "max-w-[82%] rounded-2xl rounded-bl-md border border-slate-200 bg-white px-4 py-3 text-sm leading-relaxed text-[#072B57] shadow-sm whitespace-pre-wrap"
                   }
                 >
                   {message.content ||
@@ -279,7 +279,7 @@ export const AIBot: React.FC = () => {
                 onKeyDown={handleKeyDown}
                 placeholder="Ask your question..."
                 disabled={loading}
-                className="min-w-0 flex-1 rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 disabled:bg-slate-100"
+                className="min-w-0 flex-1 rounded-xl border border-slate-200 px-4 py-3 text-sm text-[#072B57] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 disabled:bg-slate-100"
               />
 
               <button

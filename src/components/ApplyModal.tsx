@@ -164,7 +164,7 @@ export const ApplyModal: React.FC<ApplyModalProps> = ({
             Apply for CBM Academy
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Fill in your details below. Submissions are delivered to <span className="font-semibold text-slate-700">office@cbmacademy.in</span>.
+            Fill in your details below. Submissions are delivered to <span className="font-semibold text-[#072B57]">office@cbmacademy.in</span>.
           </p>
         </div>
 

@@ -414,7 +414,7 @@ export default function AdminDashboard() {
               CBM
             </div>
 
-            <h1 className="text-3xl font-bold text-slate-900 mt-5">
+            <h1 className="text-3xl font-bold text-[#072B57] mt-5">
               Admin Login
             </h1>
 
@@ -446,7 +446,7 @@ export default function AdminDashboard() {
             className="space-y-5"
           >
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
+              <label className="block text-sm font-semibold text-[#072B57] mb-2">
                 Admin Email
               </label>
 
@@ -465,7 +465,7 @@ export default function AdminDashboard() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
+              <label className="block text-sm font-semibold text-[#072B57] mb-2">
                 Password
               </label>
 
@@ -603,7 +603,7 @@ export default function AdminDashboard() {
         <div className="flex items-center justify-between mb-5">
 
           <div>
-            <h2 className="text-2xl font-bold text-slate-900">
+            <h2 className="text-2xl font-bold text-[#072B57]">
               Job Listings
             </h2>
 
@@ -631,7 +631,7 @@ export default function AdminDashboard() {
               📋
             </div>
 
-            <h3 className="text-xl font-bold text-slate-800">
+            <h3 className="text-xl font-bold text-[#072B57]">
               No job submissions available
             </h3>
 
@@ -656,7 +656,7 @@ export default function AdminDashboard() {
 
                     <div className="flex flex-wrap items-center gap-3">
 
-                      <h3 className="text-xl font-bold text-slate-900">
+                      <h3 className="text-xl font-bold text-[#072B57]">
                         {job.job_title}
                       </h3>
 
@@ -730,7 +730,7 @@ export default function AdminDashboard() {
 
                     <div className="mt-5">
 
-                      <p className="font-semibold text-slate-800 mb-1">
+                      <p className="font-semibold text-[#072B57] mb-1">
                         Job Description
                       </p>
 
@@ -744,7 +744,7 @@ export default function AdminDashboard() {
                       job.skills.length > 0 && (
                         <div className="mt-4">
 
-                          <p className="font-semibold text-slate-800 mb-2">
+                          <p className="font-semibold text-[#072B57] mb-2">
                             Skills
                           </p>
 
@@ -757,7 +757,7 @@ export default function AdminDashboard() {
                               ) => (
                                 <span
                                   key={index}
-                                  className="bg-slate-100 px-3 py-1 rounded-full text-sm text-slate-700"
+                                  className="bg-slate-100 px-3 py-1 rounded-full text-sm text-[#072B57]"
                                 >
                                   {skill}
                                 </span>

@@ -110,7 +110,7 @@ export const Contact: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <section id="contact" className="py-16 lg:py-24 bg-white border-b border-slate-200">
+    <section id="contact" className="py-16 lg:py-24 bg-transparent border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
@@ -258,7 +258,7 @@ export const Contact: React.FC = () => {
                   Send an Inquiry
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                  All messages are routed directly to <strong className="text-slate-700">office@cbmacademy.in</strong>. We reply within 24 hours.
+                  All messages are routed directly to <strong className="text-[#072B57]">office@cbmacademy.in</strong>. We reply within 24 hours.
                 </p>
               </div>
 

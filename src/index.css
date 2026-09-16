@@ -5,12 +5,16 @@
     --color-primary: #072B57;
     --color-accent: #FF6B00;
     --color-bg-light: #F8FAFC;
-    --color-text-main: #1E293B;
+    --color-text-main: #072B57;
     --color-border: #E5E7EB;
   }
 
   html {
     scroll-behavior: smooth;
+  }
+
+  body {
+    color: #072B57;
   }
 }
 
@@ -28,5 +32,198 @@
   border: 1px solid #E5E7EB;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+/* =========================================================
+   LIVING GRID & AMBIENT WAVE KEYFRAMES (Subtle, GPU-Accelerated)
+   ========================================================= */
+@keyframes ambientWaveSweep {
+  0% {
+    transform: translate3d(-60%, 0, 0);
+  }
+  50% {
+    transform: translate3d(60%, 0, 0);
+  }
+  100% {
+    transform: translate3d(-60%, 0, 0);
+  }
+}
+
+@keyframes particleDriftA {
+  0%, 100% {
+    transform: translate3d(0px, 0px, 0);
+    opacity: 0.22;
+  }
+  35% {
+    transform: translate3d(14px, -20px, 0);
+    opacity: 0.52;
+  }
+  70% {
+    transform: translate3d(-12px, 16px, 0);
+    opacity: 0.2;
+  }
+}
+
+@keyframes particleDriftB {
+  0%, 100% {
+    transform: translate3d(0px, 0px, 0);
+    opacity: 0.18;
+  }
+  45% {
+    transform: translate3d(-18px, 18px, 0);
+    opacity: 0.48;
+  }
+  80% {
+    transform: translate3d(15px, -14px, 0);
+    opacity: 0.16;
+  }
+}
+
+@keyframes particleDriftC {
+  0%, 100% {
+    transform: translate3d(0px, 0px, 0);
+    opacity: 0.25;
+  }
+  50% {
+    transform: translate3d(12px, 16px, 0);
+    opacity: 0.55;
+  }
+  80% {
+    transform: translate3d(-15px, -12px, 0);
+    opacity: 0.24;
+  }
+}
+
+.cbm-ambient-wave {
+  animation: ambientWaveSweep 22s ease-in-out infinite;
+  will-change: transform;
+}
+
+.cbm-particle-drift-a {
+  animation: particleDriftA 13s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.cbm-particle-drift-b {
+  animation: particleDriftB 17s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.cbm-particle-drift-c {
+  animation: particleDriftC 11s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* =========================================================
+   CURRICULUM SECTION AMBIENT BLOBS KEYFRAMES
+   ========================================================= */
+@keyframes curriculumBlobDrift1 {
+  0% {
+    transform: translate3d(0px, 0px, 0) scale(1);
+    opacity: 0.8;
+  }
+  33% {
+    transform: translate3d(70px, 40px, 0) scale(1.12);
+    opacity: 1;
+  }
+  66% {
+    transform: translate3d(25px, 80px, 0) scale(0.92);
+    opacity: 0.65;
+  }
+  100% {
+    transform: translate3d(0px, 0px, 0) scale(1);
+    opacity: 0.8;
+  }
+}
+
+@keyframes curriculumBlobDrift2 {
+  0% {
+    transform: translate3d(0px, 0px, 0) scale(1);
+    opacity: 0.75;
+  }
+  40% {
+    transform: translate3d(-65px, 50px, 0) scale(1.1);
+    opacity: 1;
+  }
+  75% {
+    transform: translate3d(-35px, -30px, 0) scale(0.95);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate3d(0px, 0px, 0) scale(1);
+    opacity: 0.75;
+  }
+}
+
+@keyframes curriculumBlobDrift3 {
+  0% {
+    transform: translate3d(0px, 0px, 0) scale(0.95);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate3d(55px, -45px, 0) scale(1.15);
+    opacity: 0.95;
+  }
+  80% {
+    transform: translate3d(-45px, 35px, 0) scale(1);
+    opacity: 0.75;
+  }
+  100% {
+    transform: translate3d(0px, 0px, 0) scale(0.95);
+    opacity: 0.7;
+  }
+}
+
+@keyframes curriculumBlobDrift4 {
+  0% {
+    transform: translate3d(0px, 0px, 0) scale(1.05);
+    opacity: 0.75;
+  }
+  35% {
+    transform: translate3d(-70px, -40px, 0) scale(0.92);
+    opacity: 0.55;
+  }
+  70% {
+    transform: translate3d(35px, -55px, 0) scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(0px, 0px, 0) scale(1.05);
+    opacity: 0.75;
+  }
+}
+
+.cbm-curriculum-blob-1 {
+  animation: curriculumBlobDrift1 15s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.cbm-curriculum-blob-2 {
+  animation: curriculumBlobDrift2 18s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.cbm-curriculum-blob-3 {
+  animation: curriculumBlobDrift3 13s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.cbm-curriculum-blob-4 {
+  animation: curriculumBlobDrift4 20s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cbm-ambient-wave,
+  .cbm-particle-drift-a,
+  .cbm-particle-drift-b,
+  .cbm-particle-drift-c,
+  .cbm-curriculum-blob-1,
+  .cbm-curriculum-blob-2,
+  .cbm-curriculum-blob-3,
+  .cbm-curriculum-blob-4 {
+    animation: none !important;
+    transform: none !important;
+  }
 }
 

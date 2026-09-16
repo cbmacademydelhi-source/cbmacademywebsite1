@@ -175,7 +175,7 @@ export const Header: React.FC<HeaderProps> = ({
                   className={`px-3 py-2 rounded-lg text-sm font-semibold transition-colors duration-150 whitespace-nowrap ${
                     isActive
                       ? 'text-[#072B57] bg-slate-100 font-bold border-b-2 border-[#FF6B00]'
-                      : 'text-slate-600 hover:text-[#072B57] hover:bg-slate-50'
+                      : 'text-[#072B57] hover:text-[#072B57] hover:bg-slate-50'
                   }`}
                 >
                   {link.name}
@@ -258,7 +258,7 @@ export const Header: React.FC<HeaderProps> = ({
                     className={`px-3 py-2.5 rounded-lg text-base font-semibold transition-colors flex items-center justify-between ${
                       isActive
                         ? 'text-[#072B57] bg-slate-100 font-bold border-l-4 border-[#FF6B00]'
-                        : 'text-slate-700 hover:text-[#072B57] hover:bg-slate-50'
+                        : 'text-[#072B57] hover:text-[#072B57] hover:bg-slate-50'
                     }`}
                   >
                     <span>{link.name}</span>
@@ -275,7 +275,7 @@ export const Header: React.FC<HeaderProps> = ({
                   onOpenBrochure();
                 }}
                 type="button"
-                className="w-full text-center py-2.5 rounded-xl border border-slate-300 text-slate-700 font-bold text-sm"
+                className="w-full text-center py-2.5 rounded-xl border border-slate-300 text-[#072B57] font-bold text-sm"
               >
                 Download Detailed Brochure
               </button>

@@ -175,7 +175,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({
                 {/* Location & Salary */}
                 <div className="space-y-2 py-2 border-y border-slate-100 text-xs">
 
-                  <div className="flex items-center justify-between text-slate-700 gap-3">
+                  <div className="flex items-center justify-between text-[#072B57] gap-3">
 
                     <span className="flex items-center gap-1.5 text-slate-500 shrink-0">
                       {job.isRemote ? (
@@ -186,13 +186,13 @@ export const JobBoard: React.FC<JobBoardProps> = ({
                       Location:
                     </span>
 
-                    <span className="font-semibold text-right">
+                    <span className="font-semibold text-right text-[#072B57]">
                       {job.location}
                     </span>
 
                   </div>
 
-                  <div className="flex items-center justify-between text-slate-700">
+                  <div className="flex items-center justify-between text-[#072B57]">
 
                     <span className="flex items-center gap-1.5 text-slate-500">
                       <IndianRupee className="w-4 h-4 text-emerald-600" />
@@ -205,13 +205,13 @@ export const JobBoard: React.FC<JobBoardProps> = ({
 
                   </div>
 
-                  <div className="flex items-center justify-between text-slate-700">
+                  <div className="flex items-center justify-between text-[#072B57]">
 
                     <span className="text-slate-500">
                       Experience:
                     </span>
 
-                    <span className="font-semibold">
+                    <span className="font-semibold text-[#072B57]">
                       {job.experience}
                     </span>
 
@@ -231,7 +231,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({
                     {job.skills.map((skill, sIdx) => (
                       <span
                         key={sIdx}
-                        className="text-[11px] font-medium bg-[#F8FAFC] text-slate-700 px-2 py-0.5 rounded border border-slate-200"
+                        className="text-[11px] font-medium bg-[#F8FAFC] text-[#072B57] px-2 py-0.5 rounded border border-slate-200"
                       >
                         {skill}
                       </span>

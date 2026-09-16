@@ -15,6 +15,7 @@ import { BrochureModal } from './components/BrochureModal';
 import { PostJobModal } from './components/PostJobModal';
 import { AIBot } from './components/AIBot';
 import AdminDashboard from './components/AdminDashboard';
+import { AmbientBackground } from './components/AmbientBackground';
 
 export default function App() {
   const [applyModalOpen, setApplyModalOpen] = useState(false);
@@ -85,7 +86,10 @@ export default function App() {
 
   const renderHomePage = () => {
     return (
-      <>
+      <div className="relative isolate">
+        {/* Subtle Ambient Background Animation for Home Page */}
+        <AmbientBackground />
+
         <Hero
           onOpenApply={() => handleOpenApply()}
           onOpenBrochure={handleOpenBrochure}
@@ -103,7 +107,7 @@ export default function App() {
         <BlogSection />
 
         <Contact />
-      </>
+      </div>
     );
   };
 
