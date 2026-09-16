@@ -128,7 +128,7 @@ export const AITools: React.FC = () => {
               </div>
 
               {/* Tool Name */}
-              <h3 className="text-xs sm:text-sm font-bold text-[#072B57] leading-tight">
+              <h3 className="text-[19px] sm:text-[20px] font-bold text-[#072B57] leading-tight">
                 {tool.name}
               </h3>
             </div>

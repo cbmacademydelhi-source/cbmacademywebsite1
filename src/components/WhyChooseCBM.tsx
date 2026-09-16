@@ -14,7 +14,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
       {/* =========================================================
           AMBIENT BACKGROUND CURVES (MATCHING REFERENCE IMAGE)
       ========================================================= */}
-      {/* Soft periwinkle/lavender organic wave on the right edge */}
+      {/* Soft warm orange organic wave on the right edge */}
       <div
         className="absolute top-0 right-0 w-[380px] sm:w-[480px] lg:w-[580px] h-full pointer-events-none overflow-hidden select-none"
         aria-hidden="true"
@@ -30,17 +30,17 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
           />
           <defs>
             <linearGradient id="ambientRightGrad" x1="500" y1="0" x2="300" y2="600" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#EEF2FF" stopOpacity="0.8" />
-              <stop offset="0.6" stopColor="#E0E7FF" stopOpacity="0.4" />
-              <stop offset="1" stopColor="#F5F3FF" stopOpacity="0.1" />
+              <stop stopColor="#FFF7ED" stopOpacity="0.8" />
+              <stop offset="0.6" stopColor="#FFEDD5" stopOpacity="0.4" />
+              <stop offset="1" stopColor="#FED7AA" stopOpacity="0.1" />
             </linearGradient>
           </defs>
         </svg>
       </div>
 
-      {/* Soft lavender/blue glow on the bottom-left */}
+      {/* Soft CBM orange glow on the bottom-left */}
       <div
-        className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-blue-50/70 blur-3xl pointer-events-none"
+        className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-orange-50/70 blur-3xl pointer-events-none"
         aria-hidden="true"
       />
 

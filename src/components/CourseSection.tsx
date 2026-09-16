@@ -1,10 +1,6 @@
 import React from 'react';
 import {
   Sparkles,
-  Zap,
-  Trophy,
-  GraduationCap,
-  Users,
 } from 'lucide-react';
 
 interface CourseSectionProps {
@@ -831,11 +827,11 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
                   MODULE {module.number}
                 </div>
 
-                <h3 className="text-[13px] font-extrabold leading-[1.2] text-[#071B41]">
+                <h3 className="text-[19px] sm:text-[20px] font-extrabold leading-[1.2] text-[#071B41]">
                   {module.title}
                 </h3>
 
-                <p className="mt-1.5 text-[10px] leading-[1.35] text-slate-500">
+                <p className="mt-1.5 text-[13px] sm:text-[13.5px] leading-[1.35] text-slate-500">
                   {module.description}
                 </p>
 
@@ -899,48 +895,12 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
 
                 </div>
 
-                <span className="text-[10px] font-bold leading-tight text-[#072B57]">
+                <span className="text-[19px] sm:text-[20px] font-bold leading-tight text-[#072B57]">
                   {tool.name}
                 </span>
 
               </div>
             ))}
-
-          </div>
-
-        </div>
-
-        {/* BENEFITS STRIP */}
-
-        <div className="mx-auto mt-5 max-w-[760px] rounded-full border border-slate-200 bg-white px-2 py-1.5 shadow-[0_3px_12px_rgba(15,23,42,0.04)]">
-
-          <div className="flex items-center justify-center">
-
-            <div className="flex flex-1 items-center justify-center gap-1 text-[6px] font-semibold text-slate-700 sm:text-[7px]">
-              <Zap className="h-2.5 w-2.5 text-purple-500" />
-              <span>AI-Powered Learning</span>
-            </div>
-
-            <div className="h-3 w-px bg-slate-200" />
-
-            <div className="flex flex-1 items-center justify-center gap-1 text-[6px] font-semibold text-slate-700 sm:text-[7px]">
-              <Trophy className="h-2.5 w-2.5 text-orange-500" />
-              <span>Industry-Relevant Projects</span>
-            </div>
-
-            <div className="h-3 w-px bg-slate-200" />
-
-            <div className="flex flex-1 items-center justify-center gap-1 text-[6px] font-semibold text-slate-700 sm:text-[7px]">
-              <GraduationCap className="h-2.5 w-2.5 text-pink-500" />
-              <span>Certification &amp; Career Support</span>
-            </div>
-
-            <div className="h-3 w-px bg-slate-200" />
-
-            <div className="flex flex-1 items-center justify-center gap-1 text-[6px] font-semibold text-slate-700 sm:text-[7px]">
-              <Users className="h-2.5 w-2.5 text-blue-500" />
-              <span>Lifetime Access &amp; Community</span>
-            </div>
 
           </div>
 
