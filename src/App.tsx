@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { motion, useReducedMotion } from 'motion/react';
 
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
@@ -83,29 +84,46 @@ export default function App() {
     setPostJobModalOpen(true);
   };
 
- const renderHomePage = () => {
-  return (
-    <>
-      <Hero
-        onOpenApply={() => handleOpenApply()}
-        onOpenBrochure={handleOpenBrochure}
-      />
+  const shouldReduceMotion = useReducedMotion();
 
-      <WhyChooseCBM
-        onOpenApply={() => handleOpenApply()}
-      />
+  const sectionReveal = {
+    initial: shouldReduceMotion ? false : { opacity: 0, y: 16 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, margin: '-60px' },
+    transition: { duration: 0.6, ease: 'easeOut' },
+  };
 
-      <CourseSection
-        onOpenApply={handleOpenApply}
-        onOpenBrochure={handleOpenBrochure}
-      />
+  const renderHomePage = () => {
+    return (
+      <>
+        <Hero
+          onOpenApply={() => handleOpenApply()}
+          onOpenBrochure={handleOpenBrochure}
+        />
 
-      <BlogSection />
+        <motion.div {...sectionReveal}>
+          <WhyChooseCBM
+            onOpenApply={() => handleOpenApply()}
+          />
+        </motion.div>
 
-      <Contact />
-    </>
-  );
-};
+        <motion.div {...sectionReveal}>
+          <CourseSection
+            onOpenApply={handleOpenApply}
+            onOpenBrochure={handleOpenBrochure}
+          />
+        </motion.div>
+
+        <motion.div {...sectionReveal}>
+          <BlogSection />
+        </motion.div>
+
+        <motion.div {...sectionReveal}>
+          <Contact />
+        </motion.div>
+      </>
+    );
+  };
 
   const renderPage = () => {
     switch (currentPage) {
@@ -163,6 +181,7 @@ export default function App() {
         <Header
           onOpenApply={handleOpenApply}
           onOpenBrochure={handleOpenBrochure}
+          isHomePage={currentPage === 'home'}
         />
       )}
 

@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Sparkles,
 } from 'lucide-react';
+import { AITools } from './AITools';
 
 interface CourseSectionProps {
   onOpenApply?: (courseName?: string) => void;
@@ -83,72 +84,6 @@ const modules = [
   },
 ];
 
-/* =========================================================
-   15 AI & MARKETING TOOLS
-========================================================= */
-
-const aiTools = [
-  {
-    name: 'GitHub',
-    logo: 'https://cdn.simpleicons.org/github/181717',
-  },
-  {
-    name: 'Supabase',
-    logo: 'https://cdn.simpleicons.org/supabase/3ECF8E',
-  },
-  {
-    name: 'Google AI',
-    logo: 'https://cdn.simpleicons.org/google/4285F4',
-  },
-  {
-    name: 'Gemini',
-    logo: 'https://cdn.simpleicons.org/googlegemini/8E75B2',
-  },
-  {
-    name: 'ChatGPT',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/e/ef/ChatGPT-Logo.svg',
-  },
-  {
-    name: 'Claude',
-    logo: 'https://cdn.simpleicons.org/anthropic/D97757',
-  },
-  {
-    name: 'Midjourney',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a7/Midjourney_Emblem_%28in-colour%29.svg',
-  },
-  {
-    name: 'Notion',
-    logo: 'https://cdn.simpleicons.org/notion/000000',
-  },
-  {
-    name: 'Semrush',
-    logo: 'https://cdn.simpleicons.org/semrush/FF642D',
-  },
-  {
-    name: 'Meta AI',
-    logo: 'https://cdn.simpleicons.org/meta/0668E1',
-  },
-  {
-    name: 'Canva',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/b/b8/Canva_logo.svg',
-  },
-  {
-    name: 'Google Analytics',
-    logo: 'https://cdn.simpleicons.org/googleanalytics/E37400',
-  },
-  {
-    name: 'Shopify',
-    logo: 'https://cdn.simpleicons.org/shopify/7AB55C',
-  },
-  {
-    name: 'Google Search Console',
-    logo: 'https://cdn.simpleicons.org/googlesearchconsole/458CF5',
-  },
-  {
-    name: 'WordPress',
-    logo: 'https://cdn.simpleicons.org/wordpress/21759B',
-  },
-];
 
 /* =========================================================
    SMALL BRAND LOGOS
@@ -717,12 +652,16 @@ const Illustration = ({
    COURSE SECTION
 ========================================================= */
 
-export const CourseSection: React.FC<CourseSectionProps> = () => {
+export const CourseSection: React.FC<CourseSectionProps> = ({
+  onOpenApply,
+  onOpenBrochure,
+}) => {
   return (
-    <section
-      id="course"
-      className="relative overflow-hidden bg-white py-3 sm:py-4 lg:py-5"
-    >
+    <>
+      <section
+        id="course"
+        className="relative overflow-hidden bg-white py-3 sm:py-4 lg:py-5"
+      >
       <div className="mx-auto max-w-[1200px] px-2 sm:px-3">
 
         {/* HEADER */}
@@ -827,11 +766,11 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
                   MODULE {module.number}
                 </div>
 
-                <h3 className="text-[19px] sm:text-[20px] font-extrabold leading-[1.2] text-[#071B41]">
+                <h3 className="text-[18px] sm:text-[19px] font-extrabold leading-[1.2] text-[#071B41]">
                   {module.title}
                 </h3>
 
-                <p className="mt-1.5 text-[13px] sm:text-[13.5px] leading-[1.35] text-slate-500">
+                <p className="mt-1.5 text-[12px] sm:text-[12.5px] leading-[1.35] text-slate-500">
                   {module.description}
                 </p>
 
@@ -851,62 +790,13 @@ export const CourseSection: React.FC<CourseSectionProps> = () => {
 
         </div>
 
-        {/* =================================================
-            AI & MARKETING TOOLS
-        ================================================= */}
-
-        <div className="mt-8">
-
-          <div className="mb-4 text-center">
-
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-orange-100 bg-orange-50 px-3 py-1 text-[9px] font-bold uppercase tracking-wider text-[#FF6B00]">
-              Tools We Teach
-            </div>
-
-            <h3 className="mt-2 text-xl font-extrabold text-[#072B57] sm:text-2xl">
-              AI & Marketing Tools
-            </h3>
-
-            <p className="mt-1 text-[10px] text-slate-600 sm:text-xs">
-              Learn with industry-standard tools used by modern marketing
-              teams.
-            </p>
-
-          </div>
-
-          {/* 15 TOOLS — 5 PER ROW */}
-
-          <div className="mx-auto grid w-full grid-cols-5 gap-2">
-
-            {aiTools.map((tool) => (
-              <div
-                key={tool.name}
-                className="flex min-h-[78px] flex-col items-center justify-center rounded-lg border border-slate-200 bg-white px-2 py-2 text-center shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-orange-200"
-              >
-
-                <div className="mb-1.5 flex h-8 w-8 items-center justify-center rounded-lg border border-slate-100 bg-white">
-
-                  <img
-                    src={tool.logo}
-                    alt={`${tool.name} logo`}
-                    className="h-full w-full object-contain"
-                    loading="lazy"
-                  />
-
-                </div>
-
-                <span className="text-[19px] sm:text-[20px] font-bold leading-tight text-[#072B57]">
-                  {tool.name}
-                </span>
-
-              </div>
-            ))}
-
-          </div>
-
-        </div>
-
       </div>
     </section>
+
+    {/* =================================================
+        AI & MARKETING TOOLS (REDESIGNED PREMIUM SECTION)
+    ================================================= */}
+    <AITools onOpenApply={onOpenApply} />
+  </>
   );
 };

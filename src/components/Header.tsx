@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { motion, useReducedMotion } from 'motion/react';
 import { CbmLogo } from './CbmLogo';
 import {
   Menu,
@@ -12,15 +13,19 @@ import {
 interface HeaderProps {
   onOpenApply: (courseTitle?: string) => void;
   onOpenBrochure: () => void;
+  isHomePage?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   onOpenApply,
   onOpenBrochure,
+  isHomePage = false,
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activePage, setActivePage] = useState('home');
+  const shouldReduceMotion = useReducedMotion();
+  const shouldAnimate = isHomePage && !shouldReduceMotion;
 
   const navLinks = [
     { name: 'Home', href: '#home', id: 'home' },
@@ -86,7 +91,12 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <>
       {/* Top Notification Bar */}
-      <div className="bg-[#072B57] text-white text-xs py-2 px-4 border-b border-blue-900/40">
+      <motion.div
+        initial={shouldAnimate ? { opacity: 0 } : false}
+        animate={shouldAnimate ? { opacity: 1 } : undefined}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="bg-[#072B57] text-white text-xs py-2 px-4 border-b border-blue-900/40"
+      >
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
 
           <div className="flex items-center gap-2 font-medium">
@@ -119,11 +129,14 @@ export const Header: React.FC<HeaderProps> = ({
             </span>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Main Header */}
-      <header
+      <motion.header
         id="main-header"
+        initial={shouldAnimate ? { opacity: 0 } : false}
+        animate={shouldAnimate ? { opacity: 1 } : undefined}
+        transition={{ duration: 0.5, delay: 0.05, ease: 'easeOut' }}
         className={`sticky top-0 z-40 w-full transition-all duration-200 bg-white/95 backdrop-blur-md border-b ${
           isScrolled
             ? 'border-slate-200 shadow-md py-2'
@@ -281,7 +294,7 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
         )}
-      </header>
+      </motion.header>
     </>
   );
 };
