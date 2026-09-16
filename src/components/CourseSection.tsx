@@ -225,7 +225,7 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
     <>
       <section
         id="course"
-        className="relative overflow-hidden bg-[#FFFCF8] py-12 sm:py-16"
+        className="relative overflow-hidden bg-transparent pt-8 sm:pt-10 pb-14 sm:pb-16"
       >
         {/* Continuous Animated Ambient Orange Blobs (Behind Content) */}
         <div
@@ -275,8 +275,8 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
 
         <div className="relative z-10 mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
           {/* HEADER */}
-          <div className="mx-auto max-w-3xl text-center mb-10 sm:mb-12">
-            <h2 className="text-3xl sm:text-4xl lg:text-[40px] font-extrabold tracking-tight leading-tight text-[#072B57]">
+          <div className="mx-auto max-w-5xl text-center mb-10 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-[34px] lg:text-[40px] font-extrabold tracking-tight leading-tight text-[#072B57] sm:whitespace-nowrap">
               AI-Powered{' '}
               <span className="text-[#FF6B00]">Digital Marketing</span>{' '}
               Curriculum

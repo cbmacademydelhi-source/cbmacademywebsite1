@@ -87,9 +87,6 @@ export default function App() {
   const renderHomePage = () => {
     return (
       <div className="relative isolate">
-        {/* Subtle Ambient Background Animation for Home Page */}
-        <AmbientBackground />
-
         <Hero
           onOpenApply={() => handleOpenApply()}
           onOpenBrochure={handleOpenBrochure}
@@ -160,7 +157,9 @@ export default function App() {
   const isAdminPage = currentPage === 'admin';
 
   return (
-    <div className="min-h-screen bg-white text-[#1E293B] font-['Plus_Jakarta_Sans',sans-serif] flex flex-col">
+    <div className="min-h-screen relative text-[#1E293B] font-['Plus_Jakarta_Sans',sans-serif] flex flex-col">
+      {/* Global AI & Tech Ambient Background (Matches Reference Peach-Cream Palette) */}
+      <AmbientBackground />
 
       {/* Header */}
       {!isAdminPage && (

@@ -11,7 +11,10 @@ export const Hero: React.FC<HeroProps> = ({ onOpenApply, onOpenBrochure }) => {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <section id="home" className="relative overflow-hidden bg-transparent pt-6 pb-16 lg:pt-12 lg:pb-24 border-b border-slate-100/80">
+    <section
+      id="home"
+      className="relative overflow-hidden bg-white/90 backdrop-blur-xs pt-6 pb-8 sm:pb-10 lg:pt-10 lg:pb-12 border-b-2 border-orange-200/80 shadow-[0_1px_3px_rgba(254,215,170,0.3)]"
+    >
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
@@ -89,7 +92,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenApply, onOpenBrochure }) => {
               initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.55, delay: 0.39, ease: 'easeOut' }}
-              className="pt-4 grid grid-cols-2 sm:grid-cols-3 gap-3 border-t border-slate-100"
+              className="pt-4 grid grid-cols-2 sm:grid-cols-3 gap-3 border-t border-slate-200/80"
             >
               <div className="flex items-center gap-2 text-xs font-semibold text-slate-700">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />

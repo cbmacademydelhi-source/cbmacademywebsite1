@@ -421,7 +421,7 @@ export const AITools: React.FC<AIToolsProps> = ({ onOpenApply }) => {
         {/* =========================================================
             SECTION HEADER
             ========================================================= */}
-        <div className="max-w-2xl mx-auto text-center">
+        <div className="max-w-4xl mx-auto text-center">
 
           {/* Top Pill / Badge */}
           <motion.div
@@ -438,16 +438,15 @@ export const AITools: React.FC<AIToolsProps> = ({ onOpenApply }) => {
             <span className="w-3.5 sm:w-4 h-[1.5px] bg-[#FF6B00] rounded-full" />
           </motion.div>
 
-          {/* Main Headline - Balanced Font Size (42px desktop) */}
+          {/* Main Headline - In One Line */}
           <motion.h2
             initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={VIEWPORT_ONCE}
             transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
-            className="mt-3.5 sm:mt-4 text-2xl sm:text-3xl lg:text-[42px] font-extrabold text-[#072B57] tracking-tight leading-[1.18]"
+            className="mt-3.5 sm:mt-4 text-2xl sm:text-3xl md:text-[34px] lg:text-[40px] font-extrabold text-[#072B57] tracking-tight leading-[1.18] sm:whitespace-nowrap"
           >
             Master the tools modern teams{' '}
-            <br className="hidden sm:inline" />
             <span className="bg-gradient-to-r from-[#FF6B00] via-[#FF7E24] to-[#F59E0B] bg-clip-text text-transparent">
               actually use.
             </span>

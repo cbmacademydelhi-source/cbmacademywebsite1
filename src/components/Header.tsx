@@ -137,10 +137,10 @@ export const Header: React.FC<HeaderProps> = ({
         initial={shouldAnimate ? { opacity: 0 } : false}
         animate={shouldAnimate ? { opacity: 1 } : undefined}
         transition={{ duration: 0.5, delay: 0.05, ease: 'easeOut' }}
-        className={`sticky top-0 z-40 w-full transition-all duration-200 bg-white/95 backdrop-blur-md border-b ${
+        className={`sticky top-0 z-40 w-full transition-all duration-200 bg-[#FFFDFB]/95 backdrop-blur-md border-b ${
           isScrolled
-            ? 'border-slate-200 shadow-md py-2'
-            : 'border-slate-100 py-3'
+            ? 'border-orange-100/80 shadow-md py-2'
+            : 'border-orange-100/50 py-3'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">

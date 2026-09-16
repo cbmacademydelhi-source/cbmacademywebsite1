@@ -1,150 +1,437 @@
 import React from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import { WHY_CHOOSE_CBM_CARDS } from '../data/cbmData';
 import { SMOOTH_EASE_OUT, VIEWPORT_ONCE } from '../lib/animations';
 
 interface WhyChooseCBMProps {
-  onOpenApply: () => void;
+  onOpenApply?: () => void;
 }
+
+interface CardItem {
+  id: string;
+  badgeNumber: string;
+  badgeLabel: string;
+  title: string;
+  description: string;
+  renderIcon: () => React.ReactNode;
+}
+
+const CARDS: CardItem[] = [
+  {
+    id: 'card-1',
+    badgeNumber: '10+',
+    badgeLabel: 'Years',
+    title: 'Experienced Trainers',
+    description:
+      'Learn from agency leads and certified marketers with 10+ years of live campaign experience.',
+    renderIcon: () => (
+      <svg
+        className="w-20 h-16 sm:w-22 sm:h-18 drop-shadow-md"
+        viewBox="0 0 100 80"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <defs>
+          <radialGradient id="capGlow" cx="50%" cy="80%" r="60%">
+            <stop offset="0%" stopColor="#2D323E" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#2D323E" stopOpacity="0" />
+          </radialGradient>
+          <linearGradient id="capTopGrad" x1="15" y1="20" x2="85" y2="40" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#3A3F4D" />
+            <stop offset="45%" stopColor="#222630" />
+            <stop offset="100%" stopColor="#14171F" />
+          </linearGradient>
+          <linearGradient id="tasselGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#FFE066" />
+            <stop offset="60%" stopColor="#F59E0B" />
+            <stop offset="100%" stopColor="#D97706" />
+          </linearGradient>
+        </defs>
+
+        {/* Ambient shadow beneath cap */}
+        <ellipse cx="50" cy="58" rx="34" ry="10" fill="url(#capGlow)" />
+
+        {/* Cap Skull Base */}
+        <path
+          d="M32 38C32 38 32 54 50 54C68 54 68 38 68 38L62 36C62 47 50 49 50 49C50 49 38 47 38 36L32 38Z"
+          fill="#1A1D24"
+        />
+
+        {/* Diamond Mortarboard Top (3D Perspective) */}
+        <polygon
+          points="50,15 88,31 50,47 12,31"
+          fill="url(#capTopGrad)"
+        />
+
+        {/* Top Edge Highlights for 3D realism */}
+        <path
+          d="M12 31L50 15L88 31"
+          stroke="#555C6D"
+          strokeWidth="1.2"
+          strokeLinecap="round"
+        />
+        <path
+          d="M12 31L50 47L88 31"
+          stroke="#111318"
+          strokeWidth="1.4"
+          strokeLinecap="round"
+        />
+
+        {/* Center Button */}
+        <ellipse cx="50" cy="31" rx="3.5" ry="2.2" fill="url(#tasselGrad)" />
+
+        {/* Golden Tassel Cord draped over the edge */}
+        <path
+          d="M50 31 Q 68 32 74 42 Q 77 47 77 56"
+          stroke="url(#tasselGrad)"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          fill="none"
+        />
+
+        {/* Tassel Cap & Fringe */}
+        <ellipse cx="77" cy="56" rx="3" ry="1.8" fill="#F59E0B" />
+        <path
+          d="M74 57L73 66C73 67 81 67 81 66L80 57Z"
+          fill="url(#tasselGrad)"
+        />
+      </svg>
+    ),
+  },
+  {
+    id: 'card-2',
+    badgeNumber: '80%',
+    badgeLabel: 'Live',
+    title: 'Practical Learning',
+    description:
+      '80% hands-on training executing live campaigns with real marketing budgets.',
+    renderIcon: () => (
+      <svg
+        className="w-20 h-16 sm:w-22 sm:h-18 drop-shadow-md"
+        viewBox="0 0 100 80"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <defs>
+          <linearGradient id="laptopBezel" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#333742" />
+            <stop offset="100%" stopColor="#1E2129" />
+          </linearGradient>
+          <linearGradient id="playGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#FF7A00" />
+            <stop offset="100%" stopColor="#EA580C" />
+          </linearGradient>
+        </defs>
+
+        {/* Sound/Energy Rays (Right side) */}
+        <path d="M82 23L88 20" stroke="#FF7A00" strokeWidth="2.8" strokeLinecap="round" />
+        <path d="M84 32L91 32" stroke="#FF7A00" strokeWidth="2.8" strokeLinecap="round" />
+        <path d="M82 41L88 44" stroke="#FF7A00" strokeWidth="2.8" strokeLinecap="round" />
+
+        {/* Sound/Energy Rays (Left side) */}
+        <path d="M18 23L12 20" stroke="#FF7A00" strokeWidth="2.8" strokeLinecap="round" />
+        <path d="M16 32L9 32" stroke="#FF7A00" strokeWidth="2.8" strokeLinecap="round" />
+        <path d="M18 41L12 44" stroke="#FF7A00" strokeWidth="2.8" strokeLinecap="round" />
+
+        {/* Laptop Display Shell */}
+        <rect x="23" y="15" width="54" height="35" rx="3.5" fill="url(#laptopBezel)" />
+        {/* Inner Screen */}
+        <rect x="26" y="18" width="48" height="29" rx="2" fill="#0F1117" />
+
+        {/* Orange Glowing Play Circle */}
+        <circle cx="50" cy="32.5" r="11" fill="url(#playGrad)" />
+        {/* Triangle Play Symbol */}
+        <polygon points="47,27.5 56,32.5 47,37.5" fill="#FFFFFF" />
+
+        {/* Screen Bottom Bar Accent */}
+        <rect x="36" y="44" width="28" height="1.5" rx="0.75" fill="#FF7A00" fillOpacity="0.8" />
+
+        {/* Laptop Base (3D Bevel) */}
+        <path
+          d="M17 50C17 48.8 18 48 19.2 48H80.8C82 48 83 48.8 83 50L80 54.5C79.5 55.4 78.5 56 77.4 56H22.6C21.5 56 20.5 55.4 20 54.5L17 50Z"
+          fill="#474D5C"
+        />
+        {/* Trackpad Notch */}
+        <rect x="44" y="49" width="12" height="2" rx="1" fill="#71788A" />
+      </svg>
+    ),
+  },
+  {
+    id: 'card-3',
+    badgeNumber: '15+',
+    badgeLabel: 'Projects',
+    title: 'Industry Projects',
+    description:
+      'Build an employer-ready portfolio with 15+ live client case studies and capstones.',
+    renderIcon: () => (
+      <svg
+        className="w-20 h-16 sm:w-22 sm:h-18 drop-shadow-md"
+        viewBox="0 0 100 80"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <defs>
+          <linearGradient id="barGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#EA580C" />
+            <stop offset="100%" stopColor="#9A3412" />
+          </linearGradient>
+          <linearGradient id="barTop" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#FB923C" />
+            <stop offset="100%" stopColor="#F97316" />
+          </linearGradient>
+          <linearGradient id="arrowGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#F97316" />
+            <stop offset="60%" stopColor="#FBBF24" />
+            <stop offset="100%" stopColor="#F59E0B" />
+          </linearGradient>
+        </defs>
+
+        {/* 3D Ascending Bars */}
+        {/* Bar 1 (Short) */}
+        <rect x="25" y="45" width="9" height="15" rx="2" fill="url(#barGrad)" />
+        <rect x="25" y="43" width="9" height="3" rx="1.5" fill="url(#barTop)" />
+
+        {/* Bar 2 (Medium-Low) */}
+        <rect x="38" y="36" width="9.5" height="24" rx="2" fill="url(#barGrad)" />
+        <rect x="38" y="34" width="9.5" height="3" rx="1.5" fill="url(#barTop)" />
+
+        {/* Bar 3 (Medium-High) */}
+        <rect x="52" y="27" width="9.5" height="33" rx="2" fill="url(#barGrad)" />
+        <rect x="52" y="25" width="9.5" height="3" rx="1.5" fill="url(#barTop)" />
+
+        {/* Bar 4 (High) */}
+        <rect x="66" y="18" width="9.5" height="42" rx="2" fill="url(#barGrad)" />
+        <rect x="66" y="16" width="9.5" height="3" rx="1.5" fill="url(#barTop)" />
+
+        {/* 3D Dynamic Curved Growth Arrow */}
+        <path
+          d="M21 44 C 34 40, 50 28, 76 13"
+          stroke="url(#arrowGrad)"
+          strokeWidth="4.5"
+          strokeLinecap="round"
+        />
+        {/* Arrow Tip Head */}
+        <polygon points="76,8 82,18 70,16" fill="#F59E0B" />
+      </svg>
+    ),
+  },
+  {
+    id: 'card-4',
+    badgeNumber: '100%',
+    badgeLabel: 'Help',
+    title: 'Placement Support',
+    description:
+      'Dedicated 1-on-1 placement support, resume reviews, mock interviews, and hiring drives.',
+    renderIcon: () => (
+      <svg
+        className="w-20 h-16 sm:w-22 sm:h-18 drop-shadow-md"
+        viewBox="0 0 100 80"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <defs>
+          <linearGradient id="leatherGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#C2410C" />
+            <stop offset="50%" stopColor="#A83707" />
+            <stop offset="100%" stopColor="#7C2D12" />
+          </linearGradient>
+          <linearGradient id="goldBuckle" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#FDE68A" />
+            <stop offset="50%" stopColor="#F59E0B" />
+            <stop offset="100%" stopColor="#B45309" />
+          </linearGradient>
+        </defs>
+
+        {/* Briefcase Handle */}
+        <path
+          d="M38 18C38 13.5 42 10 47 10H53C58 10 62 13.5 62 18V20H38V18Z"
+          stroke="#7C2D12"
+          strokeWidth="4.5"
+          strokeLinecap="round"
+          fill="none"
+        />
+        {/* Handle Gold Mounts */}
+        <rect x="36" y="17" width="5" height="4" rx="1.5" fill="url(#goldBuckle)" />
+        <rect x="59" y="17" width="5" height="4" rx="1.5" fill="url(#goldBuckle)" />
+
+        {/* Briefcase Main Body */}
+        <rect x="22" y="20" width="56" height="42" rx="7" fill="url(#leatherGrad)" />
+
+        {/* Front Flap Horizontal Seam with Depth */}
+        <path
+          d="M22 36C22 36 38 41 50 41C62 41 78 36 78 36"
+          stroke="#5F1E08"
+          strokeWidth="2.5"
+          fill="none"
+        />
+
+        {/* Gold Clasp in Center */}
+        <rect x="46" y="34" width="8" height="9" rx="2" fill="url(#goldBuckle)" />
+        <circle cx="50" cy="38.5" r="1.2" fill="#78350F" />
+
+        {/* Subtle Highlight on Bottom Edges */}
+        <path
+          d="M26 60H74"
+          stroke="#EA580C"
+          strokeWidth="1.2"
+          strokeLinecap="round"
+        />
+      </svg>
+    ),
+  },
+];
 
 export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
   const shouldReduceMotion = useReducedMotion();
+
   return (
     <section
       id="why-cbm"
-      className="relative py-16 sm:py-20 lg:py-24 bg-transparent overflow-hidden border-b border-slate-100/80"
+      className="relative pt-8 sm:pt-10 lg:pt-12 pb-8 sm:pb-10 lg:pb-12 border-b-2 border-orange-200/80 shadow-[0_2px_4px_rgba(254,215,170,0.25)] overflow-hidden"
+      style={{
+        background: 'linear-gradient(135deg, #FFF2E2 0%, #FFE4CC 45%, #FED5B2 100%)',
+      }}
     >
       {/* =========================================================
-          AMBIENT BACKGROUND CURVES (MATCHING REFERENCE IMAGE)
+          BACKGROUND DECORATIVE WATERMARKS & WATERMARK GRAPHICS
       ========================================================= */}
-      {/* Soft warm orange organic wave on the right edge */}
       <div
-        className="absolute top-0 right-0 w-[380px] sm:w-[480px] lg:w-[580px] h-full pointer-events-none overflow-hidden select-none"
+        className="pointer-events-none absolute inset-0 overflow-hidden select-none"
         aria-hidden="true"
       >
-        <svg
-          viewBox="0 0 500 800"
-          fill="none"
-          className="w-full h-full object-cover opacity-60"
-        >
-          <path
-            d="M500 0 C320 80 240 280 340 460 C420 600 330 720 500 800 Z"
-            fill="url(#ambientRightGrad)"
-          />
-          <defs>
-            <linearGradient id="ambientRightGrad" x1="500" y1="0" x2="300" y2="600" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#FFF7ED" stopOpacity="0.8" />
-              <stop offset="0.6" stopColor="#FFEDD5" stopOpacity="0.4" />
-              <stop offset="1" stopColor="#FED7AA" stopOpacity="0.1" />
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
+        {/* Soft Warm Ambient Glow */}
+        <div
+          className="absolute -top-36 left-1/2 -translate-x-1/2 w-[800px] h-[450px] rounded-full"
+          style={{
+            background:
+              'radial-gradient(ellipse at center, rgba(254, 215, 170, 0.45) 0%, rgba(255, 237, 213, 0.2) 50%, transparent 75%)',
+            filter: 'blur(60px)',
+          }}
+        />
 
-      {/* Soft CBM orange glow on the bottom-left */}
-      <div
-        className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-orange-50/70 blur-3xl pointer-events-none"
-        aria-hidden="true"
-      />
+        {/* Left Side: Faint Student Silhouette in Graduation Cap */}
+        <svg
+          className="absolute -left-12 -top-4 w-96 h-96 text-orange-950/[0.035] pointer-events-none"
+          viewBox="0 0 200 200"
+          fill="currentColor"
+        >
+          {/* Mortarboard */}
+          <polygon points="100,20 180,50 100,80 20,50" />
+          <path d="M50,60 L50,90 Q100,120 150,90 L150,60" fill="currentColor" />
+          {/* Student Head & Shoulder Silhouette */}
+          <circle cx="100" cy="115" r="32" />
+          <path d="M40,190 C40,145 70,140 100,140 C130,140 160,145 160,190 Z" />
+        </svg>
+
+        {/* Right Side: Faint Ascending Bar Chart & Graduating Students Silhouette */}
+        <svg
+          className="absolute -right-12 -top-4 w-96 h-96 text-orange-950/[0.035] pointer-events-none"
+          viewBox="0 0 200 200"
+          fill="currentColor"
+        >
+          <rect x="80" y="100" width="18" height="90" rx="3" />
+          <rect x="110" y="70" width="18" height="120" rx="3" />
+          <rect x="140" y="40" width="18" height="150" rx="3" />
+          {/* Mortarboard overlay */}
+          <polygon points="80,30 140,50 80,70 20,50" />
+        </svg>
+
+        {/* Left Handwritten Annotation: "Learn Apply Grow" */}
+        <div className="hidden xl:block absolute left-8 top-6 lg:top-7 text-[#EA580C] font-['Caveat',cursive] leading-tight select-none rotate-[-6deg]">
+          <span className="block text-[28px] font-bold tracking-wide">Learn</span>
+          <span className="block text-[28px] font-bold tracking-wide">Apply</span>
+          <span className="block text-[28px] font-bold tracking-wide">Grow</span>
+          {/* Hand-drawn curved arrow pointing to cards */}
+          <svg
+            className="w-12 h-12 mt-1 text-[#EA580C] rotate-[15deg]"
+            viewBox="0 0 50 50"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.6"
+            strokeLinecap="round"
+          >
+            <path d="M12 8 C 12 28, 36 26, 38 42" />
+            <path d="M28 38 L 38 42 L 40 32" />
+          </svg>
+        </div>
+
+        {/* Right Handwritten Annotation: "Your Next Step Starts Here" */}
+        <div className="hidden xl:block absolute right-8 top-6 lg:top-7 text-[#EA580C] font-['Caveat',cursive] leading-tight select-none rotate-[6deg] text-right">
+          <span className="block text-[28px] font-bold tracking-wide">Your</span>
+          <span className="block text-[28px] font-bold tracking-wide">Next Step</span>
+          <span className="block text-[28px] font-bold tracking-wide">Starts Here</span>
+          {/* Hand-drawn curved arrow pointing up-right */}
+          <svg
+            className="w-12 h-12 mt-1 ml-auto text-[#EA580C] -rotate-[10deg]"
+            viewBox="0 0 50 50"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.6"
+            strokeLinecap="round"
+          >
+            <path d="M16 44 C 18 20, 32 18, 40 10" />
+            <path d="M28 10 L 40 10 L 40 22" />
+          </svg>
+        </div>
+      </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* =========================================================
-            SECTION HEADER
+            HEADING AREA (MATCHING REFERENCE IMAGE)
         ========================================================= */}
-        <div className="max-w-3xl mx-auto text-center mb-12 sm:mb-14">
-          {/* Top Pill Badge with 3 Radiating Sparks on Each Side */}
+        <div className="max-w-3xl mx-auto text-center mb-10 sm:mb-14">
+          {/* Top Pill with Parallel Golden Horizontal Lines */}
           <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT_ONCE}
+            transition={{ duration: 0.45, ease: SMOOTH_EASE_OUT }}
+            className="flex items-center justify-center gap-3 sm:gap-3.5 mb-3.5"
+          >
+            {/* Left 2 Golden Lines (top longer, bottom shorter) */}
+            <div className="flex flex-col gap-1 items-end">
+              <div className="h-[2.5px] w-7 sm:w-8 rounded-full bg-[#F59E0B]" />
+              <div className="h-[2.5px] w-4 sm:w-5 rounded-full bg-[#F59E0B]" />
+            </div>
+
+            {/* Pill Container */}
+            <div className="px-5 sm:px-6 py-1.5 rounded-full border-2 border-[#F59E0B] bg-[#FFF0E0] shadow-2xs">
+              <span className="text-[#C2410C] font-extrabold text-[11.5px] sm:text-[13px] tracking-wider uppercase">
+                WHY CBM ACADEMY
+              </span>
+            </div>
+
+            {/* Right 2 Golden Lines (top longer, bottom shorter) */}
+            <div className="flex flex-col gap-1 items-start">
+              <div className="h-[2.5px] w-7 sm:w-8 rounded-full bg-[#F59E0B]" />
+              <div className="h-[2.5px] w-4 sm:w-5 rounded-full bg-[#F59E0B]" />
+            </div>
+          </motion.div>
+
+          {/* Main Heading: "Built for" deep navy + "High-Growth Careers" vibrant orange */}
+          <motion.h2
             initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={VIEWPORT_ONCE}
-            transition={{ duration: 0.6, ease: SMOOTH_EASE_OUT }}
-            className="inline-flex items-center justify-center gap-2.5 mb-3.5"
-          >
-            {/* Left Spark Rays */}
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              className="text-[#FF6B00]"
-              aria-hidden="true"
-            >
-              <path
-                d="M9 12H3"
-                stroke="currentColor"
-                strokeWidth="2.4"
-                strokeLinecap="round"
-              />
-              <path
-                d="M10 6L5 3"
-                stroke="currentColor"
-                strokeWidth="2.4"
-                strokeLinecap="round"
-              />
-              <path
-                d="M10 18L5 21"
-                stroke="currentColor"
-                strokeWidth="2.4"
-                strokeLinecap="round"
-              />
-            </svg>
-
-            {/* Pill Container */}
-            <span className="px-4 py-1.5 rounded-full bg-orange-50 text-orange-600 text-[11px] sm:text-xs font-black uppercase tracking-wider border border-orange-200 shadow-2xs">
-              Why CBM Academy
-            </span>
-
-            {/* Right Spark Rays */}
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              className="text-[#FF6B00]"
-              aria-hidden="true"
-            >
-              <path
-                d="M15 12H21"
-                stroke="currentColor"
-                strokeWidth="2.4"
-                strokeLinecap="round"
-              />
-              <path
-                d="M14 6L19 3"
-                stroke="currentColor"
-                strokeWidth="2.4"
-                strokeLinecap="round"
-              />
-              <path
-                d="M14 18L19 21"
-                stroke="currentColor"
-                strokeWidth="2.4"
-                strokeLinecap="round"
-              />
-            </svg>
-          </motion.div>
-
-          {/* Main Title */}
-          <motion.h2
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={VIEWPORT_ONCE}
-            transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
-            className="text-3xl sm:text-4xl lg:text-[42px] font-black text-[#072B57] tracking-tight leading-[1.15]"
+            transition={{ duration: 0.5, delay: 0.08, ease: SMOOTH_EASE_OUT }}
+            className="text-3xl sm:text-4xl lg:text-[44px] font-black text-[#072B57] tracking-tight leading-[1.15]"
           >
             Built for{' '}
-            <span className="bg-gradient-to-r from-[#FF6B00] via-[#F59E0B] to-[#F6D7A7] bg-clip-text text-transparent">
+            <span className="text-[#EA580C]">
               High-Growth Careers
             </span>
           </motion.h2>
 
           {/* Subtitle */}
           <motion.p
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={VIEWPORT_ONCE}
-            transition={{ duration: 0.6, delay: 0.16, ease: SMOOTH_EASE_OUT }}
-            className="mt-3 text-slate-500 text-sm sm:text-[15px] leading-relaxed max-w-2xl mx-auto font-normal"
+            transition={{ duration: 0.5, delay: 0.15, ease: SMOOTH_EASE_OUT }}
+            className="mt-3 text-slate-600 text-sm sm:text-base lg:text-[16.5px] font-normal leading-relaxed max-w-2xl mx-auto"
           >
             Outcome-driven training with live ad budgets, modern AI tools, and
             direct placement support.
@@ -152,866 +439,53 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
         </div>
 
         {/* =========================================================
-            FOUR CARDS HORIZONTAL GRID (MATCHING REFERENCE IMAGE)
+            4 EQUAL CARDS HORIZONTALLY ON DESKTOP
+            (Desktop: 4 cols | Tablet: 2 cols | Mobile: 1 col)
         ========================================================= */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
-          {/* -------------------------------------------------------
-              CARD 1: EXPERIENCED TRAINERS (BLUE THEME)
-          ------------------------------------------------------- */}
-          <motion.div
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={VIEWPORT_ONCE}
-            transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
-            onClick={onOpenApply}
-            className="group relative bg-white rounded-[26px] border border-[#E9EEF5] shadow-[0_8px_24px_-6px_rgba(15,23,42,0.06)] hover:shadow-[0_16px_36px_-8px_rgba(234,88,12,0.12)] hover:-translate-y-[3px] transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-pointer"
-          >
-            {/* Top Visual Area with Organic Wave Background */}
-            <div className="relative w-full h-[180px] p-4 sm:p-5 flex items-start justify-between">
-              {/* Background Gradient & Dual Wave Curves */}
-              <svg
-                className="absolute inset-0 w-full h-full pointer-events-none"
-                viewBox="0 0 280 180"
-                preserveAspectRatio="none"
-                fill="none"
-              >
-                {/* Upper soft peach tint */}
-                <rect width="280" height="180" fill="url(#card1TopGrad)" />
-                {/* Secondary smooth wave */}
-                <path
-                  d="M0,110 C80,85 160,145 280,105 L280,180 L0,180 Z"
-                  fill="#FFEDD5"
-                  fillOpacity="0.8"
-                />
-                {/* Front white wave transition */}
-                <path
-                  d="M0,135 C90,115 170,165 280,135 L280,180 L0,180 Z"
-                  fill="#FFFFFF"
-                />
-                <defs>
-                  <linearGradient id="card1TopGrad" x1="140" y1="0" x2="140" y2="180" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#FFF7ED" />
-                    <stop offset="0.7" stopColor="#FFEDD5" stopOpacity="0.6" />
-                    <stop offset="1" stopColor="#FFFFFF" />
-                  </linearGradient>
-                </defs>
-              </svg>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6 items-stretch">
+          {CARDS.map((card, index) => (
+            <motion.article
+              key={card.id}
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={VIEWPORT_ONCE}
+              transition={{
+                duration: 0.45,
+                delay: 0.08 * (index + 1),
+                ease: SMOOTH_EASE_OUT,
+              }}
+              onClick={onOpenApply}
+              className="group relative bg-[#FFFFFF] rounded-[22px] shadow-[0_10px_28px_rgba(234,88,12,0.07)] hover:shadow-[0_16px_36px_rgba(234,88,12,0.14)] hover:-translate-y-1.5 transition-all duration-300 p-6 sm:p-6.5 flex flex-col justify-start cursor-pointer h-full border border-orange-100"
+            >
+              {/* Top Row: Illustrated 3D Graphic (Left) & Soft Cream Badge (Right) */}
+              <div className="flex items-center justify-between gap-3">
+                {/* 3D Illustration on Oval/Circular Peach Background Glow */}
+                <div className="w-[104px] h-[92px] sm:w-[110px] sm:h-[96px] rounded-[22px] bg-gradient-to-b from-[#FFF2E5] to-[#FFE2CC] flex items-center justify-center relative shadow-[inset_0_1px_3px_rgba(255,255,255,0.8)] group-hover:scale-105 transition-transform duration-300 shrink-0">
+                  {card.renderIcon()}
+                </div>
 
-              {/* 3D Mortarboard Cap & Book Artwork */}
-              <div className="relative z-10 w-32 h-32 flex items-center justify-center -mt-1 ml-1">
-                <svg
-                  viewBox="0 0 130 130"
-                  className="w-full h-full drop-shadow-md"
-                  fill="none"
-                >
-                  {/* Soft Oval Drop Shadow */}
-                  <ellipse
-                    cx="65"
-                    cy="104"
-                    rx="40"
-                    ry="9"
-                    fill="#0284C7"
-                    fillOpacity="0.22"
-                  />
-
-                  {/* Hardcover Book Underneath */}
-                  <g transform="translate(0, 10)">
-                    {/* Book Bottom Cover (Navy/Blue) */}
-                    <path
-                      d="M30 76 L65 89 L100 76 L100 81 L65 94 L30 81 Z"
-                      fill="#1E3A8A"
-                    />
-                    {/* Book Thick Pages Block (White with layered page grooves) */}
-                    <path
-                      d="M31 71 L65 84 L99 71 L99 78 L65 91 L31 78 Z"
-                      fill="#FFFFFF"
-                    />
-                    <path
-                      d="M35 77 L65 88 L95 77"
-                      stroke="#E2E8F0"
-                      strokeWidth="1.2"
-                    />
-                    {/* Book Top Cover (Royal Blue) */}
-                    <path
-                      d="M28 69 L65 82 L102 69 L102 73 L65 86 L28 73 Z"
-                      fill="#1D4ED8"
-                    />
-                    <path
-                      d="M30 67 L65 80 L100 67 L65 55 Z"
-                      fill="#2563EB"
-                    />
-                    {/* Spine Highlight */}
-                    <path
-                      d="M28 69 L65 82"
-                      stroke="#60A5FA"
-                      strokeWidth="1"
-                    />
-                  </g>
-
-                  {/* Mortarboard Cap Skull Dome */}
-                  <path
-                    d="M48 56 C48 68 56 74 65 74 C74 74 82 68 82 56 Z"
-                    fill="#172554"
-                  />
-                  <path
-                    d="M49 55 C49 65 56 71 65 71 C74 71 81 65 81 55 Z"
-                    fill="#1E40AF"
-                  />
-
-                  {/* 3D Mortarboard Diamond Plate */}
-                  <g transform="translate(0, -2)">
-                    {/* 3D Under-rim Thickness */}
-                    <path
-                      d="M26 48 L65 62 L104 48 L104 53 L65 67 L26 53 Z"
-                      fill="#0F172A"
-                    />
-                    {/* Diamond Top Surface */}
-                    <path
-                      d="M65 31 L104 46 L65 60 L26 46 Z"
-                      fill="url(#capSurfaceGrad)"
-                    />
-                    {/* Bevel Highlight along upper edges */}
-                    <path
-                      d="M26 46 L65 31 L104 46"
-                      stroke="#93C5FD"
-                      strokeWidth="1.4"
-                    />
-
-                    {/* Central Gold Button */}
-                    <ellipse
-                      cx="65"
-                      cy="46"
-                      rx="3.8"
-                      ry="2.2"
-                      fill="#F59E0B"
-                    />
-
-                    {/* Elegant Golden Tassel Drape */}
-                    <path
-                      d="M65 46 C73 47 82 52 84 58 C85.5 63 85 70 86 77"
-                      stroke="#F59E0B"
-                      strokeWidth="2.4"
-                      strokeLinecap="round"
-                      fill="none"
-                    />
-                    {/* Tassel Cap & Fringe */}
-                    <rect
-                      x="83"
-                      y="75"
-                      width="6"
-                      height="10"
-                      rx="2"
-                      fill="#D97706"
-                    />
-                    <ellipse
-                      cx="86"
-                      cy="75"
-                      rx="3"
-                      ry="1.8"
-                      fill="#FBBF24"
-                    />
-                  </g>
-
-                  {/* Radiating Spark Rays */}
-                  <circle cx="98" cy="54" r="1.5" fill="#38BDF8" />
-                  <line
-                    x1="102"
-                    y1="48"
-                    x2="108"
-                    y2="45"
-                    stroke="#38BDF8"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                  />
-                  <line
-                    x1="104"
-                    y1="56"
-                    x2="110"
-                    y2="58"
-                    stroke="#38BDF8"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                  />
-
-                  {/* Gradient Definitions */}
-                  <defs>
-                    <linearGradient
-                      id="capSurfaceGrad"
-                      x1="26"
-                      y1="31"
-                      x2="104"
-                      y2="60"
-                      gradientUnits="userSpaceOnUse"
-                    >
-                      <stop stopColor="#3B82F6" />
-                      <stop offset="0.45" stopColor="#2563EB" />
-                      <stop offset="1" stopColor="#1D4ED8" />
-                    </linearGradient>
-                  </defs>
-                </svg>
+                {/* Badge: Centered Number + Label in soft peach box */}
+                <div className="bg-[#FFF0E0] border border-orange-200/70 rounded-2xl px-3.5 py-2.5 text-center flex flex-col items-center justify-center min-w-[74px] shadow-2xs">
+                  <span className="text-xl sm:text-[22px] font-black text-[#D9480F] leading-none">
+                    {card.badgeNumber}
+                  </span>
+                  <span className="text-xs sm:text-[13px] font-bold text-[#D9480F] leading-none mt-1">
+                    {card.badgeLabel}
+                  </span>
+                </div>
               </div>
 
-              {/* Metric Badge Pill (Top-Right) */}
-              <div className="relative z-10 px-3 py-1.5 rounded-[14px] bg-[#FFEDD5] border border-orange-100/80 text-center shadow-2xs">
-                <span className="block text-[15px] font-black text-[#C2410C] leading-none">
-                  10+
-                </span>
-                <span className="block text-[11px] font-bold text-[#EA580C] mt-0.5 leading-none">
-                  Years
-                </span>
-              </div>
-            </div>
+              {/* Card Title in Dark Burnt Orange (#D9480F) */}
+              <h3 className="mt-5 sm:mt-6 text-xl sm:text-[21px] font-black text-[#D9480F] tracking-tight leading-snug">
+                {card.title}
+              </h3>
 
-            {/* Bottom Content Area */}
-            <div className="p-5 sm:p-6 pt-2 flex flex-col flex-1 justify-between">
-              <div>
-                <h3 className="text-[19px] sm:text-[20px] font-black text-[#072B57] tracking-tight leading-snug mb-2">
-                  {WHY_CHOOSE_CBM_CARDS[0].title}
-                </h3>
-                <p className="text-[13px] sm:text-[13.5px] text-slate-500 font-normal leading-[1.65]">
-                  {WHY_CHOOSE_CBM_CARDS[0].description}
-                </p>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* -------------------------------------------------------
-              CARD 2: PRACTICAL LEARNING (ORANGE THEME)
-          ------------------------------------------------------- */}
-          <motion.div
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={VIEWPORT_ONCE}
-            transition={{ duration: 0.6, delay: 0.16, ease: SMOOTH_EASE_OUT }}
-            onClick={onOpenApply}
-            className="group relative bg-white rounded-[26px] border border-[#E9EEF5] shadow-[0_8px_24px_-6px_rgba(15,23,42,0.06)] hover:shadow-[0_16px_36px_-8px_rgba(234,88,12,0.12)] hover:-translate-y-[3px] transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-pointer"
-          >
-            {/* Top Visual Area with Organic Wave Background */}
-            <div className="relative w-full h-[180px] p-4 sm:p-5 flex items-start justify-between">
-              {/* Background Gradient & Dual Wave Curves */}
-              <svg
-                className="absolute inset-0 w-full h-full pointer-events-none"
-                viewBox="0 0 280 180"
-                preserveAspectRatio="none"
-                fill="none"
-              >
-                {/* Upper soft peach tint */}
-                <rect width="280" height="180" fill="url(#card2TopGrad)" />
-                {/* Secondary smooth wave */}
-                <path
-                  d="M0,115 C90,135 170,85 280,115 L280,180 L0,180 Z"
-                  fill="#FFEDD5"
-                  fillOpacity="0.8"
-                />
-                {/* Front white wave transition */}
-                <path
-                  d="M0,140 C80,165 180,120 280,140 L280,180 L0,180 Z"
-                  fill="#FFFFFF"
-                />
-                <defs>
-                  <linearGradient id="card2TopGrad" x1="140" y1="0" x2="140" y2="180" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#FFF7ED" />
-                    <stop offset="0.7" stopColor="#FFEDD5" stopOpacity="0.6" />
-                    <stop offset="1" stopColor="#FFFFFF" />
-                  </linearGradient>
-                </defs>
-              </svg>
-
-              {/* 3D Laptop Artwork with Play Button & Scrubber */}
-              <div className="relative z-10 w-32 h-32 flex items-center justify-center -mt-1 ml-1">
-                <svg
-                  viewBox="0 0 130 130"
-                  className="w-full h-full drop-shadow-md"
-                  fill="none"
-                >
-                  {/* Soft Oval Drop Shadow */}
-                  <ellipse
-                    cx="65"
-                    cy="104"
-                    rx="40"
-                    ry="8"
-                    fill="#C2410C"
-                    fillOpacity="0.18"
-                  />
-
-                  {/* 3D Laptop Unit */}
-                  <g transform="translate(4, 8)">
-                    {/* Outer Shell Bezel */}
-                    <rect
-                      x="26"
-                      y="22"
-                      width="66"
-                      height="48"
-                      rx="5"
-                      fill="#1E293B"
-                    />
-                    {/* Inner Vibrant Display */}
-                    <rect
-                      x="29"
-                      y="25"
-                      width="60"
-                      height="42"
-                      rx="3"
-                      fill="url(#laptopScreenGrad)"
-                    />
-
-                    {/* 3D Orange Play Button Circle */}
-                    <circle
-                      cx="59"
-                      cy="44"
-                      r="12"
-                      fill="url(#orangePlayGrad)"
-                      className="drop-shadow-sm"
-                    />
-                    <polygon
-                      points="56,38 66,44 56,50"
-                      fill="#FFFFFF"
-                    />
-
-                    {/* Video Scrubber Bar */}
-                    <rect
-                      x="35"
-                      y="58"
-                      width="48"
-                      height="2.5"
-                      rx="1.2"
-                      fill="#0F172A"
-                      fillOpacity="0.45"
-                    />
-                    <rect
-                      x="35"
-                      y="58"
-                      width="20"
-                      height="2.5"
-                      rx="1.2"
-                      fill="#FF6B00"
-                    />
-                    <circle
-                      cx="55"
-                      cy="59.2"
-                      r="2.5"
-                      fill="#FF6B00"
-                    />
-
-                    {/* Metallic Silver-Blue Laptop Base */}
-                    <path
-                      d="M16 71 L102 71 L95 82 L23 82 Z"
-                      fill="#CBD5E1"
-                    />
-                    <path
-                      d="M23 82 L95 82 L95 84 L23 84 Z"
-                      fill="#94A3B8"
-                    />
-                    {/* Trackpad */}
-                    <rect
-                      x="51"
-                      y="73"
-                      width="18"
-                      height="7"
-                      rx="1.5"
-                      fill="#94A3B8"
-                      fillOpacity="0.55"
-                    />
-                  </g>
-
-                  {/* Radiating Spark Rays */}
-                  <line
-                    x1="99"
-                    y1="44"
-                    x2="105"
-                    y2="41"
-                    stroke="#FB923C"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                  />
-                  <line
-                    x1="102"
-                    y1="51"
-                    x2="108"
-                    y2="51"
-                    stroke="#FB923C"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                  />
-
-                  {/* Gradient Definitions */}
-                  <defs>
-                    <linearGradient
-                      id="laptopScreenGrad"
-                      x1="29"
-                      y1="25"
-                      x2="89"
-                      y2="67"
-                      gradientUnits="userSpaceOnUse"
-                    >
-                      <stop stopColor="#3B82F6" />
-                      <stop offset="1" stopColor="#1E3A8A" />
-                    </linearGradient>
-                    <linearGradient
-                      id="orangePlayGrad"
-                      x1="47"
-                      y1="32"
-                      x2="71"
-                      y2="56"
-                      gradientUnits="userSpaceOnUse"
-                    >
-                      <stop stopColor="#FB923C" />
-                      <stop offset="1" stopColor="#EA580C" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </div>
-
-              {/* Metric Badge Pill (Top-Right) */}
-              <div className="relative z-10 px-3 py-1.5 rounded-[14px] bg-[#FFEDD5] border border-orange-100/80 text-center shadow-2xs">
-                <span className="block text-[15px] font-black text-[#C2410C] leading-none">
-                  80%
-                </span>
-                <span className="block text-[11px] font-bold text-[#EA580C] mt-0.5 leading-none">
-                  Live
-                </span>
-              </div>
-            </div>
-
-            {/* Bottom Content Area */}
-            <div className="p-5 sm:p-6 pt-2 flex flex-col flex-1 justify-between">
-              <div>
-                <h3 className="text-[19px] sm:text-[20px] font-black text-[#072B57] tracking-tight leading-snug mb-2">
-                  {WHY_CHOOSE_CBM_CARDS[1].title}
-                </h3>
-                <p className="text-[13px] sm:text-[13.5px] text-slate-500 font-normal leading-[1.65]">
-                  {WHY_CHOOSE_CBM_CARDS[1].description}
-                </p>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* -------------------------------------------------------
-              CARD 3: INDUSTRY PROJECTS (GREEN THEME)
-          ------------------------------------------------------- */}
-          <motion.div
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={VIEWPORT_ONCE}
-            transition={{ duration: 0.6, delay: 0.24, ease: SMOOTH_EASE_OUT }}
-            onClick={onOpenApply}
-            className="group relative bg-white rounded-[26px] border border-[#E9EEF5] shadow-[0_8px_24px_-6px_rgba(15,23,42,0.06)] hover:shadow-[0_16px_36px_-8px_rgba(234,88,12,0.12)] hover:-translate-y-[3px] transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-pointer"
-          >
-            {/* Top Visual Area with Organic Wave Background */}
-            <div className="relative w-full h-[180px] p-4 sm:p-5 flex items-start justify-between">
-              {/* Background Gradient & Dual Wave Curves */}
-              <svg
-                className="absolute inset-0 w-full h-full pointer-events-none"
-                viewBox="0 0 280 180"
-                preserveAspectRatio="none"
-                fill="none"
-              >
-                {/* Upper soft peach tint */}
-                <rect width="280" height="180" fill="url(#card3TopGrad)" />
-                {/* Secondary smooth wave */}
-                <path
-                  d="M0,110 C80,85 160,140 280,105 L280,180 L0,180 Z"
-                  fill="#FFEDD5"
-                  fillOpacity="0.8"
-                />
-                {/* Front white wave transition */}
-                <path
-                  d="M0,135 C90,115 170,165 280,135 L280,180 L0,180 Z"
-                  fill="#FFFFFF"
-                />
-                <defs>
-                  <linearGradient id="card3TopGrad" x1="140" y1="0" x2="140" y2="180" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#FFF7ED" />
-                    <stop offset="0.7" stopColor="#FFEDD5" stopOpacity="0.6" />
-                    <stop offset="1" stopColor="#FFFFFF" />
-                  </linearGradient>
-                </defs>
-              </svg>
-
-              {/* 3D Analytics Easel / Growth Board & AI Tag Artwork */}
-              <div className="relative z-10 w-32 h-32 flex items-center justify-center -mt-1 ml-1">
-                <svg
-                  viewBox="0 0 130 130"
-                  className="w-full h-full drop-shadow-md"
-                  fill="none"
-                >
-                  {/* Soft Oval Drop Shadow */}
-                  <ellipse
-                    cx="65"
-                    cy="104"
-                    rx="40"
-                    ry="8"
-                    fill="#15803D"
-                    fillOpacity="0.18"
-                  />
-
-                  {/* Angled White Canvas / Board */}
-                  <g transform="translate(6, 6)">
-                    {/* Board Surface */}
-                    <rect
-                      x="23"
-                      y="26"
-                      width="64"
-                      height="54"
-                      rx="6"
-                      fill="#FFFFFF"
-                      stroke="#E2E8F0"
-                      strokeWidth="1.5"
-                    />
-
-                    {/* 4 Ascending 3D Green Bar Charts */}
-                    <rect
-                      x="32"
-                      y="60"
-                      width="7"
-                      height="13"
-                      rx="2.5"
-                      fill="url(#greenBarGrad)"
-                    />
-                    <rect
-                      x="42"
-                      y="51"
-                      width="7"
-                      height="22"
-                      rx="2.5"
-                      fill="url(#greenBarGrad)"
-                    />
-                    <rect
-                      x="52"
-                      y="42"
-                      width="7"
-                      height="31"
-                      rx="2.5"
-                      fill="url(#greenBarGrad)"
-                    />
-                    <rect
-                      x="62"
-                      y="33"
-                      width="7"
-                      height="40"
-                      rx="2.5"
-                      fill="url(#greenBarGrad)"
-                    />
-
-                    {/* Upward Trending Arrow Line */}
-                    <path
-                      d="M31 62 Q 46 52 69 31"
-                      stroke="#10B981"
-                      strokeWidth="2.8"
-                      strokeLinecap="round"
-                      fill="none"
-                    />
-                    <polygon
-                      points="69,25 74,33 65,32"
-                      fill="#10B981"
-                    />
-
-                    {/* Floating Green AI Badge */}
-                    <rect
-                      x="70"
-                      y="16"
-                      width="20"
-                      height="14"
-                      rx="4"
-                      fill="#10B981"
-                      className="drop-shadow-xs"
-                    />
-                    <text
-                      x="80"
-                      y="26.5"
-                      fill="#FFFFFF"
-                      fontSize="8.5"
-                      fontWeight="900"
-                      textAnchor="middle"
-                    >
-                      AI
-                    </text>
-                  </g>
-
-                  {/* Radiating Spark Rays */}
-                  <line
-                    x1="101"
-                    y1="48"
-                    x2="107"
-                    y2="45"
-                    stroke="#34D399"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                  />
-                  <line
-                    x1="102"
-                    y1="56"
-                    x2="108"
-                    y2="58"
-                    stroke="#34D399"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                  />
-
-                  {/* Gradients */}
-                  <defs>
-                    <linearGradient
-                      id="greenBarGrad"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop stopColor="#34D399" />
-                      <stop offset="1" stopColor="#059669" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </div>
-
-              {/* Metric Badge Pill (Top-Right) */}
-              <div className="relative z-10 px-3 py-1.5 rounded-[14px] bg-[#FFEDD5] border border-orange-100/80 text-center shadow-2xs">
-                <span className="block text-[15px] font-black text-[#C2410C] leading-none">
-                  15+
-                </span>
-                <span className="block text-[11px] font-bold text-[#EA580C] mt-0.5 leading-none">
-                  Projects
-                </span>
-              </div>
-            </div>
-
-            {/* Bottom Content Area */}
-            <div className="p-5 sm:p-6 pt-2 flex flex-col flex-1 justify-between">
-              <div>
-                <h3 className="text-[19px] sm:text-[20px] font-black text-[#072B57] tracking-tight leading-snug mb-2">
-                  {WHY_CHOOSE_CBM_CARDS[2].title}
-                </h3>
-                <p className="text-[13px] sm:text-[13.5px] text-slate-500 font-normal leading-[1.65]">
-                  {WHY_CHOOSE_CBM_CARDS[2].description}
-                </p>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* -------------------------------------------------------
-              CARD 4: PLACEMENT SUPPORT (PURPLE THEME)
-          ------------------------------------------------------- */}
-          <motion.div
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={VIEWPORT_ONCE}
-            transition={{ duration: 0.6, delay: 0.32, ease: SMOOTH_EASE_OUT }}
-            onClick={onOpenApply}
-            className="group relative bg-white rounded-[26px] border border-[#E9EEF5] shadow-[0_8px_24px_-6px_rgba(15,23,42,0.06)] hover:shadow-[0_16px_36px_-8px_rgba(234,88,12,0.12)] hover:-translate-y-[3px] transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-pointer"
-          >
-            {/* Top Visual Area with Organic Wave Background */}
-            <div className="relative w-full h-[180px] p-4 sm:p-5 flex items-start justify-between">
-              {/* Background Gradient & Dual Wave Curves */}
-              <svg
-                className="absolute inset-0 w-full h-full pointer-events-none"
-                viewBox="0 0 280 180"
-                preserveAspectRatio="none"
-                fill="none"
-              >
-                {/* Upper soft peach tint */}
-                <rect width="280" height="180" fill="url(#card4TopGrad)" />
-                {/* Secondary smooth wave */}
-                <path
-                  d="M0,115 C85,90 175,135 280,110 L280,180 L0,180 Z"
-                  fill="#FFEDD5"
-                  fillOpacity="0.8"
-                />
-                {/* Front white wave transition */}
-                <path
-                  d="M0,140 C85,115 175,165 280,140 L280,180 L0,180 Z"
-                  fill="#FFFFFF"
-                />
-                <defs>
-                  <linearGradient id="card4TopGrad" x1="140" y1="0" x2="140" y2="180" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#FFF7ED" />
-                    <stop offset="0.7" stopColor="#FFEDD5" stopOpacity="0.6" />
-                    <stop offset="1" stopColor="#FFFFFF" />
-                  </linearGradient>
-                </defs>
-              </svg>
-
-              {/* 3D Purple Briefcase & ID Badge Artwork */}
-              <div className="relative z-10 w-32 h-32 flex items-center justify-center -mt-1 ml-1">
-                <svg
-                  viewBox="0 0 130 130"
-                  className="w-full h-full drop-shadow-md"
-                  fill="none"
-                >
-                  {/* Soft Oval Drop Shadow */}
-                  <ellipse
-                    cx="61"
-                    cy="104"
-                    rx="38"
-                    ry="8"
-                    fill="#7C3AED"
-                    fillOpacity="0.18"
-                  />
-
-                  {/* 3D Briefcase Body & Handle */}
-                  <g transform="translate(6, 6)">
-                    {/* Top Curved Handle */}
-                    <path
-                      d="M40 33 C40 25 45 22 53 22 C61 22 66 25 66 33"
-                      stroke="#5B21B6"
-                      strokeWidth="4"
-                      strokeLinecap="round"
-                      fill="none"
-                    />
-
-                    {/* Briefcase Main Body */}
-                    <rect
-                      x="25"
-                      y="33"
-                      width="56"
-                      height="46"
-                      rx="7"
-                      fill="url(#purpleBagGrad)"
-                    />
-                    {/* Briefcase Flap */}
-                    <path
-                      d="M25 38 C25 35 28 33 31 33 L75 33 C78 33 81 35 81 38 L81 54 C81 57 73 62 53 62 C33 62 25 57 25 54 Z"
-                      fill="#6D28D9"
-                    />
-
-                    {/* Metallic Golden Clasp */}
-                    <rect
-                      x="49"
-                      y="53"
-                      width="8"
-                      height="11"
-                      rx="2"
-                      fill="#FCD34D"
-                      stroke="#F59E0B"
-                      strokeWidth="0.8"
-                    />
-                    <circle cx="53" cy="58.5" r="1.2" fill="#78350F" />
-
-                    {/* Laminated ID Badge Card */}
-                    <g transform="translate(52, 46)">
-                      {/* ID Card Shadow */}
-                      <rect
-                        x="0"
-                        y="0"
-                        width="32"
-                        height="24"
-                        rx="3.5"
-                        fill="#0F172A"
-                        fillOpacity="0.12"
-                        transform="translate(1.5, 1.5)"
-                      />
-                      {/* ID Card Base */}
-                      <rect
-                        x="0"
-                        y="0"
-                        width="32"
-                        height="24"
-                        rx="3.5"
-                        fill="#FFFFFF"
-                        stroke="#E2E8F0"
-                        strokeWidth="1"
-                      />
-                      {/* Avatar Photo */}
-                      <circle
-                        cx="9"
-                        cy="12"
-                        r="5"
-                        fill="#818CF8"
-                      />
-                      <circle cx="9" cy="10.5" r="2.2" fill="#FFFFFF" />
-                      <path
-                        d="M5.5 15.5 C5.5 13.8 7 12.8 9 12.8 C11 12.8 12.5 13.8 12.5 15.5"
-                        fill="#FFFFFF"
-                      />
-
-                      {/* Detail Lines */}
-                      <rect
-                        x="17"
-                        y="7.5"
-                        width="11"
-                        height="2"
-                        rx="1"
-                        fill="#6366F1"
-                      />
-                      <rect
-                        x="17"
-                        y="12"
-                        width="8.5"
-                        height="1.5"
-                        rx="0.75"
-                        fill="#CBD5E1"
-                      />
-                      <rect
-                        x="17"
-                        y="15.5"
-                        width="10"
-                        height="1.5"
-                        rx="0.75"
-                        fill="#CBD5E1"
-                      />
-                    </g>
-                  </g>
-
-                  {/* Radiating Spark Rays */}
-                  <line
-                    x1="98"
-                    y1="42"
-                    x2="104"
-                    y2="38"
-                    stroke="#A855F7"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                  />
-                  <line
-                    x1="101"
-                    y1="50"
-                    x2="107"
-                    y2="50"
-                    stroke="#A855F7"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                  />
-
-                  {/* Gradients */}
-                  <defs>
-                    <linearGradient
-                      id="purpleBagGrad"
-                      x1="25"
-                      y1="33"
-                      x2="81"
-                      y2="79"
-                      gradientUnits="userSpaceOnUse"
-                    >
-                      <stop stopColor="#8B5CF6" />
-                      <stop offset="0.5" stopColor="#7C3AED" />
-                      <stop offset="1" stopColor="#6D28D9" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </div>
-
-              {/* Metric Badge Pill (Top-Right) */}
-              <div className="relative z-10 px-3 py-1.5 rounded-[14px] bg-[#FFEDD5] border border-orange-100/80 text-center shadow-2xs">
-                <span className="block text-[15px] font-black text-[#C2410C] leading-none">
-                  100%
-                </span>
-                <span className="block text-[11px] font-bold text-[#EA580C] mt-0.5 leading-none">
-                  Help
-                </span>
-              </div>
-            </div>
-
-            {/* Bottom Content Area */}
-            <div className="p-5 sm:p-6 pt-2 flex flex-col flex-1 justify-between">
-              <div>
-                <h3 className="text-[19px] sm:text-[20px] font-black text-[#072B57] tracking-tight leading-snug mb-2">
-                  {WHY_CHOOSE_CBM_CARDS[3].title}
-                </h3>
-                <p className="text-[13px] sm:text-[13.5px] text-slate-500 font-normal leading-[1.65]">
-                  {WHY_CHOOSE_CBM_CARDS[3].description}
-                </p>
-              </div>
-            </div>
-          </motion.div>
+              {/* Body Text in Clean Slate Neutral (#334155 / slate-600) */}
+              <p className="mt-2.5 text-[14px] sm:text-[14.5px] text-slate-600 font-normal leading-[1.6]">
+                {card.description}
+              </p>
+            </motion.article>
+          ))}
         </div>
       </div>
     </section>

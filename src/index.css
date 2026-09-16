@@ -4,17 +4,21 @@
   :root {
     --color-primary: #072B57;
     --color-accent: #FF6B00;
-    --color-bg-light: #F8FAFC;
+    --color-bg-light: #FFF5EC;
     --color-text-main: #072B57;
-    --color-border: #E5E7EB;
+    --color-border: #FED7AA;
   }
 
   html {
     scroll-behavior: smooth;
+    background-color: #FFFDFB;
   }
 
   body {
     color: #072B57;
+    background-color: #FFFDFB;
+    background-image: linear-gradient(135deg, #FFFDFB 0%, #FFF5EC 40%, #FEEFE3 100%);
+    background-attachment: fixed;
   }
 }
 
@@ -213,6 +217,62 @@
   will-change: transform, opacity;
 }
 
+/* =========================================================
+   AI & TECH BACKGROUND ELEMENTS KEYFRAMES
+   ========================================================= */
+@keyframes aiSparkFloat {
+  0%, 100% {
+    transform: translate3d(0px, 0px, 0) scale(1) rotate(0deg);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translate3d(8px, -15px, 0) scale(1.18) rotate(15deg);
+    opacity: 0.75;
+  }
+}
+
+@keyframes neuralPulse {
+  0%, 100% {
+    opacity: 0.25;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes codeTokenFloat {
+  0%, 100% {
+    transform: translate3d(0px, 0px, 0);
+    opacity: 0.18;
+  }
+  50% {
+    transform: translate3d(-10px, -14px, 0);
+    opacity: 0.42;
+  }
+}
+
+.cbm-ai-spark-1 {
+  animation: aiSparkFloat 12s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.cbm-ai-spark-2 {
+  animation: aiSparkFloat 16s ease-in-out infinite 3s;
+  will-change: transform, opacity;
+}
+
+.cbm-neural-pulse {
+  animation: neuralPulse 8s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.cbm-code-token {
+  animation: codeTokenFloat 14s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cbm-ambient-wave,
   .cbm-particle-drift-a,
@@ -221,7 +281,11 @@
   .cbm-curriculum-blob-1,
   .cbm-curriculum-blob-2,
   .cbm-curriculum-blob-3,
-  .cbm-curriculum-blob-4 {
+  .cbm-curriculum-blob-4,
+  .cbm-ai-spark-1,
+  .cbm-ai-spark-2,
+  .cbm-neural-pulse,
+  .cbm-code-token {
     animation: none !important;
     transform: none !important;
   }
