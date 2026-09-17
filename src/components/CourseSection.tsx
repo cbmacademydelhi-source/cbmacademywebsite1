@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion, useReducedMotion } from 'motion/react';
 import { AITools } from './AITools';
 
 interface CourseSectionProps {
@@ -221,54 +222,91 @@ const modules: ModuleItem[] = [
 export const CourseSection: React.FC<CourseSectionProps> = ({
   onOpenApply,
 }) => {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <>
       <section
         id="course"
-        className="relative overflow-hidden bg-transparent pt-8 sm:pt-10 pb-8 sm:pb-10"
+        className="relative overflow-hidden bg-[#FFF0E3] pt-8 sm:pt-10 pb-8 sm:pb-10 border-b border-orange-200/50"
       >
-        {/* Continuous Animated Ambient Orange Blobs (Behind Content) */}
+        {/* 4 Large Visible Soft Orange/Peach Translucent Floating Circles */}
         <div
           className="pointer-events-none absolute inset-0 overflow-hidden select-none"
           aria-hidden="true"
         >
-          {/* Blob 1: Top Left / Center glow */}
-          <div
-            className="cbm-curriculum-blob-1 absolute -top-16 -left-12 h-[380px] w-[380px] sm:h-[480px] sm:w-[480px] rounded-full"
-            style={{
-              background:
-                'radial-gradient(circle, rgba(255, 107, 0, 0.18) 0%, rgba(255, 138, 61, 0.08) 45%, transparent 70%)',
-              filter: 'blur(50px)',
+          {/* Shape 1: Top-Left Edge */}
+          <motion.div
+            className="absolute -top-20 -left-16 w-[420px] h-[420px] rounded-full bg-[#FF9A52]/24 blur-[85px]"
+            animate={
+              shouldReduceMotion
+                ? undefined
+                : {
+                    x: [0, 45, -25, 0],
+                    y: [0, 35, -20, 0],
+                  }
+            }
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              ease: 'easeInOut',
             }}
           />
 
-          {/* Blob 2: Top Right glow */}
-          <div
-            className="cbm-curriculum-blob-2 absolute -top-8 -right-16 h-[360px] w-[360px] sm:h-[460px] sm:w-[460px] rounded-full"
-            style={{
-              background:
-                'radial-gradient(circle, rgba(255, 120, 20, 0.16) 0%, rgba(255, 160, 92, 0.07) 50%, transparent 70%)',
-              filter: 'blur(55px)',
+          {/* Shape 2: Top-Right Edge */}
+          <motion.div
+            className="absolute -top-16 -right-20 w-[380px] h-[380px] rounded-full bg-[#FFAE7A]/28 blur-[80px]"
+            animate={
+              shouldReduceMotion
+                ? undefined
+                : {
+                    x: [0, -40, 20, 0],
+                    y: [0, 40, -15, 0],
+                  }
+            }
+            transition={{
+              duration: 24,
+              repeat: Infinity,
+              delay: 2,
+              ease: 'easeInOut',
             }}
           />
 
-          {/* Blob 3: Center / Middle glow */}
-          <div
-            className="cbm-curriculum-blob-3 absolute top-[35%] left-[20%] h-[340px] w-[340px] sm:h-[440px] sm:w-[440px] rounded-full"
-            style={{
-              background:
-                'radial-gradient(circle, rgba(255, 107, 0, 0.15) 0%, rgba(255, 140, 50, 0.06) 45%, transparent 70%)',
-              filter: 'blur(50px)',
+          {/* Shape 3: Bottom-Left Edge */}
+          <motion.div
+            className="absolute -bottom-24 -left-12 w-[460px] h-[460px] rounded-full bg-[#FF8C38]/22 blur-[90px]"
+            animate={
+              shouldReduceMotion
+                ? undefined
+                : {
+                    x: [0, 35, -30, 0],
+                    y: [0, -30, 20, 0],
+                  }
+            }
+            transition={{
+              duration: 22,
+              repeat: Infinity,
+              delay: 3,
+              ease: 'easeInOut',
             }}
           />
 
-          {/* Blob 4: Bottom Right glow */}
-          <div
-            className="cbm-curriculum-blob-4 absolute -bottom-20 right-[15%] h-[380px] w-[380px] sm:h-[480px] sm:w-[480px] rounded-full"
-            style={{
-              background:
-                'radial-gradient(circle, rgba(255, 107, 0, 0.16) 0%, rgba(255, 150, 70, 0.07) 50%, transparent 70%)',
-              filter: 'blur(60px)',
+          {/* Shape 4: Bottom-Right Edge */}
+          <motion.div
+            className="absolute -bottom-20 -right-16 w-[400px] h-[400px] rounded-full bg-[#FFA566]/26 blur-[85px]"
+            animate={
+              shouldReduceMotion
+                ? undefined
+                : {
+                    x: [0, -35, 25, 0],
+                    y: [0, -35, 15, 0],
+                  }
+            }
+            transition={{
+              duration: 25,
+              repeat: Infinity,
+              delay: 1,
+              ease: 'easeInOut',
             }}
           />
         </div>

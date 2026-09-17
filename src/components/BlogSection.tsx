@@ -10,8 +10,168 @@ export const BlogSection: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <section id="blogs" className="pt-8 sm:pt-10 pb-8 sm:pb-10 bg-transparent border-b border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="blogs" className="relative overflow-hidden pt-8 sm:pt-10 pb-8 sm:pb-10 bg-[#FFD3A3] border-b border-orange-300/50">
+      {/* Soft Glowing Orange Circles & Upward Floating Particles */}
+      <div
+        className="pointer-events-none absolute inset-0 overflow-hidden select-none"
+        aria-hidden="true"
+      >
+        {/* Glowing Circle 1: Top-Right */}
+        <motion.div
+          className="absolute -top-16 -right-12 w-[360px] h-[360px] rounded-full bg-[#FF7A00]/22 blur-[75px]"
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  scale: [0.95, 1.12, 0.95],
+                  y: [15, -25, 15],
+                  opacity: [0.22, 0.32, 0.22],
+                }
+          }
+          transition={{
+            duration: 16,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+
+        {/* Glowing Circle 2: Bottom-Left */}
+        <motion.div
+          className="absolute -bottom-20 -left-12 w-[400px] h-[400px] rounded-full bg-[#FF9433]/24 blur-[80px]"
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  scale: [1.08, 0.94, 1.08],
+                  y: [20, -30, 20],
+                  opacity: [0.24, 0.35, 0.24],
+                }
+          }
+          transition={{
+            duration: 18,
+            repeat: Infinity,
+            delay: 2,
+            ease: 'easeInOut',
+          }}
+        />
+
+        {/* Floating Particle Dots with Slow Upward Movement & Pulse */}
+        <motion.div
+          className="absolute top-[20%] left-[12%] w-6 h-6 rounded-full bg-[#FF6B00]/40 blur-[3px]"
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  y: [40, -50, 40],
+                  x: [0, 15, 0],
+                  scale: [0.9, 1.25, 0.9],
+                  opacity: [0.35, 0.65, 0.35],
+                }
+          }
+          transition={{
+            duration: 14,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+        <motion.div
+          className="absolute top-[45%] left-[22%] w-3.5 h-3.5 rounded-full bg-[#FF8C33]/45 blur-[2px]"
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  y: [50, -45, 50],
+                  x: [0, -18, 0],
+                  scale: [0.85, 1.3, 0.85],
+                  opacity: [0.4, 0.7, 0.4],
+                }
+          }
+          transition={{
+            duration: 16,
+            repeat: Infinity,
+            delay: 1,
+            ease: 'easeInOut',
+          }}
+        />
+        <motion.div
+          className="absolute top-[30%] right-[18%] w-5 h-5 rounded-full bg-[#FF7711]/40 blur-[2px]"
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  y: [45, -55, 45],
+                  x: [0, 16, 0],
+                  scale: [0.9, 1.2, 0.9],
+                  opacity: [0.35, 0.65, 0.35],
+                }
+          }
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            delay: 3,
+            ease: 'easeInOut',
+          }}
+        />
+        <motion.div
+          className="absolute bottom-[25%] left-[45%] w-3 h-3 rounded-full bg-[#FF9944]/50 blur-[1px]"
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  y: [55, -50, 55],
+                  x: [0, -14, 0],
+                  scale: [0.8, 1.35, 0.8],
+                  opacity: [0.4, 0.75, 0.4],
+                }
+          }
+          transition={{
+            duration: 18,
+            repeat: Infinity,
+            delay: 2,
+            ease: 'easeInOut',
+          }}
+        />
+        <motion.div
+          className="absolute bottom-[18%] right-[28%] w-7 h-7 rounded-full bg-[#FFA044]/35 blur-[3px]"
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  y: [40, -45, 40],
+                  x: [0, 20, 0],
+                  scale: [0.95, 1.2, 0.95],
+                  opacity: [0.3, 0.6, 0.3],
+                }
+          }
+          transition={{
+            duration: 17,
+            repeat: Infinity,
+            delay: 4,
+            ease: 'easeInOut',
+          }}
+        />
+        <motion.div
+          className="absolute top-[65%] right-[8%] w-2.5 h-2.5 rounded-full bg-[#FF8022]/55 blur-[1px]"
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  y: [50, -60, 50],
+                  x: [0, -14, 0],
+                  scale: [0.85, 1.4, 0.85],
+                  opacity: [0.45, 0.8, 0.45],
+                }
+          }
+          transition={{
+            duration: 13,
+            repeat: Infinity,
+            delay: 1.5,
+            ease: 'easeInOut',
+          }}
+        />
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-8 sm:mb-10">

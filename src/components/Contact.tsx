@@ -110,8 +110,325 @@ export const Contact: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <section id="contact" className="pt-8 sm:pt-10 pb-8 sm:pb-10 bg-transparent border-b border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section
+      id="contact"
+      style={{ backgroundColor: '#FFE0B2' }}
+      className="relative overflow-hidden pt-8 sm:pt-10 pb-8 sm:pb-10 bg-[#FFE0B2] border-b border-orange-300/60 !bg-[#FFE0B2]"
+    >
+      {/* =========================================================
+          LEFT SIDE DECORATIONS (Soft curves, translucent circle, blob, dots)
+          ========================================================= */}
+      <div
+        className="pointer-events-none absolute inset-y-0 left-0 w-[180px] sm:w-[260px] lg:w-[320px] overflow-hidden select-none z-0"
+        aria-hidden="true"
+      >
+        {/* Soft Curved Line (SVG) - Left Side */}
+        <motion.svg
+          className="absolute -left-8 top-[18%] w-[260px] h-[340px] text-[#E98B4A]"
+          viewBox="0 0 260 340"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  y: [0, -16, 12, 0],
+                  rotate: [0, 2, -1.5, 0],
+                }
+          }
+          transition={{
+            duration: 22,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        >
+          <path
+            d="M-20,20 C110,60 150,190 30,310"
+            stroke="#E98B4A"
+            strokeOpacity="0.32"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeDasharray="6 6"
+          />
+          <path
+            d="M-35,80 C80,110 110,230 10,330"
+            stroke="#F4A261"
+            strokeOpacity="0.38"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        </motion.svg>
+
+        {/* Large Translucent Circle (#F4A261) - Upper Left */}
+        <motion.div
+          className="absolute -top-12 -left-16 w-[260px] h-[260px] rounded-full bg-[#F4A261]/22 blur-[30px]"
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  x: [0, 25, -15, 0],
+                  y: [0, 20, -20, 0],
+                  scale: [1, 1.08, 0.95, 1],
+                }
+          }
+          transition={{
+            duration: 24,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+
+        {/* Abstract Flowing Shape / Blob (#E98B4A) - Lower Left */}
+        <motion.div
+          className="absolute -bottom-14 -left-12 w-[280px] h-[300px] bg-[#E98B4A]/20 blur-[28px]"
+          style={{ borderRadius: '58% 42% 66% 34% / 44% 62% 38% 56%' }}
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  x: [0, 22, -18, 0],
+                  y: [0, -22, 16, 0],
+                  rotate: [0, 12, -8, 0],
+                }
+          }
+          transition={{
+            duration: 26,
+            repeat: Infinity,
+            delay: 1,
+            ease: 'easeInOut',
+          }}
+        />
+
+        {/* Subtle Orange Dots - Left Side */}
+        <motion.div
+          className="absolute top-[16%] left-[62%] w-3 h-3 rounded-full bg-[#FFB56B]/65 blur-[1px]"
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  y: [0, -18, 0],
+                  scale: [1, 1.25, 1],
+                  opacity: [0.55, 0.85, 0.55],
+                }
+          }
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+        <motion.div
+          className="absolute top-[44%] left-[78%] w-2 h-2 rounded-full bg-[#E98B4A]/55"
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  y: [0, 16, 0],
+                  scale: [0.9, 1.3, 0.9],
+                  opacity: [0.45, 0.75, 0.45],
+                }
+          }
+          transition={{
+            duration: 17,
+            repeat: Infinity,
+            delay: 1.5,
+            ease: 'easeInOut',
+          }}
+        />
+        <motion.div
+          className="absolute bottom-[30%] left-[48%] w-4 h-4 rounded-full bg-[#F4A261]/50 blur-[1.5px]"
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  y: [0, -22, 0],
+                  x: [0, 8, 0],
+                  scale: [0.95, 1.2, 0.95],
+                }
+          }
+          transition={{
+            duration: 19,
+            repeat: Infinity,
+            delay: 3,
+            ease: 'easeInOut',
+          }}
+        />
+        <motion.div
+          className="absolute bottom-[14%] left-[70%] w-2.5 h-2.5 rounded-full bg-[#FFB56B]/70"
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  y: [0, 14, 0],
+                  opacity: [0.5, 0.85, 0.5],
+                }
+          }
+          transition={{
+            duration: 16,
+            repeat: Infinity,
+            delay: 2,
+            ease: 'easeInOut',
+          }}
+        />
+      </div>
+
+      {/* =========================================================
+          RIGHT SIDE DECORATIONS (Soft curves, translucent circle, blob, dots)
+          ========================================================= */}
+      <div
+        className="pointer-events-none absolute inset-y-0 right-0 w-[180px] sm:w-[260px] lg:w-[320px] overflow-hidden select-none z-0"
+        aria-hidden="true"
+      >
+        {/* Soft Curved Line (SVG) - Right Side */}
+        <motion.svg
+          className="absolute -right-6 top-[28%] w-[260px] h-[360px] text-[#FFB56B]"
+          viewBox="0 0 260 360"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  y: [0, 18, -14, 0],
+                  rotate: [0, -2.5, 1.5, 0],
+                }
+          }
+          transition={{
+            duration: 25,
+            repeat: Infinity,
+            delay: 1,
+            ease: 'easeInOut',
+          }}
+        >
+          <path
+            d="M280,30 C150,75 120,210 240,320"
+            stroke="#FFB56B"
+            strokeOpacity="0.38"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+          />
+          <path
+            d="M295,90 C185,130 165,250 265,340"
+            stroke="#E98B4A"
+            strokeOpacity="0.3"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeDasharray="7 5"
+          />
+        </motion.svg>
+
+        {/* Large Translucent Circle (#FFB56B) - Upper Right */}
+        <motion.div
+          className="absolute -top-10 -right-16 w-[280px] h-[280px] rounded-full bg-[#FFB56B]/24 blur-[32px]"
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  x: [0, -22, 16, 0],
+                  y: [0, 24, -18, 0],
+                  scale: [1, 1.09, 0.94, 1],
+                }
+          }
+          transition={{
+            duration: 23,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+
+        {/* Abstract Flowing Shape / Blob (#F4A261) - Lower Right */}
+        <motion.div
+          className="absolute -bottom-16 -right-14 w-[300px] h-[280px] bg-[#F4A261]/22 blur-[28px]"
+          style={{ borderRadius: '46% 54% 38% 62% / 58% 42% 58% 42%' }}
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  x: [0, -25, 20, 0],
+                  y: [0, -20, 24, 0],
+                  rotate: [0, -10, 8, 0],
+                }
+          }
+          transition={{
+            duration: 27,
+            repeat: Infinity,
+            delay: 1.5,
+            ease: 'easeInOut',
+          }}
+        />
+
+        {/* Subtle Orange Dots - Right Side */}
+        <motion.div
+          className="absolute top-[22%] right-[66%] w-3.5 h-3.5 rounded-full bg-[#E98B4A]/55 blur-[1px]"
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  y: [0, -16, 0],
+                  scale: [1, 1.25, 1],
+                  opacity: [0.45, 0.8, 0.45],
+                }
+          }
+          transition={{
+            duration: 16,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+        <motion.div
+          className="absolute top-[52%] right-[48%] w-2 h-2 rounded-full bg-[#FFB56B]/70"
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  y: [0, 18, 0],
+                  opacity: [0.5, 0.85, 0.5],
+                }
+          }
+          transition={{
+            duration: 18,
+            repeat: Infinity,
+            delay: 1,
+            ease: 'easeInOut',
+          }}
+        />
+        <motion.div
+          className="absolute bottom-[36%] right-[72%] w-4 h-4 rounded-full bg-[#F4A261]/45 blur-[1.5px]"
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  y: [0, -20, 0],
+                  scale: [0.9, 1.25, 0.9],
+                }
+          }
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            delay: 2.5,
+            ease: 'easeInOut',
+          }}
+        />
+        <motion.div
+          className="absolute bottom-[18%] right-[38%] w-2.5 h-2.5 rounded-full bg-[#E98B4A]/60"
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  y: [0, 15, 0],
+                  opacity: [0.55, 0.85, 0.55],
+                }
+          }
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            delay: 2,
+            ease: 'easeInOut',
+          }}
+        />
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="max-w-3xl mx-auto text-center space-y-3 mb-8 sm:mb-10">

@@ -399,21 +399,72 @@ export const AITools: React.FC<AIToolsProps> = ({ onOpenApply }) => {
   return (
     <section
       id="ai-tools"
-      className="relative overflow-hidden bg-transparent pt-8 sm:pt-10 pb-8 sm:pb-10 border-t border-b border-orange-100/50"
+      className="relative overflow-hidden bg-[#FFE1C2] pt-8 sm:pt-10 pb-8 sm:pb-10 border-t border-b border-orange-200/60"
     >
-      {/* Subtle Warm Ambient Glow on Page Edges */}
+      {/* Soft Flowing Orange Abstract Curved / Blob Shapes */}
       <div
-        className="pointer-events-none absolute -top-32 -left-32 w-80 sm:w-96 h-80 sm:h-96 rounded-full bg-orange-200/20 blur-[110px]"
+        className="pointer-events-none absolute inset-0 overflow-hidden select-none"
         aria-hidden="true"
-      />
-      <div
-        className="pointer-events-none absolute -bottom-32 -right-32 w-80 sm:w-96 h-80 sm:h-96 rounded-full bg-amber-200/20 blur-[110px]"
-        aria-hidden="true"
-      />
-      <div
-        className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[450px] rounded-full bg-orange-100/15 blur-[150px]"
-        aria-hidden="true"
-      />
+      >
+        <motion.div
+          className="absolute -top-16 -right-10 w-[500px] h-[340px] bg-[#FF8522]/22 blur-[75px]"
+          style={{ borderRadius: '62% 38% 70% 30% / 40% 65% 35% 60%' }}
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  x: [0, 60, -30, 0],
+                  y: [0, -25, 30, 0],
+                  opacity: [0.22, 0.34, 0.18, 0.22],
+                }
+          }
+          transition={{
+            duration: 22,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+
+        <motion.div
+          className="absolute -bottom-16 -left-12 w-[460px] h-[380px] bg-[#FFA04D]/25 blur-[80px]"
+          style={{ borderRadius: '35% 65% 42% 58% / 58% 38% 62% 42%' }}
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  x: [0, -50, 35, 0],
+                  y: [0, 35, -25, 0],
+                  opacity: [0.26, 0.18, 0.32, 0.26],
+                }
+          }
+          transition={{
+            duration: 25,
+            repeat: Infinity,
+            delay: 2,
+            ease: 'easeInOut',
+          }}
+        />
+
+        <motion.div
+          className="absolute top-1/3 left-1/4 w-[420px] h-[320px] bg-[#FF7300]/20 blur-[70px]"
+          style={{ borderRadius: '50% 50% 30% 70% / 60% 40% 60% 40%' }}
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  x: [0, 45, -45, 0],
+                  y: [0, 20, -20, 0],
+                  opacity: [0.20, 0.30, 0.16, 0.20],
+                }
+          }
+          transition={{
+            duration: 28,
+            repeat: Infinity,
+            delay: 4,
+            ease: 'easeInOut',
+          }}
+        />
+      </div>
 
       {/* HORIZONTAL WIDTH MATCHING MODULE CARDS ABOVE (max-w-[1200px]) */}
       <div className="relative z-10 max-w-[1200px] mx-auto px-3 sm:px-4 lg:px-6">
