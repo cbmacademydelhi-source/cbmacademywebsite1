@@ -87,11 +87,11 @@ export const CertificateVerification: React.FC = () => {
   };
 
   return (
-    <section id="certificate" className="py-16 lg:py-24 bg-transparent border-b border-slate-200">
+    <section id="certificate" className="pt-8 sm:pt-10 pb-8 sm:pb-10 bg-transparent border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className="max-w-3xl mx-auto text-center space-y-3 mb-10">
+        <div className="max-w-3xl mx-auto text-center space-y-3 mb-8 sm:mb-9">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold uppercase tracking-wider border border-emerald-200">
             <ShieldCheck className="w-4 h-4 text-emerald-600" />
             Official Credential Registry

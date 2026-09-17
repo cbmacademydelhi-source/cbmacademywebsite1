@@ -110,11 +110,11 @@ export const Contact: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <section id="contact" className="py-16 lg:py-24 bg-transparent border-b border-slate-200">
+    <section id="contact" className="pt-8 sm:pt-10 pb-8 sm:pb-10 bg-transparent border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className="max-w-3xl mx-auto text-center space-y-3 mb-12">
+        <div className="max-w-3xl mx-auto text-center space-y-3 mb-8 sm:mb-10">
           <motion.div
             initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -308,7 +308,6 @@ export const Contact: React.FC = () => {
                         setFormData({ ...formData, fullName: e.target.value });
                         if (errors.fullName) setErrors({ ...errors, fullName: '' });
                       }}
-                      placeholder="e.g. Rahul Sharma"
                       className={`w-full px-4 py-3 rounded-xl border text-sm text-[#072B57] placeholder:text-slate-400 focus:outline-none focus:ring-2 ${
                         errors.fullName ? 'border-rose-300 ring-1 ring-rose-300 bg-rose-50/20' : 'border-slate-300 focus:ring-[#FF6B00] focus:border-[#FF6B00]'
                       }`}
@@ -329,7 +328,6 @@ export const Contact: React.FC = () => {
                         setFormData({ ...formData, email: e.target.value });
                         if (errors.email) setErrors({ ...errors, email: '' });
                       }}
-                      placeholder="e.g. rahul@example.com"
                       className={`w-full px-4 py-3 rounded-xl border text-sm text-[#072B57] placeholder:text-slate-400 focus:outline-none focus:ring-2 ${
                         errors.email ? 'border-rose-300 ring-1 ring-rose-300 bg-rose-50/20' : 'border-slate-300 focus:ring-[#FF6B00] focus:border-[#FF6B00]'
                       }`}
@@ -352,7 +350,6 @@ export const Contact: React.FC = () => {
                         setFormData({ ...formData, phone: e.target.value });
                         if (errors.phone) setErrors({ ...errors, phone: '' });
                       }}
-                      placeholder="10-digit number (e.g. 9876543210)"
                       className={`w-full px-4 py-3 rounded-xl border text-sm text-[#072B57] placeholder:text-slate-400 focus:outline-none focus:ring-2 ${
                         errors.phone ? 'border-rose-300 ring-1 ring-rose-300 bg-rose-50/20' : 'border-slate-300 focus:ring-[#FF6B00] focus:border-[#FF6B00]'
                       }`}

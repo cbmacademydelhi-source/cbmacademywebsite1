@@ -399,7 +399,7 @@ export const AITools: React.FC<AIToolsProps> = ({ onOpenApply }) => {
   return (
     <section
       id="ai-tools"
-      className="relative overflow-hidden bg-transparent py-12 sm:py-16 lg:py-16 border-t border-b border-orange-100/50"
+      className="relative overflow-hidden bg-transparent pt-8 sm:pt-10 pb-8 sm:pb-10 border-t border-b border-orange-100/50"
     >
       {/* Subtle Warm Ambient Glow on Page Edges */}
       <div
@@ -469,7 +469,7 @@ export const AITools: React.FC<AIToolsProps> = ({ onOpenApply }) => {
         {/* =========================================================
             MAIN CONTENT: 2-COLUMN × 2-ROW GRID (Compact & Proportional)
             ========================================================= */}
-        <div className="mt-8 sm:mt-10 lg:mt-10 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
+        <div className="mt-7 sm:mt-8 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
           {categoryCards.map((category, index) => (
             <motion.div
               key={category.id}

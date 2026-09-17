@@ -10,11 +10,11 @@ export const BlogSection: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <section id="blogs" className="py-16 lg:py-24 bg-transparent border-b border-slate-200">
+    <section id="blogs" className="pt-8 sm:pt-10 pb-8 sm:pb-10 bg-transparent border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-8 sm:mb-10">
           <div className="space-y-3 max-w-2xl">
             <motion.div
               initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
@@ -47,7 +47,7 @@ export const BlogSection: React.FC = () => {
         </div>
 
         {/* Responsive 3-Column Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
           {BLOG_POSTS.map((post, index) => (
             <motion.article
               key={post.id}

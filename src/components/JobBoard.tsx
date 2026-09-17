@@ -42,12 +42,12 @@ export const JobBoard: React.FC<JobBoardProps> = ({
   return (
     <section
       id="jobs"
-      className="py-16 lg:py-24 bg-transparent border-b border-slate-200"
+      className="pt-8 sm:pt-10 pb-8 sm:pb-10 bg-transparent border-b border-slate-200"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Section Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 sm:gap-6 mb-8 sm:mb-10">
 
           <div className="space-y-3 max-w-2xl">
 

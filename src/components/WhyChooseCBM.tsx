@@ -43,8 +43,8 @@ const CARDS: CardItem[] = [
           </linearGradient>
           <linearGradient id="tasselGrad" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#FFE066" />
-            <stop offset="60%" stopColor="#F59E0B" />
-            <stop offset="100%" stopColor="#D97706" />
+            <stop offset="60%" stopColor="#FF6B00" />
+            <stop offset="100%" stopColor="#FF6B00" />
           </linearGradient>
         </defs>
 
@@ -90,7 +90,7 @@ const CARDS: CardItem[] = [
         />
 
         {/* Tassel Cap & Fringe */}
-        <ellipse cx="77" cy="56" rx="3" ry="1.8" fill="#F59E0B" />
+        <ellipse cx="77" cy="56" rx="3" ry="1.8" fill="#FF6B00" />
         <path
           d="M74 57L73 66C73 67 81 67 81 66L80 57Z"
           fill="url(#tasselGrad)"
@@ -119,20 +119,20 @@ const CARDS: CardItem[] = [
             <stop offset="100%" stopColor="#1E2129" />
           </linearGradient>
           <linearGradient id="playGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#FF7A00" />
-            <stop offset="100%" stopColor="#EA580C" />
+            <stop offset="0%" stopColor="#FF6B00" />
+            <stop offset="100%" stopColor="#FF6B00" />
           </linearGradient>
         </defs>
 
         {/* Sound/Energy Rays (Right side) */}
-        <path d="M82 23L88 20" stroke="#FF7A00" strokeWidth="2.8" strokeLinecap="round" />
-        <path d="M84 32L91 32" stroke="#FF7A00" strokeWidth="2.8" strokeLinecap="round" />
-        <path d="M82 41L88 44" stroke="#FF7A00" strokeWidth="2.8" strokeLinecap="round" />
+        <path d="M82 23L88 20" stroke="#FF6B00" strokeWidth="2.8" strokeLinecap="round" />
+        <path d="M84 32L91 32" stroke="#FF6B00" strokeWidth="2.8" strokeLinecap="round" />
+        <path d="M82 41L88 44" stroke="#FF6B00" strokeWidth="2.8" strokeLinecap="round" />
 
         {/* Sound/Energy Rays (Left side) */}
-        <path d="M18 23L12 20" stroke="#FF7A00" strokeWidth="2.8" strokeLinecap="round" />
-        <path d="M16 32L9 32" stroke="#FF7A00" strokeWidth="2.8" strokeLinecap="round" />
-        <path d="M18 41L12 44" stroke="#FF7A00" strokeWidth="2.8" strokeLinecap="round" />
+        <path d="M18 23L12 20" stroke="#FF6B00" strokeWidth="2.8" strokeLinecap="round" />
+        <path d="M16 32L9 32" stroke="#FF6B00" strokeWidth="2.8" strokeLinecap="round" />
+        <path d="M18 41L12 44" stroke="#FF6B00" strokeWidth="2.8" strokeLinecap="round" />
 
         {/* Laptop Display Shell */}
         <rect x="23" y="15" width="54" height="35" rx="3.5" fill="url(#laptopBezel)" />
@@ -145,7 +145,8 @@ const CARDS: CardItem[] = [
         <polygon points="47,27.5 56,32.5 47,37.5" fill="#FFFFFF" />
 
         {/* Screen Bottom Bar Accent */}
-        <rect x="36" y="44" width="28" height="1.5" rx="0.75" fill="#FF7A00" fillOpacity="0.8" />
+        <rect x="36" y="44" width="28" height="1.5" rx="0.75" fill="#FF6B00" fillOpacity="0.8" />
+
 
         {/* Laptop Base (3D Bevel) */}
         <path
@@ -174,17 +175,17 @@ const CARDS: CardItem[] = [
       >
         <defs>
           <linearGradient id="barGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#EA580C" />
-            <stop offset="100%" stopColor="#9A3412" />
+            <stop offset="0%" stopColor="#FF6B00" />
+            <stop offset="100%" stopColor="#FF6B00" />
           </linearGradient>
           <linearGradient id="barTop" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#FB923C" />
-            <stop offset="100%" stopColor="#F97316" />
+            <stop offset="0%" stopColor="#FFA05C" />
+            <stop offset="100%" stopColor="#FF6B00" />
           </linearGradient>
           <linearGradient id="arrowGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#F97316" />
-            <stop offset="60%" stopColor="#FBBF24" />
-            <stop offset="100%" stopColor="#F59E0B" />
+            <stop offset="0%" stopColor="#FF6B00" />
+            <stop offset="60%" stopColor="#FFA05C" />
+            <stop offset="100%" stopColor="#FF6B00" />
           </linearGradient>
         </defs>
 
@@ -213,7 +214,7 @@ const CARDS: CardItem[] = [
           strokeLinecap="round"
         />
         {/* Arrow Tip Head */}
-        <polygon points="76,8 82,18 70,16" fill="#F59E0B" />
+        <polygon points="76,8 82,18 70,16" fill="#FF6B00" />
       </svg>
     ),
   },
@@ -234,7 +235,7 @@ const CARDS: CardItem[] = [
       >
         <defs>
           <linearGradient id="leatherGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#C2410C" />
+            <stop offset="0%" stopColor="#FF6B00" />
             <stop offset="50%" stopColor="#A83707" />
             <stop offset="100%" stopColor="#7C2D12" />
           </linearGradient>
@@ -275,7 +276,7 @@ const CARDS: CardItem[] = [
         {/* Subtle Highlight on Bottom Edges */}
         <path
           d="M26 60H74"
-          stroke="#EA580C"
+          stroke="#FF6B00"
           strokeWidth="1.2"
           strokeLinecap="round"
         />
@@ -290,7 +291,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
   return (
     <section
       id="why-cbm"
-      className="relative pt-8 sm:pt-10 lg:pt-12 pb-8 sm:pb-10 lg:pb-12 border-b-2 border-orange-200/80 shadow-[0_2px_4px_rgba(254,215,170,0.25)] overflow-hidden"
+      className="relative pt-8 sm:pt-10 pb-8 sm:pb-10 border-b-2 border-orange-200/80 shadow-[0_2px_4px_rgba(254,215,170,0.25)] overflow-hidden"
       style={{
         background: 'linear-gradient(135deg, #FFF2E2 0%, #FFE4CC 45%, #FED5B2 100%)',
       }}
@@ -340,13 +341,13 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
         </svg>
 
         {/* Left Handwritten Annotation: "Learn Apply Grow" */}
-        <div className="hidden xl:block absolute left-8 top-6 lg:top-7 text-[#EA580C] font-['Caveat',cursive] leading-tight select-none rotate-[-6deg]">
+        <div className="hidden xl:block absolute left-8 top-6 lg:top-7 text-[#FF6B00] font-['Caveat',cursive] leading-tight select-none rotate-[-6deg]">
           <span className="block text-[28px] font-bold tracking-wide">Learn</span>
           <span className="block text-[28px] font-bold tracking-wide">Apply</span>
           <span className="block text-[28px] font-bold tracking-wide">Grow</span>
           {/* Hand-drawn curved arrow pointing to cards */}
           <svg
-            className="w-12 h-12 mt-1 text-[#EA580C] rotate-[15deg]"
+            className="w-12 h-12 mt-1 text-[#FF6B00] rotate-[15deg]"
             viewBox="0 0 50 50"
             fill="none"
             stroke="currentColor"
@@ -359,13 +360,13 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
         </div>
 
         {/* Right Handwritten Annotation: "Your Next Step Starts Here" */}
-        <div className="hidden xl:block absolute right-8 top-6 lg:top-7 text-[#EA580C] font-['Caveat',cursive] leading-tight select-none rotate-[6deg] text-right">
+        <div className="hidden xl:block absolute right-8 top-6 lg:top-7 text-[#FF6B00] font-['Caveat',cursive] leading-tight select-none rotate-[6deg] text-right">
           <span className="block text-[28px] font-bold tracking-wide">Your</span>
           <span className="block text-[28px] font-bold tracking-wide">Next Step</span>
           <span className="block text-[28px] font-bold tracking-wide">Starts Here</span>
           {/* Hand-drawn curved arrow pointing up-right */}
           <svg
-            className="w-12 h-12 mt-1 ml-auto text-[#EA580C] -rotate-[10deg]"
+            className="w-12 h-12 mt-1 ml-auto text-[#FF6B00] -rotate-[10deg]"
             viewBox="0 0 50 50"
             fill="none"
             stroke="currentColor"
@@ -382,7 +383,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
         {/* =========================================================
             HEADING AREA (MATCHING REFERENCE IMAGE)
         ========================================================= */}
-        <div className="max-w-3xl mx-auto text-center mb-10 sm:mb-14">
+        <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-10">
           {/* Top Pill with Parallel Golden Horizontal Lines */}
           <motion.div
             initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
@@ -393,21 +394,21 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
           >
             {/* Left 2 Golden Lines (top longer, bottom shorter) */}
             <div className="flex flex-col gap-1 items-end">
-              <div className="h-[2.5px] w-7 sm:w-8 rounded-full bg-[#F59E0B]" />
-              <div className="h-[2.5px] w-4 sm:w-5 rounded-full bg-[#F59E0B]" />
+              <div className="h-[2.5px] w-7 sm:w-8 rounded-full bg-[#FF6B00]" />
+              <div className="h-[2.5px] w-4 sm:w-5 rounded-full bg-[#FF6B00]" />
             </div>
 
             {/* Pill Container */}
-            <div className="px-5 sm:px-6 py-1.5 rounded-full border-2 border-[#F59E0B] bg-[#FFF0E0] shadow-2xs">
-              <span className="text-[#C2410C] font-extrabold text-[11.5px] sm:text-[13px] tracking-wider uppercase">
+            <div className="px-5 sm:px-6 py-1.5 rounded-full border-2 border-[#FF6B00] bg-[#FFF0E0] shadow-2xs">
+              <span className="text-[#FF6B00] font-extrabold text-[11.5px] sm:text-[13px] tracking-wider uppercase">
                 WHY CBM ACADEMY
               </span>
             </div>
 
             {/* Right 2 Golden Lines (top longer, bottom shorter) */}
             <div className="flex flex-col gap-1 items-start">
-              <div className="h-[2.5px] w-7 sm:w-8 rounded-full bg-[#F59E0B]" />
-              <div className="h-[2.5px] w-4 sm:w-5 rounded-full bg-[#F59E0B]" />
+              <div className="h-[2.5px] w-7 sm:w-8 rounded-full bg-[#FF6B00]" />
+              <div className="h-[2.5px] w-4 sm:w-5 rounded-full bg-[#FF6B00]" />
             </div>
           </motion.div>
 
@@ -420,7 +421,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
             className="text-3xl sm:text-4xl lg:text-[44px] font-black text-[#072B57] tracking-tight leading-[1.15]"
           >
             Built for{' '}
-            <span className="text-[#EA580C]">
+            <span className="text-[#FF6B00]">
               High-Growth Careers
             </span>
           </motion.h2>
@@ -455,7 +456,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
                 ease: SMOOTH_EASE_OUT,
               }}
               onClick={onOpenApply}
-              className="group relative bg-[#FFFFFF] rounded-[22px] shadow-[0_10px_28px_rgba(234,88,12,0.07)] hover:shadow-[0_16px_36px_rgba(234,88,12,0.14)] hover:-translate-y-1.5 transition-all duration-300 p-6 sm:p-6.5 flex flex-col justify-start cursor-pointer h-full border border-orange-100"
+              className="group relative bg-[#FFFFFF] rounded-[22px] shadow-[0_10px_28px_rgba(255,107,0,0.07)] hover:shadow-[0_16px_36px_rgba(255,107,0,0.14)] hover:-translate-y-1.5 transition-all duration-300 p-6 sm:p-6.5 flex flex-col justify-start cursor-pointer h-full border border-orange-100"
             >
               {/* Top Row: Illustrated 3D Graphic (Left) & Soft Cream Badge (Right) */}
               <div className="flex items-center justify-between gap-3">
@@ -466,17 +467,17 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
 
                 {/* Badge: Centered Number + Label in soft peach box */}
                 <div className="bg-[#FFF0E0] border border-orange-200/70 rounded-2xl px-3.5 py-2.5 text-center flex flex-col items-center justify-center min-w-[74px] shadow-2xs">
-                  <span className="text-xl sm:text-[22px] font-black text-[#D9480F] leading-none">
+                  <span className="text-xl sm:text-[22px] font-black text-[#FF6B00] leading-none">
                     {card.badgeNumber}
                   </span>
-                  <span className="text-xs sm:text-[13px] font-bold text-[#D9480F] leading-none mt-1">
+                  <span className="text-xs sm:text-[13px] font-bold text-[#FF6B00] leading-none mt-1">
                     {card.badgeLabel}
                   </span>
                 </div>
               </div>
 
-              {/* Card Title in Dark Burnt Orange (#D9480F) */}
-              <h3 className="mt-5 sm:mt-6 text-xl sm:text-[21px] font-black text-[#D9480F] tracking-tight leading-snug">
+              {/* Card Title in Orange (#FF6B00) */}
+              <h3 className="mt-5 sm:mt-6 text-xl sm:text-[21px] font-black text-[#FF6B00] tracking-tight leading-snug">
                 {card.title}
               </h3>
 
