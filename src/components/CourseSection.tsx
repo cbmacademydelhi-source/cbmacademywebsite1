@@ -222,141 +222,58 @@ const modules: ModuleItem[] = [
 export const CourseSection: React.FC<CourseSectionProps> = ({
   onOpenApply,
 }) => {
-  const shouldReduceMotion = useReducedMotion();
-
   return (
     <>
       <section
         id="course"
-        className="relative overflow-hidden bg-[#FFF0E3] pt-8 sm:pt-10 pb-8 sm:pb-10 border-b border-orange-200/50"
+        className="relative overflow-hidden bg-transparent pt-8 sm:pt-10 pb-8 sm:pb-10"
       >
-        {/* 4 Large Visible Soft Orange/Peach Translucent Floating Circles */}
-        <div
-          className="pointer-events-none absolute inset-0 overflow-hidden select-none"
-          aria-hidden="true"
-        >
-          {/* Shape 1: Top-Left Edge */}
-          <motion.div
-            className="absolute -top-20 -left-16 w-[420px] h-[420px] rounded-full bg-[#FF9A52]/24 blur-[85px]"
-            animate={
-              shouldReduceMotion
-                ? undefined
-                : {
-                    x: [0, 45, -25, 0],
-                    y: [0, 35, -20, 0],
-                  }
-            }
-            transition={{
-              duration: 20,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-          />
-
-          {/* Shape 2: Top-Right Edge */}
-          <motion.div
-            className="absolute -top-16 -right-20 w-[380px] h-[380px] rounded-full bg-[#FFAE7A]/28 blur-[80px]"
-            animate={
-              shouldReduceMotion
-                ? undefined
-                : {
-                    x: [0, -40, 20, 0],
-                    y: [0, 40, -15, 0],
-                  }
-            }
-            transition={{
-              duration: 24,
-              repeat: Infinity,
-              delay: 2,
-              ease: 'easeInOut',
-            }}
-          />
-
-          {/* Shape 3: Bottom-Left Edge */}
-          <motion.div
-            className="absolute -bottom-24 -left-12 w-[460px] h-[460px] rounded-full bg-[#FF8C38]/22 blur-[90px]"
-            animate={
-              shouldReduceMotion
-                ? undefined
-                : {
-                    x: [0, 35, -30, 0],
-                    y: [0, -30, 20, 0],
-                  }
-            }
-            transition={{
-              duration: 22,
-              repeat: Infinity,
-              delay: 3,
-              ease: 'easeInOut',
-            }}
-          />
-
-          {/* Shape 4: Bottom-Right Edge */}
-          <motion.div
-            className="absolute -bottom-20 -right-16 w-[400px] h-[400px] rounded-full bg-[#FFA566]/26 blur-[85px]"
-            animate={
-              shouldReduceMotion
-                ? undefined
-                : {
-                    x: [0, -35, 25, 0],
-                    y: [0, -35, 15, 0],
-                  }
-            }
-            transition={{
-              duration: 25,
-              repeat: Infinity,
-              delay: 1,
-              ease: 'easeInOut',
-            }}
-          />
-        </div>
-
         <div className="relative z-10 mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
           {/* HEADER */}
           <div className="mx-auto max-w-5xl text-center mb-8 sm:mb-10">
-            <h2 className="text-2xl sm:text-3xl md:text-[34px] lg:text-[40px] font-extrabold tracking-tight leading-tight text-[#072B57] sm:whitespace-nowrap">
+            <h2 className="text-2xl sm:text-3xl md:text-[34px] lg:text-[40px] font-extrabold tracking-tight leading-tight text-white sm:whitespace-nowrap">
               AI-Powered{' '}
-              <span className="text-[#FF6B00]">Digital Marketing</span>{' '}
+              <span className="text-[#FF7200]">Digital Marketing</span>{' '}
               Curriculum
             </h2>
 
-            <p className="mt-2.5 text-xs sm:text-sm md:text-base font-normal text-slate-500">
+            <p className="mt-2.5 text-xs sm:text-sm md:text-base font-normal text-[#A7A7A7]">
               8 power-packed modules. Real-world skills. AI tools. Career-ready you.
             </p>
 
-            {/* Accent divider pill matching reference design */}
-            <div className="w-12 h-1 bg-[#FF6B00] rounded-full mx-auto mt-4" />
+            {/* Accent divider pill */}
+            <div className="w-12 h-1 bg-[#FF7200] rounded-full mx-auto mt-4" />
           </div>
 
-          {/* 4x2 MODULE GRID */}
+          {/* 4x2 MODULE GRID - Consistent Card System */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
             {modules.map((module) => (
               <article
                 key={module.number}
-                className="bg-white rounded-2xl border border-slate-200/90 shadow-[0_2px_8px_rgba(0,0,0,0.03)] p-6 sm:p-7 flex flex-col justify-start h-full hover:shadow-md transition-shadow duration-200"
+                className="bg-white/[0.04] hover:bg-white/[0.07] rounded-[20px] border border-white/[0.08] hover:border-white/[0.16] shadow-[0_8px_24px_rgba(0,0,0,0.2)] p-6 sm:p-7 flex flex-col justify-start h-full hover:-translate-y-1 transition-all duration-300 backdrop-blur-xs group"
               >
                 {/* Top Row: Number Badge & Circular Icon */}
                 <div className="flex items-center justify-between">
                   <span
-                    className={`inline-flex items-center justify-center px-2.5 py-1 rounded-md text-xs sm:text-[13px] font-bold leading-none ${module.badgeBg} ${module.badgeText}`}
+                    className="inline-flex items-center justify-center px-2.5 py-1 rounded-md text-xs sm:text-[13px] font-bold leading-none bg-[#FF7200]/10 border border-[#FF7200]/30 text-[#FF7200]"
                   >
                     {module.number}
                   </span>
 
                   <div
-                    className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${module.circleBg}`}
+                    className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 bg-white/[0.05] border border-white/[0.08] group-hover:scale-105 transition-transform duration-300"
                   >
                     {module.renderIcon()}
                   </div>
                 </div>
 
                 {/* Bold Module Title */}
-                <h3 className="mt-5 sm:mt-6 text-[17px] sm:text-[18px] font-bold text-[#072B57] leading-[1.3]">
+                <h3 className="mt-5 sm:mt-6 text-[17px] sm:text-[18px] font-bold text-white group-hover:text-[#FF7200] transition-colors leading-[1.3]">
                   {module.title}
                 </h3>
 
                 {/* Short Description */}
-                <p className="mt-2 text-[13px] sm:text-[13.5px] text-slate-500 leading-[1.55]">
+                <p className="mt-2 text-[13px] sm:text-[13.5px] text-[#A7A7A7] leading-[1.55]">
                   {module.description}
                 </p>
               </article>

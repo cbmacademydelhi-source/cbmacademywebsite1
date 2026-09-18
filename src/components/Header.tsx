@@ -95,31 +95,31 @@ export const Header: React.FC<HeaderProps> = ({
         initial={shouldAnimate ? { opacity: 0 } : false}
         animate={shouldAnimate ? { opacity: 1 } : undefined}
         transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="bg-[#072B57] text-white text-xs py-2 px-4 border-b border-blue-900/40"
+        className="bg-[#0D0D0D] text-white text-xs py-2 px-4 border-b border-white/[0.06]"
       >
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
 
           <div className="flex items-center gap-2 font-medium">
-            <span className="inline-flex items-center gap-1 bg-[#FF6B00] text-white px-2 py-0.5 rounded text-[11px] font-semibold tracking-wide uppercase">
+            <span className="inline-flex items-center gap-1 bg-[#FF7200] text-white px-2 py-0.5 rounded text-[11px] font-semibold tracking-wide uppercase">
               <Sparkles className="w-3 h-3" />
               New Batch
             </span>
 
-            <span>
+            <span className="text-[#A7A7A7]">
               New Batch Starting Soon &bull; Limited 25 Seats
             </span>
           </div>
 
-          <div className="flex items-center gap-4 text-slate-200">
+          <div className="flex items-center gap-4 text-[#A7A7A7]">
             <a
               href="tel:+911145678900"
-              className="inline-flex items-center gap-1.5 hover:text-[#FF6B00] transition-colors"
+              className="inline-flex items-center gap-1.5 hover:text-[#FF7200] transition-colors"
             >
-              <PhoneCall className="w-3.5 h-3.5 text-[#FF6B00]" />
+              <PhoneCall className="w-3.5 h-3.5 text-[#FF7200]" />
               <span>Admissions: +91 11 4567 8900</span>
             </a>
 
-            <span className="hidden md:inline text-slate-500">
+            <span className="hidden md:inline text-white/20">
               |
             </span>
 
@@ -137,10 +137,10 @@ export const Header: React.FC<HeaderProps> = ({
         initial={shouldAnimate ? { opacity: 0 } : false}
         animate={shouldAnimate ? { opacity: 1 } : undefined}
         transition={{ duration: 0.5, delay: 0.05, ease: 'easeOut' }}
-        className={`sticky top-0 z-40 w-full transition-all duration-200 bg-[#FFFDFB]/95 backdrop-blur-md border-b ${
+        className={`sticky top-0 z-40 w-full transition-all duration-200 bg-[#080808]/90 backdrop-blur-md border-b ${
           isScrolled
-            ? 'border-orange-100/80 shadow-md py-2'
-            : 'border-orange-100/50 py-3'
+            ? 'border-white/[0.12] shadow-xl py-2'
+            : 'border-white/[0.06] py-3'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
@@ -149,11 +149,12 @@ export const Header: React.FC<HeaderProps> = ({
           <a
             href="#home"
             onClick={(e) => handleNavigation(e, '#home')}
-            className="flex-shrink-0 flex items-center group focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:ring-offset-2 rounded-lg"
+            className="flex-shrink-0 flex items-center group focus:outline-none focus:ring-2 focus:ring-[#FF7200] focus:ring-offset-2 focus:ring-offset-[#080808] rounded-lg"
             id="header-logo-link"
             aria-label="CBM Academy Home"
           >
             <CbmLogo
+              variant="dark"
               height={isScrolled ? 42 : 48}
               showTagline={true}
             />
@@ -174,8 +175,8 @@ export const Header: React.FC<HeaderProps> = ({
                   }
                   className={`px-3 py-2 rounded-lg text-sm font-semibold transition-colors duration-150 whitespace-nowrap ${
                     isActive
-                      ? 'text-[#072B57] bg-slate-100 font-bold border-b-2 border-[#FF6B00]'
-                      : 'text-[#072B57] hover:text-[#072B57] hover:bg-slate-50'
+                      ? 'text-[#FF7200] bg-white/[0.06] font-bold border-b-2 border-[#FF7200]'
+                      : 'text-[#A7A7A7] hover:text-white hover:bg-white/[0.04]'
                   }`}
                 >
                   {link.name}
@@ -190,7 +191,7 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={onOpenBrochure}
               id="header-brochure-btn"
               type="button"
-              className="text-xs font-bold text-[#072B57] hover:text-[#FF6B00] px-3 py-2 rounded-lg border border-slate-200 hover:border-slate-300 transition-colors"
+              className="text-xs font-bold text-white hover:text-[#FF7200] px-3.5 py-2 rounded-lg border border-white/[0.12] hover:border-[#FF7200]/50 transition-colors cursor-pointer"
             >
               Brochure
             </button>
@@ -199,7 +200,7 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={() => onOpenApply()}
               id="header-apply-btn"
               type="button"
-              className="inline-flex items-center justify-center gap-2 bg-[#FF6B00] hover:bg-[#e05e00] text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow-sm hover:shadow-md transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:ring-offset-2"
+              className="inline-flex items-center justify-center gap-2 bg-[#FF7200] hover:bg-[#e06500] text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow-[0_4px_16px_rgba(255,114,0,0.25)] hover:shadow-[0_6px_22px_rgba(255,114,0,0.35)] transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF7200] focus:ring-offset-2 focus:ring-offset-[#080808]"
             >
               <span>Apply Now</span>
               <ArrowRight className="w-4 h-4" />
@@ -211,7 +212,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={() => onOpenApply()}
               type="button"
-              className="sm:hidden bg-[#FF6B00] text-white text-xs font-bold px-3 py-1.5 rounded-lg"
+              className="sm:hidden bg-[#FF7200] text-white text-xs font-bold px-3 py-1.5 rounded-lg cursor-pointer"
             >
               Apply
             </button>
@@ -223,7 +224,7 @@ export const Header: React.FC<HeaderProps> = ({
               type="button"
               id="mobile-menu-toggle"
               aria-label="Toggle navigation menu"
-              className="p-2 rounded-xl text-slate-700 hover:text-[#072B57] hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-[#072B57]"
+              className="p-2 rounded-xl text-[#A7A7A7] hover:text-white hover:bg-white/[0.06] focus:outline-none focus:ring-2 focus:ring-[#FF7200]"
             >
               {mobileMenuOpen ? (
                 <X className="w-6 h-6" />
@@ -238,10 +239,10 @@ export const Header: React.FC<HeaderProps> = ({
         {mobileMenuOpen && (
           <div
             id="mobile-menu-drawer"
-            className="lg:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-6 space-y-2 shadow-xl"
+            className="lg:hidden border-t border-white/[0.08] bg-[#0D0D0D] px-4 pt-3 pb-6 space-y-2 shadow-2xl"
           >
-            <div className="py-2 border-b border-slate-100">
-              <CbmLogo height={38} showTagline={true} />
+            <div className="py-2 border-b border-white/[0.06]">
+              <CbmLogo variant="dark" height={38} showTagline={true} />
             </div>
 
             <div className="flex flex-col space-y-1 pt-2">
@@ -257,25 +258,25 @@ export const Header: React.FC<HeaderProps> = ({
                     }
                     className={`px-3 py-2.5 rounded-lg text-base font-semibold transition-colors flex items-center justify-between ${
                       isActive
-                        ? 'text-[#072B57] bg-slate-100 font-bold border-l-4 border-[#FF6B00]'
-                        : 'text-[#072B57] hover:text-[#072B57] hover:bg-slate-50'
+                        ? 'text-[#FF7200] bg-white/[0.06] font-bold border-l-4 border-[#FF7200]'
+                        : 'text-[#A7A7A7] hover:text-white hover:bg-white/[0.04]'
                     }`}
                   >
                     <span>{link.name}</span>
-                    <ArrowRight className="w-4 h-4 text-slate-400" />
+                    <ArrowRight className="w-4 h-4 text-white/30" />
                   </a>
                 );
               })}
             </div>
 
-            <div className="pt-4 border-t border-slate-100 flex flex-col gap-2">
+            <div className="pt-4 border-t border-white/[0.08] flex flex-col gap-2">
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
                   onOpenBrochure();
                 }}
                 type="button"
-                className="w-full text-center py-2.5 rounded-xl border border-slate-300 text-[#072B57] font-bold text-sm"
+                className="w-full text-center py-2.5 rounded-xl border border-white/[0.12] text-white hover:border-[#FF7200] font-bold text-sm"
               >
                 Download Detailed Brochure
               </button>
@@ -286,7 +287,7 @@ export const Header: React.FC<HeaderProps> = ({
                   onOpenApply();
                 }}
                 type="button"
-                className="w-full inline-flex items-center justify-center gap-2 bg-[#FF6B00] text-white font-bold text-base py-3 rounded-xl shadow-md"
+                className="w-full inline-flex items-center justify-center gap-2 bg-[#FF7200] hover:bg-[#e06500] text-white font-bold text-base py-3 rounded-xl shadow-md"
               >
                 <span>Apply for Next Cohort</span>
                 <ArrowRight className="w-5 h-5" />

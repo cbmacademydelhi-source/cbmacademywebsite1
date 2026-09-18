@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { BLOG_POSTS } from '../data/cbmData';
 import { BlogPost } from '../types';
-import { Calendar, Clock, ArrowRight, User, X, BookOpen, Share2 } from 'lucide-react';
+import { Calendar, Clock, ArrowRight, User, X } from 'lucide-react';
 import { SMOOTH_EASE_OUT, VIEWPORT_ONCE } from '../lib/animations';
 
 export const BlogSection: React.FC = () => {
@@ -10,167 +10,7 @@ export const BlogSection: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <section id="blogs" className="relative overflow-hidden pt-8 sm:pt-10 pb-8 sm:pb-10 bg-[#FFD3A3] border-b border-orange-300/50">
-      {/* Soft Glowing Orange Circles & Upward Floating Particles */}
-      <div
-        className="pointer-events-none absolute inset-0 overflow-hidden select-none"
-        aria-hidden="true"
-      >
-        {/* Glowing Circle 1: Top-Right */}
-        <motion.div
-          className="absolute -top-16 -right-12 w-[360px] h-[360px] rounded-full bg-[#FF7A00]/22 blur-[75px]"
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  scale: [0.95, 1.12, 0.95],
-                  y: [15, -25, 15],
-                  opacity: [0.22, 0.32, 0.22],
-                }
-          }
-          transition={{
-            duration: 16,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-        />
-
-        {/* Glowing Circle 2: Bottom-Left */}
-        <motion.div
-          className="absolute -bottom-20 -left-12 w-[400px] h-[400px] rounded-full bg-[#FF9433]/24 blur-[80px]"
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  scale: [1.08, 0.94, 1.08],
-                  y: [20, -30, 20],
-                  opacity: [0.24, 0.35, 0.24],
-                }
-          }
-          transition={{
-            duration: 18,
-            repeat: Infinity,
-            delay: 2,
-            ease: 'easeInOut',
-          }}
-        />
-
-        {/* Floating Particle Dots with Slow Upward Movement & Pulse */}
-        <motion.div
-          className="absolute top-[20%] left-[12%] w-6 h-6 rounded-full bg-[#FF6B00]/40 blur-[3px]"
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  y: [40, -50, 40],
-                  x: [0, 15, 0],
-                  scale: [0.9, 1.25, 0.9],
-                  opacity: [0.35, 0.65, 0.35],
-                }
-          }
-          transition={{
-            duration: 14,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-        />
-        <motion.div
-          className="absolute top-[45%] left-[22%] w-3.5 h-3.5 rounded-full bg-[#FF8C33]/45 blur-[2px]"
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  y: [50, -45, 50],
-                  x: [0, -18, 0],
-                  scale: [0.85, 1.3, 0.85],
-                  opacity: [0.4, 0.7, 0.4],
-                }
-          }
-          transition={{
-            duration: 16,
-            repeat: Infinity,
-            delay: 1,
-            ease: 'easeInOut',
-          }}
-        />
-        <motion.div
-          className="absolute top-[30%] right-[18%] w-5 h-5 rounded-full bg-[#FF7711]/40 blur-[2px]"
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  y: [45, -55, 45],
-                  x: [0, 16, 0],
-                  scale: [0.9, 1.2, 0.9],
-                  opacity: [0.35, 0.65, 0.35],
-                }
-          }
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            delay: 3,
-            ease: 'easeInOut',
-          }}
-        />
-        <motion.div
-          className="absolute bottom-[25%] left-[45%] w-3 h-3 rounded-full bg-[#FF9944]/50 blur-[1px]"
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  y: [55, -50, 55],
-                  x: [0, -14, 0],
-                  scale: [0.8, 1.35, 0.8],
-                  opacity: [0.4, 0.75, 0.4],
-                }
-          }
-          transition={{
-            duration: 18,
-            repeat: Infinity,
-            delay: 2,
-            ease: 'easeInOut',
-          }}
-        />
-        <motion.div
-          className="absolute bottom-[18%] right-[28%] w-7 h-7 rounded-full bg-[#FFA044]/35 blur-[3px]"
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  y: [40, -45, 40],
-                  x: [0, 20, 0],
-                  scale: [0.95, 1.2, 0.95],
-                  opacity: [0.3, 0.6, 0.3],
-                }
-          }
-          transition={{
-            duration: 17,
-            repeat: Infinity,
-            delay: 4,
-            ease: 'easeInOut',
-          }}
-        />
-        <motion.div
-          className="absolute top-[65%] right-[8%] w-2.5 h-2.5 rounded-full bg-[#FF8022]/55 blur-[1px]"
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  y: [50, -60, 50],
-                  x: [0, -14, 0],
-                  scale: [0.85, 1.4, 0.85],
-                  opacity: [0.45, 0.8, 0.45],
-                }
-          }
-          transition={{
-            duration: 13,
-            repeat: Infinity,
-            delay: 1.5,
-            ease: 'easeInOut',
-          }}
-        />
-      </div>
-
+    <section id="blogs" className="relative overflow-hidden pt-8 sm:pt-10 pb-8 sm:pb-10 bg-transparent">
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
@@ -181,7 +21,7 @@ export const BlogSection: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={VIEWPORT_ONCE}
               transition={{ duration: 0.6, ease: SMOOTH_EASE_OUT }}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 text-[#FF6B00] text-xs font-bold uppercase tracking-wider border border-orange-100"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FF7200]/10 text-[#FF7200] text-xs font-bold uppercase tracking-wider border border-[#FF7200]/30"
             >
               Insights & Articles
             </motion.div>
@@ -190,7 +30,7 @@ export const BlogSection: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={VIEWPORT_ONCE}
               transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
-              className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#072B57] tracking-tight"
+              className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight"
             >
               Digital Marketing & AI Insights
             </motion.h2>
@@ -199,14 +39,14 @@ export const BlogSection: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={VIEWPORT_ONCE}
               transition={{ duration: 0.6, delay: 0.16, ease: SMOOTH_EASE_OUT }}
-              className="text-slate-600 text-base leading-relaxed"
+              className="text-[#A7A7A7] text-base leading-relaxed"
             >
               Algorithmic updates, paid advertising strategies, and AI workflows curated by CBM mentors.
             </motion.p>
           </div>
         </div>
 
-        {/* Responsive 3-Column Cards Grid */}
+        {/* Responsive 3-Column Cards Grid - Consistent Card System */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
           {BLOG_POSTS.map((post, index) => (
             <motion.article
@@ -215,18 +55,18 @@ export const BlogSection: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={VIEWPORT_ONCE}
               transition={{ duration: 0.6, delay: index * 0.1, ease: SMOOTH_EASE_OUT }}
-              className="bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col justify-between cbm-shadow hover:shadow-[0_12px_28px_-4px_rgba(15,23,42,0.08)] hover:-translate-y-[2.5px] transition-all duration-300 hover:border-slate-300 group"
+              className="bg-white/[0.04] hover:bg-white/[0.07] rounded-[20px] border border-white/[0.08] hover:border-white/[0.16] shadow-[0_8px_24px_rgba(0,0,0,0.2)] hover:-translate-y-[2.5px] transition-all duration-300 overflow-hidden flex flex-col justify-between backdrop-blur-xs group"
             >
               <div>
                 {/* Featured Image */}
-                <div className="relative aspect-[16/9] overflow-hidden bg-slate-100">
+                <div className="relative aspect-[16/9] overflow-hidden bg-white/[0.02]">
                   <img
                     src={post.imageUrl}
                     alt={post.title}
                     referrerPolicy="no-referrer"
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 opacity-90"
                   />
-                  <div className="absolute top-3 left-3 bg-[#072B57] text-white text-[11px] font-bold px-2.5 py-1 rounded-md shadow-sm">
+                  <div className="absolute top-3 left-3 bg-[#0D0D0D]/90 backdrop-blur-xs text-white text-[11px] font-bold px-2.5 py-1 rounded-md border border-white/10 shadow-sm">
                     {post.category}
                   </div>
                 </div>
@@ -234,44 +74,44 @@ export const BlogSection: React.FC = () => {
                 {/* Content */}
                 <div className="p-6">
                   {/* Date & Read Time */}
-                  <div className="flex items-center gap-3 text-xs text-slate-500 font-medium mb-3">
+                  <div className="flex items-center gap-3 text-xs text-[#A7A7A7] font-medium mb-3">
                     <span className="flex items-center gap-1">
-                      <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                      <Calendar className="w-3.5 h-3.5 text-[#A7A7A7]" />
                       {post.date}
                     </span>
                     <span>&bull;</span>
                     <span className="flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5 text-slate-400" />
+                      <Clock className="w-3.5 h-3.5 text-[#A7A7A7]" />
                       {post.readTime}
                     </span>
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-lg font-bold text-[#072B57] group-hover:text-[#FF6B00] transition-colors leading-snug line-clamp-2 mb-3">
+                  <h3 className="text-lg font-bold text-white group-hover:text-[#FF7200] transition-colors leading-snug line-clamp-2 mb-3">
                     {post.title}
                   </h3>
 
                   {/* Excerpt */}
-                  <p className="text-sm text-slate-600 leading-relaxed line-clamp-3">
+                  <p className="text-sm text-[#A7A7A7] leading-relaxed line-clamp-3">
                     {post.excerpt}
                   </p>
                 </div>
               </div>
 
               {/* Bottom Action: Author & Read More → */}
-              <div className="px-6 pb-6 pt-2 border-t border-slate-100 flex items-center justify-between mt-auto">
+              <div className="px-6 pb-6 pt-3 border-t border-white/[0.08] flex items-center justify-between mt-auto">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
+                  <div className="w-7 h-7 rounded-full bg-white/[0.06] flex items-center justify-center text-[#A7A7A7]">
                     <User className="w-4 h-4" />
                   </div>
-                  <span className="text-xs font-semibold text-[#072B57]">{post.author.name}</span>
+                  <span className="text-xs font-semibold text-white">{post.author.name}</span>
                 </div>
 
                 <button
                   onClick={() => setSelectedPost(post)}
                   type="button"
                   id={`read-more-${post.id}`}
-                  className="inline-flex items-center gap-1 text-xs font-bold text-[#FF6B00] hover:text-[#072B57] transition-colors group/btn"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-[#FF7200] hover:text-white transition-colors group/btn cursor-pointer"
                 >
                   <span>Read More</span>
                   <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
@@ -286,13 +126,13 @@ export const BlogSection: React.FC = () => {
 
       {/* Interactive Blog Reader Modal */}
       {selectedPost && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl border border-slate-200 relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-150">
+          <div className="bg-[#0D0D0D] rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl border border-white/[0.12] relative text-white">
             
             <button
               onClick={() => setSelectedPost(null)}
               type="button"
-              className="absolute top-5 right-5 p-2 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+              className="absolute top-5 right-5 p-2 rounded-lg text-[#A7A7A7] hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
               aria-label="Close article"
             >
               <X className="w-5 h-5" />
@@ -300,14 +140,14 @@ export const BlogSection: React.FC = () => {
 
             {/* Header info */}
             <div className="space-y-3 mb-6">
-              <span className="inline-block bg-orange-50 text-[#FF6B00] text-xs font-bold px-3 py-1 rounded-full border border-orange-100">
+              <span className="inline-block bg-[#FF7200]/10 text-[#FF7200] text-xs font-bold px-3 py-1 rounded-full border border-[#FF7200]/30">
                 {selectedPost.category}
               </span>
-              <h2 className="text-xl sm:text-2xl font-extrabold text-[#072B57] leading-tight">
+              <h2 className="text-xl sm:text-2xl font-extrabold text-white leading-tight">
                 {selectedPost.title}
               </h2>
-              <div className="flex items-center gap-4 text-xs text-slate-500 pb-4 border-b border-slate-100">
-                <span className="font-semibold text-[#072B57]">{selectedPost.author.name} ({selectedPost.author.role})</span>
+              <div className="flex items-center gap-4 text-xs text-[#A7A7A7] pb-4 border-b border-white/[0.08]">
+                <span className="font-semibold text-white">{selectedPost.author.name} ({selectedPost.author.role})</span>
                 <span>&bull;</span>
                 <span>{selectedPost.date}</span>
                 <span>&bull;</span>
@@ -316,7 +156,7 @@ export const BlogSection: React.FC = () => {
             </div>
 
             {/* Image */}
-            <div className="aspect-[16/9] rounded-xl overflow-hidden mb-6 bg-slate-100">
+            <div className="aspect-[16/9] rounded-xl overflow-hidden mb-6 bg-white/[0.04]">
               <img
                 src={selectedPost.imageUrl}
                 alt={selectedPost.title}
@@ -326,8 +166,8 @@ export const BlogSection: React.FC = () => {
             </div>
 
             {/* Content text */}
-            <div className="prose prose-slate max-w-none text-sm text-slate-700 leading-relaxed space-y-4">
-              <p className="font-medium text-[#072B57] text-base">
+            <div className="text-sm text-[#A7A7A7] leading-relaxed space-y-4">
+              <p className="font-medium text-white text-base">
                 {selectedPost.excerpt}
               </p>
               <p>
@@ -339,20 +179,20 @@ export const BlogSection: React.FC = () => {
             </div>
 
             {/* Tags */}
-            <div className="mt-6 pt-4 border-t border-slate-100 flex flex-wrap items-center gap-1.5">
-              <span className="text-xs font-bold text-slate-400 mr-1">Topics:</span>
+            <div className="mt-6 pt-4 border-t border-white/[0.08] flex flex-wrap items-center gap-1.5">
+              <span className="text-xs font-bold text-[#A7A7A7] mr-1">Topics:</span>
               {selectedPost.tags.map((tag, i) => (
-                <span key={i} className="text-xs bg-slate-100 text-[#072B57] px-2.5 py-1 rounded-md">
+                <span key={i} className="text-xs bg-white/[0.06] text-white px-2.5 py-1 rounded-md border border-white/[0.08]">
                   #{tag}
                 </span>
               ))}
             </div>
 
-            <div className="mt-8 pt-4 border-t border-slate-100 text-right">
+            <div className="mt-8 pt-4 border-t border-white/[0.08] text-right">
               <button
                 onClick={() => setSelectedPost(null)}
                 type="button"
-                className="px-6 py-2.5 bg-[#072B57] text-white font-bold text-xs rounded-xl hover:bg-[#0c3c78] transition-colors"
+                className="px-6 py-2.5 bg-[#FF7200] hover:bg-[#e06500] text-white font-bold text-xs rounded-xl shadow-[0_4px_16px_rgba(255,114,0,0.3)] transition-colors cursor-pointer"
               >
                 Close Article
               </button>

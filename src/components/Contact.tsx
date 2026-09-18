@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { ContactFormData } from '../types';
 import { submitContactForm, TARGET_NOTIFICATION_EMAIL } from '../services/formService';
-import { MapPin, Mail, Phone, Clock, Send, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react';
+import { MapPin, Mail, Phone, Clock, Send, CheckCircle2, AlertCircle } from 'lucide-react';
 import { SMOOTH_EASE_OUT, VIEWPORT_ONCE } from '../lib/animations';
 
 export const Contact: React.FC = () => {
@@ -97,7 +97,7 @@ export const Contact: React.FC = () => {
           message: result.message || `We couldn't send your message right now. Please try again or contact CBM Academy directly at ${TARGET_NOTIFICATION_EMAIL}.`,
         });
       }
-    } catch (err) {
+    } catch {
       setSubmitStatus({
         type: 'error',
         message: `We couldn't send your message right now. Please try again or contact CBM Academy directly at ${TARGET_NOTIFICATION_EMAIL}.`,
@@ -112,322 +112,8 @@ export const Contact: React.FC = () => {
   return (
     <section
       id="contact"
-      style={{ backgroundColor: '#FFE0B2' }}
-      className="relative overflow-hidden pt-8 sm:pt-10 pb-8 sm:pb-10 bg-[#FFE0B2] border-b border-orange-300/60 !bg-[#FFE0B2]"
+      className="relative overflow-hidden pt-8 sm:pt-10 pb-8 sm:pb-10 bg-transparent"
     >
-      {/* =========================================================
-          LEFT SIDE DECORATIONS (Soft curves, translucent circle, blob, dots)
-          ========================================================= */}
-      <div
-        className="pointer-events-none absolute inset-y-0 left-0 w-[180px] sm:w-[260px] lg:w-[320px] overflow-hidden select-none z-0"
-        aria-hidden="true"
-      >
-        {/* Soft Curved Line (SVG) - Left Side */}
-        <motion.svg
-          className="absolute -left-8 top-[18%] w-[260px] h-[340px] text-[#E98B4A]"
-          viewBox="0 0 260 340"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  y: [0, -16, 12, 0],
-                  rotate: [0, 2, -1.5, 0],
-                }
-          }
-          transition={{
-            duration: 22,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-        >
-          <path
-            d="M-20,20 C110,60 150,190 30,310"
-            stroke="#E98B4A"
-            strokeOpacity="0.32"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeDasharray="6 6"
-          />
-          <path
-            d="M-35,80 C80,110 110,230 10,330"
-            stroke="#F4A261"
-            strokeOpacity="0.38"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-        </motion.svg>
-
-        {/* Large Translucent Circle (#F4A261) - Upper Left */}
-        <motion.div
-          className="absolute -top-12 -left-16 w-[260px] h-[260px] rounded-full bg-[#F4A261]/22 blur-[30px]"
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  x: [0, 25, -15, 0],
-                  y: [0, 20, -20, 0],
-                  scale: [1, 1.08, 0.95, 1],
-                }
-          }
-          transition={{
-            duration: 24,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-        />
-
-        {/* Abstract Flowing Shape / Blob (#E98B4A) - Lower Left */}
-        <motion.div
-          className="absolute -bottom-14 -left-12 w-[280px] h-[300px] bg-[#E98B4A]/20 blur-[28px]"
-          style={{ borderRadius: '58% 42% 66% 34% / 44% 62% 38% 56%' }}
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  x: [0, 22, -18, 0],
-                  y: [0, -22, 16, 0],
-                  rotate: [0, 12, -8, 0],
-                }
-          }
-          transition={{
-            duration: 26,
-            repeat: Infinity,
-            delay: 1,
-            ease: 'easeInOut',
-          }}
-        />
-
-        {/* Subtle Orange Dots - Left Side */}
-        <motion.div
-          className="absolute top-[16%] left-[62%] w-3 h-3 rounded-full bg-[#FFB56B]/65 blur-[1px]"
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  y: [0, -18, 0],
-                  scale: [1, 1.25, 1],
-                  opacity: [0.55, 0.85, 0.55],
-                }
-          }
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-        />
-        <motion.div
-          className="absolute top-[44%] left-[78%] w-2 h-2 rounded-full bg-[#E98B4A]/55"
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  y: [0, 16, 0],
-                  scale: [0.9, 1.3, 0.9],
-                  opacity: [0.45, 0.75, 0.45],
-                }
-          }
-          transition={{
-            duration: 17,
-            repeat: Infinity,
-            delay: 1.5,
-            ease: 'easeInOut',
-          }}
-        />
-        <motion.div
-          className="absolute bottom-[30%] left-[48%] w-4 h-4 rounded-full bg-[#F4A261]/50 blur-[1.5px]"
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  y: [0, -22, 0],
-                  x: [0, 8, 0],
-                  scale: [0.95, 1.2, 0.95],
-                }
-          }
-          transition={{
-            duration: 19,
-            repeat: Infinity,
-            delay: 3,
-            ease: 'easeInOut',
-          }}
-        />
-        <motion.div
-          className="absolute bottom-[14%] left-[70%] w-2.5 h-2.5 rounded-full bg-[#FFB56B]/70"
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  y: [0, 14, 0],
-                  opacity: [0.5, 0.85, 0.5],
-                }
-          }
-          transition={{
-            duration: 16,
-            repeat: Infinity,
-            delay: 2,
-            ease: 'easeInOut',
-          }}
-        />
-      </div>
-
-      {/* =========================================================
-          RIGHT SIDE DECORATIONS (Soft curves, translucent circle, blob, dots)
-          ========================================================= */}
-      <div
-        className="pointer-events-none absolute inset-y-0 right-0 w-[180px] sm:w-[260px] lg:w-[320px] overflow-hidden select-none z-0"
-        aria-hidden="true"
-      >
-        {/* Soft Curved Line (SVG) - Right Side */}
-        <motion.svg
-          className="absolute -right-6 top-[28%] w-[260px] h-[360px] text-[#FFB56B]"
-          viewBox="0 0 260 360"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  y: [0, 18, -14, 0],
-                  rotate: [0, -2.5, 1.5, 0],
-                }
-          }
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            delay: 1,
-            ease: 'easeInOut',
-          }}
-        >
-          <path
-            d="M280,30 C150,75 120,210 240,320"
-            stroke="#FFB56B"
-            strokeOpacity="0.38"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-          />
-          <path
-            d="M295,90 C185,130 165,250 265,340"
-            stroke="#E98B4A"
-            strokeOpacity="0.3"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeDasharray="7 5"
-          />
-        </motion.svg>
-
-        {/* Large Translucent Circle (#FFB56B) - Upper Right */}
-        <motion.div
-          className="absolute -top-10 -right-16 w-[280px] h-[280px] rounded-full bg-[#FFB56B]/24 blur-[32px]"
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  x: [0, -22, 16, 0],
-                  y: [0, 24, -18, 0],
-                  scale: [1, 1.09, 0.94, 1],
-                }
-          }
-          transition={{
-            duration: 23,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-        />
-
-        {/* Abstract Flowing Shape / Blob (#F4A261) - Lower Right */}
-        <motion.div
-          className="absolute -bottom-16 -right-14 w-[300px] h-[280px] bg-[#F4A261]/22 blur-[28px]"
-          style={{ borderRadius: '46% 54% 38% 62% / 58% 42% 58% 42%' }}
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  x: [0, -25, 20, 0],
-                  y: [0, -20, 24, 0],
-                  rotate: [0, -10, 8, 0],
-                }
-          }
-          transition={{
-            duration: 27,
-            repeat: Infinity,
-            delay: 1.5,
-            ease: 'easeInOut',
-          }}
-        />
-
-        {/* Subtle Orange Dots - Right Side */}
-        <motion.div
-          className="absolute top-[22%] right-[66%] w-3.5 h-3.5 rounded-full bg-[#E98B4A]/55 blur-[1px]"
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  y: [0, -16, 0],
-                  scale: [1, 1.25, 1],
-                  opacity: [0.45, 0.8, 0.45],
-                }
-          }
-          transition={{
-            duration: 16,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-        />
-        <motion.div
-          className="absolute top-[52%] right-[48%] w-2 h-2 rounded-full bg-[#FFB56B]/70"
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  y: [0, 18, 0],
-                  opacity: [0.5, 0.85, 0.5],
-                }
-          }
-          transition={{
-            duration: 18,
-            repeat: Infinity,
-            delay: 1,
-            ease: 'easeInOut',
-          }}
-        />
-        <motion.div
-          className="absolute bottom-[36%] right-[72%] w-4 h-4 rounded-full bg-[#F4A261]/45 blur-[1.5px]"
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  y: [0, -20, 0],
-                  scale: [0.9, 1.25, 0.9],
-                }
-          }
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            delay: 2.5,
-            ease: 'easeInOut',
-          }}
-        />
-        <motion.div
-          className="absolute bottom-[18%] right-[38%] w-2.5 h-2.5 rounded-full bg-[#E98B4A]/60"
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  y: [0, 15, 0],
-                  opacity: [0.55, 0.85, 0.55],
-                }
-          }
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            delay: 2,
-            ease: 'easeInOut',
-          }}
-        />
-      </div>
-
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
@@ -437,7 +123,7 @@ export const Contact: React.FC = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={VIEWPORT_ONCE}
             transition={{ duration: 0.6, ease: SMOOTH_EASE_OUT }}
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 text-[#FF6B00] text-xs font-bold uppercase tracking-wider border border-orange-100"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FF7200]/10 text-[#FF7200] text-xs font-bold uppercase tracking-wider border border-[#FF7200]/30"
           >
             Get In Touch
           </motion.div>
@@ -446,7 +132,7 @@ export const Contact: React.FC = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={VIEWPORT_ONCE}
             transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
-            className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#072B57] tracking-tight"
+            className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight"
           >
             Contact CBM Academy
           </motion.h2>
@@ -455,14 +141,14 @@ export const Contact: React.FC = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={VIEWPORT_ONCE}
             transition={{ duration: 0.6, delay: 0.16, ease: SMOOTH_EASE_OUT }}
-            className="text-slate-600 text-base leading-relaxed"
+            className="text-[#A7A7A7] text-base leading-relaxed"
           >
             Have questions about upcoming batches, syllabus, or corporate training? Reach out below.
           </motion.p>
         </div>
 
         {/* Two-Column Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           
           {/* Left Column: Institute Contact Details & Google Map Container */}
           <motion.div
@@ -472,23 +158,24 @@ export const Contact: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
             className="lg:col-span-5 space-y-6"
           >
-            <div className="bg-[#F8FAFC] p-6 sm:p-8 rounded-2xl border border-slate-200 space-y-6">
+            {/* Consistent Card Container */}
+            <div className="bg-white/[0.04] p-6 sm:p-8 rounded-[20px] border border-white/[0.08] shadow-[0_8px_24px_rgba(0,0,0,0.2)] backdrop-blur-xs space-y-6">
               
-              <h3 className="text-xl font-bold text-[#072B57] pb-3 border-b border-slate-200">
+              <h3 className="text-xl font-bold text-white pb-3 border-b border-white/[0.08]">
                 Admissions & Campus Office
               </h3>
 
               {/* Address */}
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center flex-shrink-0 text-[#FF6B00] shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-white/[0.06] border border-white/[0.08] flex items-center justify-center flex-shrink-0 text-[#FF7200] shadow-sm">
                   <MapPin className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">Address</h4>
-                  <p className="text-sm font-semibold text-[#072B57]">
+                  <h4 className="text-xs font-bold text-[#A7A7A7] uppercase tracking-wider mb-0.5">Address</h4>
+                  <p className="text-sm font-semibold text-white">
                     CBM Academy, Digital Growth Campus
                   </p>
-                  <p className="text-xs text-slate-600 leading-relaxed mt-0.5">
+                  <p className="text-xs text-[#A7A7A7] leading-relaxed mt-0.5">
                     Plot 14, Institutional Area, South Extension & Connaught Place, New Delhi, 110049, India
                   </p>
                 </div>
@@ -496,64 +183,64 @@ export const Contact: React.FC = () => {
 
               {/* Email */}
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center flex-shrink-0 text-[#FF6B00] shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-white/[0.06] border border-white/[0.08] flex items-center justify-center flex-shrink-0 text-[#FF7200] shadow-sm">
                   <Mail className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">Official Email</h4>
+                  <h4 className="text-xs font-bold text-[#A7A7A7] uppercase tracking-wider mb-0.5">Official Email</h4>
                   <a
                     href="mailto:office@cbmacademy.in"
-                    className="text-sm font-bold text-[#072B57] hover:text-[#FF6B00] transition-colors"
+                    className="text-sm font-bold text-white hover:text-[#FF7200] transition-colors"
                   >
                     office@cbmacademy.in
                   </a>
-                  <p className="text-xs text-slate-500 mt-0.5">Direct inquiries & corporate partnerships</p>
+                  <p className="text-xs text-[#A7A7A7] mt-0.5">Direct inquiries & corporate partnerships</p>
                 </div>
               </div>
 
               {/* Phone */}
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center flex-shrink-0 text-[#FF6B00] shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-white/[0.06] border border-white/[0.08] flex items-center justify-center flex-shrink-0 text-[#FF7200] shadow-sm">
                   <Phone className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">Helpline & WhatsApp</h4>
+                  <h4 className="text-xs font-bold text-[#A7A7A7] uppercase tracking-wider mb-0.5">Helpline & WhatsApp</h4>
                   <a
                     href="tel:+919876543210"
-                    className="text-sm font-bold text-[#072B57] hover:text-[#FF6B00] transition-colors block"
+                    className="text-sm font-bold text-white hover:text-[#FF7200] transition-colors block"
                   >
                     +91 98765 43210 / +91 11 4567 8900
                   </a>
-                  <p className="text-xs text-slate-500 mt-0.5">Available on WhatsApp for instant guidance</p>
+                  <p className="text-xs text-[#A7A7A7] mt-0.5">Available on WhatsApp for instant guidance</p>
                 </div>
               </div>
 
               {/* Working Hours */}
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center flex-shrink-0 text-[#FF6B00] shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-white/[0.06] border border-white/[0.08] flex items-center justify-center flex-shrink-0 text-[#FF7200] shadow-sm">
                   <Clock className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">Office Timings</h4>
-                  <p className="text-sm font-semibold text-[#072B57]">
+                  <h4 className="text-xs font-bold text-[#A7A7A7] uppercase tracking-wider mb-0.5">Office Timings</h4>
+                  <p className="text-sm font-semibold text-white">
                     Monday – Saturday: 9:00 AM – 7:00 PM IST
                   </p>
-                  <p className="text-xs text-slate-500 mt-0.5">Sunday: Prior Appointment Only</p>
+                  <p className="text-xs text-[#A7A7A7] mt-0.5">Sunday: Prior Appointment Only</p>
                 </div>
               </div>
 
             </div>
 
             {/* Google Map Interactive Container */}
-            <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-slate-100 h-56 relative">
+            <div className="rounded-[20px] overflow-hidden border border-white/[0.08] shadow-sm bg-[#0D0D0D] h-56 relative">
               <iframe
                 title="CBM Academy Delhi Location"
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d112061.7618210352!2d77.12781682974558!3d28.631853516544976!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390cfd37b92bb18b%3A0xe5a36371a539eb87!2sConnaught%20Place%2C%20New%20Delhi%2C%20Delhi!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
-                className="w-full h-full border-0"
+                className="w-full h-full border-0 opacity-80"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
               />
-              <div className="absolute bottom-2 left-2 bg-white/95 px-3 py-1 rounded-md text-[11px] font-bold text-[#072B57] shadow">
+              <div className="absolute bottom-2 left-2 bg-[#0D0D0D]/90 backdrop-blur-xs px-3 py-1 rounded-md text-[11px] font-bold text-white border border-white/10 shadow">
                 📍 CBM Academy Campus &bull; New Delhi
               </div>
             </div>
@@ -568,21 +255,22 @@ export const Contact: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.16, ease: SMOOTH_EASE_OUT }}
             className="lg:col-span-7"
           >
-            <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-md">
+            {/* Consistent Card Container */}
+            <div className="bg-white/[0.04] p-6 sm:p-8 rounded-[20px] border border-white/[0.08] shadow-[0_8px_24px_rgba(0,0,0,0.2)] backdrop-blur-xs">
               
               <div className="mb-6">
-                <h3 className="text-xl font-bold text-[#072B57]">
+                <h3 className="text-xl font-bold text-white">
                   Send an Inquiry
                 </h3>
-                <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                  All messages are routed directly to <strong className="text-[#072B57]">office@cbmacademy.in</strong>. We reply within 24 hours.
+                <p className="text-xs sm:text-sm text-[#A7A7A7] mt-1">
+                  All messages are routed directly to <strong className="text-[#FF7200]">office@cbmacademy.in</strong>. We reply within 24 hours.
                 </p>
               </div>
 
               {/* Status Banner */}
               {submitStatus.type === 'success' && (
-                <div className="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-start gap-3 animate-in fade-in">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                <div className="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 flex items-start gap-3 animate-in fade-in">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
                   <div className="text-xs sm:text-sm font-medium leading-relaxed">
                     {submitStatus.message}
                   </div>
@@ -590,8 +278,8 @@ export const Contact: React.FC = () => {
               )}
 
               {submitStatus.type === 'error' && (
-                <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 flex items-start gap-3 animate-in fade-in">
-                  <AlertCircle className="w-5 h-5 text-rose-600 flex-shrink-0 mt-0.5" />
+                <div className="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 flex items-start gap-3 animate-in fade-in">
+                  <AlertCircle className="w-5 h-5 text-rose-400 flex-shrink-0 mt-0.5" />
                   <div className="text-xs sm:text-sm font-medium leading-relaxed">
                     {submitStatus.message}
                   </div>
@@ -614,8 +302,8 @@ export const Contact: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Full Name */}
                   <div>
-                    <label htmlFor="contact-fullname" className="block text-xs font-bold text-[#072B57] uppercase tracking-wider mb-1.5">
-                      Full Name <span className="text-rose-500">*</span>
+                    <label htmlFor="contact-fullname" className="block text-xs font-bold text-[#A7A7A7] uppercase tracking-wider mb-1.5">
+                      Full Name <span className="text-rose-400">*</span>
                     </label>
                     <input
                       type="text"
@@ -625,17 +313,17 @@ export const Contact: React.FC = () => {
                         setFormData({ ...formData, fullName: e.target.value });
                         if (errors.fullName) setErrors({ ...errors, fullName: '' });
                       }}
-                      className={`w-full px-4 py-3 rounded-xl border text-sm text-[#072B57] placeholder:text-slate-400 focus:outline-none focus:ring-2 ${
-                        errors.fullName ? 'border-rose-300 ring-1 ring-rose-300 bg-rose-50/20' : 'border-slate-300 focus:ring-[#FF6B00] focus:border-[#FF6B00]'
+                      className={`w-full px-4 py-3 rounded-xl border text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-2 ${
+                        errors.fullName ? 'border-rose-400/80 ring-1 ring-rose-400/50 bg-rose-500/10' : 'bg-white/[0.04] border-white/[0.12] focus:ring-[#FF7200] focus:border-[#FF7200]'
                       }`}
                     />
-                    {errors.fullName && <p className="text-xs text-rose-600 mt-1 font-medium">{errors.fullName}</p>}
+                    {errors.fullName && <p className="text-xs text-rose-400 mt-1 font-medium">{errors.fullName}</p>}
                   </div>
 
                   {/* Email */}
                   <div>
-                    <label htmlFor="contact-email" className="block text-xs font-bold text-[#072B57] uppercase tracking-wider mb-1.5">
-                      Email Address <span className="text-rose-500">*</span>
+                    <label htmlFor="contact-email" className="block text-xs font-bold text-[#A7A7A7] uppercase tracking-wider mb-1.5">
+                      Email Address <span className="text-rose-400">*</span>
                     </label>
                     <input
                       type="email"
@@ -645,19 +333,19 @@ export const Contact: React.FC = () => {
                         setFormData({ ...formData, email: e.target.value });
                         if (errors.email) setErrors({ ...errors, email: '' });
                       }}
-                      className={`w-full px-4 py-3 rounded-xl border text-sm text-[#072B57] placeholder:text-slate-400 focus:outline-none focus:ring-2 ${
-                        errors.email ? 'border-rose-300 ring-1 ring-rose-300 bg-rose-50/20' : 'border-slate-300 focus:ring-[#FF6B00] focus:border-[#FF6B00]'
+                      className={`w-full px-4 py-3 rounded-xl border text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-2 ${
+                        errors.email ? 'border-rose-400/80 ring-1 ring-rose-400/50 bg-rose-500/10' : 'bg-white/[0.04] border-white/[0.12] focus:ring-[#FF7200] focus:border-[#FF7200]'
                       }`}
                     />
-                    {errors.email && <p className="text-xs text-rose-600 mt-1 font-medium">{errors.email}</p>}
+                    {errors.email && <p className="text-xs text-rose-400 mt-1 font-medium">{errors.email}</p>}
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Phone */}
                   <div>
-                    <label htmlFor="contact-phone" className="block text-xs font-bold text-[#072B57] uppercase tracking-wider mb-1.5">
-                      Phone Number <span className="text-rose-500">*</span>
+                    <label htmlFor="contact-phone" className="block text-xs font-bold text-[#A7A7A7] uppercase tracking-wider mb-1.5">
+                      Phone Number <span className="text-rose-400">*</span>
                     </label>
                     <input
                       type="tel"
@@ -667,17 +355,17 @@ export const Contact: React.FC = () => {
                         setFormData({ ...formData, phone: e.target.value });
                         if (errors.phone) setErrors({ ...errors, phone: '' });
                       }}
-                      className={`w-full px-4 py-3 rounded-xl border text-sm text-[#072B57] placeholder:text-slate-400 focus:outline-none focus:ring-2 ${
-                        errors.phone ? 'border-rose-300 ring-1 ring-rose-300 bg-rose-50/20' : 'border-slate-300 focus:ring-[#FF6B00] focus:border-[#FF6B00]'
+                      className={`w-full px-4 py-3 rounded-xl border text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-2 ${
+                        errors.phone ? 'border-rose-400/80 ring-1 ring-rose-400/50 bg-rose-500/10' : 'bg-white/[0.04] border-white/[0.12] focus:ring-[#FF7200] focus:border-[#FF7200]'
                       }`}
                     />
-                    {errors.phone && <p className="text-xs text-rose-600 mt-1 font-medium">{errors.phone}</p>}
+                    {errors.phone && <p className="text-xs text-rose-400 mt-1 font-medium">{errors.phone}</p>}
                   </div>
 
                   {/* Inquiry Type */}
                   <div>
-                    <label htmlFor="contact-subject" className="block text-xs font-bold text-[#072B57] uppercase tracking-wider mb-1.5">
-                      Inquiry Subject <span className="text-rose-500">*</span>
+                    <label htmlFor="contact-subject" className="block text-xs font-bold text-[#A7A7A7] uppercase tracking-wider mb-1.5">
+                      Inquiry Subject <span className="text-rose-400">*</span>
                     </label>
                     <select
                       id="contact-subject"
@@ -686,23 +374,23 @@ export const Contact: React.FC = () => {
                         setFormData({ ...formData, subject: e.target.value });
                         if (errors.subject) setErrors({ ...errors, subject: '' });
                       }}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-sm text-[#072B57] focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:border-[#FF6B00]"
+                      className="w-full px-4 py-3 rounded-xl border border-white/[0.12] bg-[#0D0D0D] text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#FF7200] focus:border-[#FF7200]"
                     >
-                      <option value="Course Admission & Eligibility">Course Admission & Eligibility</option>
-                      <option value="Placement Drives & Job Assistance">Placement Drives & Job Assistance</option>
-                      <option value="Corporate Training & Workshops">Corporate Training & Workshops</option>
-                      <option value="Fee Structure & Scholarship Options">Fee Structure & Scholarship Options</option>
-                      <option value="Certificate Verification Assistance">Certificate Verification Assistance</option>
-                      <option value="Other Query">Other Query</option>
+                      <option value="Course Admission & Eligibility" className="bg-[#0D0D0D] text-white">Course Admission & Eligibility</option>
+                      <option value="Placement Drives & Job Assistance" className="bg-[#0D0D0D] text-white">Placement Drives & Job Assistance</option>
+                      <option value="Corporate Training & Workshops" className="bg-[#0D0D0D] text-white">Corporate Training & Workshops</option>
+                      <option value="Fee Structure & Scholarship Options" className="bg-[#0D0D0D] text-white">Fee Structure & Scholarship Options</option>
+                      <option value="Certificate Verification Assistance" className="bg-[#0D0D0D] text-white">Certificate Verification Assistance</option>
+                      <option value="Other Query" className="bg-[#0D0D0D] text-white">Other Query</option>
                     </select>
-                    {errors.subject && <p className="text-xs text-rose-600 mt-1 font-medium">{errors.subject}</p>}
+                    {errors.subject && <p className="text-xs text-rose-400 mt-1 font-medium">{errors.subject}</p>}
                   </div>
                 </div>
 
                 {/* Message */}
                 <div>
-                  <label htmlFor="contact-message" className="block text-xs font-bold text-[#072B57] uppercase tracking-wider mb-1.5">
-                    Your Message <span className="text-rose-500">*</span>
+                  <label htmlFor="contact-message" className="block text-xs font-bold text-[#A7A7A7] uppercase tracking-wider mb-1.5">
+                    Your Message <span className="text-rose-400">*</span>
                   </label>
                   <textarea
                     id="contact-message"
@@ -713,11 +401,11 @@ export const Contact: React.FC = () => {
                       if (errors.message) setErrors({ ...errors, message: '' });
                     }}
                     placeholder="Tell us about your background, career goals, or specific questions..."
-                    className={`w-full px-4 py-3 rounded-xl border text-sm text-[#072B57] placeholder:text-slate-400 focus:outline-none focus:ring-2 ${
-                      errors.message ? 'border-rose-300 ring-1 ring-rose-300 bg-rose-50/20' : 'border-slate-300 focus:ring-[#FF6B00] focus:border-[#FF6B00]'
+                    className={`w-full px-4 py-3 rounded-xl border text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-2 ${
+                      errors.message ? 'border-rose-400/80 ring-1 ring-rose-400/50 bg-rose-500/10' : 'bg-white/[0.04] border-white/[0.12] focus:ring-[#FF7200] focus:border-[#FF7200]'
                     }`}
                   />
-                  {errors.message && <p className="text-xs text-rose-600 mt-1 font-medium">{errors.message}</p>}
+                  {errors.message && <p className="text-xs text-rose-400 mt-1 font-medium">{errors.message}</p>}
                 </div>
 
                 {/* Submit Button */}
@@ -725,7 +413,7 @@ export const Contact: React.FC = () => {
                   type="submit"
                   disabled={isSubmitting}
                   id="contact-submit-btn"
-                  className="w-full inline-flex items-center justify-center gap-2 bg-[#FF6B00] hover:bg-[#e05e00] text-white font-bold text-base py-3.5 rounded-xl shadow-md transition-all active:scale-98 disabled:opacity-60 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:ring-offset-2"
+                  className="w-full inline-flex items-center justify-center gap-2 bg-[#FF7200] hover:bg-[#e06500] text-white font-bold text-base py-3.5 rounded-xl shadow-[0_4px_20px_rgba(255,114,0,0.3)] hover:shadow-[0_6px_25px_rgba(255,114,0,0.4)] transition-all active:scale-98 disabled:opacity-60 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF7200] focus:ring-offset-2 focus:ring-offset-[#080808]"
                 >
                   {isSubmitting ? (
                     <>
@@ -740,7 +428,7 @@ export const Contact: React.FC = () => {
                   )}
                 </button>
 
-                <p className="text-[11px] text-slate-400 text-center">
+                <p className="text-[11px] text-[#A7A7A7] text-center">
                   Protected by honeypot spam filtering. Your contact information is kept strictly confidential.
                 </p>
 

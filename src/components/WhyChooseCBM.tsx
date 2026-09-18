@@ -291,31 +291,28 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
   return (
     <section
       id="why-cbm"
-      className="relative pt-8 sm:pt-10 pb-8 sm:pb-10 border-b-2 border-orange-200/80 shadow-[0_2px_4px_rgba(254,215,170,0.25)] overflow-hidden"
-      style={{
-        background: 'linear-gradient(135deg, #FFF2E2 0%, #FFE4CC 45%, #FED5B2 100%)',
-      }}
+      className="relative pt-8 sm:pt-10 pb-8 sm:pb-10 bg-transparent overflow-hidden"
     >
       {/* =========================================================
-          BACKGROUND DECORATIVE WATERMARKS & WATERMARK GRAPHICS
+          BACKGROUND DECORATIVE WATERMARKS & SUBTLE ACCENTS
       ========================================================= */}
       <div
         className="pointer-events-none absolute inset-0 overflow-hidden select-none"
         aria-hidden="true"
       >
-        {/* Soft Warm Ambient Glow */}
+        {/* Very Faint Ambient Warmth */}
         <div
-          className="absolute -top-36 left-1/2 -translate-x-1/2 w-[800px] h-[450px] rounded-full"
+          className="absolute -top-36 left-1/2 -translate-x-1/2 w-[700px] h-[400px] rounded-full"
           style={{
             background:
-              'radial-gradient(ellipse at center, rgba(254, 215, 170, 0.45) 0%, rgba(255, 237, 213, 0.2) 50%, transparent 75%)',
-            filter: 'blur(60px)',
+              'radial-gradient(ellipse at center, rgba(255, 114, 0, 0.04) 0%, transparent 70%)',
+            filter: 'blur(80px)',
           }}
         />
 
         {/* Left Side: Faint Student Silhouette in Graduation Cap */}
         <svg
-          className="absolute -left-12 -top-4 w-96 h-96 text-orange-950/[0.035] pointer-events-none"
+          className="absolute -left-12 -top-4 w-96 h-96 text-white/[0.015] pointer-events-none"
           viewBox="0 0 200 200"
           fill="currentColor"
         >
@@ -329,7 +326,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
 
         {/* Right Side: Faint Ascending Bar Chart & Graduating Students Silhouette */}
         <svg
-          className="absolute -right-12 -top-4 w-96 h-96 text-orange-950/[0.035] pointer-events-none"
+          className="absolute -right-12 -top-4 w-96 h-96 text-white/[0.015] pointer-events-none"
           viewBox="0 0 200 200"
           fill="currentColor"
         >
@@ -341,13 +338,13 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
         </svg>
 
         {/* Left Handwritten Annotation: "Learn Apply Grow" */}
-        <div className="hidden xl:block absolute left-8 top-6 lg:top-7 text-[#FF6B00] font-['Caveat',cursive] leading-tight select-none rotate-[-6deg]">
+        <div className="hidden xl:block absolute left-8 top-6 lg:top-7 text-[#FF7200] font-['Caveat',cursive] leading-tight select-none rotate-[-6deg]">
           <span className="block text-[28px] font-bold tracking-wide">Learn</span>
           <span className="block text-[28px] font-bold tracking-wide">Apply</span>
           <span className="block text-[28px] font-bold tracking-wide">Grow</span>
           {/* Hand-drawn curved arrow pointing to cards */}
           <svg
-            className="w-12 h-12 mt-1 text-[#FF6B00] rotate-[15deg]"
+            className="w-12 h-12 mt-1 text-[#FF7200] rotate-[15deg]"
             viewBox="0 0 50 50"
             fill="none"
             stroke="currentColor"
@@ -360,13 +357,13 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
         </div>
 
         {/* Right Handwritten Annotation: "Your Next Step Starts Here" */}
-        <div className="hidden xl:block absolute right-8 top-6 lg:top-7 text-[#FF6B00] font-['Caveat',cursive] leading-tight select-none rotate-[6deg] text-right">
+        <div className="hidden xl:block absolute right-8 top-6 lg:top-7 text-[#FF7200] font-['Caveat',cursive] leading-tight select-none rotate-[6deg] text-right">
           <span className="block text-[28px] font-bold tracking-wide">Your</span>
           <span className="block text-[28px] font-bold tracking-wide">Next Step</span>
           <span className="block text-[28px] font-bold tracking-wide">Starts Here</span>
           {/* Hand-drawn curved arrow pointing up-right */}
           <svg
-            className="w-12 h-12 mt-1 ml-auto text-[#FF6B00] -rotate-[10deg]"
+            className="w-12 h-12 mt-1 ml-auto text-[#FF7200] -rotate-[10deg]"
             viewBox="0 0 50 50"
             fill="none"
             stroke="currentColor"
@@ -381,7 +378,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* =========================================================
-            HEADING AREA (MATCHING REFERENCE IMAGE)
+            HEADING AREA
         ========================================================= */}
         <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-10">
           {/* Top Pill with Parallel Golden Horizontal Lines */}
@@ -392,36 +389,36 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
             transition={{ duration: 0.45, ease: SMOOTH_EASE_OUT }}
             className="flex items-center justify-center gap-3 sm:gap-3.5 mb-3.5"
           >
-            {/* Left 2 Golden Lines (top longer, bottom shorter) */}
+            {/* Left 2 Golden Lines */}
             <div className="flex flex-col gap-1 items-end">
-              <div className="h-[2.5px] w-7 sm:w-8 rounded-full bg-[#FF6B00]" />
-              <div className="h-[2.5px] w-4 sm:w-5 rounded-full bg-[#FF6B00]" />
+              <div className="h-[2px] w-7 sm:w-8 rounded-full bg-[#FF7200]" />
+              <div className="h-[2px] w-4 sm:w-5 rounded-full bg-[#FF7200]" />
             </div>
 
             {/* Pill Container */}
-            <div className="px-5 sm:px-6 py-1.5 rounded-full border-2 border-[#FF6B00] bg-[#FFF0E0] shadow-2xs">
-              <span className="text-[#FF6B00] font-extrabold text-[11.5px] sm:text-[13px] tracking-wider uppercase">
+            <div className="px-5 sm:px-6 py-1.5 rounded-full border border-[#FF7200]/30 bg-[#FF7200]/10 shadow-2xs">
+              <span className="text-[#FF7200] font-extrabold text-[11.5px] sm:text-[13px] tracking-wider uppercase">
                 WHY CBM ACADEMY
               </span>
             </div>
 
-            {/* Right 2 Golden Lines (top longer, bottom shorter) */}
+            {/* Right 2 Golden Lines */}
             <div className="flex flex-col gap-1 items-start">
-              <div className="h-[2.5px] w-7 sm:w-8 rounded-full bg-[#FF6B00]" />
-              <div className="h-[2.5px] w-4 sm:w-5 rounded-full bg-[#FF6B00]" />
+              <div className="h-[2px] w-7 sm:w-8 rounded-full bg-[#FF7200]" />
+              <div className="h-[2px] w-4 sm:w-5 rounded-full bg-[#FF7200]" />
             </div>
           </motion.div>
 
-          {/* Main Heading: "Built for" deep navy + "High-Growth Careers" vibrant orange */}
+          {/* Main Heading: "Built for" white + "High-Growth Careers" vibrant orange */}
           <motion.h2
             initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={VIEWPORT_ONCE}
             transition={{ duration: 0.5, delay: 0.08, ease: SMOOTH_EASE_OUT }}
-            className="text-3xl sm:text-4xl lg:text-[44px] font-black text-[#072B57] tracking-tight leading-[1.15]"
+            className="text-3xl sm:text-4xl lg:text-[44px] font-black text-white tracking-tight leading-[1.15]"
           >
             Built for{' '}
-            <span className="text-[#FF6B00]">
+            <span className="text-[#FF7200]">
               High-Growth Careers
             </span>
           </motion.h2>
@@ -432,7 +429,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={VIEWPORT_ONCE}
             transition={{ duration: 0.5, delay: 0.15, ease: SMOOTH_EASE_OUT }}
-            className="mt-3 text-slate-600 text-sm sm:text-base lg:text-[16.5px] font-normal leading-relaxed max-w-2xl mx-auto"
+            className="mt-3 text-[#A7A7A7] text-sm sm:text-base lg:text-[16.5px] font-normal leading-relaxed max-w-2xl mx-auto"
           >
             Outcome-driven training with live ad budgets, modern AI tools, and
             direct placement support.
@@ -441,7 +438,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
 
         {/* =========================================================
             4 EQUAL CARDS HORIZONTALLY ON DESKTOP
-            (Desktop: 4 cols | Tablet: 2 cols | Mobile: 1 col)
+            Consistent Card Styling: background rgba(255,255,255,0.04), border 1px solid rgba(255,255,255,0.08)
         ========================================================= */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6 items-stretch">
           {CARDS.map((card, index) => (
@@ -456,33 +453,33 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
                 ease: SMOOTH_EASE_OUT,
               }}
               onClick={onOpenApply}
-              className="group relative bg-[#FFFFFF] rounded-[22px] shadow-[0_10px_28px_rgba(255,107,0,0.07)] hover:shadow-[0_16px_36px_rgba(255,107,0,0.14)] hover:-translate-y-1.5 transition-all duration-300 p-6 sm:p-6.5 flex flex-col justify-start cursor-pointer h-full border border-orange-100"
+              className="group relative bg-white/[0.04] hover:bg-white/[0.07] rounded-[20px] border border-white/[0.08] hover:border-white/[0.16] shadow-[0_8px_24px_rgba(0,0,0,0.2)] hover:-translate-y-1.5 transition-all duration-300 p-6 flex flex-col justify-start cursor-pointer h-full backdrop-blur-xs"
             >
-              {/* Top Row: Illustrated 3D Graphic (Left) & Soft Cream Badge (Right) */}
+              {/* Top Row: Illustrated 3D Graphic (Left) & Soft Badge (Right) */}
               <div className="flex items-center justify-between gap-3">
-                {/* 3D Illustration on Oval/Circular Peach Background Glow */}
-                <div className="w-[104px] h-[92px] sm:w-[110px] sm:h-[96px] rounded-[22px] bg-gradient-to-b from-[#FFF2E5] to-[#FFE2CC] flex items-center justify-center relative shadow-[inset_0_1px_3px_rgba(255,255,255,0.8)] group-hover:scale-105 transition-transform duration-300 shrink-0">
+                {/* 3D Illustration inside dark translucent container */}
+                <div className="w-[104px] h-[92px] sm:w-[110px] sm:h-[96px] rounded-2xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center relative group-hover:scale-105 transition-transform duration-300 shrink-0">
                   {card.renderIcon()}
                 </div>
 
-                {/* Badge: Centered Number + Label in soft peach box */}
-                <div className="bg-[#FFF0E0] border border-orange-200/70 rounded-2xl px-3.5 py-2.5 text-center flex flex-col items-center justify-center min-w-[74px] shadow-2xs">
-                  <span className="text-xl sm:text-[22px] font-black text-[#FF6B00] leading-none">
+                {/* Badge: Centered Number + Label in dark translucent box */}
+                <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl px-3.5 py-2.5 text-center flex flex-col items-center justify-center min-w-[74px] shadow-2xs">
+                  <span className="text-xl sm:text-[22px] font-black text-[#FF7200] leading-none">
                     {card.badgeNumber}
                   </span>
-                  <span className="text-xs sm:text-[13px] font-bold text-[#FF6B00] leading-none mt-1">
+                  <span className="text-xs sm:text-[13px] font-bold text-[#A7A7A7] leading-none mt-1">
                     {card.badgeLabel}
                   </span>
                 </div>
               </div>
 
-              {/* Card Title in Orange (#FF6B00) */}
-              <h3 className="mt-5 sm:mt-6 text-xl sm:text-[21px] font-black text-[#FF6B00] tracking-tight leading-snug">
+              {/* Card Title */}
+              <h3 className="mt-5 sm:mt-6 text-xl sm:text-[21px] font-black text-white group-hover:text-[#FF7200] transition-colors tracking-tight leading-snug">
                 {card.title}
               </h3>
 
-              {/* Body Text in Clean Slate Neutral (#334155 / slate-600) */}
-              <p className="mt-2.5 text-[14px] sm:text-[14.5px] text-slate-600 font-normal leading-[1.6]">
+              {/* Body Text */}
+              <p className="mt-2.5 text-[14px] sm:text-[14.5px] text-[#A7A7A7] font-normal leading-[1.6]">
                 {card.description}
               </p>
             </motion.article>

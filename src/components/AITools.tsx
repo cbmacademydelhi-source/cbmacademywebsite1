@@ -238,14 +238,14 @@ const categoryCards: CategoryCard[] = [
     subtitle: 'Work smarter with the power of AI.',
     icon: <Sparkles className="w-5 h-5 sm:w-5.5 sm:h-5.5 stroke-[2.2]" />,
     colorClasses: {
-      badgeBg: 'bg-orange-500/10',
-      badgeBorder: 'border-orange-500/20',
-      badgeText: 'text-[#FF6B00]',
-      cardBg: 'bg-gradient-to-b from-[#FFFDF9] via-[#FFF9F2] to-[#FFF6EB]',
-      cardBorder: 'border-orange-200/60',
-      cardBorderHover: 'hover:border-orange-300',
-      arrowHoverText: 'group-hover:text-[#FF6B00]',
-      arrowHoverBorder: 'group-hover:border-orange-300',
+      badgeBg: 'bg-[#FF7200]/10',
+      badgeBorder: 'border-[#FF7200]/25',
+      badgeText: 'text-[#FF7200]',
+      cardBg: 'bg-white/[0.04]',
+      cardBorder: 'border-white/[0.08]',
+      cardBorderHover: 'hover:border-[#FF7200]/40',
+      arrowHoverText: 'group-hover:text-[#FF7200]',
+      arrowHoverBorder: 'group-hover:border-[#FF7200]/40',
     },
     tools: [
       {
@@ -278,13 +278,13 @@ const categoryCards: CategoryCard[] = [
     icon: <BarChart3 className="w-5 h-5 sm:w-5.5 sm:h-5.5 stroke-[2.2]" />,
     colorClasses: {
       badgeBg: 'bg-blue-500/10',
-      badgeBorder: 'border-blue-500/20',
-      badgeText: 'text-[#2563EB]',
-      cardBg: 'bg-gradient-to-b from-[#FAFBFD] via-[#F5F8FF] to-[#EFF4FE]',
-      cardBorder: 'border-blue-200/60',
-      cardBorderHover: 'hover:border-blue-300',
-      arrowHoverText: 'group-hover:text-[#2563EB]',
-      arrowHoverBorder: 'group-hover:border-blue-300',
+      badgeBorder: 'border-blue-500/25',
+      badgeText: 'text-blue-400',
+      cardBg: 'bg-white/[0.04]',
+      cardBorder: 'border-white/[0.08]',
+      cardBorderHover: 'hover:border-blue-500/40',
+      arrowHoverText: 'group-hover:text-blue-400',
+      arrowHoverBorder: 'group-hover:border-blue-500/40',
     },
     tools: [
       {
@@ -317,13 +317,13 @@ const categoryCards: CategoryCard[] = [
     icon: <Palette className="w-5 h-5 sm:w-5.5 sm:h-5.5 stroke-[2.2]" />,
     colorClasses: {
       badgeBg: 'bg-purple-500/10',
-      badgeBorder: 'border-purple-500/20',
-      badgeText: 'text-[#9333EA]',
-      cardBg: 'bg-gradient-to-b from-[#FBFAFD] via-[#F9F5FF] to-[#F5EEFE]',
-      cardBorder: 'border-purple-200/60',
-      cardBorderHover: 'hover:border-purple-300',
-      arrowHoverText: 'group-hover:text-[#9333EA]',
-      arrowHoverBorder: 'group-hover:border-purple-300',
+      badgeBorder: 'border-purple-500/25',
+      badgeText: 'text-purple-400',
+      cardBg: 'bg-white/[0.04]',
+      cardBorder: 'border-white/[0.08]',
+      cardBorderHover: 'hover:border-purple-500/40',
+      arrowHoverText: 'group-hover:text-purple-400',
+      arrowHoverBorder: 'group-hover:border-purple-500/40',
     },
     tools: [
       {
@@ -356,13 +356,13 @@ const categoryCards: CategoryCard[] = [
     icon: <Globe className="w-5 h-5 sm:w-5.5 sm:h-5.5 stroke-[2.2]" />,
     colorClasses: {
       badgeBg: 'bg-emerald-500/10',
-      badgeBorder: 'border-emerald-500/20',
-      badgeText: 'text-[#16A34A]',
-      cardBg: 'bg-gradient-to-b from-[#FAFCFB] via-[#F4FAF6] to-[#EDF7F0]',
-      cardBorder: 'border-emerald-200/60',
-      cardBorderHover: 'hover:border-emerald-300',
-      arrowHoverText: 'group-hover:text-[#16A34A]',
-      arrowHoverBorder: 'group-hover:border-emerald-300',
+      badgeBorder: 'border-emerald-500/25',
+      badgeText: 'text-emerald-400',
+      cardBg: 'bg-white/[0.04]',
+      cardBorder: 'border-white/[0.08]',
+      cardBorderHover: 'hover:border-emerald-500/40',
+      arrowHoverText: 'group-hover:text-emerald-400',
+      arrowHoverBorder: 'group-hover:border-emerald-500/40',
     },
     tools: [
       {
@@ -399,74 +399,9 @@ export const AITools: React.FC<AIToolsProps> = ({ onOpenApply }) => {
   return (
     <section
       id="ai-tools"
-      className="relative overflow-hidden bg-[#FFE1C2] pt-8 sm:pt-10 pb-8 sm:pb-10 border-t border-b border-orange-200/60"
+      className="relative overflow-hidden bg-transparent pt-8 sm:pt-10 pb-8 sm:pb-10"
     >
-      {/* Soft Flowing Orange Abstract Curved / Blob Shapes */}
-      <div
-        className="pointer-events-none absolute inset-0 overflow-hidden select-none"
-        aria-hidden="true"
-      >
-        <motion.div
-          className="absolute -top-16 -right-10 w-[500px] h-[340px] bg-[#FF8522]/22 blur-[75px]"
-          style={{ borderRadius: '62% 38% 70% 30% / 40% 65% 35% 60%' }}
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  x: [0, 60, -30, 0],
-                  y: [0, -25, 30, 0],
-                  opacity: [0.22, 0.34, 0.18, 0.22],
-                }
-          }
-          transition={{
-            duration: 22,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-        />
-
-        <motion.div
-          className="absolute -bottom-16 -left-12 w-[460px] h-[380px] bg-[#FFA04D]/25 blur-[80px]"
-          style={{ borderRadius: '35% 65% 42% 58% / 58% 38% 62% 42%' }}
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  x: [0, -50, 35, 0],
-                  y: [0, 35, -25, 0],
-                  opacity: [0.26, 0.18, 0.32, 0.26],
-                }
-          }
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            delay: 2,
-            ease: 'easeInOut',
-          }}
-        />
-
-        <motion.div
-          className="absolute top-1/3 left-1/4 w-[420px] h-[320px] bg-[#FF7300]/20 blur-[70px]"
-          style={{ borderRadius: '50% 50% 30% 70% / 60% 40% 60% 40%' }}
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  x: [0, 45, -45, 0],
-                  y: [0, 20, -20, 0],
-                  opacity: [0.20, 0.30, 0.16, 0.20],
-                }
-          }
-          transition={{
-            duration: 28,
-            repeat: Infinity,
-            delay: 4,
-            ease: 'easeInOut',
-          }}
-        />
-      </div>
-
-      {/* HORIZONTAL WIDTH MATCHING MODULE CARDS ABOVE (max-w-[1200px]) */}
+      {/* HORIZONTAL WIDTH MATCHING MODULE CARDS (max-w-[1200px]) */}
       <div className="relative z-10 max-w-[1200px] mx-auto px-3 sm:px-4 lg:px-6">
 
         {/* =========================================================
@@ -480,25 +415,25 @@ export const AITools: React.FC<AIToolsProps> = ({ onOpenApply }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={VIEWPORT_ONCE}
             transition={{ duration: 0.6, ease: SMOOTH_EASE_OUT }}
-            className="inline-flex items-center justify-center gap-2 px-3 py-1 rounded-full bg-orange-50/90 border border-orange-200/70 shadow-2xs"
+            className="inline-flex items-center justify-center gap-2 px-3 py-1 rounded-full bg-[#FF7200]/10 border border-[#FF7200]/30 shadow-2xs"
           >
-            <span className="w-3.5 sm:w-4 h-[1.5px] bg-[#FF6B00] rounded-full" />
-            <span className="text-[11px] sm:text-xs font-black uppercase tracking-[0.14em] text-[#FF6B00]">
+            <span className="w-3.5 sm:w-4 h-[1.5px] bg-[#FF7200] rounded-full" />
+            <span className="text-[11px] sm:text-xs font-black uppercase tracking-[0.14em] text-[#FF7200]">
               INDUSTRY TOOLKIT
             </span>
-            <span className="w-3.5 sm:w-4 h-[1.5px] bg-[#FF6B00] rounded-full" />
+            <span className="w-3.5 sm:w-4 h-[1.5px] bg-[#FF7200] rounded-full" />
           </motion.div>
 
-          {/* Main Headline - In One Line */}
+          {/* Main Headline */}
           <motion.h2
             initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={VIEWPORT_ONCE}
             transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
-            className="mt-3.5 sm:mt-4 text-2xl sm:text-3xl md:text-[34px] lg:text-[40px] font-extrabold text-[#072B57] tracking-tight leading-[1.18] sm:whitespace-nowrap"
+            className="mt-3.5 sm:mt-4 text-2xl sm:text-3xl md:text-[34px] lg:text-[40px] font-extrabold text-white tracking-tight leading-[1.18] sm:whitespace-nowrap"
           >
             Master the tools modern teams{' '}
-            <span className="bg-gradient-to-r from-[#FF6B00] via-[#FF7E24] to-[#F59E0B] bg-clip-text text-transparent">
+            <span className="text-[#FF7200]">
               actually use.
             </span>
           </motion.h2>
@@ -509,7 +444,7 @@ export const AITools: React.FC<AIToolsProps> = ({ onOpenApply }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={VIEWPORT_ONCE}
             transition={{ duration: 0.6, delay: 0.16, ease: SMOOTH_EASE_OUT }}
-            className="mt-2.5 sm:mt-3 text-sm sm:text-[15px] text-slate-500 font-medium leading-relaxed max-w-xl mx-auto"
+            className="mt-2.5 sm:mt-3 text-sm sm:text-[15px] text-[#A7A7A7] font-medium leading-relaxed max-w-xl mx-auto"
           >
             Build practical skills with the platforms powering today’s AI, marketing
             and digital businesses.
@@ -518,7 +453,8 @@ export const AITools: React.FC<AIToolsProps> = ({ onOpenApply }) => {
         </div>
 
         {/* =========================================================
-            MAIN CONTENT: 2-COLUMN × 2-ROW GRID (Compact & Proportional)
+            MAIN CONTENT: 2-COLUMN × 2-ROW GRID
+            Consistent Card System: bg: rgba(255,255,255,0.04), border: 1px solid rgba(255,255,255,0.08)
             ========================================================= */}
         <div className="mt-7 sm:mt-8 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
           {categoryCards.map((category, index) => (
@@ -528,7 +464,7 @@ export const AITools: React.FC<AIToolsProps> = ({ onOpenApply }) => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={VIEWPORT_ONCE}
               transition={{ duration: 0.6, delay: index * 0.1, ease: SMOOTH_EASE_OUT }}
-              className={`group relative rounded-[20px] sm:rounded-[22px] ${category.colorClasses.cardBg} border ${category.colorClasses.cardBorder} ${category.colorClasses.cardBorderHover} p-5 sm:p-6 shadow-[0_2px_16px_-3px_rgba(15,23,42,0.04)] hover:shadow-[0_12px_28px_-4px_rgba(15,23,42,0.06)] hover:-translate-y-[2.5px] transition-all duration-300 flex flex-col justify-between`}
+              className={`group relative rounded-[20px] sm:rounded-[22px] ${category.colorClasses.cardBg} border ${category.colorClasses.cardBorder} ${category.colorClasses.cardBorderHover} p-5 sm:p-6 shadow-[0_8px_24px_rgba(0,0,0,0.2)] hover:-translate-y-[2.5px] transition-all duration-300 flex flex-col justify-between backdrop-blur-xs`}
             >
               {/* Category Card Header */}
               <div>
@@ -543,10 +479,10 @@ export const AITools: React.FC<AIToolsProps> = ({ onOpenApply }) => {
                     </div>
 
                     <div>
-                      <h3 className="text-lg sm:text-xl font-extrabold text-[#072B57] tracking-tight leading-tight">
+                      <h3 className="text-lg sm:text-xl font-extrabold text-white tracking-tight leading-tight">
                         {category.title}
                       </h3>
-                      <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-0.5 leading-snug">
+                      <p className="text-xs sm:text-[13px] text-[#A7A7A7] font-medium mt-0.5 leading-snug">
                         {category.subtitle}
                       </p>
                     </div>
@@ -557,7 +493,7 @@ export const AITools: React.FC<AIToolsProps> = ({ onOpenApply }) => {
                     type="button"
                     onClick={() => onOpenApply?.(category.title)}
                     aria-label={`Learn more about ${category.title}`}
-                    className={`w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-full bg-white/95 border border-slate-200/80 flex items-center justify-center text-slate-400 ${category.colorClasses.arrowHoverText} ${category.colorClasses.arrowHoverBorder} group-hover:scale-105 transition-all duration-200 shadow-2xs flex-shrink-0 cursor-pointer`}
+                    className={`w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-full bg-white/[0.05] border border-white/[0.1] flex items-center justify-center text-[#A7A7A7] ${category.colorClasses.arrowHoverText} ${category.colorClasses.arrowHoverBorder} group-hover:scale-105 group-hover:bg-white/[0.1] transition-all duration-200 shadow-2xs flex-shrink-0 cursor-pointer`}
                   >
                     <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </button>
@@ -576,20 +512,20 @@ export const AITools: React.FC<AIToolsProps> = ({ onOpenApply }) => {
                 {category.tools.map((tool) => (
                   <div
                     key={tool.name}
-                    className="group/tool flex flex-col items-center sm:items-start text-center sm:text-left p-3 sm:p-3.5 rounded-xl bg-white/85 hover:bg-white border border-slate-200/60 hover:border-slate-300 shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:shadow-xs transition-all duration-200 cursor-default"
+                    className="group/tool flex flex-col items-center sm:items-start text-center sm:text-left p-3 sm:p-3.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.06] hover:border-white/[0.14] transition-all duration-200 cursor-default"
                   >
-                    {/* Logo in light rounded-square container */}
-                    <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white border border-slate-200/80 shadow-2xs flex items-center justify-center p-2 mb-2 sm:mb-2.5 group-hover/tool:scale-105 group-hover/tool:border-slate-300 transition-all duration-200">
+                    {/* Logo in rounded-square container */}
+                    <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white/[0.06] border border-white/[0.08] shadow-2xs flex items-center justify-center p-2 mb-2 sm:mb-2.5 group-hover/tool:scale-105 group-hover/tool:border-white/[0.2] transition-all duration-200">
                       {tool.logo}
                     </div>
 
                     {/* Tool Name */}
-                    <span className="text-[12.5px] sm:text-[13px] font-bold text-[#072B57] tracking-tight leading-tight">
+                    <span className="text-[12.5px] sm:text-[13px] font-bold text-white tracking-tight leading-tight">
                       {tool.name}
                     </span>
 
                     {/* Small Muted Description */}
-                    <span className="text-[10.5px] sm:text-[11px] text-slate-500 font-medium leading-snug mt-0.5 sm:mt-1">
+                    <span className="text-[10.5px] sm:text-[11px] text-[#A7A7A7] font-medium leading-snug mt-0.5 sm:mt-1">
                       {tool.description}
                     </span>
                   </div>

@@ -157,8 +157,8 @@ export default function App() {
   const isAdminPage = currentPage === 'admin';
 
   return (
-    <div className="min-h-screen relative text-[#1E293B] font-['Plus_Jakarta_Sans',sans-serif] flex flex-col">
-      {/* Global AI & Tech Ambient Background (Matches Reference Peach-Cream Palette) */}
+    <div className="min-h-screen relative bg-[#080808] text-[#FFFFFF] font-['Plus_Jakarta_Sans',sans-serif] flex flex-col selection:bg-[#FF7200]/30 selection:text-white">
+      {/* Global Ambient Background - Continuous Premium Dark Canvas */}
       <AmbientBackground />
 
       {/* Header */}
