@@ -291,7 +291,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
   return (
     <section
       id="why-cbm"
-      className="relative pt-8 sm:pt-10 pb-8 sm:pb-10 bg-transparent overflow-hidden"
+      className="py-12 sm:py-16 bg-[#FAFAFA] border-b border-slate-100 relative overflow-hidden"
     >
       {/* =========================================================
           BACKGROUND DECORATIVE WATERMARKS & SUBTLE ACCENTS
@@ -305,75 +305,10 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
           className="absolute -top-36 left-1/2 -translate-x-1/2 w-[700px] h-[400px] rounded-full"
           style={{
             background:
-              'radial-gradient(ellipse at center, rgba(255, 114, 0, 0.04) 0%, transparent 70%)',
+              'radial-gradient(ellipse at center, rgba(255, 107, 0, 0.05) 0%, transparent 70%)',
             filter: 'blur(80px)',
           }}
         />
-
-        {/* Left Side: Faint Student Silhouette in Graduation Cap */}
-        <svg
-          className="absolute -left-12 -top-4 w-96 h-96 text-white/[0.015] pointer-events-none"
-          viewBox="0 0 200 200"
-          fill="currentColor"
-        >
-          {/* Mortarboard */}
-          <polygon points="100,20 180,50 100,80 20,50" />
-          <path d="M50,60 L50,90 Q100,120 150,90 L150,60" fill="currentColor" />
-          {/* Student Head & Shoulder Silhouette */}
-          <circle cx="100" cy="115" r="32" />
-          <path d="M40,190 C40,145 70,140 100,140 C130,140 160,145 160,190 Z" />
-        </svg>
-
-        {/* Right Side: Faint Ascending Bar Chart & Graduating Students Silhouette */}
-        <svg
-          className="absolute -right-12 -top-4 w-96 h-96 text-white/[0.015] pointer-events-none"
-          viewBox="0 0 200 200"
-          fill="currentColor"
-        >
-          <rect x="80" y="100" width="18" height="90" rx="3" />
-          <rect x="110" y="70" width="18" height="120" rx="3" />
-          <rect x="140" y="40" width="18" height="150" rx="3" />
-          {/* Mortarboard overlay */}
-          <polygon points="80,30 140,50 80,70 20,50" />
-        </svg>
-
-        {/* Left Handwritten Annotation: "Learn Apply Grow" */}
-        <div className="hidden xl:block absolute left-8 top-6 lg:top-7 text-[#FF7200] font-['Caveat',cursive] leading-tight select-none rotate-[-6deg]">
-          <span className="block text-[28px] font-bold tracking-wide">Learn</span>
-          <span className="block text-[28px] font-bold tracking-wide">Apply</span>
-          <span className="block text-[28px] font-bold tracking-wide">Grow</span>
-          {/* Hand-drawn curved arrow pointing to cards */}
-          <svg
-            className="w-12 h-12 mt-1 text-[#FF7200] rotate-[15deg]"
-            viewBox="0 0 50 50"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.6"
-            strokeLinecap="round"
-          >
-            <path d="M12 8 C 12 28, 36 26, 38 42" />
-            <path d="M28 38 L 38 42 L 40 32" />
-          </svg>
-        </div>
-
-        {/* Right Handwritten Annotation: "Your Next Step Starts Here" */}
-        <div className="hidden xl:block absolute right-8 top-6 lg:top-7 text-[#FF7200] font-['Caveat',cursive] leading-tight select-none rotate-[6deg] text-right">
-          <span className="block text-[28px] font-bold tracking-wide">Your</span>
-          <span className="block text-[28px] font-bold tracking-wide">Next Step</span>
-          <span className="block text-[28px] font-bold tracking-wide">Starts Here</span>
-          {/* Hand-drawn curved arrow pointing up-right */}
-          <svg
-            className="w-12 h-12 mt-1 ml-auto text-[#FF7200] -rotate-[10deg]"
-            viewBox="0 0 50 50"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.6"
-            strokeLinecap="round"
-          >
-            <path d="M16 44 C 18 20, 32 18, 40 10" />
-            <path d="M28 10 L 40 10 L 40 22" />
-          </svg>
-        </div>
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -391,34 +326,34 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
           >
             {/* Left 2 Golden Lines */}
             <div className="flex flex-col gap-1 items-end">
-              <div className="h-[2px] w-7 sm:w-8 rounded-full bg-[#FF7200]" />
-              <div className="h-[2px] w-4 sm:w-5 rounded-full bg-[#FF7200]" />
+              <div className="h-[2px] w-7 sm:w-8 rounded-full bg-[#FF6B00]" />
+              <div className="h-[2px] w-4 sm:w-5 rounded-full bg-[#FF6B00]" />
             </div>
 
             {/* Pill Container */}
-            <div className="px-5 sm:px-6 py-1.5 rounded-full border border-[#FF7200]/30 bg-[#FF7200]/10 shadow-2xs">
-              <span className="text-[#FF7200] font-extrabold text-[11.5px] sm:text-[13px] tracking-wider uppercase">
+            <div className="px-5 sm:px-6 py-1.5 rounded-full border border-orange-200 bg-orange-50 shadow-2xs">
+              <span className="text-[#FF6B00] font-extrabold text-[11.5px] sm:text-[13px] tracking-wider uppercase">
                 WHY CBM ACADEMY
               </span>
             </div>
 
             {/* Right 2 Golden Lines */}
             <div className="flex flex-col gap-1 items-start">
-              <div className="h-[2px] w-7 sm:w-8 rounded-full bg-[#FF7200]" />
-              <div className="h-[2px] w-4 sm:w-5 rounded-full bg-[#FF7200]" />
+              <div className="h-[2px] w-7 sm:w-8 rounded-full bg-[#FF6B00]" />
+              <div className="h-[2px] w-4 sm:w-5 rounded-full bg-[#FF6B00]" />
             </div>
           </motion.div>
 
-          {/* Main Heading: "Built for" white + "High-Growth Careers" vibrant orange */}
+          {/* Main Heading */}
           <motion.h2
             initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={VIEWPORT_ONCE}
             transition={{ duration: 0.5, delay: 0.08, ease: SMOOTH_EASE_OUT }}
-            className="text-3xl sm:text-4xl lg:text-[44px] font-black text-white tracking-tight leading-[1.15]"
+            className="text-3xl sm:text-4xl lg:text-[44px] font-black text-[#072B57] tracking-tight leading-[1.15]"
           >
             Built for{' '}
-            <span className="text-[#FF7200]">
+            <span className="text-[#FF6B00]">
               High-Growth Careers
             </span>
           </motion.h2>
@@ -429,17 +364,14 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={VIEWPORT_ONCE}
             transition={{ duration: 0.5, delay: 0.15, ease: SMOOTH_EASE_OUT }}
-            className="mt-3 text-[#A7A7A7] text-sm sm:text-base lg:text-[16.5px] font-normal leading-relaxed max-w-2xl mx-auto"
+            className="mt-3 text-slate-600 text-sm sm:text-base lg:text-[16.5px] font-normal leading-relaxed max-w-2xl mx-auto"
           >
             Outcome-driven training with live ad budgets, modern AI tools, and
             direct placement support.
           </motion.p>
         </div>
 
-        {/* =========================================================
-            4 EQUAL CARDS HORIZONTALLY ON DESKTOP
-            Consistent Card Styling: background rgba(255,255,255,0.04), border 1px solid rgba(255,255,255,0.08)
-        ========================================================= */}
+        {/* 4 EQUAL CARDS HORIZONTALLY ON DESKTOP */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6 items-stretch">
           {CARDS.map((card, index) => (
             <motion.article
@@ -453,33 +385,33 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
                 ease: SMOOTH_EASE_OUT,
               }}
               onClick={onOpenApply}
-              className="group relative bg-white/[0.04] hover:bg-white/[0.07] rounded-[20px] border border-white/[0.08] hover:border-white/[0.16] shadow-[0_8px_24px_rgba(0,0,0,0.2)] hover:-translate-y-1.5 transition-all duration-300 p-6 flex flex-col justify-start cursor-pointer h-full backdrop-blur-xs"
+              className="group relative bg-white hover:bg-white rounded-[20px] border border-slate-200/90 hover:border-[#FF6B00]/40 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_32px_rgba(255,107,0,0.12)] hover:-translate-y-1.5 transition-all duration-300 p-6 flex flex-col justify-start cursor-pointer h-full"
             >
               {/* Top Row: Illustrated 3D Graphic (Left) & Soft Badge (Right) */}
               <div className="flex items-center justify-between gap-3">
-                {/* 3D Illustration inside dark translucent container */}
-                <div className="w-[104px] h-[92px] sm:w-[110px] sm:h-[96px] rounded-2xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center relative group-hover:scale-105 transition-transform duration-300 shrink-0">
+                {/* 3D Illustration */}
+                <div className="w-[104px] h-[92px] sm:w-[110px] sm:h-[96px] rounded-2xl bg-orange-50/60 border border-orange-100/80 flex items-center justify-center relative group-hover:scale-105 transition-transform duration-300 shrink-0">
                   {card.renderIcon()}
                 </div>
 
-                {/* Badge: Centered Number + Label in dark translucent box */}
-                <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl px-3.5 py-2.5 text-center flex flex-col items-center justify-center min-w-[74px] shadow-2xs">
-                  <span className="text-xl sm:text-[22px] font-black text-[#FF7200] leading-none">
+                {/* Badge */}
+                <div className="bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 py-2.5 text-center flex flex-col items-center justify-center min-w-[74px] shadow-2xs">
+                  <span className="text-xl sm:text-[22px] font-black text-[#FF6B00] leading-none">
                     {card.badgeNumber}
                   </span>
-                  <span className="text-xs sm:text-[13px] font-bold text-[#A7A7A7] leading-none mt-1">
+                  <span className="text-xs sm:text-[13px] font-bold text-slate-500 leading-none mt-1">
                     {card.badgeLabel}
                   </span>
                 </div>
               </div>
 
               {/* Card Title */}
-              <h3 className="mt-5 sm:mt-6 text-xl sm:text-[21px] font-black text-white group-hover:text-[#FF7200] transition-colors tracking-tight leading-snug">
+              <h3 className="mt-5 sm:mt-6 text-xl sm:text-[21px] font-black text-[#072B57] group-hover:text-[#FF6B00] transition-colors tracking-tight leading-snug">
                 {card.title}
               </h3>
 
               {/* Body Text */}
-              <p className="mt-2.5 text-[14px] sm:text-[14.5px] text-[#A7A7A7] font-normal leading-[1.6]">
+              <p className="mt-2.5 text-[14px] sm:text-[14.5px] text-slate-600 font-normal leading-[1.6]">
                 {card.description}
               </p>
             </motion.article>

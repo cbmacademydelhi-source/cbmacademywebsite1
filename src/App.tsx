@@ -15,7 +15,6 @@ import { BrochureModal } from './components/BrochureModal';
 import { PostJobModal } from './components/PostJobModal';
 import { AIBot } from './components/AIBot';
 import AdminDashboard from './components/AdminDashboard';
-import { AmbientBackground } from './components/AmbientBackground';
 
 export default function App() {
   const [applyModalOpen, setApplyModalOpen] = useState(false);
@@ -157,10 +156,7 @@ export default function App() {
   const isAdminPage = currentPage === 'admin';
 
   return (
-    <div className="min-h-screen relative bg-[#080808] text-[#FFFFFF] font-['Plus_Jakarta_Sans',sans-serif] flex flex-col selection:bg-[#FF7200]/30 selection:text-white">
-      {/* Global Ambient Background - Continuous Premium Dark Canvas */}
-      <AmbientBackground />
-
+    <div className="min-h-screen bg-[#FAFAFA] text-[#072B57] font-['Plus_Jakarta_Sans',sans-serif] flex flex-col selection:bg-[#FF6B00] selection:text-white">
       {/* Header */}
       {!isAdminPage && (
         <Header

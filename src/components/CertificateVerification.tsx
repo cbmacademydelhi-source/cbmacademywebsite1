@@ -87,7 +87,7 @@ export const CertificateVerification: React.FC = () => {
   };
 
   return (
-    <section id="certificate" className="pt-8 sm:pt-10 pb-8 sm:pb-10 bg-transparent border-b border-slate-200">
+    <section id="certificate" className="pt-12 sm:pt-16 pb-12 sm:pb-16 bg-[#FAFAFA] border-b border-slate-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
