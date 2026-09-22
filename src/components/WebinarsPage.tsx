@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Sparkles, Filter } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { Webinar } from '../types';
 import { getWebinars, WEBINAR_UPDATE_EVENT } from '../services/webinarStorage';
-import { WebinarCard } from './webinars/WebinarCard';
+import { FeaturedWebinarCard } from './webinars/FeaturedWebinarCard';
+import { SecondaryWebinarCard } from './webinars/SecondaryWebinarCard';
+import { CompactWebinarCard } from './webinars/CompactWebinarCard';
 import { WebinarDetailsModal } from './webinars/WebinarDetailsModal';
 import { WebinarRegisterModal } from './webinars/WebinarRegisterModal';
 import { ManageWebinarsModal } from './webinars/ManageWebinarsModal';
@@ -40,8 +42,7 @@ export const WebinarsPage: React.FC = () => {
     };
   }, []);
 
-  // Filter public view: only show published/upcoming (or all non-draft for public view)
-  // If in admin mode, drafts can be seen in Manage Webinars.
+  // Filter public view: only show published/upcoming
   const publicWebinars = webinars.filter(
     (w) => w.status === 'published' || w.status === 'upcoming'
   );
@@ -51,6 +52,14 @@ export const WebinarsPage: React.FC = () => {
     if (filter === 'paid') return w.type === 'paid';
     return true;
   });
+
+  // Editorial hierarchy breakdown for Version 2:
+  // 1. Featured Webinar (first item)
+  // 2. Secondary Webinars (next 2 items)
+  // 3. Remaining Webinars (items 3+)
+  const featuredWebinar = filteredWebinars[0] || null;
+  const secondaryWebinars = filteredWebinars.slice(1, 3);
+  const remainingWebinars = filteredWebinars.slice(3);
 
   const handleOpenDetails = (webinar: Webinar) => {
     setSelectedWebinarForDetails(webinar);
@@ -63,56 +72,57 @@ export const WebinarsPage: React.FC = () => {
   };
 
   return (
-    <div id="webinars-page-root" className="min-h-screen bg-[#F8FAFC] py-12 sm:py-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header section with badge & admin button */}
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 pb-8 border-b border-[#E5E7EB]">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-orange-100 px-3.5 py-1 text-xs font-bold text-[#FF6B00] mb-3">
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>LIVE INDUSTRY SESSIONS</span>
-            </div>
-
-            <h1
-              id="webinars-main-heading"
-              className="text-3xl sm:text-4xl font-extrabold text-[#072B57] tracking-tight"
-            >
-              Upcoming Webinars
-            </h1>
-
-            <p
-              id="webinars-subtitle"
-              className="mt-2 text-sm sm:text-base text-slate-600 max-w-2xl leading-relaxed"
-            >
-              Learn from industry experts through live, practical and career-focused sessions.
-            </p>
-          </div>
-
-          {/* Quick Admin / Management Access Button */}
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              id="btn-open-manage-webinars-page"
-              onClick={() => setManageModalOpen(true)}
-              className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-bold text-[#072B57] hover:bg-slate-50 transition-colors shadow-xs cursor-pointer"
-            >
-              <Settings className="h-4 w-4 text-[#FF6B00]" />
-              <span>Manage Webinars</span>
-            </button>
-          </div>
+    <div
+      id="webinars-page-root"
+      className="min-h-screen bg-[#F8FAFC] pt-8 sm:pt-12 pb-28 sm:pb-36"
+    >
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
+        {/* Top bar with Admin Quick Access */}
+        <div className="flex justify-end mb-2.5 sm:mb-3">
+          <button
+            type="button"
+            id="btn-open-manage-webinars-page"
+            onClick={() => setManageModalOpen(true)}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-[#072B57] transition-colors cursor-pointer"
+          >
+            <Settings className="h-3.5 w-3.5 text-[#FF6B00]" />
+            <span>Manage Webinars</span>
+          </button>
         </div>
 
-        {/* Filter Tabs */}
-        <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-2 p-1 bg-white border border-[#E5E7EB] rounded-2xl shadow-2xs">
+        {/* 1. HERO / INTRO: Left-aligned, balanced 60–70px total spacing */}
+        <div className="max-w-3xl">
+          {/* Small orange label */}
+          <div className="text-xs font-extrabold text-[#FF6B00] tracking-wider uppercase mb-1.5">
+            CBM ACADEMY EVENTS
+          </div>
+
+          {/* Main heading */}
+          <h1
+            id="webinars-main-heading"
+            className="text-3xl sm:text-4xl lg:text-[40px] font-black text-[#072B57] tracking-tight leading-tight"
+          >
+            Learn. Connect. Grow.
+          </h1>
+
+          {/* Supporting text */}
+          <p
+            id="webinars-subtitle"
+            className="mt-2.5 text-sm sm:text-base text-[#1E293B]/80 leading-relaxed max-w-2xl"
+          >
+            Join live sessions led by experienced professionals and discover practical strategies for digital marketing, AI and career growth.
+          </p>
+
+          {/* Compact and Elegant Functional Filters: [ All ] [ Free ] [ Paid ] */}
+          <div className="mt-5 flex flex-wrap items-center gap-2.5">
             <button
               type="button"
               id="filter-all"
               onClick={() => setFilter('all')}
-              className={`rounded-xl px-5 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+              className={`rounded-[8px] px-4 sm:px-5 py-2 text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
                 filter === 'all'
-                  ? 'bg-[#072B57] text-white shadow-xs'
-                  : 'text-slate-600 hover:text-[#072B57] hover:bg-slate-50'
+                  ? 'bg-[#072B57] text-white border border-[#072B57] shadow-xs'
+                  : 'bg-white text-[#072B57] border border-[#E5E7EB] hover:border-[#072B57]/40'
               }`}
             >
               All ({publicWebinars.length})
@@ -122,10 +132,10 @@ export const WebinarsPage: React.FC = () => {
               type="button"
               id="filter-free"
               onClick={() => setFilter('free')}
-              className={`rounded-xl px-5 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+              className={`rounded-[8px] px-4 sm:px-5 py-2 text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
                 filter === 'free'
-                  ? 'bg-[#072B57] text-white shadow-xs'
-                  : 'text-slate-600 hover:text-[#072B57] hover:bg-slate-50'
+                  ? 'bg-[#072B57] text-white border border-[#072B57] shadow-xs'
+                  : 'bg-white text-[#072B57] border border-[#E5E7EB] hover:border-[#072B57]/40'
               }`}
             >
               Free ({publicWebinars.filter((w) => w.type === 'free').length})
@@ -135,55 +145,91 @@ export const WebinarsPage: React.FC = () => {
               type="button"
               id="filter-paid"
               onClick={() => setFilter('paid')}
-              className={`rounded-xl px-5 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+              className={`rounded-[8px] px-4 sm:px-5 py-2 text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
                 filter === 'paid'
-                  ? 'bg-[#072B57] text-white shadow-xs'
-                  : 'text-slate-600 hover:text-[#072B57] hover:bg-slate-50'
+                  ? 'bg-[#072B57] text-white border border-[#072B57] shadow-xs'
+                  : 'bg-white text-[#072B57] border border-[#E5E7EB] hover:border-[#072B57]/40'
               }`}
             >
               Paid ({publicWebinars.filter((w) => w.type === 'paid').length})
             </button>
           </div>
-
-          <div className="text-xs text-slate-500 font-medium flex items-center gap-1.5">
-            <Filter className="h-3.5 w-3.5 text-slate-400" />
-            <span>
-              Showing {filteredWebinars.length} {filteredWebinars.length === 1 ? 'webinar' : 'webinars'}
-            </span>
-          </div>
         </div>
 
-        {/* Webinars Grid: Desktop 3 cols, Tablet 2 cols, Mobile 1 col */}
-        <div className="mt-8">
-          {filteredWebinars.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-[#E5E7EB] bg-white p-12 text-center">
-              <p className="text-sm font-semibold text-slate-600">
-                No webinars found for this filter.
-              </p>
-              <button
-                type="button"
-                onClick={() => setFilter('all')}
-                className="mt-3 text-xs font-bold text-[#FF6B00] hover:underline cursor-pointer"
-              >
-                View all webinars &rarr;
-              </button>
-            </div>
-          ) : (
-            <div
-              id="webinars-grid"
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
+        {/* Empty State */}
+        {filteredWebinars.length === 0 ? (
+          <div className="mt-8 rounded-[16px] border border-dashed border-[#E5E7EB] bg-white p-12 text-center max-w-md mx-auto">
+            <p className="text-sm font-semibold text-slate-600">
+              No webinars found for this filter.
+            </p>
+            <button
+              type="button"
+              onClick={() => setFilter('all')}
+              className="mt-3 text-xs font-bold text-[#FF6B00] hover:underline cursor-pointer"
             >
-              {filteredWebinars.map((webinar) => (
-                <WebinarCard
-                  key={webinar.id}
-                  webinar={webinar}
+              View all webinars &rarr;
+            </button>
+          </div>
+        ) : (
+          <div className="mt-6 sm:mt-7 space-y-6 sm:space-y-7">
+            {/* 2. ONE LARGE FEATURED WEBINAR */}
+            {featuredWebinar && (
+              <section id="featured-webinar-section">
+                <FeaturedWebinarCard
+                  webinar={featuredWebinar}
                   onSelect={handleOpenDetails}
                   onRegister={handleOpenRegister}
                 />
-              ))}
-            </div>
-          )}
-        </div>
+              </section>
+            )}
+
+            {/* 3. TWO SECONDARY WEBINARS (Horizontal row of 2 cards with consistent 16:9 images) */}
+            {secondaryWebinars.length > 0 && (
+              <section id="secondary-webinars-section">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+                  {secondaryWebinars.map((webinar) => (
+                    <SecondaryWebinarCard
+                      key={webinar.id}
+                      webinar={webinar}
+                      onSelect={handleOpenDetails}
+                      onRegister={handleOpenRegister}
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* 4. MORE UPCOMING WEBINARS (Compact grid) */}
+            {remainingWebinars.length > 0 && (
+              <section
+                id="remaining-webinars-section"
+                className="pt-5 sm:pt-6 border-t border-[#E5E7EB]"
+              >
+                <div className="flex items-center justify-between mb-4 sm:mb-5">
+                  <div>
+                    <h3 className="text-xl sm:text-2xl font-bold text-[#072B57] tracking-tight">
+                      More Upcoming Webinars
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                      Expand your digital skill set with additional live sessions
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+                  {remainingWebinars.map((webinar) => (
+                    <CompactWebinarCard
+                      key={webinar.id}
+                      webinar={webinar}
+                      onSelect={handleOpenDetails}
+                      onRegister={handleOpenRegister}
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Details Modal */}
@@ -211,3 +257,6 @@ export const WebinarsPage: React.FC = () => {
     </div>
   );
 };
+
+
+
