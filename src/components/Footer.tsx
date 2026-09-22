@@ -34,6 +34,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenApply, onOpenBrochure }) =
   const navLinks = [
     { name: 'Home', href: '#home' },
     { name: 'Course Modules', href: '#course' },
+    { name: 'Live Webinars', href: '#webinars' },
     { name: 'About CBM', href: '#about' },
     { name: 'Certificate Verification', href: '#certificate' },
     { name: 'Job Opportunities', href: '#jobs' },

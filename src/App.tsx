@@ -16,6 +16,11 @@ import { BrochureModal } from './components/BrochureModal';
 import { PostJobModal } from './components/PostJobModal';
 import { AIBot } from './components/AIBot';
 import AdminDashboard from './components/AdminDashboard';
+import { WebinarsPage } from './components/WebinarsPage';
+import { WebinarPromoPopup } from './components/webinars/WebinarPromoPopup';
+import { WebinarRegisterModal } from './components/webinars/WebinarRegisterModal';
+import { Webinar } from './types';
+import { getWebinars, WEBINAR_UPDATE_EVENT } from './services/webinarStorage';
 
 export default function App() {
   const [applyModalOpen, setApplyModalOpen] = useState(false);
@@ -31,6 +36,23 @@ export default function App() {
 
   const [currentPage, setCurrentPage] = useState('home');
 
+  // Webinar system state
+  const [webinars, setWebinars] = useState<Webinar[]>([]);
+  const [promoRegisterWebinar, setPromoRegisterWebinar] = useState<Webinar | null>(null);
+  const [promoRegisterModalOpen, setPromoRegisterModalOpen] = useState(false);
+
+  useEffect(() => {
+    const loadWebinarData = () => {
+      setWebinars(getWebinars());
+    };
+
+    loadWebinarData();
+    window.addEventListener(WEBINAR_UPDATE_EVENT, loadWebinarData);
+    return () => {
+      window.removeEventListener(WEBINAR_UPDATE_EVENT, loadWebinarData);
+    };
+  }, []);
+
   useEffect(() => {
     const updatePage = () => {
       const hash = window.location.hash.replace('#', '');
@@ -38,6 +60,7 @@ export default function App() {
       const validPages = [
         'home',
         'course',
+        'webinars',
         'about',
         'certificate',
         'jobs',
@@ -82,6 +105,11 @@ export default function App() {
 
   const handleOpenPostJob = () => {
     setPostJobModalOpen(true);
+  };
+
+  const handleOpenPromoRegister = (webinar: Webinar) => {
+    setPromoRegisterWebinar(webinar);
+    setPromoRegisterModalOpen(true);
   };
 
   const renderHomePage = () => {
@@ -137,6 +165,9 @@ export default function App() {
       case 'blogs':
         return <BlogSection />;
 
+      case 'webinars':
+        return <WebinarsPage />;
+
       case 'contact':
         return <Contact />;
 
@@ -157,6 +188,10 @@ export default function App() {
   */
 
   const isAdminPage = currentPage === 'admin';
+
+  // Find next upcoming active webinar for promo popup
+  const upcomingWebinarForPromo =
+    webinars.find((w) => w.status === 'published' || w.status === 'upcoming') || null;
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] text-[#072B57] font-['Plus_Jakarta_Sans',sans-serif] flex flex-col selection:bg-[#FF6B00] selection:text-white">
@@ -200,6 +235,22 @@ export default function App() {
         isOpen={postJobModalOpen}
         onClose={() => setPostJobModalOpen(false)}
       />
+
+      {/* Promo Registration Modal (Triggered by session popup) */}
+      <WebinarRegisterModal
+        isOpen={promoRegisterModalOpen}
+        onClose={() => setPromoRegisterModalOpen(false)}
+        selectedWebinar={promoRegisterWebinar}
+        availableWebinars={webinars.filter((w) => w.status === 'published' || w.status === 'upcoming')}
+      />
+
+      {/* Promotional Session-based Upcoming Webinar Popup */}
+      {!isAdminPage && (
+        <WebinarPromoPopup
+          upcomingWebinar={upcomingWebinarForPromo}
+          onRegister={handleOpenPromoRegister}
+        />
+      )}
 
       {/* =====================================================
           FLOATING WHATSAPP + CBM AI BOT

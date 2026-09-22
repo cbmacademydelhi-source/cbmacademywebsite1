@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { ManageWebinarsModal } from "./webinars/ManageWebinarsModal";
 
 const JOBS_API =
   "https://cbm-jobs-api.cbmacademydelhi.workers.dev";
@@ -47,6 +48,9 @@ export default function AdminDashboard() {
 
   const [checkingSession, setCheckingSession] =
     useState(true);
+
+  const [webinarModalOpen, setWebinarModalOpen] =
+    useState(false);
 
   useEffect(() => {
     const token =
@@ -497,6 +501,15 @@ export default function AdminDashboard() {
           <p className="text-center text-xs text-slate-400 mt-6">
             Authorized CBM Academy administrator only
           </p>
+
+          <div className="mt-6 pt-5 border-t border-slate-200 text-center space-y-2">
+            <a
+              href="#webinars"
+              className="inline-block text-xs font-bold text-[#FF6B00] hover:underline"
+            >
+              &larr; Return to Webinars &amp; Public Site
+            </a>
+          </div>
         </div>
       </div>
     );
@@ -536,12 +549,22 @@ export default function AdminDashboard() {
             </p>
           </div>
 
-          <button
-            onClick={logout}
-            className="bg-red-500 hover:bg-red-600 px-5 py-2.5 rounded-xl font-semibold"
-          >
-            Logout
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setWebinarModalOpen(true)}
+              className="bg-[#FF6B00] hover:bg-[#e05f00] text-white px-4 py-2.5 rounded-xl font-semibold text-sm cursor-pointer shadow-xs"
+            >
+              Manage Webinars
+            </button>
+
+            <button
+              onClick={logout}
+              className="bg-red-500 hover:bg-red-600 px-5 py-2.5 rounded-xl font-semibold text-sm cursor-pointer"
+            >
+              Logout
+            </button>
+          </div>
 
         </div>
       </header>
@@ -813,6 +836,11 @@ export default function AdminDashboard() {
         )}
 
       </main>
+
+      <ManageWebinarsModal
+        isOpen={webinarModalOpen}
+        onClose={() => setWebinarModalOpen(false)}
+      />
     </div>
   );
 }

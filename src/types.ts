@@ -86,6 +86,37 @@ export interface BlogPost {
   tags: string[];
 }
 
+export type WebinarType = 'free' | 'paid';
+export type WebinarStatus = 'upcoming' | 'published' | 'draft' | 'completed';
+
+export interface Webinar {
+  id: string;
+  title: string;
+  description: string;
+  posterUrl: string;
+  type: WebinarType;
+  price?: number | string;
+  date: string;
+  time: string;
+  duration: string;
+  host: string;
+  whatYouWillLearn: string[];
+  registrationLink?: string;
+  status: WebinarStatus;
+  createdAt: string;
+}
+
+export interface WebinarRegistration {
+  id: string;
+  webinarId: string;
+  webinarTitle: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  message?: string;
+  registeredAt: string;
+}
+
 export interface FormSubmissionResult {
   success: boolean;
   message: string;
