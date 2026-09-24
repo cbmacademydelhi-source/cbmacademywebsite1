@@ -88,6 +88,8 @@ export interface BlogPost {
 
 export type WebinarType = 'free' | 'paid';
 export type WebinarStatus = 'upcoming' | 'published' | 'draft' | 'completed';
+export type WebinarPaymentStatus = 'not_required' | 'pending' | 'paid' | 'failed' | 'expired';
+export type WebinarRegistrationStatus = 'pending' | 'approved' | 'cancelled';
 
 export interface Webinar {
   id: string;
@@ -103,21 +105,46 @@ export interface Webinar {
   whatYouWillLearn: string[];
   registrationLink?: string;
   status: WebinarStatus;
+  max_capacity?: number;
+  current_registrations?: number;
   createdAt: string;
 }
 
 export interface WebinarRegistration {
   id: string;
-  webinarId: string;
-  webinarTitle: string;
-  fullName: string;
+  webinar_id: string;
+  webinar_title?: string;
+  webinarId?: string;
+  webinarTitle?: string;
+  full_name: string;
+  fullName?: string;
   email: string;
   phone: string;
   message?: string;
-  registeredAt: string;
+  registration_type: 'free' | 'paid';
+  amount: number;
+  currency: string;
+  payment_status: WebinarPaymentStatus;
+  registration_status?: WebinarRegistrationStatus;
+  razorpay_order_id?: string | null;
+  razorpay_payment_id?: string | null;
+  razorpay_signature?: string | null;
+  razorpay_qr_id?: string | null;
+  created_at: string;
+  registeredAt?: string;
+  paid_at?: string | null;
 }
 
 export interface FormSubmissionResult {
   success: boolean;
   message: string;
+  registrationId?: string;
+  orderId?: string;
+  qrId?: string;
+  qrImageUrl?: string;
+  qrPayload?: string;
+  amount?: number;
+  currency?: string;
+  keyId?: string;
+  code?: string;
 }

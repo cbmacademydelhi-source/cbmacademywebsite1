@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ManageWebinarsModal } from "./webinars/ManageWebinarsModal";
+import { AdminWebinarRegistrations } from "./admin/AdminWebinarRegistrations";
 
 const JOBS_API =
   "https://cbm-jobs-api.cbmacademydelhi.workers.dev";
@@ -48,6 +49,9 @@ export default function AdminDashboard() {
 
   const [checkingSession, setCheckingSession] =
     useState(true);
+
+  const [adminTab, setAdminTab] =
+    useState<'webinars' | 'jobs'>('webinars');
 
   const [webinarModalOpen, setWebinarModalOpen] =
     useState(false);
@@ -571,57 +575,90 @@ export default function AdminDashboard() {
 
       <main className="max-w-7xl mx-auto px-5 py-8">
 
-        {error && (
-          <div className="mb-6 rounded-xl border border-orange-300 bg-orange-50 p-4 text-orange-700">
-            <div className="font-bold">
-              Job storage temporarily unavailable
-            </div>
+        {/* Tab Switcher */}
+        <div className="flex items-center gap-3 border-b border-slate-200 pb-4 mb-6">
+          <button
+            type="button"
+            onClick={() => setAdminTab('webinars')}
+            className={`px-4 py-2 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+              adminTab === 'webinars'
+                ? 'bg-[#072B57] text-white shadow-xs'
+                : 'bg-white text-slate-600 hover:bg-slate-200 border border-slate-200'
+            }`}
+          >
+            Webinar Registrations &amp; Payments
+          </button>
 
-            <div className="mt-1 text-sm">
-              {error}
-            </div>
-          </div>
-        )}
-
-        {success && (
-          <div className="mb-6 rounded-xl border border-green-300 bg-green-50 p-4 text-green-700">
-            {success}
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
-
-          <div className="bg-white rounded-2xl p-6 shadow">
-            <p className="text-slate-500">
-              Pending
-            </p>
-
-            <p className="text-4xl font-bold text-orange-500 mt-2">
-              {pendingJobs.length}
-            </p>
-          </div>
-
-          <div className="bg-white rounded-2xl p-6 shadow">
-            <p className="text-slate-500">
-              Approved
-            </p>
-
-            <p className="text-4xl font-bold text-green-600 mt-2">
-              {approvedJobs.length}
-            </p>
-          </div>
-
-          <div className="bg-white rounded-2xl p-6 shadow">
-            <p className="text-slate-500">
-              Rejected
-            </p>
-
-            <p className="text-4xl font-bold text-red-600 mt-2">
-              {rejectedJobs.length}
-            </p>
-          </div>
-
+          <button
+            type="button"
+            onClick={() => setAdminTab('jobs')}
+            className={`px-4 py-2 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+              adminTab === 'jobs'
+                ? 'bg-[#072B57] text-white shadow-xs'
+                : 'bg-white text-slate-600 hover:bg-slate-200 border border-slate-200'
+            }`}
+          >
+            Job Postings ({jobs.length})
+          </button>
         </div>
+
+        {adminTab === 'webinars' ? (
+          <AdminWebinarRegistrations
+            token={localStorage.getItem("cbm_admin_access_token") || "admin_session"}
+          />
+        ) : (
+          <div>
+            {error && (
+              <div className="mb-6 rounded-xl border border-orange-300 bg-orange-50 p-4 text-orange-700">
+                <div className="font-bold">
+                  Job storage temporarily unavailable
+                </div>
+
+                <div className="mt-1 text-sm">
+                  {error}
+                </div>
+              </div>
+            )}
+
+            {success && (
+              <div className="mb-6 rounded-xl border border-green-300 bg-green-50 p-4 text-green-700">
+                {success}
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+
+              <div className="bg-white rounded-2xl p-6 shadow">
+                <p className="text-slate-500">
+                  Pending
+                </p>
+
+                <p className="text-4xl font-bold text-orange-500 mt-2">
+                  {pendingJobs.length}
+                </p>
+              </div>
+
+              <div className="bg-white rounded-2xl p-6 shadow">
+                <p className="text-slate-500">
+                  Approved
+                </p>
+
+                <p className="text-4xl font-bold text-green-600 mt-2">
+                  {approvedJobs.length}
+                </p>
+              </div>
+
+              <div className="bg-white rounded-2xl p-6 shadow">
+                <p className="text-slate-500">
+                  Rejected
+                </p>
+
+                <p className="text-4xl font-bold text-red-600 mt-2">
+                  {rejectedJobs.length}
+                </p>
+              </div>
+
+            </div>
 
         <div className="flex items-center justify-between mb-5">
 
@@ -832,6 +869,8 @@ export default function AdminDashboard() {
               </div>
             ))}
 
+          </div>
+        )}
           </div>
         )}
 

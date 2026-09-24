@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Star } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
 import { SMOOTH_EASE_OUT, VIEWPORT_ONCE } from '../lib/animations';
 
@@ -15,7 +15,7 @@ export interface TestimonialItem {
 }
 
 /**
- * EXACTLY 8 COMPACT TESTIMONIALS (4 cards × 2 rows on desktop)
+ * EXACTLY 8 COMPACT TESTIMONIALS
  * Balanced student representation with clean, professional profile photos.
  */
 export const SAMPLE_TESTIMONIALS: TestimonialItem[] = [
@@ -184,23 +184,13 @@ const renderCardDeco = (type: TestimonialItem['cornerDeco']) => {
  */
 const TestimonialCard: React.FC<{
   item: TestimonialItem;
-  index: number;
-  shouldReduceMotion: boolean | null;
-}> = ({ item, index, shouldReduceMotion }) => {
+}> = ({ item }) => {
   const [imgError, setImgError] = useState(false);
 
   return (
-    <motion.article
+    <article
       id={item.id}
-      initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={VIEWPORT_ONCE}
-      transition={{
-        duration: 0.35,
-        delay: shouldReduceMotion ? 0 : (index % 4) * 0.05 + Math.floor(index / 4) * 0.08,
-        ease: SMOOTH_EASE_OUT,
-      }}
-      className="relative overflow-hidden bg-white rounded-[14px] border border-[#E5E7EB] p-5 flex flex-col justify-between shadow-[0_1px_4px_rgba(0,0,0,0.03)] hover:shadow-[0_6px_16px_rgba(0,0,0,0.05)] hover:-translate-y-[3px] transition-all duration-200 ease-out h-full min-h-[250px]"
+      className="relative overflow-hidden bg-white rounded-[14px] border border-[#E5E7EB] p-5 flex flex-col justify-between shadow-[0_1px_4px_rgba(0,0,0,0.03)] hover:shadow-[0_6px_16px_rgba(0,0,0,0.05)] hover:-translate-y-[2px] transition-all duration-200 ease-out h-full min-h-[240px] select-none"
     >
       {/* Subtle Decorative Background Inside Card */}
       {renderCardDeco(item.cornerDeco)}
@@ -257,26 +247,144 @@ const TestimonialCard: React.FC<{
           </p>
         </div>
       </div>
-    </motion.article>
+    </article>
   );
 };
 
 export const Testimonials: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
 
+  // Triple the list to achieve completely seamless infinite loop
+  const totalOriginal = SAMPLE_TESTIMONIALS.length; // 8
+  const extendedItems = [
+    ...SAMPLE_TESTIMONIALS,
+    ...SAMPLE_TESTIMONIALS,
+    ...SAMPLE_TESTIMONIALS,
+  ]; // 24 items
+
+  // Responsive visible count: Desktop = 3, Tablet = 2, Mobile = 1
+  const [visibleCount, setVisibleCount] = useState<number>(3);
+  const [currentIndex, setCurrentIndex] = useState<number>(totalOriginal); // Start at middle batch (8)
+  const [isTransitioning, setIsTransitioning] = useState<boolean>(true);
+  const [isPaused, setIsPaused] = useState<boolean>(false);
+
+  // Touch tracking for mobile swipe
+  const touchStartX = useRef<number | null>(null);
+  const touchDeltaX = useRef<number>(0);
+
+  // Update visible card count on resize
+  useEffect(() => {
+    const updateVisibleCount = () => {
+      if (typeof window === 'undefined') return;
+      if (window.innerWidth >= 1024) {
+        setVisibleCount(3);
+      } else if (window.innerWidth >= 640) {
+        setVisibleCount(2);
+      } else {
+        setVisibleCount(1);
+      }
+    };
+
+    updateVisibleCount();
+    window.addEventListener('resize', updateVisibleCount);
+    return () => window.removeEventListener('resize', updateVisibleCount);
+  }, []);
+
+  // Slide forward
+  const handleNext = useCallback(() => {
+    setIsTransitioning(true);
+    setCurrentIndex((prev) => prev + 1);
+  }, []);
+
+  // Slide backward
+  const handlePrev = useCallback(() => {
+    setIsTransitioning(true);
+    setCurrentIndex((prev) => prev - 1);
+  }, []);
+
+  // Seamless jump without animation when reaching edge of middle buffer
+  const handleTransitionEnd = () => {
+    if (currentIndex >= 2 * totalOriginal) {
+      setIsTransitioning(false);
+      setCurrentIndex((prev) => prev - totalOriginal);
+    } else if (currentIndex < totalOriginal) {
+      setIsTransitioning(false);
+      setCurrentIndex((prev) => prev + totalOriginal);
+    }
+  };
+
+  // Re-enable transition on the next animation frame after instant jump
+  useEffect(() => {
+    if (!isTransitioning) {
+      const frame = requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setIsTransitioning(true);
+        });
+      });
+      return () => cancelAnimationFrame(frame);
+    }
+  }, [isTransitioning]);
+
+  // Auto-slide every 4 seconds (pauses on desktop hover, pauses on reduced motion)
+  useEffect(() => {
+    if (isPaused || shouldReduceMotion) return;
+
+    const timer = setInterval(() => {
+      handleNext();
+    }, 4000);
+
+    return () => clearInterval(timer);
+  }, [isPaused, shouldReduceMotion, handleNext, currentIndex]);
+
+  // Mobile touch gestures
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchDeltaX.current = 0;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartX.current !== null) {
+      touchDeltaX.current = e.touches[0].clientX - touchStartX.current;
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX.current !== null) {
+      if (touchDeltaX.current > 45) {
+        handlePrev();
+      } else if (touchDeltaX.current < -45) {
+        handleNext();
+      }
+    }
+    touchStartX.current = null;
+    touchDeltaX.current = 0;
+  };
+
+  // Active dot index in original 0..7 list
+  const activeDot = ((currentIndex % totalOriginal) + totalOriginal) % totalOriginal;
+
+  // Jump to specific slide dot via shortest path
+  const handleDotClick = (targetDot: number) => {
+    setIsTransitioning(true);
+    let diff = targetDot - activeDot;
+    if (diff > totalOriginal / 2) diff -= totalOriginal;
+    if (diff < -totalOriginal / 2) diff += totalOriginal;
+    setCurrentIndex((prev) => prev + diff);
+  };
+
   return (
     <section
       id="testimonials"
-      className="w-full bg-[#F8FAFC] py-[56px] sm:py-[60px] lg:py-[64px] border-b border-[#E5E7EB]"
+      className="w-full bg-[#F8FAFC] py-[44px] sm:py-[50px] lg:py-[56px] border-b border-[#E5E7EB] overflow-hidden"
     >
-      <div className="max-w-[1200px] mx-auto px-5 sm:px-6">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* SECTION HEADER */}
         <motion.div
           initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={VIEWPORT_ONCE}
           transition={{ duration: 0.4, ease: SMOOTH_EASE_OUT }}
-          className="text-center max-w-2xl mx-auto mb-7 sm:mb-8"
+          className="text-center max-w-2xl mx-auto mb-6 sm:mb-7"
         >
           {/* Small orange eyebrow text */}
           <p className="text-xs font-bold tracking-wider uppercase text-[#FF6B00]">
@@ -289,23 +397,121 @@ export const Testimonials: React.FC = () => {
           </h2>
 
           {/* Short description */}
-          <p className="text-xs sm:text-sm text-[#64748B] mt-2 leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#64748B] mt-1.5 leading-relaxed">
             Hear from learners who are building practical digital marketing skills with CBM Academy.
           </p>
         </motion.div>
 
-        {/* 8 COMPACT TESTIMONIAL CARDS: 4 COLUMNS × 2 ROWS ON DESKTOP */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[18px] items-stretch">
-          {SAMPLE_TESTIMONIALS.map((item, index) => (
-            <TestimonialCard
-              key={item.id}
-              item={item}
-              index={index}
-              shouldReduceMotion={shouldReduceMotion}
-            />
-          ))}
+        {/* COMPACT HORIZONTAL CAROUSEL CONTAINER */}
+        <div
+          className="relative max-w-[1140px] mx-auto"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
+          {/* Subtle Side Navigation Arrow: Previous (Desktop & Tablet) */}
+          <button
+            type="button"
+            onClick={handlePrev}
+            aria-label="Previous testimonials"
+            className="hidden sm:flex absolute -left-4 lg:-left-5 top-1/2 -translate-y-1/2 z-20 w-8 h-8 lg:w-9 lg:h-9 rounded-full bg-white border border-[#E5E7EB] text-[#072B57] hover:border-[#FF6B00] hover:text-[#FF6B00] hover:bg-orange-50/50 shadow-xs items-center justify-center transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF6B00]/30"
+          >
+            <ChevronLeft className="w-4 h-4 lg:w-4.5 lg:h-4.5 stroke-[2.2]" />
+          </button>
+
+          {/* Carousel Viewport (Strictly hides horizontal overflow) */}
+          <div
+            className="overflow-hidden w-full py-1"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            {/* Sliding Track */}
+            <div
+              className="flex items-stretch"
+              style={{
+                transform: `translateX(-${currentIndex * (100 / visibleCount)}%)`,
+                transition: isTransitioning
+                  ? 'transform 500ms cubic-bezier(0.25, 1, 0.5, 1)'
+                  : 'none',
+              }}
+              onTransitionEnd={handleTransitionEnd}
+            >
+              {extendedItems.map((item, idx) => (
+                <div
+                  key={`${item.id}-${idx}`}
+                  style={{
+                    width: `${100 / visibleCount}%`,
+                    flexShrink: 0,
+                  }}
+                  className="px-2 sm:px-2.5 h-full"
+                >
+                  <TestimonialCard item={item} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Subtle Side Navigation Arrow: Next (Desktop & Tablet) */}
+          <button
+            type="button"
+            onClick={handleNext}
+            aria-label="Next testimonials"
+            className="hidden sm:flex absolute -right-4 lg:-right-5 top-1/2 -translate-y-1/2 z-20 w-8 h-8 lg:w-9 lg:h-9 rounded-full bg-white border border-[#E5E7EB] text-[#072B57] hover:border-[#FF6B00] hover:text-[#FF6B00] hover:bg-orange-50/50 shadow-xs items-center justify-center transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF6B00]/30"
+          >
+            <ChevronRight className="w-4 h-4 lg:w-4.5 lg:h-4.5 stroke-[2.2]" />
+          </button>
+        </div>
+
+        {/* BOTTOM NAVIGATION: Small subtle controls & pagination dots */}
+        <div className="flex items-center justify-center gap-3 mt-5 sm:mt-6">
+          {/* Mobile Prev Arrow */}
+          <button
+            type="button"
+            onClick={handlePrev}
+            aria-label="Previous slide"
+            className="sm:hidden flex w-7 h-7 rounded-full bg-white border border-[#E5E7EB] text-[#072B57] hover:text-[#FF6B00] hover:border-[#FF6B00] items-center justify-center shadow-xs transition-colors cursor-pointer"
+          >
+            <ChevronLeft className="w-3.5 h-3.5 stroke-[2.2]" />
+          </button>
+
+          {/* Small Pagination Dots */}
+          <div
+            className="flex items-center gap-1.5"
+            role="tablist"
+            aria-label="Testimonial slider pagination"
+          >
+            {SAMPLE_TESTIMONIALS.map((t, dotIndex) => {
+              const isActive = activeDot === dotIndex;
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  aria-label={`Go to testimonial ${dotIndex + 1}: ${t.name}`}
+                  onClick={() => handleDotClick(dotIndex)}
+                  className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                    isActive
+                      ? 'w-5 bg-[#FF6B00]'
+                      : 'w-1.5 bg-slate-300 hover:bg-slate-400'
+                  }`}
+                />
+              );
+            })}
+          </div>
+
+          {/* Mobile Next Arrow */}
+          <button
+            type="button"
+            onClick={handleNext}
+            aria-label="Next slide"
+            className="sm:hidden flex w-7 h-7 rounded-full bg-white border border-[#E5E7EB] text-[#072B57] hover:text-[#FF6B00] hover:border-[#FF6B00] items-center justify-center shadow-xs transition-colors cursor-pointer"
+          >
+            <ChevronRight className="w-3.5 h-3.5 stroke-[2.2]" />
+          </button>
         </div>
       </div>
     </section>
   );
 };
+

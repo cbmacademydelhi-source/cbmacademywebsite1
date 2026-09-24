@@ -158,18 +158,26 @@ export const WebinarDetailsModal: React.FC<WebinarDetailsModalProps> = ({
             </div>
           </div>
 
-          <button
-            type="button"
-            id="btn-modal-register-now"
-            onClick={() => {
-              onClose();
-              onRegister(webinar);
-            }}
-            className="inline-flex items-center gap-2 rounded-xl bg-[#FF6B00] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-[#e05f00] cursor-pointer shadow-md active:scale-95"
-          >
-            <span>Register Now</span>
-            <ArrowRight className="h-4 w-4" />
-          </button>
+          {typeof webinar.max_capacity === 'number' &&
+          typeof webinar.current_registrations === 'number' &&
+          webinar.current_registrations >= webinar.max_capacity ? (
+            <div className="rounded-xl bg-slate-200 px-6 py-3 text-sm font-bold text-slate-500 cursor-not-allowed">
+              Registration Closed
+            </div>
+          ) : (
+            <button
+              type="button"
+              id="btn-modal-register-now"
+              onClick={() => {
+                onClose();
+                onRegister(webinar);
+              }}
+              className="inline-flex items-center gap-2 rounded-xl bg-[#FF6B00] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-[#e05f00] cursor-pointer shadow-md active:scale-95"
+            >
+              <span>Register Now</span>
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          )}
         </div>
       </div>
     </div>

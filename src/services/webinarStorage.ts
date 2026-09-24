@@ -272,12 +272,20 @@ export async function registerForWebinar(data: {
 
   const registration: WebinarRegistration = {
     id: `reg-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+    webinar_id: data.webinarId,
+    webinar_title: data.webinarTitle,
     webinarId: data.webinarId,
     webinarTitle: data.webinarTitle,
+    full_name: name,
     fullName: name,
     email,
     phone,
     message: data.message?.trim(),
+    registration_type: 'free',
+    amount: 0,
+    currency: 'INR',
+    payment_status: 'not_required',
+    created_at: new Date().toISOString(),
     registeredAt: new Date().toISOString(),
   };
 

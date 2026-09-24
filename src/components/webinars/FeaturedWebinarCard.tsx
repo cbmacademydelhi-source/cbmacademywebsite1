@@ -133,18 +133,26 @@ export const FeaturedWebinarCard: React.FC<FeaturedWebinarCardProps> = ({
                 View Details →
               </button>
 
-              <button
-                type="button"
-                id={`btn-register-featured-${webinar.id}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onRegister(webinar);
-                }}
-                className="inline-flex items-center justify-center gap-1.5 rounded-[8px] bg-[#FF6B00] px-4 py-2 text-xs sm:text-sm font-bold text-white transition-all duration-150 hover:bg-[#e05f00] cursor-pointer shadow-xs active:scale-[0.98]"
-              >
-                <span>Register Now</span>
-                <ArrowRight className="h-4 w-4" />
-              </button>
+              {typeof webinar.max_capacity === 'number' &&
+              typeof webinar.current_registrations === 'number' &&
+              webinar.current_registrations >= webinar.max_capacity ? (
+                <span className="inline-flex items-center justify-center rounded-[8px] bg-slate-200 px-4 py-2 text-xs sm:text-sm font-bold text-slate-500 cursor-not-allowed">
+                  Registration Closed
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  id={`btn-register-featured-${webinar.id}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRegister(webinar);
+                  }}
+                  className="inline-flex items-center justify-center gap-1.5 rounded-[8px] bg-[#FF6B00] px-4 py-2 text-xs sm:text-sm font-bold text-white transition-all duration-150 hover:bg-[#e05f00] cursor-pointer shadow-xs active:scale-[0.98]"
+                >
+                  <span>Register Now</span>
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              )}
             </div>
           </div>
         </div>

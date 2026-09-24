@@ -112,18 +112,26 @@ export const SecondaryWebinarCard: React.FC<SecondaryWebinarCardProps> = ({
               View Details →
             </button>
 
-            <button
-              type="button"
-              id={`btn-register-secondary-${webinar.id}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                onRegister(webinar);
-              }}
-              className="inline-flex items-center justify-center gap-1.5 rounded-[8px] bg-[#FF6B00] px-3.5 py-2 text-xs font-bold text-white transition-all duration-150 hover:bg-[#e05f00] cursor-pointer shadow-xs active:scale-[0.98]"
-            >
-              <span>Register</span>
-              <ArrowRight className="h-3 w-3" />
-            </button>
+            {typeof webinar.max_capacity === 'number' &&
+            typeof webinar.current_registrations === 'number' &&
+            webinar.current_registrations >= webinar.max_capacity ? (
+              <span className="inline-flex items-center justify-center rounded-[8px] bg-slate-200 px-3.5 py-2 text-xs font-bold text-slate-500 cursor-not-allowed">
+                Closed
+              </span>
+            ) : (
+              <button
+                type="button"
+                id={`btn-register-secondary-${webinar.id}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRegister(webinar);
+                }}
+                className="inline-flex items-center justify-center gap-1.5 rounded-[8px] bg-[#FF6B00] px-3.5 py-2 text-xs font-bold text-white transition-all duration-150 hover:bg-[#e05f00] cursor-pointer shadow-xs active:scale-[0.98]"
+              >
+                <span>Register</span>
+                <ArrowRight className="h-3 w-3" />
+              </button>
+            )}
           </div>
         </div>
       </div>

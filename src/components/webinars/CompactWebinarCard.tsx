@@ -80,18 +80,26 @@ export const CompactWebinarCard: React.FC<CompactWebinarCardProps> = ({
             {priceDisplay}
           </span>
 
-          <button
-            type="button"
-            id={`btn-register-compact-${webinar.id}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              onRegister(webinar);
-            }}
-            className="inline-flex items-center gap-1 rounded-md bg-[#FF6B00] px-3 py-1.5 text-xs font-bold text-white transition-colors hover:bg-[#e05f00] cursor-pointer shadow-xs active:scale-[0.98]"
-          >
-            <span>Register</span>
-            <ArrowRight className="h-3 w-3" />
-          </button>
+          {typeof webinar.max_capacity === 'number' &&
+          typeof webinar.current_registrations === 'number' &&
+          webinar.current_registrations >= webinar.max_capacity ? (
+            <span className="inline-flex items-center rounded-md bg-slate-200 px-3 py-1.5 text-xs font-bold text-slate-500 cursor-not-allowed">
+              Closed
+            </span>
+          ) : (
+            <button
+              type="button"
+              id={`btn-register-compact-${webinar.id}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                onRegister(webinar);
+              }}
+              className="inline-flex items-center gap-1 rounded-md bg-[#FF6B00] px-3 py-1.5 text-xs font-bold text-white transition-colors hover:bg-[#e05f00] cursor-pointer shadow-xs active:scale-[0.98]"
+            >
+              <span>Register</span>
+              <ArrowRight className="h-3 w-3" />
+            </button>
+          )}
         </div>
       </div>
     </div>
