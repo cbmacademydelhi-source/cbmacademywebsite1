@@ -20,9 +20,9 @@ const CARDS: CardItem[] = [
     id: 'card-1',
     badgeNumber: '10+',
     badgeLabel: 'Years',
-    title: 'Experienced Trainers',
+    title: 'Experienced Digital Marketing Trainers',
     description:
-      'Learn from agency leads and certified marketers with 10+ years of live campaign experience.',
+      'Learn from experienced marketing professionals and trainers with practical knowledge of SEO, paid advertising, social media, analytics and digital growth.',
     renderIcon: () => (
       <svg
         className="w-20 h-16 sm:w-22 sm:h-18 drop-shadow-md"
@@ -102,9 +102,9 @@ const CARDS: CardItem[] = [
     id: 'card-2',
     badgeNumber: '80%',
     badgeLabel: 'Live',
-    title: 'Practical Learning',
+    title: 'Hands-On Digital Marketing Learning',
     description:
-      '80% hands-on training executing live campaigns with real marketing budgets.',
+      'Work on practical assignments, campaign planning, SEO exercises, advertising strategies and real-world marketing projects.',
     renderIcon: () => (
       <svg
         className="w-20 h-16 sm:w-22 sm:h-18 drop-shadow-md"
@@ -161,10 +161,10 @@ const CARDS: CardItem[] = [
   {
     id: 'card-3',
     badgeNumber: '15+',
-    badgeLabel: 'Projects',
-    title: 'Industry Projects',
+    badgeLabel: 'Tools',
+    title: 'AI-Powered Marketing Skills',
     description:
-      'Build an employer-ready portfolio with 15+ live client case studies and capstones.',
+      'Learn how to use modern AI tools for content creation, research, campaign planning, analytics, automation and marketing productivity.',
     renderIcon: () => (
       <svg
         className="w-20 h-16 sm:w-22 sm:h-18 drop-shadow-md"
@@ -222,9 +222,9 @@ const CARDS: CardItem[] = [
     id: 'card-4',
     badgeNumber: '100%',
     badgeLabel: 'Help',
-    title: 'Placement Support',
+    title: 'Career & Placement Support',
     description:
-      'Dedicated 1-on-1 placement support, resume reviews, mock interviews, and hiring drives.',
+      'Get career guidance, resume support, interview preparation, portfolio development and placement assistance to help you move toward digital marketing opportunities.',
     renderIcon: () => (
       <svg
         className="w-20 h-16 sm:w-22 sm:h-18 drop-shadow-md"
@@ -313,7 +313,38 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* =========================================================
-            HEADING AREA
+            INTRO / VALUE SECTION (SEO OKHLA, NEW DELHI)
+        ========================================================= */}
+        <div className="max-w-4xl mx-auto text-center mb-10 sm:mb-12 pb-8 sm:pb-10 border-b border-slate-200/80">
+          <motion.h2
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT_ONCE}
+            transition={{ duration: 0.45, ease: SMOOTH_EASE_OUT }}
+            className="text-2xl sm:text-3xl lg:text-[36px] font-black text-[#072B57] tracking-tight leading-tight"
+          >
+            Digital Marketing Academy in{' '}
+            <span className="text-[#FF6B00]">Okhla, New Delhi</span>
+          </motion.h2>
+
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT_ONCE}
+            transition={{ duration: 0.5, delay: 0.08, ease: SMOOTH_EASE_OUT }}
+            className="mt-4 space-y-3 text-slate-600 text-sm sm:text-base leading-relaxed max-w-3xl mx-auto"
+          >
+            <p>
+              CBM Academy is a practical digital marketing academy in Okhla, New Delhi, designed for students, freshers, freelancers, entrepreneurs and working professionals. Learn modern digital marketing through hands-on projects, real marketing tools, AI-powered workflows and career-focused training.
+            </p>
+            <p>
+              From SEO and Google Ads to Meta Ads, social media marketing, analytics, content marketing and AI automation, our digital marketing courses are designed to help learners build practical skills they can apply in real-world campaigns.
+            </p>
+          </motion.div>
+        </div>
+
+        {/* =========================================================
+            WHY CHOOSE CBM ACADEMY HEADING AREA
         ========================================================= */}
         <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-10">
           {/* Top Pill with Parallel Golden Horizontal Lines */}
@@ -345,18 +376,18 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
           </motion.div>
 
           {/* Main Heading */}
-          <motion.h2
+          <motion.h3
             initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={VIEWPORT_ONCE}
             transition={{ duration: 0.5, delay: 0.08, ease: SMOOTH_EASE_OUT }}
-            className="text-3xl sm:text-4xl lg:text-[44px] font-black text-[#072B57] tracking-tight leading-[1.15]"
+            className="text-2xl sm:text-3xl lg:text-[40px] font-black text-[#072B57] tracking-tight leading-[1.15]"
           >
-            Built for{' '}
+            Practical Digital Marketing Training for{' '}
             <span className="text-[#FF6B00]">
-              High-Growth Careers
+              Career Growth
             </span>
-          </motion.h2>
+          </motion.h3>
 
           {/* Subtitle */}
           <motion.p
@@ -364,10 +395,9 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={VIEWPORT_ONCE}
             transition={{ duration: 0.5, delay: 0.15, ease: SMOOTH_EASE_OUT }}
-            className="mt-3 text-slate-600 text-sm sm:text-base lg:text-[16.5px] font-normal leading-relaxed max-w-2xl mx-auto"
+            className="mt-3 text-slate-600 text-sm sm:text-base lg:text-[16px] font-normal leading-relaxed max-w-2xl mx-auto"
           >
-            Outcome-driven training with live ad budgets, modern AI tools, and
-            direct placement support.
+            Learn digital marketing through practical assignments, live campaign simulations, industry tools and AI-powered workflows instead of relying only on classroom theory.
           </motion.p>
         </div>
 

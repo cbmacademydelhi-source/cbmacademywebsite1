@@ -33,13 +33,13 @@ export const Footer: React.FC<FooterProps> = ({ onOpenApply, onOpenBrochure }) =
 
   const navLinks = [
     { name: 'Home', href: '#home' },
-    { name: 'Course Modules', href: '#course' },
-    { name: 'Live Webinars', href: '#webinars' },
-    { name: 'About CBM', href: '#about' },
+    { name: 'Courses', href: '#course' },
+    { name: 'Webinars', href: '#webinars' },
+    { name: 'About', href: '#about' },
     { name: 'Certificate Verification', href: '#certificate' },
-    { name: 'Job Opportunities', href: '#jobs' },
-    { name: 'Articles & Blogs', href: '#blogs' },
-    { name: 'Contact Campus', href: '#contact' },
+    { name: 'Jobs', href: '#jobs' },
+    { name: 'Blogs', href: '#blogs' },
+    { name: 'Contact', href: '#contact' },
   ];
 
   const courseTracks = [
@@ -63,13 +63,13 @@ export const Footer: React.FC<FooterProps> = ({ onOpenApply, onOpenBrochure }) =
             <CbmLogo variant="dark" height={44} showTagline={true} />
 
             <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-sm">
-              India’s premier outcome-driven AI digital marketing institute. Practical execution with direct career placement support.
+              CBM Academy is a practical digital marketing academy in Okhla, New Delhi. Learn SEO, performance advertising, Google & Meta Ads, and AI marketing with career placement support.
             </p>
 
             <div className="space-y-2 text-xs text-slate-300">
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-[#FF6B00] flex-shrink-0" />
-                <span>Connaught Place & South Ext, New Delhi, India</span>
+                <span>Okhla Industrial Area (Near Jamia Nagar), New Delhi, Delhi 110020</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-[#FF6B00] flex-shrink-0" />

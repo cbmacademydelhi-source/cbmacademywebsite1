@@ -23,9 +23,9 @@ const modules: ModuleItem[] = [
     badgeBg: 'bg-[#EEF4FF]',
     badgeText: 'text-[#1E60F2]',
     circleBg: 'bg-[#EEF4FF]',
-    title: 'AI-Driven Search Engine Optimization (SEO)',
+    title: 'Master in Digital Marketing & AI Strategy',
     description:
-      'Master search rankings with AI tools, keyword strategies & on-page SEO.',
+      'Build a complete foundation in digital marketing with SEO, paid advertising, social media, analytics, content marketing and AI-powered marketing strategies.',
     renderIcon: () => (
       <svg
         className="w-6 h-6 text-[#1E60F2]"
@@ -47,20 +47,22 @@ const modules: ModuleItem[] = [
     badgeBg: 'bg-[#EAFBF3]',
     badgeText: 'text-[#10B981]',
     circleBg: 'bg-[#EAFBF3]',
-    title: 'Performance Marketing & Meta Ads Suite',
+    title: 'AI in Digital Marketing & Growth Systems',
     description:
-      'Run high-converting ads on Google & Meta with performance focus.',
+      'Learn how AI can support content creation, marketing research, automation, campaign planning, analytics and business growth.',
     renderIcon: () => (
-      <svg
-        className="w-6 h-6"
-        viewBox="0 0 24 24"
-        fill="none"
+      <div
+        className="w-6 h-6 rounded-[7px] bg-[#10B981] flex flex-col items-center justify-center text-white shadow-xs"
         aria-hidden="true"
       >
-        <rect x="5" y="14" width="3.2" height="6" rx="1.6" fill="#10B981" />
-        <rect x="10.4" y="9" width="3.2" height="11" rx="1.6" fill="#10B981" />
-        <rect x="15.8" y="4" width="3.2" height="16" rx="1.6" fill="#10B981" />
-      </svg>
+        <span className="text-[9.5px] font-black tracking-tight leading-none">
+          AI
+        </span>
+        <div className="mt-1 flex flex-col gap-[1.5px] w-3.5">
+          <div className="h-[1.5px] bg-white/90 rounded-full w-full" />
+          <div className="h-[1.5px] bg-white/90 rounded-full w-2.5 mx-auto" />
+        </div>
+      </div>
     ),
   },
   {
@@ -68,9 +70,9 @@ const modules: ModuleItem[] = [
     badgeBg: 'bg-[#FFF3EB]',
     badgeText: 'text-[#FF6B00]',
     circleBg: 'bg-[#FFF3EB]',
-    title: 'Google Ads & Performance Max Mastery',
+    title: 'Performance Marketing & Media Buying',
     description:
-      'Drive results with Google Ads, PMax campaigns & smart bidding.',
+      'Learn Google Ads, Meta Ads, campaign strategy, audience targeting, optimization, conversion tracking and performance marketing fundamentals.',
     renderIcon: () => (
       <svg
         className="w-6 h-6 text-[#FF6B00]"
@@ -95,53 +97,34 @@ const modules: ModuleItem[] = [
     badgeBg: 'bg-[#F3E8FF]',
     badgeText: 'text-[#7C3AED]',
     circleBg: 'bg-[#F3E8FF]',
-    title: 'AI Content Creation, Copywriting & Media',
+    title: 'SEO & Content Marketing',
     description:
-      'Create content that ranks, engages & converts with AI superpowers.',
-    renderIcon: () => (
-      <div
-        className="w-6 h-6 rounded-[7px] bg-[#6D28D9] flex flex-col items-center justify-center text-white shadow-xs"
-        aria-hidden="true"
-      >
-        <span className="text-[9.5px] font-black tracking-tight leading-none">
-          AI
-        </span>
-        <div className="mt-1 flex flex-col gap-[1.5px] w-3.5">
-          <div className="h-[1.5px] bg-white/90 rounded-full w-full" />
-          <div className="h-[1.5px] bg-white/90 rounded-full w-2.5 mx-auto" />
-        </div>
-      </div>
-    ),
-  },
-  {
-    number: '05',
-    badgeBg: 'bg-[#FEF7EA]',
-    badgeText: 'text-[#D97706]',
-    circleBg: 'bg-[#FEF7EA]',
-    title: 'Web Analytics, GA4 & Looker Dashboards',
-    description:
-      'Track, analyze & visualize data like a pro with GA4 & Looker.',
+      'Learn keyword research, on-page SEO, technical SEO fundamentals, content strategy, search visibility and SEO analytics.',
     renderIcon: () => (
       <svg
-        className="w-6 h-6"
+        className="w-6 h-6 text-[#7C3AED]"
         viewBox="0 0 24 24"
         fill="none"
+        stroke="currentColor"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         aria-hidden="true"
       >
-        <rect x="5" y="14" width="3.2" height="6" rx="1.6" fill="#F59E0B" />
-        <rect x="10.4" y="9" width="3.2" height="11" rx="1.6" fill="#F59E0B" />
-        <rect x="15.8" y="4" width="3.2" height="16" rx="1.6" fill="#F59E0B" />
+        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+        <path d="M6 6h10" />
+        <path d="M6 10h10" />
       </svg>
     ),
   },
   {
-    number: '06',
+    number: '05',
     badgeBg: 'bg-[#FFEBF0]',
     badgeText: 'text-[#E11D48]',
     circleBg: 'bg-[#FFEBF0]',
-    title: 'Organic Social Media Strategy & Growth',
+    title: 'Social Media Marketing & Personal Branding',
     description:
-      'Build brand presence & grow organically across platforms.',
+      'Learn social media strategy, content planning, audience growth, personal branding and platform-specific marketing.',
     renderIcon: () => (
       <div
         className="flex flex-col items-center justify-center gap-1"
@@ -160,15 +143,28 @@ const modules: ModuleItem[] = [
           <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
           <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
         </svg>
-        <div className="flex items-center gap-1">
-          <svg className="w-3.5 h-3.5 fill-[#E1306C]" viewBox="0 0 24 24">
-            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-          </svg>
-          <svg className="w-3.5 h-3.5 fill-[#E1306C]" viewBox="0 0 24 24">
-            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-          </svg>
-        </div>
       </div>
+    ),
+  },
+  {
+    number: '06',
+    badgeBg: 'bg-[#FEF7EA]',
+    badgeText: 'text-[#D97706]',
+    circleBg: 'bg-[#FEF7EA]',
+    title: 'Web Analytics, GA4 & CRO',
+    description:
+      'Learn GA4, conversion tracking, marketing analytics, reporting, user behavior analysis and conversion rate optimization.',
+    renderIcon: () => (
+      <svg
+        className="w-6 h-6"
+        viewBox="0 0 24 24"
+        fill="none"
+        aria-hidden="true"
+      >
+        <rect x="5" y="14" width="3.2" height="6" rx="1.6" fill="#F59E0B" />
+        <rect x="10.4" y="9" width="3.2" height="11" rx="1.6" fill="#F59E0B" />
+        <rect x="15.8" y="4" width="3.2" height="16" rx="1.6" fill="#F59E0B" />
+      </svg>
     ),
   },
   {
@@ -176,9 +172,9 @@ const modules: ModuleItem[] = [
     badgeBg: 'bg-[#EEF4FF]',
     badgeText: 'text-[#1E60F2]',
     circleBg: 'bg-[#EEF4FF]',
-    title: 'Email Marketing & CRM Automation',
+    title: 'Executive Digital Leadership Program',
     description:
-      'Automate, engage & convert with email funnels & smart CRM.',
+      'Develop digital strategy, marketing leadership, growth planning, analytics and AI adoption skills for business and management roles.',
     renderIcon: () => (
       <svg
         className="w-6 h-6 text-[#1E60F2]"
@@ -190,8 +186,10 @@ const modules: ModuleItem[] = [
         strokeLinejoin="round"
         aria-hidden="true"
       >
-        <rect width="20" height="15" x="2" y="4.5" rx="2.5" />
-        <path d="m22 6.5-9.25 6.4a1.5 1.5 0 0 1-1.5 0L2 6.5" />
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
       </svg>
     ),
   },
@@ -200,9 +198,9 @@ const modules: ModuleItem[] = [
     badgeBg: 'bg-[#EAFBF3]',
     badgeText: 'text-[#10B981]',
     circleBg: 'bg-[#EAFBF3]',
-    title: 'Freelancing, Affiliate & Agency Blueprint',
+    title: 'Freelancing & Digital Agency Blueprint',
     description:
-      'Build your income streams & scale as a freelancer or agency owner.',
+      'Learn how to launch a digital marketing agency in Okhla or New Delhi, win high-ticket clients, deliver campaigns, and scale freelance revenue.',
     renderIcon: () => (
       <svg
         className="w-6 h-6 fill-[#10B981]"
@@ -232,14 +230,16 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
         <div className="relative z-10 mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
           {/* HEADER */}
           <div className="mx-auto max-w-5xl text-center mb-8 sm:mb-10">
-            <h2 className="text-2xl sm:text-3xl md:text-[34px] lg:text-[40px] font-extrabold tracking-tight leading-tight text-[#072B57] sm:whitespace-nowrap">
-              AI-Powered{' '}
-              <span className="text-[#FF6B00]">Digital Marketing</span>{' '}
-              Curriculum
+            <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-orange-50 text-[#FF6B00] text-xs font-bold uppercase tracking-wider border border-orange-200 mb-3">
+              DIGITAL MARKETING COURSES
+            </div>
+            <h2 className="text-2xl sm:text-3xl md:text-[34px] lg:text-[40px] font-extrabold tracking-tight leading-tight text-[#072B57]">
+              Industry-Focused{' '}
+              <span className="text-[#FF6B00]">Digital Marketing Courses</span>
             </h2>
 
-            <p className="mt-2.5 text-xs sm:text-sm md:text-base font-normal text-slate-600">
-              8 power-packed modules. Real-world skills. AI tools. Career-ready you.
+            <p className="mt-3 text-sm sm:text-base font-normal text-slate-600 max-w-3xl mx-auto leading-relaxed">
+              Explore practical digital marketing courses covering SEO, performance marketing, Google Ads, Meta Ads, social media marketing, analytics, AI marketing and digital growth strategies.
             </p>
 
             {/* Accent divider pill */}

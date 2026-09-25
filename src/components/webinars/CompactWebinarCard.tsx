@@ -42,11 +42,11 @@ export const CompactWebinarCard: React.FC<CompactWebinarCardProps> = ({
         <div className="absolute top-2.5 left-2.5 flex items-center gap-1 pointer-events-none">
           {isFree ? (
             <span className="inline-block rounded-md bg-emerald-600 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-xs">
-              FREE
+              FREE WEBINAR
             </span>
           ) : (
             <span className="inline-block rounded-md bg-[#FF6B00] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-xs">
-              PAID
+              PAID WEBINAR
             </span>
           )}
         </div>
@@ -96,7 +96,7 @@ export const CompactWebinarCard: React.FC<CompactWebinarCardProps> = ({
               }}
               className="inline-flex items-center gap-1 rounded-md bg-[#FF6B00] px-3 py-1.5 text-xs font-bold text-white transition-colors hover:bg-[#e05f00] cursor-pointer shadow-xs active:scale-[0.98]"
             >
-              <span>Register</span>
+              <span>Register Now</span>
               <ArrowRight className="h-3 w-3" />
             </button>
           )}

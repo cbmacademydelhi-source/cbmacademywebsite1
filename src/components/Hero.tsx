@@ -29,9 +29,9 @@ export const Hero: React.FC<HeroProps> = ({ onOpenApply, onOpenBrochure }) => {
               className="inline-flex items-center gap-2 bg-orange-50 border border-orange-100 px-3.5 py-1.5 rounded-full text-xs font-semibold text-slate-700 shadow-sm"
             >
               <span className="flex h-2 w-2 rounded-full bg-[#FF6B00] animate-pulse" />
-              <span className="font-bold text-[#FF6B00]">Admissions Open 2026</span>
+              <span className="font-bold text-[#FF6B00]">AI-Powered Digital Marketing Academy</span>
               <span className="text-slate-300">|</span>
-              <span>Practical AI Growth Training</span>
+              <span>Okhla, New Delhi</span>
             </motion.div>
 
             {/* Main Headline */}
@@ -41,21 +41,21 @@ export const Hero: React.FC<HeroProps> = ({ onOpenApply, onOpenBrochure }) => {
               transition={{ duration: 0.55, delay: 0.18, ease: 'easeOut' }}
               className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#072B57] tracking-tight leading-[1.15]"
             >
-              Become Job Ready with <br className="hidden sm:inline" />
+              Master Digital Marketing with{' '}
               <span className="text-[#FF6B00] underline decoration-[#FF6B00]/30 decoration-wavy decoration-1 underline-offset-4">
-                AI-Powered
+                AI, Real Projects
               </span>{' '}
-              Digital Marketing Training
+              & Industry Skills
             </motion.h1>
 
-            {/* Subheadline - Shortened to 1-2 lines */}
+            {/* Subheadline */}
             <motion.p
               initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.55, delay: 0.25, ease: 'easeOut' }}
               className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl"
             >
-              Master SEO, Meta & Google Ads, GA4, and AI workflows with hands-on campaign execution and direct placement support.
+              Build job-ready digital marketing skills with practical training in SEO, Google Ads, Meta Ads, social media marketing, analytics, content marketing and AI-powered marketing workflows at CBM Academy in Okhla, New Delhi.
             </motion.p>
 
             {/* CTAs */}
@@ -71,7 +71,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenApply, onOpenBrochure }) => {
                 type="button"
                 className="inline-flex items-center justify-center gap-2.5 bg-[#FF6B00] hover:bg-[#e05e00] text-white font-bold text-base px-7 py-3.5 rounded-xl shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 transition-all duration-150 active:scale-98 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:ring-offset-2"
               >
-                <span>Apply Now</span>
+                <span>Explore Digital Marketing Courses</span>
                 <ArrowRight className="w-5 h-5" />
               </button>
 
@@ -91,19 +91,23 @@ export const Hero: React.FC<HeroProps> = ({ onOpenApply, onOpenBrochure }) => {
               initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.55, delay: 0.39, ease: 'easeOut' }}
-              className="pt-4 grid grid-cols-2 sm:grid-cols-3 gap-3 border-t border-slate-100"
+              className="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 border-t border-slate-100"
             >
               <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
                 <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                <span>100% Placement Help</span>
+                <span>Practical Training</span>
               </div>
               <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
                 <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                <span>Live Client Budgets</span>
+                <span>Live Projects</span>
               </div>
               <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
                 <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                <span>Govt. Recognized</span>
+                <span>AI-Powered Learning</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                <span>Career Support</span>
               </div>
             </motion.div>
 
@@ -139,7 +143,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenApply, onOpenBrochure }) => {
               >
                 <img
                   src="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1200&auto=format&fit=crop"
-                  alt="CBM Academy Digital Marketing Training Classroom"
+                  alt="CBM Academy Digital Marketing Institute in Okhla New Delhi"
                   referrerPolicy="no-referrer"
                   className="w-full h-80 sm:h-96 object-cover transition-transform duration-500 hover:scale-105"
                 />
@@ -154,7 +158,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenApply, onOpenBrochure }) => {
                       <span className="text-[11px] font-bold tracking-wider text-[#FF6B00] uppercase block">
                         CBM Practical Masterclass
                       </span>
-                      <p className="text-sm font-semibold text-white">Live Campaign Execution & AI Auditing</p>
+                      <p className="text-sm font-semibold text-white">Live Campaign Execution & AI Auditing in Okhla</p>
                     </div>
                     <div className="text-right">
                       <span className="inline-flex items-center gap-1 bg-emerald-500/20 text-emerald-300 text-xs px-2.5 py-1 rounded-full font-bold">

@@ -1,6 +1,6 @@
 {
   "name": "CBM Academy",
-  "description": "Official website for CBM Academy - AI-Powered Digital Marketing Training with placement assistance, live industry projects, and certified credentials.",
+  "description": "CBM Academy is a practical digital marketing academy in Okhla, New Delhi offering industry-focused training in SEO, Google Ads, Meta Ads, web analytics, and AI-powered marketing.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

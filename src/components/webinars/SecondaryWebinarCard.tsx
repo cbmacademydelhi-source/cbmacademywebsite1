@@ -128,7 +128,7 @@ export const SecondaryWebinarCard: React.FC<SecondaryWebinarCardProps> = ({
                 }}
                 className="inline-flex items-center justify-center gap-1.5 rounded-[8px] bg-[#FF6B00] px-3.5 py-2 text-xs font-bold text-white transition-all duration-150 hover:bg-[#e05f00] cursor-pointer shadow-xs active:scale-[0.98]"
               >
-                <span>Register</span>
+                <span>Register Now</span>
                 <ArrowRight className="h-3 w-3" />
               </button>
             )}

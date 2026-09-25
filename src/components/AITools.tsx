@@ -416,11 +416,11 @@ export const AITools: React.FC<AIToolsProps> = ({ onOpenApply }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={VIEWPORT_ONCE}
             transition={{ duration: 0.6, ease: SMOOTH_EASE_OUT }}
-            className="inline-flex items-center justify-center gap-2 px-3 py-1 rounded-full bg-[#FF6B00]/10 border border-[#FF6B00]/30 shadow-2xs"
+            className="inline-flex items-center justify-center gap-2 px-3.5 py-1 rounded-full bg-[#FF6B00]/10 border border-[#FF6B00]/30 shadow-2xs"
           >
             <span className="w-3.5 sm:w-4 h-[1.5px] bg-[#FF6B00] rounded-full" />
             <span className="text-[11px] sm:text-xs font-black uppercase tracking-[0.14em] text-[#FF6B00]">
-              INDUSTRY TOOLKIT
+              AI + DIGITAL MARKETING
             </span>
             <span className="w-3.5 sm:w-4 h-[1.5px] bg-[#FF6B00] rounded-full" />
           </motion.div>
@@ -431,11 +431,11 @@ export const AITools: React.FC<AIToolsProps> = ({ onOpenApply }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={VIEWPORT_ONCE}
             transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
-            className="mt-3.5 sm:mt-4 text-2xl sm:text-3xl md:text-[34px] lg:text-[40px] font-extrabold text-[#072B57] tracking-tight leading-[1.18] sm:whitespace-nowrap"
+            className="mt-3.5 sm:mt-4 text-2xl sm:text-3xl md:text-[34px] lg:text-[40px] font-extrabold text-[#072B57] tracking-tight leading-[1.18]"
           >
-            Master the tools modern teams{' '}
+            Learn AI-Powered Digital Marketing for the{' '}
             <span className="text-[#FF6B00]">
-              actually use.
+              Modern Industry
             </span>
           </motion.h2>
 
@@ -445,10 +445,9 @@ export const AITools: React.FC<AIToolsProps> = ({ onOpenApply }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={VIEWPORT_ONCE}
             transition={{ duration: 0.6, delay: 0.16, ease: SMOOTH_EASE_OUT }}
-            className="mt-2.5 sm:mt-3 text-sm sm:text-[15px] text-slate-600 font-medium leading-relaxed max-w-xl mx-auto"
+            className="mt-2.5 sm:mt-3 text-sm sm:text-[15px] text-slate-600 font-medium leading-relaxed max-w-2xl mx-auto"
           >
-            Build practical skills with the platforms powering today’s AI, marketing
-            and digital businesses.
+            AI is transforming how marketers research, create, analyze and optimize campaigns. At CBM Academy, learners develop practical AI skills with modern tools to automate workflows, accelerate research, and optimize performance.
           </motion.p>
 
         </div>

@@ -41,7 +41,7 @@ export const BlogSection: React.FC = () => {
               transition={{ duration: 0.6, delay: 0.16, ease: SMOOTH_EASE_OUT }}
               className="text-slate-600 text-base leading-relaxed"
             >
-              Algorithmic updates, paid advertising strategies, and AI workflows curated by CBM mentors.
+              Explore actionable SEO strategies, performance advertising guides, and AI marketing workflows curated by experienced digital marketing trainers at CBM Academy in Okhla, New Delhi.
             </motion.p>
           </div>
         </div>

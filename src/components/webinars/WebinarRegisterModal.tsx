@@ -448,10 +448,12 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
         <div className="flex items-center justify-between border-b border-[#E5E7EB] bg-[#072B57] px-6 py-4 text-white">
           <div>
             <h3 id="webinar-register-title" className="text-lg font-bold">
-              {qrSession ? 'UPI QR Payment' : 'Webinar Registration'}
+              {qrSession ? 'Complete Your Webinar Registration' : 'Reserve Your Webinar Seat'}
             </h3>
             <p className="text-xs text-slate-300">
-              {currentWebinar ? currentWebinar.title : 'Reserve your live seat'}
+              {qrSession
+                ? 'Complete the payment to confirm your registration for this premium webinar.'
+                : 'Choose your webinar, complete the registration form and secure your place for the upcoming session.'}
             </p>
           </div>
 
@@ -485,7 +487,7 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
               </div>
 
               <h4 className="text-2xl font-black text-[#072B57]">
-                You're Registered!
+                Registration Confirmed!
               </h4>
 
               <div className="mt-2 inline-block rounded-full bg-emerald-50 px-4 py-1 text-xs font-extrabold text-emerald-700 border border-emerald-200">
@@ -535,7 +537,7 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
               </div>
 
               <p className="mt-4 text-xs sm:text-sm text-slate-600 max-w-sm mx-auto leading-relaxed">
-                Webinar details will be sent to your registered email.
+                Your registration for the webinar has been successfully confirmed. Webinar details and joining instructions will be shared with you on your registered email address.
               </p>
 
               <button
@@ -544,7 +546,7 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
                 onClick={handleClose}
                 className="mt-6 inline-flex items-center justify-center rounded-xl bg-[#072B57] px-8 py-2.5 text-xs sm:text-sm font-bold text-white transition-colors hover:bg-[#0c3c78] cursor-pointer shadow-sm"
               >
-                Close
+                Explore More Webinars
               </button>
             </div>
           ) : qrSession ? (
@@ -609,7 +611,7 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
               {/* Primary Instruction Messages (Exact User Requirement) */}
               <div className="space-y-1.5 pt-1">
                 <div className="text-sm font-bold text-[#072B57]">
-                  Scan the QR code using your UPI app
+                  Scan the QR code using your preferred UPI app to complete the payment.
                 </div>
 
                 {/* Animated status beacon */}
@@ -624,7 +626,7 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
                 </div>
 
                 <p className="text-[11px] text-slate-500 max-w-xs mx-auto pt-1 leading-snug">
-                  Payment is still pending. Your registration will be confirmed after successful payment.
+                  Payment is pending. Your registration will be confirmed after successful payment verification.
                 </p>
               </div>
 
@@ -873,7 +875,7 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
                   ) : isPaid ? (
                     <>
                       <QrCode className="h-4 w-4" />
-                      <span>Pay via UPI QR (₹{webinarPrice})</span>
+                      <span>Proceed to Payment</span>
                     </>
                   ) : (
                     <span>Register for Free</span>

@@ -135,7 +135,7 @@ export const Contact: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
             className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#072B57] tracking-tight"
           >
-            Contact CBM Academy
+            Get in Touch with CBM Academy
           </motion.h2>
           <motion.p
             initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
@@ -144,7 +144,7 @@ export const Contact: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.16, ease: SMOOTH_EASE_OUT }}
             className="text-slate-700 text-base leading-relaxed"
           >
-            Have questions about upcoming batches, syllabus, or corporate training? Reach out below.
+            Have questions about digital marketing course admissions, batch schedules, fees, or practical training in Okhla? Reach out below.
           </motion.p>
         </div>
 
@@ -177,7 +177,7 @@ export const Contact: React.FC = () => {
                     CBM Academy, Digital Growth Campus
                   </p>
                   <p className="text-xs text-slate-600 leading-relaxed mt-0.5">
-                    Plot 14, Institutional Area, South Extension & Connaught Place, New Delhi, 110049, India
+                    Okhla Industrial Area (Near Jamia Nagar), New Delhi, Delhi 110020, India
                   </p>
                 </div>
               </div>
@@ -242,7 +242,7 @@ export const Contact: React.FC = () => {
                 referrerPolicy="no-referrer-when-downgrade"
               />
               <div className="absolute bottom-2 left-2 bg-[#072B57]/90 backdrop-blur-xs px-3 py-1 rounded-md text-[11px] font-bold text-white shadow">
-                📍 CBM Academy Campus &bull; New Delhi
+                📍 CBM Academy Campus &bull; Okhla, New Delhi
               </div>
             </div>
 
