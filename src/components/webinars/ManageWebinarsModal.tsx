@@ -557,7 +557,11 @@ export const ManageWebinarsModal: React.FC<ManageWebinarsModalProps> = ({
                       <div className="flex items-start sm:items-center gap-3 min-w-0">
                         <img
                           src={w.posterUrl || 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80'}
-                          alt={w.title}
+                          alt={w.title ? `${w.title} thumbnail` : 'Webinar poster thumbnail'}
+                          width={80}
+                          height={56}
+                          loading="lazy"
+                          decoding="async"
                           className="h-14 w-20 rounded-lg object-cover bg-slate-200 shrink-0"
                           referrerPolicy="no-referrer"
                         />

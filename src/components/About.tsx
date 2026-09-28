@@ -22,29 +22,23 @@ import {
   CheckCircle,
 } from 'lucide-react';
 
-export const About: React.FC = () => {
-  // Dynamic SEO metadata for About page
+interface AboutProps {
+  isServicesPage?: boolean;
+}
+
+export const About: React.FC<AboutProps> = ({ isServicesPage = false }) => {
+  // Scroll to services section if requested
   useEffect(() => {
-    const prevTitle = document.title;
-    document.title =
-      'Best Digital Marketing Academy in Okhla, New Delhi | About CBM Academy';
-
-    const metaDescription = document.querySelector('meta[name="description"]');
-    const prevDescription = metaDescription?.getAttribute('content') || '';
-    if (metaDescription) {
-      metaDescription.setAttribute(
-        'content',
-        'Learn about CBM Academy, a practical digital marketing academy and agency in Okhla, New Delhi focused on digital marketing, AI, SEO, advertising and career-ready skills.'
-      );
+    if (isServicesPage) {
+      const timer = setTimeout(() => {
+        const el = document.getElementById('digital-marketing-services');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 60);
+      return () => clearTimeout(timer);
     }
-
-    return () => {
-      document.title = prevTitle;
-      if (metaDescription && prevDescription) {
-        metaDescription.setAttribute('content', prevDescription);
-      }
-    };
-  }, []);
+  }, [isServicesPage]);
 
   const whatWeTeachItems = [
     {
@@ -171,7 +165,11 @@ export const About: React.FC = () => {
             <div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-xl bg-white group">
               <img
                 src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1000&auto=format&fit=crop"
-                alt="Students learning digital marketing on laptops at CBM Academy in Okhla"
+                alt="Students collaborating on digital marketing projects and laptops at CBM Academy in Okhla, New Delhi"
+                title="CBM Academy Digital Marketing Training in Okhla, New Delhi"
+                width={1000}
+                height={667}
+                decoding="async"
                 referrerPolicy="no-referrer"
                 className="w-full h-80 sm:h-[380px] object-cover transition-transform duration-500 group-hover:scale-105"
               />
@@ -228,9 +226,15 @@ export const About: React.FC = () => {
               <span>ABOUT CBM ACADEMY</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black text-[#072B57] tracking-tight leading-[1.15]">
-              About CBM Academy
-            </h1>
+            {isServicesPage ? (
+              <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-black text-[#072B57] tracking-tight leading-[1.15]">
+                About CBM Academy
+              </h2>
+            ) : (
+              <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black text-[#072B57] tracking-tight leading-[1.15]">
+                About CBM Academy
+              </h1>
+            )}
 
             <h2 className="text-lg sm:text-xl font-bold text-[#FF6B00]">
               A Practical Digital Marketing Academy in Okhla, New Delhi
@@ -272,7 +276,12 @@ export const About: React.FC = () => {
             <div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-md group">
               <img
                 src="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1000&auto=format&fit=crop"
-                alt="Digital marketing training classroom and mentor teaching students"
+                alt="Digital marketing classroom training session with mentor and learners at CBM Academy in New Delhi"
+                title="CBM Academy Classroom Training & Mentorship"
+                width={1000}
+                height={667}
+                loading="lazy"
+                decoding="async"
                 referrerPolicy="no-referrer"
                 className="w-full h-72 sm:h-84 object-cover transition-transform duration-500 group-hover:scale-105"
               />
@@ -317,7 +326,12 @@ export const About: React.FC = () => {
               <div className="relative rounded-xl overflow-hidden border border-slate-200 shadow-xs">
                 <img
                   src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1000&auto=format&fit=crop"
-                  alt="Team collaboration and practical digital marketing learning"
+                  alt="Students and digital marketing team collaborating on marketing campaigns at CBM Academy"
+                  title="Practical Learning and Student Collaboration at CBM Academy"
+                  width={1000}
+                  height={667}
+                  loading="lazy"
+                  decoding="async"
                   referrerPolicy="no-referrer"
                   className="w-full h-64 sm:h-72 object-cover"
                 />
@@ -465,7 +479,12 @@ export const About: React.FC = () => {
             <div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-md group">
               <img
                 src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1000&auto=format&fit=crop"
-                alt="Students collaborating on digital marketing strategy and project execution"
+                alt="Hands-on digital marketing campaign execution, analytics and project teamwork at CBM Academy"
+                title="Learn by Doing: Practical Digital Marketing Campaigns"
+                width={1000}
+                height={667}
+                loading="lazy"
+                decoding="async"
                 referrerPolicy="no-referrer"
                 className="w-full h-72 sm:h-88 object-cover transition-transform duration-500 group-hover:scale-105"
               />
@@ -557,7 +576,12 @@ export const About: React.FC = () => {
               <div className="relative rounded-xl overflow-hidden border border-slate-200 shadow-md group">
                 <img
                   src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop"
-                  alt="Modern AI, data visualization and digital marketing automation"
+                  alt="AI-powered digital marketing automation, analytics and intelligent campaign optimization"
+                  title="AI Meets Digital Marketing at CBM Academy"
+                  width={1000}
+                  height={667}
+                  loading="lazy"
+                  decoding="async"
                   referrerPolicy="no-referrer"
                   className="w-full h-64 sm:h-72 object-cover transition-transform duration-500 group-hover:scale-105"
                 />
@@ -650,7 +674,12 @@ export const About: React.FC = () => {
               <div className="relative rounded-xl overflow-hidden border border-slate-200 shadow-xs group">
                 <img
                   src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1000&auto=format&fit=crop"
-                  alt="Digital marketing analytics, charts and agency services"
+                  alt="Digital marketing agency performance charts, SEO metrics and growth analytics in Delhi"
+                  title="CBM Academy Digital Marketing Agency Services in Okhla, New Delhi"
+                  width={1000}
+                  height={667}
+                  loading="lazy"
+                  decoding="async"
                   referrerPolicy="no-referrer"
                   className="w-full h-60 sm:h-68 object-cover transition-transform duration-500 group-hover:scale-105"
                 />
@@ -664,9 +693,15 @@ export const About: React.FC = () => {
                 <span>DIGITAL MARKETING SERVICES</span>
               </div>
 
-              <h2 className="text-2xl sm:text-3xl font-black text-[#072B57] tracking-tight">
-                Digital Marketing Agency in Okhla, New Delhi
-              </h2>
+              {isServicesPage ? (
+                <h1 className="text-2xl sm:text-3xl font-black text-[#072B57] tracking-tight">
+                  Digital Marketing Services in Delhi
+                </h1>
+              ) : (
+                <h2 className="text-2xl sm:text-3xl font-black text-[#072B57] tracking-tight">
+                  Digital Marketing Agency in Okhla, New Delhi
+                </h2>
+              )}
 
               <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
                 We also help businesses grow online through SEO, Google Ads,
@@ -715,7 +750,12 @@ export const About: React.FC = () => {
               <div className="rounded-xl overflow-hidden border border-orange-200 shadow-xs">
                 <img
                   src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1000&auto=format&fit=crop"
-                  alt="CBM Academy modern campus workspace in Okhla New Delhi"
+                  alt="CBM Academy modern training facility and campus workspace in Okhla, New Delhi"
+                  title="CBM Academy Campus in Okhla, New Delhi"
+                  width={1000}
+                  height={667}
+                  loading="lazy"
+                  decoding="async"
                   referrerPolicy="no-referrer"
                   className="w-full h-36 sm:h-40 object-cover"
                 />

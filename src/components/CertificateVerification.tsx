@@ -96,9 +96,9 @@ export const CertificateVerification: React.FC = () => {
             <ShieldCheck className="w-4 h-4 text-emerald-600" />
             Official Credential Registry
           </div>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#072B57] tracking-tight">
-            Certificate & Credential Verification
-          </h2>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#072B57] tracking-tight">
+            Certificate Verification
+          </h1>
           <p className="text-slate-600 text-base leading-relaxed">
             Instantly authenticate genuine CBM Academy certification credentials using our public registry.
           </p>

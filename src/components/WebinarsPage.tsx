@@ -224,6 +224,15 @@ export const WebinarsPage: React.FC = () => {
             <p>
               Whether you are a student starting your digital marketing journey, a professional upgrading your skills, a freelancer looking for new opportunities or a business owner exploring digital growth, our webinars are designed to provide useful and actionable knowledge.
             </p>
+            <div className="pt-2 flex flex-wrap items-center gap-3 text-xs font-bold">
+              <a href="#course" className="text-[#FF6B00] hover:underline inline-flex items-center gap-1">
+                <span>Explore Full Digital Marketing Courses</span> &rarr;
+              </a>
+              <span className="text-slate-300">&bull;</span>
+              <a href="#contact" className="text-[#072B57] hover:text-[#FF6B00] transition-colors inline-flex items-center gap-1">
+                <span>Contact CBM Academy Admissions</span> &rarr;
+              </a>
+            </div>
           </div>
         </div>
 

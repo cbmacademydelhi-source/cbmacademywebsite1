@@ -103,7 +103,12 @@ export const WebinarPromoPopup: React.FC<WebinarPromoPopupProps> = ({
               upcomingWebinar.posterUrl ||
               'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80'
             }
-            alt={upcomingWebinar.title}
+            alt={upcomingWebinar.title ? `${upcomingWebinar.title} - CBM Academy Featured Live Webinar` : 'CBM Academy Featured Live Webinar'}
+            title={upcomingWebinar.title || 'CBM Academy Featured Live Webinar'}
+            width={800}
+            height={450}
+            loading="lazy"
+            decoding="async"
             className="h-full w-full object-cover"
             referrerPolicy="no-referrer"
           />

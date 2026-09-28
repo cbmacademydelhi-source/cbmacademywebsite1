@@ -83,7 +83,11 @@ export const TimelineEventRow: React.FC<TimelineEventRowProps> = ({
                 webinar.posterUrl ||
                 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80'
               }
-              alt={webinar.title}
+              alt={webinar.title ? `${webinar.title} - CBM Academy Masterclass Event` : 'CBM Academy Masterclass Event in New Delhi'}
+              title={webinar.title || 'CBM Academy Masterclass Event'}
+              width={800}
+              height={450}
+              decoding="async"
               className="h-full w-full object-cover transition-all duration-300 ease-out group-hover:scale-[1.02] group-hover:brightness-[1.03]"
               referrerPolicy="no-referrer"
               loading="lazy"

@@ -69,7 +69,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenApply, onOpenBrochure }) =
             <div className="space-y-2 text-xs text-slate-300">
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-[#FF6B00] flex-shrink-0" />
-                <span>Okhla Industrial Area (Near Jamia Nagar), New Delhi, Delhi 110020</span>
+                <span>E-111, Hari Kothi, Abul Fazal Enclave, Okhla, New Delhi, Delhi - 110025, India</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-[#FF6B00] flex-shrink-0" />

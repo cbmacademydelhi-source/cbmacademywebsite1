@@ -5,6 +5,7 @@ import { AITools } from './AITools';
 interface CourseSectionProps {
   onOpenApply?: (courseName?: string) => void;
   onOpenBrochure?: () => void;
+  isStandalonePage?: boolean;
 }
 
 interface ModuleItem {
@@ -219,6 +220,7 @@ const modules: ModuleItem[] = [
 
 export const CourseSection: React.FC<CourseSectionProps> = ({
   onOpenApply,
+  isStandalonePage = false,
 }) => {
   return (
     <>
@@ -233,10 +235,16 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
             <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-orange-50 text-[#FF6B00] text-xs font-bold uppercase tracking-wider border border-orange-200 mb-3">
               DIGITAL MARKETING COURSES
             </div>
-            <h2 className="text-2xl sm:text-3xl md:text-[34px] lg:text-[40px] font-extrabold tracking-tight leading-tight text-[#072B57]">
-              Industry-Focused{' '}
-              <span className="text-[#FF6B00]">Digital Marketing Courses</span>
-            </h2>
+            {isStandalonePage ? (
+              <h1 className="text-2xl sm:text-3xl md:text-[34px] lg:text-[40px] font-extrabold tracking-tight leading-tight text-[#072B57]">
+                Digital Marketing Courses in Delhi
+              </h1>
+            ) : (
+              <h2 className="text-2xl sm:text-3xl md:text-[34px] lg:text-[40px] font-extrabold tracking-tight leading-tight text-[#072B57]">
+                Industry-Focused{' '}
+                <span className="text-[#FF6B00]">Digital Marketing Courses</span>
+              </h2>
+            )}
 
             <p className="mt-3 text-sm sm:text-base font-normal text-slate-600 max-w-3xl mx-auto leading-relaxed">
               Explore practical digital marketing courses covering SEO, performance marketing, Google Ads, Meta Ads, social media marketing, analytics, AI marketing and digital growth strategies.
@@ -279,6 +287,28 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
                 </p>
               </article>
             ))}
+          </div>
+
+          {/* Internal Links for SEO & Navigation */}
+          <div className="mt-10 pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4 text-xs font-semibold text-slate-600">
+            <div className="flex flex-wrap items-center gap-3">
+              <span>Related Resources:</span>
+              <a href="#blogs" className="text-[#FF6B00] hover:underline">
+                Digital Marketing & AI Insights
+              </a>
+              <span>&bull;</span>
+              <a href="#webinars" className="text-[#FF6B00] hover:underline">
+                Upcoming Webinars & Masterclasses
+              </a>
+              <span>&bull;</span>
+              <a href="#about" className="text-[#072B57] hover:underline">
+                About CBM Academy
+              </a>
+            </div>
+            <a href="#contact" className="text-[#072B57] hover:text-[#FF6B00] transition-colors inline-flex items-center gap-1 font-bold">
+              <span>Have Questions? Contact CBM Academy</span>
+              &rarr;
+            </a>
           </div>
         </div>
       </section>

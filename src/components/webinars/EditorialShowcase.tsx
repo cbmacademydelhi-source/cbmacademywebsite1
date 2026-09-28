@@ -57,7 +57,11 @@ export const EditorialShowcase: React.FC<EditorialShowcaseProps> = ({
               webinar.posterUrl ||
               'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1000&q=80'
             }
-            alt={webinar.title}
+            alt={webinar.title ? `${webinar.title} - CBM Academy Next Live Session` : 'CBM Academy Next Live Session'}
+            title={webinar.title || 'CBM Academy Next Live Session'}
+            width={1000}
+            height={750}
+            decoding="async"
             className="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
             referrerPolicy="no-referrer"
             loading="lazy"

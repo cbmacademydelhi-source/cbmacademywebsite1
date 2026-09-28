@@ -30,6 +30,26 @@ dotenv.config();
 const app = express();
 const PORT = 3000;
 
+app.disable('x-powered-by');
+
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  next();
+});
+
+// Explicit technical SEO endpoints for robots.txt and sitemap.xml
+app.get('/robots.txt', (_req, res) => {
+  const robotsPath = path.join(process.cwd(), 'public', 'robots.txt');
+  res.type('text/plain; charset=utf-8');
+  res.sendFile(robotsPath);
+});
+
+app.get('/sitemap.xml', (_req, res) => {
+  const sitemapPath = path.join(process.cwd(), 'public', 'sitemap.xml');
+  res.type('application/xml; charset=utf-8');
+  res.sendFile(sitemapPath);
+});
+
 app.use(
   express.json({
     verify: (req: any, _res, buf) => {

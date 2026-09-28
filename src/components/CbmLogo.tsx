@@ -34,6 +34,7 @@ export const CbmLogo: React.FC<CbmLogoProps> = ({
           xmlns="http://www.w3.org/2000/svg"
           aria-label="CBM Academy - Your Digital Marketing Journey Begins Here"
         >
+          <title>CBM Academy digital marketing academy logo</title>
           {/* CBM in exact Orange */}
           <text
             x="8"
@@ -89,6 +90,7 @@ export const CbmLogo: React.FC<CbmLogoProps> = ({
         xmlns="http://www.w3.org/2000/svg"
         aria-label="CBM Academy - Your Digital Marketing Journey Begins Here"
       >
+        <title>CBM Academy digital marketing academy logo</title>
         {/* CBM in exact Orange #FF6B00 */}
         <text
           x="8"

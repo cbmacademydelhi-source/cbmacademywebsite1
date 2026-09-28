@@ -22,6 +22,137 @@ import { WebinarRegisterModal } from './components/webinars/WebinarRegisterModal
 import { Webinar } from './types';
 import { getWebinars, WEBINAR_UPDATE_EVENT } from './services/webinarStorage';
 
+interface PageSeoConfig {
+  title: string;
+  description: string;
+  canonical: string;
+  isPrivate?: boolean;
+}
+
+const PAGE_SEO_MAP: Record<string, PageSeoConfig> = {
+  home: {
+    title: 'Best Digital Marketing Academy & Agency in Delhi | CBM Academy',
+    description:
+      'CBM Academy is a digital marketing academy and agency in Delhi offering practical courses, SEO, Google Ads, Meta Ads, AI marketing and digital marketing services.',
+    canonical: 'https://cbmacademy.in/',
+  },
+  course: {
+    title: 'Best Digital Marketing Courses in Delhi | CBM Academy',
+    description:
+      'Explore practical digital marketing courses in Delhi covering SEO, Google Ads, Meta Ads, social media, performance marketing, analytics and AI marketing.',
+    canonical: 'https://cbmacademy.in/#course',
+  },
+  webinars: {
+    title: 'Digital Marketing Webinars in Delhi | CBM Academy',
+    description:
+      'Join CBM Academy webinars in Delhi covering digital marketing, AI, SEO, Google Ads, social media, performance marketing and business growth.',
+    canonical: 'https://cbmacademy.in/#webinars',
+  },
+  about: {
+    title: 'Best Digital Marketing Academy in Okhla, New Delhi | About CBM Academy',
+    description:
+      'Learn about CBM Academy, a practical digital marketing academy and agency in Okhla, New Delhi focused on digital marketing, AI, SEO, advertising and career-ready skills.',
+    canonical: 'https://cbmacademy.in/#about',
+  },
+  services: {
+    title: 'Best Digital Marketing Agency in Delhi | CBM Academy',
+    description:
+      'Explore digital marketing services from CBM Academy including SEO, Google Ads, Meta Ads, social media marketing, performance marketing and AI-powered marketing.',
+    canonical: 'https://cbmacademy.in/#services',
+  },
+  blogs: {
+    title: 'Digital Marketing & AI Insights | CBM Academy',
+    description:
+      'Explore practical insights on digital marketing, SEO, Google Ads, AI marketing, social media, analytics and digital growth.',
+    canonical: 'https://cbmacademy.in/#blogs',
+  },
+  jobs: {
+    title: 'Digital Marketing Jobs & Career Opportunities | CBM Academy',
+    description:
+      'Explore digital marketing jobs, hiring opportunities, internships, and career placement listings for CBM Academy graduates.',
+    canonical: 'https://cbmacademy.in/#jobs',
+  },
+  certificate: {
+    title: 'Certificate Verification | CBM Academy',
+    description:
+      'Verify official CBM Academy digital marketing credentials, course certifications and verified student achievements.',
+    canonical: 'https://cbmacademy.in/#certificate',
+  },
+  contact: {
+    title: 'Contact CBM Academy | Digital Marketing Academy in Delhi',
+    description:
+      'Get in touch with CBM Academy in Okhla, New Delhi for digital marketing courses, training, webinars and digital marketing services.',
+    canonical: 'https://cbmacademy.in/#contact',
+  },
+  admin: {
+    title: 'Admin Dashboard | CBM Academy',
+    description: 'Secure Administrative Dashboard for CBM Academy management.',
+    canonical: 'https://cbmacademy.in/#admin',
+    isPrivate: true,
+  },
+  '404': {
+    title: 'Page Not Found (404) | CBM Academy',
+    description:
+      'The requested page could not be found on CBM Academy. Return to homepage or explore our digital marketing courses.',
+    canonical: 'https://cbmacademy.in/',
+    isPrivate: true,
+  },
+};
+
+const applyPageSeo = (pageKey: string) => {
+  const seo = PAGE_SEO_MAP[pageKey] || PAGE_SEO_MAP.home;
+
+  // Title
+  document.title = seo.title;
+
+  // Meta description
+  let metaDesc = document.querySelector('meta[name="description"]');
+  if (!metaDesc) {
+    metaDesc = document.createElement('meta');
+    metaDesc.setAttribute('name', 'description');
+    document.head.appendChild(metaDesc);
+  }
+  metaDesc.setAttribute('content', seo.description);
+
+  // Canonical link
+  let canonicalLink = document.querySelector('link[rel="canonical"]');
+  if (!canonicalLink) {
+    canonicalLink = document.createElement('link');
+    canonicalLink.setAttribute('rel', 'canonical');
+    document.head.appendChild(canonicalLink);
+  }
+  canonicalLink.setAttribute('href', seo.canonical);
+
+  // OpenGraph & Twitter tags
+  const ogTitle = document.querySelector('meta[property="og:title"]');
+  if (ogTitle) ogTitle.setAttribute('content', seo.title);
+
+  const ogDesc = document.querySelector('meta[property="og:description"]');
+  if (ogDesc) ogDesc.setAttribute('content', seo.description);
+
+  const ogUrl = document.querySelector('meta[property="og:url"]');
+  if (ogUrl) ogUrl.setAttribute('content', seo.canonical);
+
+  const twitterTitle = document.querySelector('meta[name="twitter:title"]');
+  if (twitterTitle) twitterTitle.setAttribute('content', seo.title);
+
+  const twitterDesc = document.querySelector('meta[name="twitter:description"]');
+  if (twitterDesc) twitterDesc.setAttribute('content', seo.description);
+
+  // Robots indexing (Private admin is noindexed, public pages are indexed)
+  let robotsMeta = document.querySelector('meta[name="robots"]');
+  if (seo.isPrivate) {
+    if (!robotsMeta) {
+      robotsMeta = document.createElement('meta');
+      robotsMeta.setAttribute('name', 'robots');
+      document.head.appendChild(robotsMeta);
+    }
+    robotsMeta.setAttribute('content', 'noindex, nofollow');
+  } else if (robotsMeta) {
+    robotsMeta.setAttribute('content', 'index, follow');
+  }
+};
+
 export default function App() {
   const [applyModalOpen, setApplyModalOpen] = useState(false);
 
@@ -55,13 +186,31 @@ export default function App() {
 
   useEffect(() => {
     const updatePage = () => {
-      const hash = window.location.hash.replace('#', '');
+      const rawHash = window.location.hash.replace('#', '').trim();
+      const rawPath = window.location.pathname.replace(/^\/|\/$/g, '').trim();
+
+      // Normalize common aliases to prevent broken external links
+      const aliasMap: Record<string, string> = {
+        courses: 'course',
+        training: 'course',
+        webinar: 'webinars',
+        events: 'webinars',
+        blog: 'blogs',
+        articles: 'blogs',
+        agency: 'services',
+        verify: 'certificate',
+        careers: 'jobs',
+      };
+
+      const candidateRaw = rawHash || rawPath;
+      const candidate = aliasMap[candidateRaw] || candidateRaw;
 
       const validPages = [
         'home',
         'course',
         'webinars',
         'about',
+        'services',
         'certificate',
         'jobs',
         'blogs',
@@ -69,10 +218,16 @@ export default function App() {
         'admin',
       ];
 
-      if (validPages.includes(hash)) {
-        setCurrentPage(hash);
-      } else {
+      if (!candidate || candidate === 'home') {
         setCurrentPage('home');
+        applyPageSeo('home');
+      } else if (validPages.includes(candidate)) {
+        setCurrentPage(candidate);
+        applyPageSeo(candidate);
+      } else {
+        // Unknown route / broken URL: show 404 and set noindex, nofollow to avoid soft-404 indexing
+        setCurrentPage('404');
+        applyPageSeo('404');
       }
 
       window.scrollTo({
@@ -145,11 +300,15 @@ export default function App() {
           <CourseSection
             onOpenApply={handleOpenApply}
             onOpenBrochure={handleOpenBrochure}
+            isStandalonePage={true}
           />
         );
 
       case 'about':
         return <About />;
+
+      case 'services':
+        return <About isServicesPage={true} />;
 
       case 'certificate':
         return <CertificateVerification />;
@@ -163,16 +322,45 @@ export default function App() {
         );
 
       case 'blogs':
-        return <BlogSection />;
+        return <BlogSection isStandalonePage={true} />;
 
       case 'webinars':
         return <WebinarsPage />;
 
       case 'contact':
-        return <Contact />;
+        return <Contact isStandalonePage={true} />;
 
       case 'admin':
         return <AdminDashboard />;
+
+      case '404':
+        return (
+          <section className="min-h-[70vh] flex items-center justify-center py-20 px-4">
+            <div className="max-w-md mx-auto text-center">
+              <span className="text-6xl sm:text-7xl font-black text-[#FF6B00] block mb-3">404</span>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-[#072B57] tracking-tight mb-3">
+                Page Not Found
+              </h1>
+              <p className="text-slate-600 text-sm leading-relaxed mb-8">
+                The page you are looking for doesn't exist, has been moved, or an invalid address was entered.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <a
+                  href="#"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-xl bg-[#072B57] text-white text-xs sm:text-sm font-bold shadow-md hover:bg-[#0c3c78] transition-colors"
+                >
+                  Return to Home
+                </a>
+                <a
+                  href="#course"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-xl bg-orange-50 text-[#FF6B00] border border-orange-200 text-xs sm:text-sm font-bold hover:bg-orange-100 transition-colors"
+                >
+                  Explore Courses
+                </a>
+              </div>
+            </div>
+          </section>
+        );
 
       case 'home':
       default:

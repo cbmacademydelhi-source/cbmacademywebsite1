@@ -5,7 +5,13 @@ import { submitContactForm, TARGET_NOTIFICATION_EMAIL } from '../services/formSe
 import { MapPin, Mail, Phone, Clock, Send, CheckCircle2, AlertCircle } from 'lucide-react';
 import { SMOOTH_EASE_OUT, VIEWPORT_ONCE } from '../lib/animations';
 
-export const Contact: React.FC = () => {
+interface ContactProps {
+  isStandalonePage?: boolean;
+}
+
+export const Contact: React.FC<ContactProps> = ({
+  isStandalonePage = false,
+}) => {
   const [formData, setFormData] = useState<ContactFormData>({
     fullName: '',
     email: '',
@@ -128,15 +134,27 @@ export const Contact: React.FC = () => {
           >
             Get In Touch
           </motion.div>
-          <motion.h2
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={VIEWPORT_ONCE}
-            transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
-            className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#072B57] tracking-tight"
-          >
-            Get in Touch with CBM Academy
-          </motion.h2>
+          {isStandalonePage ? (
+            <motion.h1
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={VIEWPORT_ONCE}
+              transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
+              className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#072B57] tracking-tight"
+            >
+              Get in Touch with CBM Academy
+            </motion.h1>
+          ) : (
+            <motion.h2
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={VIEWPORT_ONCE}
+              transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
+              className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#072B57] tracking-tight"
+            >
+              Get in Touch with CBM Academy
+            </motion.h2>
+          )}
           <motion.p
             initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -174,10 +192,10 @@ export const Contact: React.FC = () => {
                 <div>
                   <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-0.5">Address</h4>
                   <p className="text-sm font-semibold text-[#072B57]">
-                    CBM Academy, Digital Growth Campus
+                    CBM Academy
                   </p>
                   <p className="text-xs text-slate-600 leading-relaxed mt-0.5">
-                    Okhla Industrial Area (Near Jamia Nagar), New Delhi, Delhi 110020, India
+                    E-111, Hari Kothi, Abul Fazal Enclave, Okhla, New Delhi, Delhi - 110025, India
                   </p>
                 </div>
               </div>
@@ -224,9 +242,9 @@ export const Contact: React.FC = () => {
                 <div>
                   <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-0.5">Office Timings</h4>
                   <p className="text-sm font-semibold text-[#072B57]">
-                    Monday – Saturday: 9:00 AM – 7:00 PM IST
+                    Monday – Saturday: 11:00 AM – 6:00 PM
                   </p>
-                  <p className="text-xs text-slate-500 mt-0.5">Sunday: Prior Appointment Only</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Sunday: Closed</p>
                 </div>
               </div>
 

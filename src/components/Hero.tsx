@@ -143,7 +143,12 @@ export const Hero: React.FC<HeroProps> = ({ onOpenApply, onOpenBrochure }) => {
               >
                 <img
                   src="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1200&auto=format&fit=crop"
-                  alt="CBM Academy Digital Marketing Institute in Okhla New Delhi"
+                  alt="Students and mentor in digital marketing practical training session at CBM Academy in Okhla, New Delhi"
+                  title="CBM Academy Digital Marketing Training & Live Session in Okhla, New Delhi"
+                  width={1200}
+                  height={800}
+                  decoding="async"
+                  fetchPriority="high"
                   referrerPolicy="no-referrer"
                   className="w-full h-80 sm:h-96 object-cover transition-transform duration-500 hover:scale-105"
                 />

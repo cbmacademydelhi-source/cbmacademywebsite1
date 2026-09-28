@@ -5,7 +5,13 @@ import { BlogPost } from '../types';
 import { Calendar, Clock, ArrowRight, User, X } from 'lucide-react';
 import { SMOOTH_EASE_OUT, VIEWPORT_ONCE } from '../lib/animations';
 
-export const BlogSection: React.FC = () => {
+interface BlogSectionProps {
+  isStandalonePage?: boolean;
+}
+
+export const BlogSection: React.FC<BlogSectionProps> = ({
+  isStandalonePage = false,
+}) => {
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const shouldReduceMotion = useReducedMotion();
 
@@ -25,15 +31,27 @@ export const BlogSection: React.FC = () => {
             >
               Insights & Articles
             </motion.div>
-            <motion.h2
-              initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={VIEWPORT_ONCE}
-              transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
-              className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#072B57] tracking-tight"
-            >
-              Digital Marketing & AI Insights
-            </motion.h2>
+            {isStandalonePage ? (
+              <motion.h1
+                initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={VIEWPORT_ONCE}
+                transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
+                className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#072B57] tracking-tight"
+              >
+                Digital Marketing & AI Insights
+              </motion.h1>
+            ) : (
+              <motion.h2
+                initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={VIEWPORT_ONCE}
+                transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
+                className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#072B57] tracking-tight"
+              >
+                Digital Marketing & AI Insights
+              </motion.h2>
+            )}
             <motion.p
               initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -62,7 +80,12 @@ export const BlogSection: React.FC = () => {
                 <div className="relative aspect-[16/9] overflow-hidden bg-slate-100">
                   <img
                     src={post.imageUrl}
-                    alt={post.title}
+                    alt={`${post.title} - CBM Academy Digital Marketing Guide`}
+                    title={post.title}
+                    width={800}
+                    height={450}
+                    loading="lazy"
+                    decoding="async"
                     referrerPolicy="no-referrer"
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
@@ -159,7 +182,12 @@ export const BlogSection: React.FC = () => {
             <div className="aspect-[16/9] rounded-xl overflow-hidden mb-6 bg-slate-100">
               <img
                 src={selectedPost.imageUrl}
-                alt={selectedPost.title}
+                alt={`${selectedPost.title} - CBM Academy Industry Insights`}
+                title={selectedPost.title}
+                width={800}
+                height={450}
+                loading="lazy"
+                decoding="async"
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover"
               />
@@ -176,6 +204,26 @@ export const BlogSection: React.FC = () => {
               <p>
                 At CBM Academy, these strategic principles are built directly into our hands-on curriculum. Students don't just read about algorithms; they deploy live campaigns, analyze real Google Analytics 4 tracking events, and test prompt engineering frameworks in real time.
               </p>
+
+              {/* Internal Links for SEO & Next Steps */}
+              <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs">
+                <a
+                  href="#course"
+                  onClick={() => setSelectedPost(null)}
+                  className="font-bold text-[#FF6B00] hover:underline inline-flex items-center gap-1"
+                >
+                  <span>Explore Digital Marketing Courses</span>
+                  &rarr;
+                </a>
+                <a
+                  href="#contact"
+                  onClick={() => setSelectedPost(null)}
+                  className="font-bold text-[#072B57] hover:underline inline-flex items-center gap-1"
+                >
+                  <span>Contact CBM Academy Admissions</span>
+                  &rarr;
+                </a>
+              </div>
             </div>
 
             {/* Tags */}

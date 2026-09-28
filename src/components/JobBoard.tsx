@@ -55,9 +55,9 @@ export const JobBoard: React.FC<JobBoardProps> = ({
               Placement Cell & Hiring Drives
             </div>
 
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#072B57] tracking-tight">
-              Live Job Opportunities
-            </h2>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#072B57] tracking-tight">
+              Digital Marketing Jobs & Career Opportunities
+            </h1>
 
             <p className="text-slate-600 text-base leading-relaxed">
               Find your next opportunity or post a job with CBM Academy.

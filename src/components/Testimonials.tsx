@@ -224,8 +224,12 @@ const TestimonialCard: React.FC<{
           {!imgError ? (
             <img
               src={item.image}
-              alt={item.name}
+              alt={`${item.name} - ${item.role} at CBM Academy`}
+              title={`${item.name} - CBM Academy Student Review`}
+              width={48}
+              height={48}
               loading="lazy"
+              decoding="async"
               referrerPolicy="no-referrer"
               onError={() => setImgError(true)}
               className="w-full h-full object-cover rounded-full"

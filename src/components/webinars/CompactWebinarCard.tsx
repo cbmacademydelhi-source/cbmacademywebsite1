@@ -33,7 +33,11 @@ export const CompactWebinarCard: React.FC<CompactWebinarCardProps> = ({
             webinar.posterUrl ||
             'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=800&q=80'
           }
-          alt={webinar.title}
+          alt={webinar.title ? `${webinar.title} - CBM Academy Live Webinar` : 'CBM Academy Live Webinar Workshop'}
+          title={webinar.title || 'CBM Academy Live Webinar Workshop'}
+          width={800}
+          height={450}
+          decoding="async"
           className="h-full w-full object-cover transition-transform duration-200 ease-out group-hover:scale-[1.02]"
           referrerPolicy="no-referrer"
           loading="lazy"

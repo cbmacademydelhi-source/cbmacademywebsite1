@@ -48,6 +48,8 @@ export const Header: React.FC<HeaderProps> = ({
 
       if (hash && navLinks.some((link) => link.id === hash)) {
         setActivePage(hash);
+      } else if (hash === 'services') {
+        setActivePage('about');
       } else {
         setActivePage('home');
       }

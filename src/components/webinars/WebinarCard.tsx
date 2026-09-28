@@ -33,7 +33,11 @@ export const WebinarCard: React.FC<WebinarCardProps> = ({
             webinar.posterUrl ||
             'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80'
           }
-          alt={webinar.title}
+          alt={webinar.title ? `${webinar.title} - CBM Academy Digital Marketing Event` : 'CBM Academy Digital Marketing Event in Delhi'}
+          title={webinar.title || 'CBM Academy Digital Marketing Event'}
+          width={800}
+          height={450}
+          decoding="async"
           className="h-full w-full object-cover transition-transform duration-200 ease-out group-hover:scale-[1.02]"
           referrerPolicy="no-referrer"
           loading="lazy"

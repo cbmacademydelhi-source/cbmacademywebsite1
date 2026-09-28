@@ -45,7 +45,11 @@ export const ShowcasePosterTile: React.FC<ShowcasePosterTileProps> = ({
           webinar.posterUrl ||
           'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80'
         }
-        alt={webinar.title}
+        alt={webinar.title ? `${webinar.title} - CBM Academy Webinar Workshop` : 'CBM Academy Webinar Workshop'}
+        title={webinar.title || 'CBM Academy Webinar Workshop'}
+        width={800}
+        height={450}
+        decoding="async"
         className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
         referrerPolicy="no-referrer"
         loading="lazy"

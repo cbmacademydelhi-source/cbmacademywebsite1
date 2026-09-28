@@ -598,7 +598,11 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
                         qrSession.qrPayload || `upi://pay?am=${qrSession.amountInINR}&cu=INR`
                       )}`
                     }
-                    alt="Razorpay UPI Payment QR Code"
+                    alt="CBM Academy Webinar Registration Razorpay UPI Payment QR Code"
+                    title="Scan to pay for CBM Academy Webinar"
+                    width={210}
+                    height={210}
+                    decoding="async"
                     className="w-full h-full object-contain"
                   />
                 </div>
