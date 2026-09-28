@@ -220,11 +220,11 @@ const CARDS: CardItem[] = [
   },
   {
     id: 'card-4',
-    badgeNumber: '100%',
-    badgeLabel: 'Help',
+    badgeNumber: 'Career',
+    badgeLabel: 'Support',
     title: 'Career & Placement Support',
     description:
-      'Get career guidance, resume support, interview preparation, portfolio development and placement assistance to help you move toward digital marketing opportunities.',
+      'Get practical career guidance, interview preparation and placement-oriented support.',
     renderIcon: () => (
       <svg
         className="w-20 h-16 sm:w-22 sm:h-18 drop-shadow-md"

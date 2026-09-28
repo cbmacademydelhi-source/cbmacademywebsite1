@@ -763,7 +763,7 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
                     Amount Payable
                   </span>
                   <span className="text-xs text-slate-500">
-                    {isPaid ? 'Live Workshop + Verified Certificate' : '100% Free Live Access'}
+                    {isPaid ? 'Live Workshop + Verified Certificate' : 'Free Live Access'}
                   </span>
                 </div>
                 <div>

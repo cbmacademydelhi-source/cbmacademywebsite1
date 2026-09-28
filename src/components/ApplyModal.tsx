@@ -370,7 +370,7 @@ export const ApplyModal: React.FC<ApplyModalProps> = ({
 
             <div className="flex items-center justify-center gap-2 text-[11px] text-slate-500 pt-1">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              <span>100% Privacy Guaranteed &bull; No Spam &bull; Admissions Team Callback</span>
+              <span>Privacy Protected &bull; No Spam &bull; Admissions Team Callback</span>
             </div>
 
           </form>

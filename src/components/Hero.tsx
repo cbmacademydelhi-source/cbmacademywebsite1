@@ -124,7 +124,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenApply, onOpenBrochure }) => {
                 ))}
               </div>
               <div className="text-xs text-slate-600">
-                <strong className="text-[#072B57] font-bold">4.9/5 Rating</strong> from 4,500+ alumni across Google, Amazon & top agency roles
+                <strong className="text-[#072B57] font-bold">Student Experiences:</strong> Explore feedback and experiences shared by CBM Academy learners.
               </div>
             </motion.div>
 
@@ -185,8 +185,8 @@ export const Hero: React.FC<HeroProps> = ({ onOpenApply, onOpenBrochure }) => {
                   <TrendingUp className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-xs text-slate-500 font-medium">Average ROI/Salary</div>
-                  <div className="text-sm font-bold text-[#072B57]">72% Career Hike</div>
+                  <div className="text-xs text-slate-500 font-medium">Practical Focus</div>
+                  <div className="text-sm font-bold text-[#072B57]">Skill Advancement</div>
                 </div>
               </motion.div>
 
@@ -201,8 +201,8 @@ export const Hero: React.FC<HeroProps> = ({ onOpenApply, onOpenBrochure }) => {
                   <Briefcase className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-xs text-slate-500 font-medium">Hiring Network</div>
-                  <div className="text-sm font-bold text-[#072B57]">500+ Corporate Brands</div>
+                  <div className="text-xs text-slate-500 font-medium">Career Support</div>
+                  <div className="text-sm font-bold text-[#072B57]">Interview & Prep</div>
                 </div>
               </motion.div>
 

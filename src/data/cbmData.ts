@@ -655,12 +655,12 @@ export const WHY_CHOOSE_CBM_CARDS = [
   },
 
   {
-    title: 'Placement Support',
+    title: 'Career & Placement Support',
     description:
-      'Dedicated 1-on-1 placement support, resume reviews, mock interviews, and hiring drives.',
+      'Get practical career guidance, interview preparation and placement-oriented support.',
     iconName: 'GraduationCap',
-    metric: '100% Help',
-    metricLabel: 'Career Support',
+    metric: 'Career',
+    metricLabel: 'Guidance',
   },
 ];
 

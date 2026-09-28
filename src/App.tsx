@@ -40,54 +40,54 @@ const PAGE_SEO_MAP: Record<string, PageSeoConfig> = {
     title: 'Best Digital Marketing Courses in Delhi | CBM Academy',
     description:
       'Explore practical digital marketing courses in Delhi covering SEO, Google Ads, Meta Ads, social media, performance marketing, analytics and AI marketing.',
-    canonical: 'https://cbmacademy.in/#course',
+    canonical: 'https://cbmacademy.in/course',
   },
   webinars: {
     title: 'Digital Marketing Webinars in Delhi | CBM Academy',
     description:
       'Join CBM Academy webinars in Delhi covering digital marketing, AI, SEO, Google Ads, social media, performance marketing and business growth.',
-    canonical: 'https://cbmacademy.in/#webinars',
+    canonical: 'https://cbmacademy.in/webinars',
   },
   about: {
     title: 'Best Digital Marketing Academy in Okhla, New Delhi | About CBM Academy',
     description:
       'Learn about CBM Academy, a practical digital marketing academy and agency in Okhla, New Delhi focused on digital marketing, AI, SEO, advertising and career-ready skills.',
-    canonical: 'https://cbmacademy.in/#about',
+    canonical: 'https://cbmacademy.in/about',
   },
   services: {
     title: 'Best Digital Marketing Agency in Delhi | CBM Academy',
     description:
       'Explore digital marketing services from CBM Academy including SEO, Google Ads, Meta Ads, social media marketing, performance marketing and AI-powered marketing.',
-    canonical: 'https://cbmacademy.in/#services',
+    canonical: 'https://cbmacademy.in/services',
   },
   blogs: {
     title: 'Digital Marketing & AI Insights | CBM Academy',
     description:
       'Explore practical insights on digital marketing, SEO, Google Ads, AI marketing, social media, analytics and digital growth.',
-    canonical: 'https://cbmacademy.in/#blogs',
+    canonical: 'https://cbmacademy.in/blogs',
   },
   jobs: {
     title: 'Digital Marketing Jobs & Career Opportunities | CBM Academy',
     description:
       'Explore digital marketing jobs, hiring opportunities, internships, and career placement listings for CBM Academy graduates.',
-    canonical: 'https://cbmacademy.in/#jobs',
+    canonical: 'https://cbmacademy.in/jobs',
   },
   certificate: {
     title: 'Certificate Verification | CBM Academy',
     description:
       'Verify official CBM Academy digital marketing credentials, course certifications and verified student achievements.',
-    canonical: 'https://cbmacademy.in/#certificate',
+    canonical: 'https://cbmacademy.in/certificate',
   },
   contact: {
     title: 'Contact CBM Academy | Digital Marketing Academy in Delhi',
     description:
       'Get in touch with CBM Academy in Okhla, New Delhi for digital marketing courses, training, webinars and digital marketing services.',
-    canonical: 'https://cbmacademy.in/#contact',
+    canonical: 'https://cbmacademy.in/contact',
   },
   admin: {
     title: 'Admin Dashboard | CBM Academy',
     description: 'Secure Administrative Dashboard for CBM Academy management.',
-    canonical: 'https://cbmacademy.in/#admin',
+    canonical: 'https://cbmacademy.in/admin',
     isPrivate: true,
   },
   '404': {
@@ -382,7 +382,7 @@ export default function App() {
     webinars.find((w) => w.status === 'published' || w.status === 'upcoming') || null;
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-[#072B57] font-['Plus_Jakarta_Sans',sans-serif] flex flex-col selection:bg-[#FF6B00] selection:text-white">
+    <div className="min-h-screen bg-[#FAFAFA] text-[#072B57] font-['Plus_Jakarta_Sans',sans-serif] flex flex-col selection:bg-[#FF6B00] selection:text-white overflow-x-clip">
       {/* Header */}
       {!isAdminPage && (
         <Header

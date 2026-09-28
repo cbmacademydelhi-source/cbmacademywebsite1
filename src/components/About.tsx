@@ -169,6 +169,7 @@ export const About: React.FC<AboutProps> = ({ isServicesPage = false }) => {
                 title="CBM Academy Digital Marketing Training in Okhla, New Delhi"
                 width={1000}
                 height={667}
+                loading="lazy"
                 decoding="async"
                 referrerPolicy="no-referrer"
                 className="w-full h-80 sm:h-[380px] object-cover transition-transform duration-500 group-hover:scale-105"
@@ -193,27 +194,27 @@ export const About: React.FC<AboutProps> = ({ isServicesPage = false }) => {
 
             <div className="grid grid-cols-3 gap-3 text-center">
               <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-xs">
-                <div className="text-base font-extrabold text-[#072B57]">
-                  10+ Yrs
+                <div className="text-sm font-extrabold text-[#072B57]">
+                  Hands-On
                 </div>
                 <div className="text-[10px] text-slate-500 font-medium">
-                  Legacy
+                  Live Projects
                 </div>
               </div>
               <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-xs">
-                <div className="text-base font-extrabold text-[#072B57]">
-                  4,500+
+                <div className="text-sm font-extrabold text-[#072B57]">
+                  Practical
                 </div>
                 <div className="text-[10px] text-slate-500 font-medium">
-                  Alumni
+                  AI Marketing
                 </div>
               </div>
               <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-xs">
-                <div className="text-base font-extrabold text-[#072B57]">
-                  500+
+                <div className="text-sm font-extrabold text-[#072B57]">
+                  Career
                 </div>
                 <div className="text-[10px] text-slate-500 font-medium">
-                  Hiring Cos
+                  Guidance
                 </div>
               </div>
             </div>
