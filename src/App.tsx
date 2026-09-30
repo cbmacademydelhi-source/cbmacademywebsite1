@@ -193,6 +193,8 @@ export default function App() {
       const aliasMap: Record<string, string> = {
         courses: 'course',
         training: 'course',
+        tools: 'course',
+        'ai-tools': 'course',
         webinar: 'webinars',
         events: 'webinars',
         blog: 'blogs',
@@ -277,16 +279,10 @@ export default function App() {
 
         <WhyChooseCBM
           onOpenApply={() => handleOpenApply()}
-        />
-
-        <CourseSection
-          onOpenApply={handleOpenApply}
           onOpenBrochure={handleOpenBrochure}
         />
 
         <Testimonials />
-
-        <BlogSection />
 
         <Contact />
       </div>

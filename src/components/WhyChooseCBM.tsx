@@ -1,9 +1,11 @@
 import React from 'react';
 import { motion, useReducedMotion } from 'motion/react';
+import { ArrowRight, Download } from 'lucide-react';
 import { SMOOTH_EASE_OUT, VIEWPORT_ONCE } from '../lib/animations';
 
 interface WhyChooseCBMProps {
   onOpenApply?: () => void;
+  onOpenBrochure?: () => void;
 }
 
 interface CardItem {
@@ -285,7 +287,10 @@ const CARDS: CardItem[] = [
   },
 ];
 
-export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
+export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
+  onOpenApply,
+  onOpenBrochure,
+}) => {
   const shouldReduceMotion = useReducedMotion();
 
   return (
@@ -447,6 +452,35 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({ onOpenApply }) => {
             </motion.article>
           ))}
         </div>
+
+        {/* Mid-Page Conversion CTA: Apply Now & Brochure */}
+        <motion.div
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={VIEWPORT_ONCE}
+          transition={{ duration: 0.5, delay: 0.2, ease: SMOOTH_EASE_OUT }}
+          className="mt-10 sm:mt-12 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4"
+        >
+          <button
+            onClick={onOpenApply}
+            id="why-cbm-apply-now-btn"
+            type="button"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-[#FF6B00] hover:bg-[#e05e00] text-white font-bold text-base px-7 py-3.5 rounded-xl shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 transition-all duration-150 active:scale-98 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:ring-offset-2"
+          >
+            <span>Apply Now</span>
+            <ArrowRight className="w-5 h-5" />
+          </button>
+
+          <button
+            onClick={onOpenBrochure}
+            id="why-cbm-download-brochure-btn"
+            type="button"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-slate-50 text-[#072B57] font-bold text-base px-6 py-3.5 rounded-xl border border-slate-200 hover:border-slate-300 shadow-sm transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-slate-300"
+          >
+            <Download className="w-5 h-5 text-[#FF6B00]" />
+            <span>Download Brochure</span>
+          </button>
+        </motion.div>
       </div>
     </section>
   );

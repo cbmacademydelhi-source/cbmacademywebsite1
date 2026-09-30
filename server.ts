@@ -37,6 +37,18 @@ app.use((req, res, next) => {
   next();
 });
 
+// Ensure all /api requests default to application/json and properly handle CORS preflight
+app.use('/api', (req, res, next) => {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  if (req.method === 'OPTIONS') {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    return res.status(204).end();
+  }
+  next();
+});
+
 // Explicit technical SEO endpoints for robots.txt and sitemap.xml
 app.get('/robots.txt', (_req, res) => {
   const robotsPath = path.join(process.cwd(), 'public', 'robots.txt');
@@ -120,10 +132,11 @@ app.get('/api/health', (req, res) => {
 });
 
 // Config Status Endpoint (Never returns secrets, only configuration flags)
-app.get('/api/webinars/config-status', (req, res) => {
-  res.json({
+app.get('/api/webinars/config-status', (_req, res) => {
+  res.status(200).json({
     supabaseConfigured: true,
     razorpayConfigured: isRazorpayConfigured(),
+    webhookConfigured: isWebhookConfigured(),
     razorpayKeyId: getRazorpayKeyId(),
   });
 });
@@ -385,6 +398,15 @@ app.post('/api/webinars/simulate-payment', async (req, res) => {
       return res.status(404).json({ success: false, message: 'Registration record not found' });
     }
 
+    if (!isRazorpayConfigured()) {
+      return res.status(400).json({
+        success: false,
+        payment_status: 'pending',
+        registration_status: 'pending',
+        message: 'Payment flow requires final real/test-mode verification with valid Razorpay credentials.',
+      });
+    }
+
     const simulatedPaymentId = `pay_test_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 6)}`;
     const approval = await approveRegistrationPayment({
       registrationId: reg.id,
@@ -423,6 +445,10 @@ app.post('/api/webinars/simulate-payment', async (req, res) => {
 /**
  * 3. PAID WEBINAR: CHECK REGISTRATION & PAYMENT STATUS (Polling)
  */
+app.get('/api/webinars/registration-status', (_req, res) => {
+  return res.status(400).json({ success: false, message: 'Registration ID required' });
+});
+
 app.get('/api/webinars/registration-status/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -722,17 +748,6 @@ app.post('/api/webinars/webhook', async (req, res) => {
 });
 
 /**
- * 6. CONFIG STATUS CHECK
- */
-app.get('/api/webinars/config-status', (_req, res) => {
-  return res.status(200).json({
-    razorpayConfigured: isRazorpayConfigured(),
-    webhookConfigured: isWebhookConfigured(),
-    razorpayKeyId: getRazorpayKeyId(),
-  });
-});
-
-/**
  * 4. ADMIN: GET REGISTRATIONS (Authenticated)
  */
 app.get('/api/webinars/registrations', async (req, res) => {
@@ -763,6 +778,24 @@ app.get('/api/webinars/registrations', async (req, res) => {
       message: 'Failed to retrieve registrations.',
     });
   }
+});
+
+// Ensure any unhandled API endpoints return standard JSON and NEVER fall through to HTML/Vite
+app.all('/api/*', (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: `API endpoint not found: ${req.method} ${req.path}`,
+  });
+});
+
+// Dedicated JSON error handler for all /api routes (catches body-parser errors, runtime exceptions, etc.)
+app.use('/api', (err: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error('[API Error Handler]', err?.stack || err);
+  const statusCode = typeof err.status === 'number' && err.status >= 400 && err.status < 600 ? err.status : 500;
+  res.status(statusCode).json({
+    success: false,
+    message: err.message || 'An unexpected server error occurred. Please try again.',
+  });
 });
 
 /**

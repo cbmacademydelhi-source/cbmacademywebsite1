@@ -2,14 +2,12 @@ import React, { useState, useEffect } from 'react';
 import {
   Settings,
   ArrowRight,
-  ArrowDown,
   BookOpen,
   Laptop,
   Cpu,
   TrendingUp,
   ChevronDown,
   ChevronUp,
-  Sparkles,
 } from 'lucide-react';
 import { Webinar } from '../types';
 import { getWebinars, WEBINAR_UPDATE_EVENT } from '../services/webinarStorage';
@@ -152,7 +150,7 @@ export const WebinarsPage: React.FC = () => {
     >
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
         {/* Top bar with Admin Quick Access */}
-        <div className="flex justify-end mb-3 sm:mb-4">
+        <div className="flex justify-end mb-4 sm:mb-6">
           <button
             type="button"
             id="btn-open-manage-webinars-page"
@@ -165,89 +163,17 @@ export const WebinarsPage: React.FC = () => {
         </div>
 
         {/* =========================================================
-            1. WEBINAR HERO SECTION
+            UPCOMING WEBINARS SECTION
             ========================================================= */}
-        <div className="max-w-4xl">
-          {/* Section Label */}
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 text-[#FF6B00] text-xs font-extrabold uppercase tracking-wider border border-orange-200 mb-3">
-            <Sparkles className="w-3.5 h-3.5 text-[#FF6B00]" />
-            <span>CBM ACADEMY WEBINARS</span>
-          </div>
-
-          {/* Main Heading (H1) */}
-          <h1
-            id="webinars-main-heading"
-            className="text-3xl sm:text-4xl lg:text-[42px] font-black text-[#072B57] tracking-tight leading-[1.18]"
-          >
-            Digital Marketing Webinars &{' '}
-            <span className="text-[#FF6B00]">Live Learning Sessions</span>
-          </h1>
-
-          {/* Subheading */}
-          <p
-            id="webinars-subtitle"
-            className="mt-3.5 text-sm sm:text-base text-slate-600 leading-relaxed max-w-3xl"
-          >
-            Join practical webinars and live sessions on digital marketing, AI, SEO, Google Ads, Meta Ads, social media marketing, performance marketing and emerging industry trends. Learn from industry-focused sessions designed for students, professionals, freelancers and business owners.
-          </p>
-
-          {/* Supporting Text */}
-          <p className="mt-2 text-xs sm:text-sm text-slate-500 font-medium">
-            Discover upcoming free and paid webinars from CBM Academy and build practical knowledge beyond the classroom.
-          </p>
-
-          {/* Primary Button */}
-          <div className="mt-5">
-            <button
-              type="button"
-              id="btn-hero-explore-webinars"
-              onClick={scrollToUpcoming}
-              className="inline-flex items-center gap-2 rounded-xl bg-[#FF6B00] px-6 py-3 text-xs sm:text-sm font-bold text-white transition-all duration-150 hover:bg-[#e05f00] cursor-pointer shadow-md hover:shadow-lg active:scale-98"
-            >
-              <span>Explore Webinars</span>
-              <ArrowDown className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-
-        {/* =========================================================
-            2. INTRODUCTION SECTION
-            ========================================================= */}
-        <div className="mt-10 sm:mt-12 rounded-2xl bg-white border border-[#E5E7EB] p-6 sm:p-8 shadow-xs">
-          <h2 className="text-xl sm:text-2xl font-black text-[#072B57] tracking-tight">
-            Learn, Connect & Grow with CBM Academy Webinars
-          </h2>
-          <div className="mt-3 space-y-2.5 text-xs sm:text-sm text-slate-600 leading-relaxed">
-            <p>
-              CBM Academy webinars provide practical insights into the latest digital marketing strategies, AI tools, advertising platforms, SEO techniques, social media trends and business growth opportunities.
-            </p>
-            <p>
-              Whether you are a student starting your digital marketing journey, a professional upgrading your skills, a freelancer looking for new opportunities or a business owner exploring digital growth, our webinars are designed to provide useful and actionable knowledge.
-            </p>
-            <div className="pt-2 flex flex-wrap items-center gap-3 text-xs font-bold">
-              <a href="#course" className="text-[#FF6B00] hover:underline inline-flex items-center gap-1">
-                <span>Explore Full Digital Marketing Courses</span> &rarr;
-              </a>
-              <span className="text-slate-300">&bull;</span>
-              <a href="#contact" className="text-[#072B57] hover:text-[#FF6B00] transition-colors inline-flex items-center gap-1">
-                <span>Contact CBM Academy Admissions</span> &rarr;
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {/* =========================================================
-            3. UPCOMING WEBINARS SECTION
-            ========================================================= */}
-        <div id="upcoming-webinars-section" className="mt-12 sm:mt-14 scroll-mt-20">
+        <div id="upcoming-webinars-section" className="scroll-mt-20">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-[#E5E7EB]">
             <div>
               <div className="text-xs font-extrabold text-[#FF6B00] tracking-wider uppercase mb-1">
                 UPCOMING WEBINARS
               </div>
-              <h2 className="text-2xl sm:text-3xl font-black text-[#072B57] tracking-tight">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#072B57] tracking-tight">
                 Explore Our Upcoming Webinars
-              </h2>
+              </h1>
               <p className="mt-1.5 text-xs sm:text-sm text-slate-600 max-w-2xl">
                 Choose from upcoming free and paid webinars covering digital marketing, AI, SEO, performance marketing, social media and business growth.
               </p>

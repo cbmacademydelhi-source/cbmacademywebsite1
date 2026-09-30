@@ -18,7 +18,6 @@ import {
   createPaidWebinarOrder,
   verifyPaidWebinarPayment,
   checkRegistrationStatus,
-  simulateWebinarPayment,
   launchRazorpayCheckout,
   ConfigStatusResponse,
 } from '../../services/webinarRegistrationService';
@@ -298,16 +297,16 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
   };
 
   /**
-   * Simulate Successful Payment in Test Mode
+   * Verify Payment Status in Test/Live Mode with Razorpay
    */
-  const handleSimulatePayment = async () => {
+  const handleCheckPaymentStatus = async () => {
     if (!qrSession) return;
     setSubmitting(true);
-    setSubmittingStep('Confirming verified test payment...');
+    setSubmittingStep('Verifying payment with Razorpay...');
 
     try {
-      const simRes = await simulateWebinarPayment(qrSession.registrationId);
-      if (simRes.success && simRes.payment_status === 'paid') {
+      const statusRes = await checkRegistrationStatus(qrSession.registrationId);
+      if (statusRes.success && statusRes.payment_status === 'paid') {
         setSuccessDetails({
           webinarTitle: qrSession.webinarTitle,
           date: qrSession.webinarDate,
@@ -315,7 +314,7 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
           duration: qrSession.webinarDuration,
           isPaid: true,
           amount: qrSession.amountInINR,
-          paymentId: simRes.payment_id || `pay_test_${Date.now().toString(36)}`,
+          paymentId: statusRes.payment_id || `pay_${Date.now().toString(36)}`,
         });
         setQrSession(null);
         setIsSuccess(true);
@@ -324,11 +323,14 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
         setPhone('');
         setMessage('');
       } else {
-        setError('Payment simulation could not be completed.');
+        setError(
+          statusRes.message ||
+            'Payment is pending. Please complete the transaction in your UPI app or using cards/netbanking.'
+        );
       }
-    } catch (simErr: any) {
-      console.warn('Simulate payment error:', simErr);
-      setError('Payment simulation could not be completed.');
+    } catch (err: any) {
+      console.warn('Payment check error:', err);
+      setError(err?.message || 'Payment status could not be verified. Please try again.');
     } finally {
       setSubmitting(false);
       setSubmittingStep('');
@@ -654,36 +656,38 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
 
               {/* Action buttons */}
               <div className="space-y-2 pt-1">
-                {/* Razorpay Test Mode Simulation Controls */}
+                {/* Razorpay Verification Status */}
                 {(qrSession.isTestMode || !configStatus.razorpayConfigured) && (
                   <div className="rounded-xl border border-amber-300 bg-amber-50/90 p-3 text-left space-y-2 shadow-xs">
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-bold text-amber-900 flex items-center gap-1.5">
                         <ShieldCheck className="h-3.5 w-3.5 text-amber-700" />
-                        Razorpay Test Mode Active
+                        Razorpay Verification
                       </span>
                       <span className="rounded-full bg-amber-200 px-2 py-0.5 text-[10px] font-extrabold text-amber-800">
-                        Sandbox / Test
+                        {configStatus.razorpayConfigured ? 'Test Mode Active' : 'Setup Required'}
                       </span>
                     </div>
                     <p className="text-[11px] text-amber-800 leading-snug">
-                      Test UPI QR generated. Click below to verify the real-time server approval and confirmation flow.
+                      {configStatus.razorpayConfigured
+                        ? 'Razorpay Test Mode is active. Complete payment via UPI or Test Card for genuine verification.'
+                        : 'Payment flow requires final real/test-mode verification with valid Razorpay credentials.'}
                     </p>
                     <button
                       type="button"
-                      onClick={handleSimulatePayment}
+                      onClick={handleCheckPaymentStatus}
                       disabled={submitting}
                       className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-[#FF6B00] py-2.5 text-xs font-bold text-white hover:opacity-95 transition-opacity shadow-xs cursor-pointer"
                     >
                       {submitting ? (
                         <>
                           <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                          <span>Approving Test Payment...</span>
+                          <span>Verifying Payment Status...</span>
                         </>
                       ) : (
                         <>
                           <CheckCircle2 className="h-3.5 w-3.5" />
-                          <span>Simulate Verified Payment (Test Mode)</span>
+                          <span>Check / Verify Payment Status</span>
                         </>
                       )}
                     </button>

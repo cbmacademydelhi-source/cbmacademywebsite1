@@ -52,15 +52,71 @@ export interface PaymentVerificationParams {
 }
 
 /**
+ * Robust JSON fetch wrapper that guarantees:
+ * 1. Safe parsing: never throws "Unexpected token '<', <html>... is not valid JSON"
+ * 2. Human-readable errors: cleanly converts HTML 404/500 into helpful messages
+ * 3. Safe logging: logs unexpected response bodies safely for debugging without exposing secrets
+ */
+async function safeFetchJson<T = any>(
+  url: string,
+  options?: RequestInit,
+  fallbackMessage = 'Request could not be completed.'
+): Promise<T> {
+  let res: Response;
+  try {
+    res = await fetch(url, options);
+  } catch (netErr: any) {
+    console.error(`[Webinar Service Network Error] ${url}:`, netErr?.message || netErr);
+    throw new Error('Unable to connect to the server. Please check your internet connection and try again.');
+  }
+
+  const contentType = res.headers.get('content-type') || '';
+  let data: any = null;
+
+  if (contentType.includes('application/json')) {
+    try {
+      data = await res.json();
+    } catch (parseErr) {
+      console.error(`[Webinar Service JSON Parse Error] ${url}:`, parseErr);
+      throw new Error('Received an unreadable response from the payment server. Please try again.');
+    }
+  } else {
+    // Non-JSON response (e.g., HTML fallback or server error page)
+    const rawText = await res.text().catch(() => '');
+    console.warn(
+      `[Webinar Service Non-JSON Response] ${url} (Status: ${res.status}, Type: ${contentType}):`,
+      rawText.slice(0, 160)
+    );
+
+    if (res.status === 404) {
+      throw new Error('Payment service endpoint not found. Please refresh the page and try again.');
+    } else if (res.status >= 500) {
+      throw new Error('Payment service is temporarily unavailable. Please try again in a few moments.');
+    } else {
+      throw new Error(fallbackMessage);
+    }
+  }
+
+  if (!res.ok) {
+    const errorMsg = data?.message || fallbackMessage;
+    const err: any = new Error(errorMsg);
+    if (data?.code) err.code = data.code;
+    throw err;
+  }
+
+  return data as T;
+}
+
+/**
  * Fetch configuration status (whether Razorpay credentials are set)
  */
 export async function fetchWebinarConfigStatus(): Promise<ConfigStatusResponse> {
   try {
-    const res = await fetch('/api/webinars/config-status');
-    if (!res.ok) {
-      return { supabaseConfigured: true, razorpayConfigured: false, razorpayKeyId: null };
-    }
-    return await res.json();
+    return await safeFetchJson<ConfigStatusResponse>(
+      '/api/webinars/config-status',
+      undefined,
+      'Could not retrieve configuration status.'
+    );
   } catch {
     return { supabaseConfigured: true, razorpayConfigured: false, razorpayKeyId: null };
   }
@@ -70,17 +126,15 @@ export async function fetchWebinarConfigStatus(): Promise<ConfigStatusResponse> 
  * Register for a Free Webinar
  */
 export async function submitFreeRegistration(data: FreeRegistrationParams) {
-  const res = await fetch('/api/webinars/register-free', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-
-  const json = await res.json();
-  if (!res.ok) {
-    throw new Error(json.message || 'Registration could not be completed.');
-  }
-  return json;
+  return await safeFetchJson(
+    '/api/webinars/register-free',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    },
+    'Registration could not be completed.'
+  );
 }
 
 export interface PaidOrderResponse {
@@ -114,16 +168,15 @@ export interface RegistrationStatusResponse {
 export async function simulateWebinarPayment(
   registrationId: string
 ): Promise<RegistrationStatusResponse> {
-  const res = await fetch('/api/webinars/simulate-payment', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ registrationId }),
-  });
-  const json = await res.json();
-  if (!res.ok) {
-    throw new Error(json.message || 'Payment simulation failed');
-  }
-  return json;
+  return await safeFetchJson<RegistrationStatusResponse>(
+    '/api/webinars/simulate-payment',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ registrationId }),
+    },
+    'Payment simulation failed.'
+  );
 }
 
 /**
@@ -132,48 +185,41 @@ export async function simulateWebinarPayment(
 export async function checkRegistrationStatus(
   registrationId: string
 ): Promise<RegistrationStatusResponse> {
-  const res = await fetch(`/api/webinars/registration-status/${encodeURIComponent(registrationId)}`);
-  const json = await res.json();
-  if (!res.ok) {
-    throw new Error(json.message || 'Failed to check status');
-  }
-  return json;
+  return await safeFetchJson<RegistrationStatusResponse>(
+    `/api/webinars/registration-status/${encodeURIComponent(registrationId)}`,
+    undefined,
+    'Failed to check registration status.'
+  );
 }
 
 /**
  * Create Razorpay Order on Server for Paid Webinar
  */
 export async function createPaidWebinarOrder(data: PaidOrderParams): Promise<PaidOrderResponse> {
-  const res = await fetch('/api/webinars/create-order', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-
-  const json = await res.json();
-  if (!res.ok) {
-    const err: any = new Error(json.message || 'Failed to create payment order.');
-    err.code = json.code;
-    throw err;
-  }
-  return json as PaidOrderResponse;
+  return await safeFetchJson<PaidOrderResponse>(
+    '/api/webinars/create-order',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    },
+    'Failed to create payment order.'
+  );
 }
 
 /**
  * Verify Razorpay Payment Server-Side
  */
 export async function verifyPaidWebinarPayment(data: PaymentVerificationParams) {
-  const res = await fetch('/api/webinars/verify-payment', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-
-  const json = await res.json();
-  if (!res.ok) {
-    throw new Error(json.message || 'Payment verification failed.');
-  }
-  return json;
+  return await safeFetchJson(
+    '/api/webinars/verify-payment',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    },
+    'Payment verification failed.'
+  );
 }
 
 /**
@@ -294,15 +340,15 @@ export async function fetchAdminRegistrations(
   if (filters?.type) params.append('type', filters.type);
   if (filters?.status) params.append('status', filters.status);
 
-  const res = await fetch(`/api/webinars/registrations?${params.toString()}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
+  const json = await safeFetchJson<{ registrations?: WebinarRegistration[] }>(
+    `/api/webinars/registrations?${params.toString()}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     },
-  });
+    'Failed to fetch registrations.'
+  );
 
-  const json = await res.json();
-  if (!res.ok) {
-    throw new Error(json.message || 'Failed to fetch registrations.');
-  }
   return json.registrations || [];
 }

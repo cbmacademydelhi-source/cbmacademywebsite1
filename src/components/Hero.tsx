@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import { ArrowRight, Download, Star, CheckCircle2, Briefcase, TrendingUp } from 'lucide-react';
+import { ArrowRight, Download, CheckCircle2, Briefcase, TrendingUp } from 'lucide-react';
 
 interface HeroProps {
   onOpenApply: () => void;
@@ -34,19 +34,73 @@ export const Hero: React.FC<HeroProps> = ({ onOpenApply, onOpenBrochure }) => {
               <span>Okhla, New Delhi</span>
             </motion.div>
 
-            {/* Main Headline */}
-            <motion.h1
-              initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, delay: 0.18, ease: 'easeOut' }}
-              className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#072B57] tracking-tight leading-[1.15]"
-            >
-              Master Digital Marketing with{' '}
-              <span className="text-[#FF6B00] underline decoration-[#FF6B00]/30 decoration-wavy decoration-1 underline-offset-4">
-                AI, Real Projects
-              </span>{' '}
-              & Industry Skills
-            </motion.h1>
+            {/* Main Headline with Distinctive Background Design */}
+            <div className="relative">
+              {/* Clean, premium background behind/around the headline */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -inset-x-3 sm:-inset-x-4 -inset-y-2.5 sm:-inset-y-3.5 -z-10 rounded-2xl sm:rounded-3xl bg-slate-50/60 border border-slate-200/70 shadow-[0_2px_12px_rgba(7,43,87,0.03)] overflow-hidden select-none"
+              >
+                {/* Very subtle abstract shapes & soft curves in navy and orange */}
+                <svg
+                  className="absolute -right-4 -bottom-6 w-44 h-44 sm:w-56 sm:h-56 text-[#072B57]/[0.045]"
+                  viewBox="0 0 160 160"
+                  fill="none"
+                >
+                  <circle cx="80" cy="80" r="64" stroke="currentColor" strokeWidth="1.2" strokeDasharray="3 3" />
+                  <path d="M20 120 C 50 70, 110 70, 140 110" stroke="currentColor" strokeWidth="1.2" />
+                </svg>
+
+                {/* Subtle soft orange curve & geometric corner element */}
+                <svg
+                  className="absolute -top-3 -right-3 w-28 h-28 text-[#FF6B00]/[0.08]"
+                  viewBox="0 0 100 100"
+                  fill="none"
+                >
+                  <path d="M0 0 H100 V100 C100 44.77 55.23 0 0 0Z" fill="currentColor" opacity="0.4" />
+                  <path d="M10 0 C60 0 100 40 100 90" stroke="#FF6B00" strokeWidth="1" strokeOpacity="0.25" />
+                </svg>
+
+                {/* Minimal geometric alignment element */}
+                <div className="absolute top-2.5 left-3 flex items-center gap-1 opacity-20">
+                  <span className="w-1 h-1 rounded-full bg-[#072B57]" />
+                  <span className="w-3 h-[1px] bg-[#072B57]" />
+                </div>
+              </div>
+
+              <motion.h1
+                initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.18, ease: 'easeOut' }}
+                className="font-['Plus_Jakarta_Sans',sans-serif] text-3xl sm:text-4xl lg:text-[44px] xl:text-[48px] tracking-tight leading-[1.2] sm:leading-[1.16]"
+              >
+                <span className="text-[#072B57] font-extrabold sm:font-black">
+                  Master Digital Marketing
+                </span>{' '}
+                <span className="relative inline-block text-[#FF6B00] font-extrabold sm:font-black">
+                  with AI
+                  <svg
+                    className="absolute left-0 -bottom-1 sm:-bottom-1.5 w-full h-[5px] sm:h-[6px] text-[#FF6B00]"
+                    viewBox="0 0 85 8"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    preserveAspectRatio="none"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M1.5 5.5C24.5 2 60.5 2 83.5 5.5"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </span>
+                {', '}
+                <span className="font-semibold text-[#072B57]/80">
+                  Real Projects & Industry Skills
+                </span>
+              </motion.h1>
+            </div>
 
             {/* Subheadline */}
             <motion.p
@@ -108,23 +162,6 @@ export const Hero: React.FC<HeroProps> = ({ onOpenApply, onOpenBrochure }) => {
               <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
                 <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
                 <span>Career Support</span>
-              </div>
-            </motion.div>
-
-            {/* Rating & Social Proof */}
-            <motion.div
-              initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.46, ease: 'easeOut' }}
-              className="flex items-center gap-4 pt-2"
-            >
-              <div className="flex items-center">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                ))}
-              </div>
-              <div className="text-xs text-slate-600">
-                <strong className="text-[#072B57] font-bold">Student Experiences:</strong> Explore feedback and experiences shared by CBM Academy learners.
               </div>
             </motion.div>
 

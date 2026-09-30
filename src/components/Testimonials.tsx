@@ -28,7 +28,7 @@ export const SAMPLE_TESTIMONIALS: TestimonialItem[] = [
     rating: 5,
     initials: 'AK',
     image:
-      'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=300&auto=format&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop&crop=faces',
     cornerDeco: 'rings',
   },
   {
@@ -40,7 +40,7 @@ export const SAMPLE_TESTIMONIALS: TestimonialItem[] = [
     rating: 5,
     initials: 'RS',
     image:
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=300&auto=format&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=300&auto=format&fit=crop&crop=faces',
     cornerDeco: 'dots',
   },
   {
@@ -52,7 +52,7 @@ export const SAMPLE_TESTIMONIALS: TestimonialItem[] = [
     rating: 5,
     initials: 'SK',
     image:
-      'https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?q=80&w=300&auto=format&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=300&auto=format&fit=crop&crop=faces',
     cornerDeco: 'arc',
   },
   {
@@ -64,7 +64,7 @@ export const SAMPLE_TESTIMONIALS: TestimonialItem[] = [
     rating: 5,
     initials: 'RV',
     image:
-      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300&auto=format&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=300&auto=format&fit=crop&crop=faces',
     cornerDeco: 'cross',
   },
   {
@@ -76,7 +76,7 @@ export const SAMPLE_TESTIMONIALS: TestimonialItem[] = [
     rating: 5,
     initials: 'AJ',
     image:
-      'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=300&auto=format&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=300&auto=format&fit=crop&crop=faces',
     cornerDeco: 'rings',
   },
   {
@@ -88,7 +88,7 @@ export const SAMPLE_TESTIMONIALS: TestimonialItem[] = [
     rating: 5,
     initials: 'PP',
     image:
-      'https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?q=80&w=300&auto=format&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=300&auto=format&fit=crop&crop=faces',
     cornerDeco: 'dots',
   },
   {
@@ -100,7 +100,7 @@ export const SAMPLE_TESTIMONIALS: TestimonialItem[] = [
     rating: 5,
     initials: 'VM',
     image:
-      'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=300&auto=format&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?q=80&w=300&auto=format&fit=crop&crop=faces',
     cornerDeco: 'cross',
   },
   {
@@ -112,7 +112,7 @@ export const SAMPLE_TESTIMONIALS: TestimonialItem[] = [
     rating: 5,
     initials: 'NG',
     image:
-      'https://images.unsplash.com/photo-1614283233556-f35b0c801ef1?q=80&w=300&auto=format&fit=crop&crop=faces',
+      'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=300&auto=format&fit=crop&crop=faces',
     cornerDeco: 'arc',
   },
 ];
