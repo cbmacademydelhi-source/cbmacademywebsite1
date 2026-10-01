@@ -128,44 +128,17 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
         {/* =========================================================
             INTRO / VALUE SECTION (DIGITAL MARKETING ACADEMY)
         ========================================================= */}
-        <div className="mb-14 sm:mb-16 pb-10 sm:pb-12 border-b border-slate-200/80">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            {/* Left Column: Text (On mobile: stacked on top) */}
-            <motion.div
-              initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={VIEWPORT_ONCE}
-              transition={{ duration: 0.5, ease: SMOOTH_EASE_OUT }}
-              className="lg:col-span-6 space-y-4"
-            >
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 text-[#FF6B00] text-xs font-extrabold uppercase tracking-wider border border-orange-200 w-fit">
-                <Sparkles className="w-3.5 h-3.5 text-[#FF6B00]" />
-                <span>PRACTICAL LEARNING</span>
-              </div>
-
-              <h2 className="text-3xl sm:text-4xl lg:text-[40px] font-black text-[#072B57] tracking-tight leading-[1.15]">
-                Digital Marketing <span className="text-[#FF6B00]">Academy</span>
-              </h2>
-
-              <div className="space-y-3.5 text-slate-600 text-sm sm:text-base leading-relaxed">
-                <p className="font-normal text-slate-700">
-                  CBM Academy is a practical digital marketing academy designed for students, freshers, freelancers, entrepreneurs and working professionals. Learn modern digital marketing through hands-on projects, real marketing tools, AI-powered workflows and career-focused training.
-                </p>
-                <p className="font-normal text-slate-600">
-                  From SEO and Google Ads to Meta Ads, social media marketing, analytics, content marketing and AI automation, our courses help learners build practical skills they can apply in real-world campaigns.
-                </p>
-              </div>
-            </motion.div>
-
-            {/* Right Column: Modern Classroom Image + Floating Cards */}
+        <div className="relative mb-14 sm:mb-18 pb-10 sm:pb-14 border-b border-slate-200/80">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-14 items-center">
+            {/* Left Column on Desktop / Bottom on Mobile: Modern Classroom Image + Floating Cards */}
             <motion.div
               initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={VIEWPORT_ONCE}
               transition={{ duration: 0.55, delay: 0.1, ease: SMOOTH_EASE_OUT }}
-              className="lg:col-span-6 relative pt-4 pb-4 px-2 sm:px-4"
+              className="lg:col-span-6 order-2 lg:order-1 relative pt-4 pb-4 px-2 sm:px-4"
             >
-              <div className="relative rounded-2xl overflow-hidden border border-slate-200/90 shadow-2xl bg-white group">
+              <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/90 shadow-xl bg-white group">
                 <img
                   src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop"
                   alt="Students working on laptops in a modern digital marketing classroom at CBM Academy"
@@ -175,7 +148,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
                   loading="lazy"
                   decoding="async"
                   referrerPolicy="no-referrer"
-                  className="w-full h-72 sm:h-84 lg:h-92 object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="w-full h-72 sm:h-84 lg:h-96 object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 
                 {/* Subtle Navy Gradient Overlay */}
@@ -228,6 +201,58 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
                   <div className="text-[10px] text-slate-500 font-medium">Placement Guidance</div>
                   <div className="text-xs sm:text-sm font-bold text-[#072B57]">Career Support</div>
                 </div>
+              </div>
+            </motion.div>
+
+            {/* Right Column on Desktop / Top on Mobile: Text Content */}
+            <motion.div
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={VIEWPORT_ONCE}
+              transition={{ duration: 0.5, ease: SMOOTH_EASE_OUT }}
+              className="lg:col-span-6 order-1 lg:order-2 space-y-4 sm:space-y-5 relative"
+            >
+              {/* Subtle Elegant Navy Blue & Light Orange Decorative Shapes */}
+              <div className="absolute -top-8 -right-4 w-60 h-60 rounded-full bg-gradient-to-br from-orange-100/50 via-blue-50/40 to-transparent blur-3xl pointer-events-none -z-10" />
+              <div className="absolute top-1/2 -left-6 w-48 h-48 rounded-full bg-gradient-to-tr from-blue-100/40 via-orange-50/30 to-transparent blur-2xl pointer-events-none -z-10" />
+
+              {/* Subtle decorative vector contour */}
+              <svg
+                className="absolute -top-4 right-0 w-32 h-32 text-orange-200/40 pointer-events-none -z-10"
+                viewBox="0 0 100 100"
+                fill="none"
+                aria-hidden="true"
+              >
+                <circle cx="50" cy="50" r="42" stroke="currentColor" strokeWidth="1.5" strokeDasharray="3 4" />
+                <circle cx="50" cy="50" r="26" stroke="#072B57" strokeOpacity="0.08" strokeWidth="1.5" />
+              </svg>
+
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-orange-50 text-[#FF6B00] text-xs font-extrabold uppercase tracking-wider border border-orange-200 w-fit">
+                <Sparkles className="w-3.5 h-3.5 text-[#FF6B00]" />
+                <span>PRACTICAL LEARNING</span>
+              </div>
+
+              <h2 className="text-3xl sm:text-4xl lg:text-[44px] xl:text-[48px] font-black text-[#072B57] tracking-tight leading-[1.12]">
+                Digital Marketing <span className="text-[#FF6B00]">Academy</span>
+              </h2>
+
+              <div className="space-y-3.5">
+                <p className="text-base sm:text-[17px] font-semibold text-[#072B57]/90 leading-relaxed">
+                  CBM Academy is a practical digital marketing academy designed for students, freshers, freelancers, entrepreneurs and working professionals. Learn modern digital marketing through hands-on projects, real marketing tools, AI-powered workflows and career-focused training.
+                </p>
+                <p className="text-[14.5px] sm:text-[15.5px] font-normal text-slate-600 leading-relaxed">
+                  From SEO and Google Ads to Meta Ads, social media marketing, analytics, content marketing and AI automation, our courses help learners build practical skills they can apply in real-world campaigns.
+                </p>
+              </div>
+
+              <div className="pt-2 flex flex-wrap items-center gap-3">
+                <a
+                  href="#course"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#FF6B00] px-6 py-3.5 text-sm font-bold text-white transition-all hover:bg-[#e05f00] cursor-pointer shadow-md hover:shadow-lg active:scale-98"
+                >
+                  <span>Explore Courses</span>
+                  <ArrowRight className="h-4 w-4" />
+                </a>
               </div>
             </motion.div>
           </div>
