@@ -226,7 +226,7 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
     <>
       <section
         id="course"
-        className="relative overflow-hidden bg-white pt-12 sm:pt-16 pb-12 sm:pb-16 border-b border-slate-100"
+        className="relative overflow-hidden bg-[#FAFAFA] pt-12 sm:pt-16 pb-12 sm:pb-16 border-b border-slate-100"
       >
 
         <div className="relative z-10 mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">

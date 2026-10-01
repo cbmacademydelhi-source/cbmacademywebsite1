@@ -218,26 +218,26 @@ export const About: React.FC<AboutProps> = ({ isServicesPage = false }) => {
         >
           {/* Introductory Content - Very top */}
           <div className="lg:col-span-6 space-y-4">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 text-[#FF6B00] text-xs font-extrabold uppercase tracking-wider border border-orange-200">
+            <div className="about-section-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 text-[#FF6B00] text-xs font-extrabold uppercase tracking-wider border border-orange-200">
               <Sparkles className="w-3.5 h-3.5 text-[#FF6B00]" />
               <span>ABOUT CBM ACADEMY</span>
             </div>
 
             {isServicesPage ? (
-              <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-black text-[#072B57] tracking-tight leading-[1.15]">
-                About CBM Academy
+              <h2 className="about-section-heading text-3xl sm:text-4xl lg:text-[42px] font-black text-[#072B57] tracking-tight leading-[1.15]">
+                About CBM <span className="text-[#FF6B00] about-accent">Academy</span>
               </h2>
             ) : (
-              <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black text-[#072B57] tracking-tight leading-[1.15]">
-                About CBM Academy
+              <h1 className="about-section-heading text-3xl sm:text-4xl lg:text-[42px] font-black text-[#072B57] tracking-tight leading-[1.15]">
+                About CBM <span className="text-[#FF6B00] about-accent">Academy</span>
               </h1>
             )}
 
-            <h2 className="text-lg sm:text-xl font-bold text-[#FF6B00]">
+            <h2 className="about-section-subheading text-lg sm:text-xl font-bold text-[#FF6B00]">
               A Practical Digital Marketing Academy in Okhla, New Delhi
             </h2>
 
-            <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+            <p className="about-section-paragraph text-slate-600 text-sm sm:text-base leading-relaxed">
               Build practical digital marketing and AI skills through projects,
               industry tools and real-world learning.
             </p>
@@ -349,16 +349,17 @@ export const About: React.FC<AboutProps> = ({ isServicesPage = false }) => {
           </div>
 
           {/* Right: Concise Content */}
-          <div className="lg:col-span-6 order-1 lg:order-2 space-y-3.5">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-[#072B57] text-xs font-extrabold uppercase tracking-wider border border-blue-100">
-              WHO WE ARE
+          <div className="lg:col-span-6 order-1 lg:order-2 space-y-4">
+            <div className="about-section-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 text-[#FF6B00] text-xs font-extrabold uppercase tracking-wider border border-orange-200">
+              <Sparkles className="w-3.5 h-3.5 text-[#FF6B00]" />
+              <span>WHO WE ARE</span>
             </div>
 
-            <h2 className="text-2xl sm:text-3xl font-black text-[#072B57] tracking-tight">
-              Who We Are
+            <h2 className="about-section-heading text-3xl sm:text-4xl lg:text-[42px] font-black text-[#072B57] tracking-tight leading-[1.15]">
+              Who We <span className="text-[#FF6B00] about-accent">Are</span>
             </h2>
 
-            <p className="text-slate-700 text-sm sm:text-base font-semibold leading-relaxed">
+            <p className="about-section-paragraph text-slate-600 text-sm sm:text-base leading-relaxed">
               CBM Academy is a digital marketing academy and marketing services platform that combines practical learning, industry exposure, technology, AI, and real-world marketing experience.
             </p>
           </div>
@@ -453,13 +454,10 @@ export const About: React.FC<AboutProps> = ({ isServicesPage = false }) => {
         </section>
 
         {/* =========================================================
-            9. WHY CBM ACADEMY
+            9. WHY LEARN WITH US
             ========================================================= */}
         <section id="why-cbm-about">
           <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-8">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 text-[#FF6B00] text-xs font-extrabold uppercase tracking-wider border border-orange-200 mb-2">
-              WHY CBM ACADEMY
-            </div>
             <h2 className="text-2xl sm:text-3xl font-black text-[#072B57] tracking-tight">
               Why Learn With Us?
             </h2>
@@ -513,23 +511,23 @@ export const About: React.FC<AboutProps> = ({ isServicesPage = false }) => {
             </div>
 
             {/* Right Info */}
-            <div className="lg:col-span-7 space-y-3.5">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-[#072B57] text-xs font-extrabold uppercase tracking-wider border border-blue-100">
-                <Building2 className="w-3.5 h-3.5 text-[#072B57]" />
+            <div className="lg:col-span-7 space-y-4">
+              <div className="about-section-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 text-[#FF6B00] text-xs font-extrabold uppercase tracking-wider border border-orange-200">
+                <Building2 className="w-3.5 h-3.5 text-[#FF6B00]" />
                 <span>DIGITAL MARKETING SERVICES</span>
               </div>
 
               {isServicesPage ? (
-                <h1 className="text-2xl sm:text-3xl font-black text-[#072B57] tracking-tight">
-                  Digital Marketing Services in Delhi
+                <h1 className="about-section-heading text-3xl sm:text-4xl lg:text-[42px] font-black text-[#072B57] tracking-tight leading-[1.15]">
+                  Digital Marketing <span className="text-[#FF6B00] about-accent">Services in Delhi</span>
                 </h1>
               ) : (
-                <h2 className="text-2xl sm:text-3xl font-black text-[#072B57] tracking-tight">
-                  Digital Marketing Agency in Okhla, New Delhi
+                <h2 className="about-section-heading text-3xl sm:text-4xl lg:text-[42px] font-black text-[#072B57] tracking-tight leading-[1.15]">
+                  Digital Marketing Agency in <span className="text-[#FF6B00] about-accent">Okhla, New Delhi</span>
                 </h2>
               )}
 
-              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+              <p className="about-section-paragraph text-slate-600 text-sm sm:text-base leading-relaxed">
                 We also help businesses grow online through SEO, Google Ads,
                 Meta Ads, social media, analytics and AI-powered marketing.
               </p>

@@ -408,7 +408,7 @@ export const AITools: React.FC<AIToolsProps> = ({ onOpenApply }) => {
         {/* =========================================================
             SECTION HEADER
             ========================================================= */}
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-4xl mx-auto text-center mb-8 sm:mb-10">
 
           {/* Top Pill / Badge */}
           <motion.div
@@ -431,24 +431,10 @@ export const AITools: React.FC<AIToolsProps> = ({ onOpenApply }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={VIEWPORT_ONCE}
             transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
-            className="mt-3.5 sm:mt-4 text-2xl sm:text-3xl md:text-[34px] lg:text-[40px] font-extrabold text-[#072B57] tracking-tight leading-[1.18]"
+            className="mt-3.5 sm:mt-4 text-3xl sm:text-4xl lg:text-[42px] font-black text-[#072B57] tracking-tight leading-[1.15]"
           >
-            Learn AI-Powered Digital Marketing for the{' '}
-            <span className="text-[#FF6B00]">
-              Modern Industry
-            </span>
+            AI <span className="text-[#FF6B00]">Tools</span>
           </motion.h2>
-
-          {/* Subtitle */}
-          <motion.p
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={VIEWPORT_ONCE}
-            transition={{ duration: 0.6, delay: 0.16, ease: SMOOTH_EASE_OUT }}
-            className="mt-2.5 sm:mt-3 text-sm sm:text-[15px] text-slate-600 font-medium leading-relaxed max-w-2xl mx-auto"
-          >
-            AI is transforming how marketers research, create, analyze and optimize campaigns. At CBM Academy, learners develop practical AI skills with modern tools to automate workflows, accelerate research, and optimize performance.
-          </motion.p>
 
         </div>
 
