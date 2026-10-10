@@ -399,7 +399,7 @@ export const AITools: React.FC<AIToolsProps> = ({ onOpenApply }) => {
   return (
     <section
       id="ai-tools"
-      className="relative overflow-hidden bg-[#FAFAFA] pt-12 sm:pt-16 pb-12 sm:pb-16 border-b border-slate-100"
+      className="relative overflow-hidden bg-[#FAFAFA] pt-6 sm:pt-8 pb-12 sm:pb-16 border-b border-slate-100"
     >
 
       {/* HORIZONTAL WIDTH MATCHING MODULE CARDS (max-w-[1200px]) */}

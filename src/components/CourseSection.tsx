@@ -1,5 +1,30 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
+import {
+  Clock,
+  Wrench,
+  Award,
+  Briefcase,
+  Sparkles,
+  Download,
+  ArrowRight,
+  CheckCircle2,
+  ChevronDown,
+  Layers,
+  Target,
+  Search,
+  Share2,
+  BarChart3,
+  Bot,
+  Zap,
+  Upload,
+  Image as ImageIcon,
+  Maximize2,
+  RotateCcw,
+  Camera,
+  X,
+  ExternalLink,
+} from 'lucide-react';
 import { AITools } from './AITools';
 
 interface CourseSectionProps {
@@ -8,315 +33,733 @@ interface CourseSectionProps {
   isStandalonePage?: boolean;
 }
 
-interface ModuleItem {
+interface CourseModule {
+  id: string;
   number: string;
+  week: string;
+  title: string;
+  tagline: string;
   badgeBg: string;
   badgeText: string;
-  circleBg: string;
-  title: string;
-  description: string;
-  renderIcon: () => React.ReactNode;
+  accentColor: string;
+  icon: React.ReactNode;
+  topics: string[];
+  project: string;
+  tools: string[];
 }
 
-const modules: ModuleItem[] = [
+const COURSE_MODULES: CourseModule[] = [
   {
+    id: 'module-1',
     number: '01',
-    badgeBg: 'bg-[#EEF4FF]',
+    week: 'Weeks 1–2 • 15 Hours',
+    title: 'Digital Marketing & AI Strategy Foundations',
+    tagline: 'Master full-funnel marketing psychology, audience research and AI prompt systems.',
+    badgeBg: 'bg-blue-50',
     badgeText: 'text-[#1E60F2]',
-    circleBg: 'bg-[#EEF4FF]',
-    title: 'Master in Digital Marketing & AI Strategy',
-    description:
-      'Build a complete foundation in digital marketing with SEO, paid advertising, social media, analytics, content marketing and AI-powered marketing strategies.',
-    renderIcon: () => (
-      <svg
-        className="w-6 h-6 text-[#1E60F2]"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <circle cx="11" cy="11" r="7" />
-        <path d="m21 21-4.35-4.35" />
-      </svg>
-    ),
+    accentColor: '#1E60F2',
+    icon: <Bot className="w-5 h-5 text-[#1E60F2]" />,
+    topics: [
+      'Digital marketing ecosystem, customer journeys & marketing funnels (AIDA & TOFU/MOFU/BOFU)',
+      'Prompt engineering for marketers (ChatGPT, Claude 3.5 & Perplexity)',
+      'Target persona profiling, competitor intelligence & TAM/SAM market research',
+      'Digital brand positioning and setting business KPIs (CPA, ROAS, LTV, CAC)',
+    ],
+    project: 'Comprehensive Digital Marketing Audit & AI-Powered Brand Growth Blueprint',
+    tools: ['ChatGPT', 'Perplexity', 'Notion AI', 'Claude'],
   },
   {
+    id: 'module-2',
     number: '02',
-    badgeBg: 'bg-[#EAFBF3]',
-    badgeText: 'text-[#10B981]',
-    circleBg: 'bg-[#EAFBF3]',
-    title: 'AI in Digital Marketing & Growth Systems',
-    description:
-      'Learn how AI can support content creation, marketing research, automation, campaign planning, analytics and business growth.',
-    renderIcon: () => (
-      <div
-        className="w-6 h-6 rounded-[7px] bg-[#10B981] flex flex-col items-center justify-center text-white shadow-xs"
-        aria-hidden="true"
-      >
-        <span className="text-[9.5px] font-black tracking-tight leading-none">
-          AI
-        </span>
-        <div className="mt-1 flex flex-col gap-[1.5px] w-3.5">
-          <div className="h-[1.5px] bg-white/90 rounded-full w-full" />
-          <div className="h-[1.5px] bg-white/90 rounded-full w-2.5 mx-auto" />
-        </div>
-      </div>
-    ),
-  },
-  {
-    number: '03',
-    badgeBg: 'bg-[#FFF3EB]',
-    badgeText: 'text-[#FF6B00]',
-    circleBg: 'bg-[#FFF3EB]',
-    title: 'Performance Marketing & Media Buying',
-    description:
-      'Learn Google Ads, Meta Ads, campaign strategy, audience targeting, optimization, conversion tracking and performance marketing fundamentals.',
-    renderIcon: () => (
-      <svg
-        className="w-6 h-6 text-[#FF6B00]"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <circle cx="12" cy="12" r="9" />
-        <circle cx="12" cy="12" r="5" />
-        <circle cx="12" cy="12" r="1.5" fill="currentColor" />
-        <path d="M19 5l-4 4" />
-        <path d="M15 5h4v4" />
-      </svg>
-    ),
-  },
-  {
-    number: '04',
-    badgeBg: 'bg-[#F3E8FF]',
+    week: 'Weeks 3–4 • 18 Hours',
+    title: 'Modern SEO, GEO & Generative AI Search',
+    tagline: 'Dominate traditional search engines and emerging AI overviews (SGE & Perplexity).',
+    badgeBg: 'bg-purple-50',
     badgeText: 'text-[#7C3AED]',
-    circleBg: 'bg-[#F3E8FF]',
-    title: 'SEO & Content Marketing',
-    description:
-      'Learn keyword research, on-page SEO, technical SEO fundamentals, content strategy, search visibility and SEO analytics.',
-    renderIcon: () => (
-      <svg
-        className="w-6 h-6 text-[#7C3AED]"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
-        <path d="M6 6h10" />
-        <path d="M6 10h10" />
-      </svg>
-    ),
+    accentColor: '#7C3AED',
+    icon: <Search className="w-5 h-5 text-[#7C3AED]" />,
+    topics: [
+      'Search intent mapping, keyword clustering & semantic entity research',
+      'Generative Engine Optimization (GEO): ranking in Google AI Overviews & Perplexity',
+      'On-page SEO, internal linking architectures & structured Schema markup',
+      'Technical SEO: Core Web Vitals, site crawlability, indexing & robots.txt',
+      'Authority building: ethical backlink acquisition & digital PR frameworks',
+    ],
+    project: 'Full-Scale Technical SEO Audit & 50-Keyword Ranked Content Plan',
+    tools: ['Semrush', 'Google Search Console', 'Ahrefs', 'Screaming Frog', 'SurferSEO'],
   },
   {
-    number: '05',
-    badgeBg: 'bg-[#FFEBF0]',
+    id: 'module-3',
+    number: '03',
+    week: 'Weeks 5–6 • 18 Hours',
+    title: 'Performance Marketing & Google Ads Mastery',
+    tagline: 'Run high-intent Search, Shopping, YouTube and Performance Max (PMax) campaigns.',
+    badgeBg: 'bg-orange-50',
+    badgeText: 'text-[#FF6B00]',
+    accentColor: '#FF6B00',
+    icon: <Target className="w-5 h-5 text-[#FF6B00]" />,
+    topics: [
+      'Google Search campaigns: keyword match types, negative keywords & Quality Score mastery',
+      'Performance Max (PMax) campaigns: asset groups, audience signals & feed optimization',
+      'YouTube Video ads & Display Network retargeting sequences',
+      'Smart bidding algorithms (tCPA, tROAS) vs. manual bidding control',
+      'Conversion tracking setup with Google Tag Manager (GTM) & GA4 linking',
+    ],
+    project: 'Live Campaign Simulation with ₹15,000 Ad Spend Budget & Real Search Ads Optimization',
+    tools: ['Google Ads', 'Google Tag Manager', 'Google Keyword Planner', 'SpyFu'],
+  },
+  {
+    id: 'module-4',
+    number: '04',
+    week: 'Weeks 7–8 • 16 Hours',
+    title: 'Meta Ads & Social Media Media Buying',
+    tagline: 'Scale Facebook & Instagram campaigns with Advantage+ and creative testing engines.',
+    badgeBg: 'bg-rose-50',
     badgeText: 'text-[#E11D48]',
-    circleBg: 'bg-[#FFEBF0]',
-    title: 'Social Media Marketing & Personal Branding',
-    description:
-      'Learn social media strategy, content planning, audience growth, personal branding and platform-specific marketing.',
-    renderIcon: () => (
-      <div
-        className="flex flex-col items-center justify-center gap-1"
-        aria-hidden="true"
-      >
-        <svg
-          className="w-4 h-4 text-[#E1306C]"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-        </svg>
-      </div>
-    ),
+    accentColor: '#E11D48',
+    icon: <Share2 className="w-5 h-5 text-[#E11D48]" />,
+    topics: [
+      'Meta Business Manager architecture, Pixel setup & Conversions API (CAPI)',
+      'Audience segmentation: custom audiences, Lookalikes & broad Advantage+ targeting',
+      'High-ROAS creative testing systems: hooks, ad formats, UGC scripts & carousels',
+      'Ad fatigue management, budget scaling strategies (CBO vs ABO) and ROAS math',
+      'LinkedIn Ads & B2B lead generation funnels for high-ticket clients',
+    ],
+    project: 'End-to-End Meta Ads Campaign Launch with 12 Creative Variations & CAPI Tracking',
+    tools: ['Meta Ads Manager', 'Canva AI', 'CapCut Pro', 'Meta Pixel Helper'],
   },
   {
-    number: '06',
-    badgeBg: 'bg-[#FEF7EA]',
+    id: 'module-5',
+    number: '05',
+    week: 'Weeks 9–10 • 14 Hours',
+    title: 'AI Content Creation, Copywriting & Media Production',
+    tagline: 'Produce viral video scripts, photorealistic visuals and persuasive direct-response copy.',
+    badgeBg: 'bg-amber-50',
     badgeText: 'text-[#D97706]',
-    circleBg: 'bg-[#FEF7EA]',
-    title: 'Web Analytics, GA4 & CRO',
-    description:
-      'Learn GA4, conversion tracking, marketing analytics, reporting, user behavior analysis and conversion rate optimization.',
-    renderIcon: () => (
-      <svg
-        className="w-6 h-6"
-        viewBox="0 0 24 24"
-        fill="none"
-        aria-hidden="true"
-      >
-        <rect x="5" y="14" width="3.2" height="6" rx="1.6" fill="#F59E0B" />
-        <rect x="10.4" y="9" width="3.2" height="11" rx="1.6" fill="#F59E0B" />
-        <rect x="15.8" y="4" width="3.2" height="16" rx="1.6" fill="#F59E0B" />
-      </svg>
-    ),
+    accentColor: '#D97706',
+    icon: <Sparkles className="w-5 h-5 text-[#D97706]" />,
+    topics: [
+      'High-converting copywriting frameworks (PAS, AIDA, Before-After-Bridge)',
+      'AI image generation with Midjourney, DALL-E & Stable Diffusion for ad creatives',
+      'Short-form vertical video production for Instagram Reels, YouTube Shorts & TikTok',
+      'AI voice cloning, automated captioning & video editing workflows',
+      'Automated multi-channel content repurposing engines',
+    ],
+    project: '30-Day Multi-Platform Content Engine with 10 AI-Generated Ad Creatives & Video Scripts',
+    tools: ['Midjourney', 'Claude', 'Canva', 'ElevenLabs', 'Descript'],
   },
   {
-    number: '07',
-    badgeBg: 'bg-[#EEF4FF]',
-    badgeText: 'text-[#1E60F2]',
-    circleBg: 'bg-[#EEF4FF]',
-    title: 'Executive Digital Leadership Program',
-    description:
-      'Develop digital strategy, marketing leadership, growth planning, analytics and AI adoption skills for business and management roles.',
-    renderIcon: () => (
-      <svg
-        className="w-6 h-6 text-[#1E60F2]"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-        <circle cx="9" cy="7" r="4" />
-        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-      </svg>
-    ),
-  },
-  {
-    number: '08',
-    badgeBg: 'bg-[#EAFBF3]',
+    id: 'module-6',
+    number: '06',
+    week: 'Weeks 11–12 • 14 Hours',
+    title: 'Web Analytics, GA4 & Conversion Rate Optimization (CRO)',
+    tagline: 'Track visitor journeys, analyze user behavior and turn clicks into paying customers.',
+    badgeBg: 'bg-emerald-50',
     badgeText: 'text-[#10B981]',
-    circleBg: 'bg-[#EAFBF3]',
-    title: 'Freelancing & Digital Agency Blueprint',
-    description:
-      'Learn how to launch a digital marketing agency in Okhla or New Delhi, win high-ticket clients, deliver campaigns, and scale freelance revenue.',
-    renderIcon: () => (
-      <svg
-        className="w-6 h-6 fill-[#10B981]"
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-      >
-        <path d="M20 6h-3V4c0-1.1-.9-2-2-2h-6c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-11-2h6v2H9V4zm11 15H4v-9h16v9zm0-11H4V8h16v2z" />
-      </svg>
-    ),
+    accentColor: '#10B981',
+    icon: <BarChart3 className="w-5 h-5 text-[#10B981]" />,
+    topics: [
+      'Google Analytics 4 (GA4) setup, data streams, custom events & dimensions',
+      'Funnel exploration reports, path analysis & cross-channel attribution modeling',
+      'Heatmaps, session replays and scroll depth analysis using Hotjar & Clarity',
+      'Landing page CRO audits, friction reduction and high-converting UX principles',
+      'Interactive business dashboard creation in Looker Studio for executive reporting',
+    ],
+    project: 'Interactive Looker Studio Executive Dashboard & CRO Landing Page Teardown',
+    tools: ['Google Analytics 4', 'Looker Studio', 'Microsoft Clarity', 'Hotjar'],
+  },
+  {
+    id: 'module-7',
+    number: '07',
+    week: 'Weeks 13–14 • 12 Hours',
+    title: 'Marketing Automation, WhatsApp & CRM Workflows',
+    tagline: 'Build automated lead nurture sequences, CRM pipelines and multi-app integrations.',
+    badgeBg: 'bg-cyan-50',
+    badgeText: 'text-[#0891B2]',
+    accentColor: '#0891B2',
+    icon: <Zap className="w-5 h-5 text-[#0891B2]" />,
+    topics: [
+      'Automated marketing pipelines connecting landing pages, ads, and CRMs',
+      'Zapier & Make.com multi-step automations to eliminate manual lead handling',
+      'WhatsApp Business API integration, automated chatbots & broadcasting rules',
+      'Email marketing automation: welcome sequences, cart abandonment & drip campaigns',
+      'Lead qualification, lead scoring and pipeline management in HubSpot CRM',
+    ],
+    project: 'Zero-Touch Automated Lead Pipeline with WhatsApp & Email Auto-Nurture Triggers',
+    tools: ['Zapier', 'Make.com', 'HubSpot', 'Brevo', 'Wati'],
+  },
+  {
+    id: 'module-8',
+    number: '08',
+    week: 'Weeks 15–16 • 15 Hours',
+    title: 'Live Agency Capstone, Freelance Blueprint & Placement',
+    tagline: 'Execute real client briefs, pitch high-ticket retainers and ace top hiring interviews.',
+    badgeBg: 'bg-indigo-50',
+    badgeText: 'text-[#4F46E5]',
+    accentColor: '#4F46E5',
+    icon: <Briefcase className="w-5 h-5 text-[#4F46E5]" />,
+    topics: [
+      'Executing a live agency capstone project with real deliverables and client KPI presentation',
+      'Freelance agency blueprint: service packaging, pricing models & high-ticket proposal pitch decks',
+      'International client outreach strategies using LinkedIn and personal branding',
+      'Portfolio building, live campaign case study documentation and GitHub/deck showcase',
+      '1-on-1 resume reviews, mock interviews with digital marketing managers & placement drives',
+    ],
+    project: 'Complete Agency Pitch Deck & Live Portfolio Presentation for Hiring Managers',
+    tools: ['LinkedIn Sales Navigator', 'Pitch', 'Loom', 'Google Workspace'],
   },
 ];
 
-/* =========================================================
-   CURRICULUM SECTION (4x2 GRID - REFERENCE MATCH)
-========================================================= */
-
 export const CourseSection: React.FC<CourseSectionProps> = ({
   onOpenApply,
+  onOpenBrochure,
   isStandalonePage = false,
 }) => {
+  const shouldReduceMotion = useReducedMotion();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const DEFAULT_POSTER =
+    'https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1600&auto=format&fit=crop';
+
+  const [posterUrl, setPosterUrl] = useState<string>(DEFAULT_POSTER);
+  const [isCustomPoster, setIsCustomPoster] = useState<boolean>(false);
+  const [showUrlPrompt, setShowUrlPrompt] = useState<boolean>(false);
+  const [urlInput, setUrlInput] = useState<string>('');
+  const [isPreviewOpen, setIsPreviewOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('cbm_course_landscape_poster');
+      if (saved) {
+        setPosterUrl(saved);
+        setIsCustomPoster(true);
+      }
+    } catch {
+      // localStorage may fail in private mode
+    }
+  }, []);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          setPosterUrl(reader.result);
+          setIsCustomPoster(true);
+          try {
+            localStorage.setItem('cbm_course_landscape_poster', reader.result);
+          } catch {
+            // ignore quota errors
+          }
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleUrlSubmit = () => {
+    if (urlInput.trim()) {
+      setPosterUrl(urlInput.trim());
+      setIsCustomPoster(true);
+      try {
+        localStorage.setItem('cbm_course_landscape_poster', urlInput.trim());
+      } catch {
+        // ignore quota errors
+      }
+      setShowUrlPrompt(false);
+      setUrlInput('');
+    }
+  };
+
+  const handleResetPoster = () => {
+    setPosterUrl(DEFAULT_POSTER);
+    setIsCustomPoster(false);
+    try {
+      localStorage.removeItem('cbm_course_landscape_poster');
+    } catch {
+      // ignore
+    }
+  };
+
+  const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>({
+    'module-1': true,
+    'module-2': true,
+  });
+
+  const toggleModule = (id: string) => {
+    setExpandedModules((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  const expandAll = () => {
+    const all: Record<string, boolean> = {};
+    COURSE_MODULES.forEach((m) => {
+      all[m.id] = true;
+    });
+    setExpandedModules(all);
+  };
+
+  const collapseAll = () => {
+    setExpandedModules({});
+  };
+
   return (
     <>
       <section
         id="course"
-        className="relative overflow-hidden bg-[#FAFAFA] pt-12 sm:pt-16 pb-12 sm:pb-16 border-b border-slate-100"
+        className="relative overflow-hidden bg-[#FAFAFA] pt-12 sm:pt-16 pb-10 sm:pb-14"
       >
-
-        <div className="relative z-10 mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
-          {/* HEADER */}
-          <div className="mx-auto max-w-5xl text-center mb-8 sm:mb-10">
-            <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-orange-50 text-[#FF6B00] text-xs font-bold uppercase tracking-wider border border-orange-200 mb-3">
-              DIGITAL MARKETING COURSES
+        <div className="relative z-10 mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-8">
+          
+          {/* =========================================================
+              COURSE HERO / HEADER
+              ========================================================= */}
+          <div className="mx-auto max-w-4xl text-center mb-8 sm:mb-10">
+            
+            {/* Top Pill */}
+            <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-orange-50 text-[#FF6B00] text-xs font-bold uppercase tracking-wider border border-orange-200 mb-3.5">
+              <Sparkles className="w-3.5 h-3.5 text-[#FF6B00]" />
+              <span>FLAGSHIP MASTER PROGRAM</span>
             </div>
+
+            {/* Main Course Title */}
             {isStandalonePage ? (
-              <h1 className="text-2xl sm:text-3xl md:text-[34px] lg:text-[40px] font-extrabold tracking-tight leading-tight text-[#072B57]">
-                Digital Marketing Courses in Delhi
+              <h1 className="text-3xl sm:text-4xl lg:text-[44px] xl:text-[48px] font-black tracking-tight leading-[1.12] text-[#072B57]">
+                AI Pro <span className="text-[#FF6B00]">Digital Marketing Course</span>
               </h1>
             ) : (
-              <h2 className="text-2xl sm:text-3xl md:text-[34px] lg:text-[40px] font-extrabold tracking-tight leading-tight text-[#072B57]">
-                Industry-Focused{' '}
-                <span className="text-[#FF6B00]">Digital Marketing Courses</span>
+              <h2 className="text-3xl sm:text-4xl lg:text-[44px] xl:text-[48px] font-black tracking-tight leading-[1.12] text-[#072B57]">
+                AI Pro <span className="text-[#FF6B00]">Digital Marketing Course</span>
               </h2>
             )}
 
-            <p className="mt-3 text-sm sm:text-base font-normal text-slate-600 max-w-3xl mx-auto leading-relaxed">
-              Explore practical digital marketing courses covering SEO, performance marketing, Google Ads, Meta Ads, social media marketing, analytics, AI marketing and digital growth strategies.
+            {/* Subtitle / Overview */}
+            <p className="mt-3.5 text-sm sm:text-base md:text-[17px] font-normal text-slate-600 max-w-3xl mx-auto leading-relaxed">
+              A comprehensive 16-week, practical curriculum engineered for modern careers. Master generative AI tools, performance marketing, search intelligence, full-funnel growth and live agency campaign execution.
             </p>
 
-            {/* Accent divider pill */}
-            <div className="w-12 h-1 bg-[#FF6B00] rounded-full mx-auto mt-4" />
+            {/* Primary Action Buttons */}
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+              <button
+                type="button"
+                onClick={() => onOpenApply?.('AI Pro Digital Marketing Course')}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#FF6B00] px-6 sm:px-7 py-3 sm:py-3.5 text-sm sm:text-base font-bold text-white shadow-md hover:bg-[#e05f00] hover:shadow-lg transition-all active:scale-98 cursor-pointer"
+              >
+                <span>Enroll in AI Pro Course</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onOpenBrochure?.()}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 sm:px-6 py-3 sm:py-3.5 text-sm sm:text-base font-bold text-[#072B57] border border-slate-200 shadow-2xs hover:bg-slate-50 hover:border-slate-300 transition-all cursor-pointer"
+              >
+                <Download className="w-4 h-4 text-[#FF6B00]" />
+                <span>Download Detailed Syllabus (PDF)</span>
+              </button>
+            </div>
           </div>
 
-          {/* 4x2 MODULE GRID */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
-            {modules.map((module) => (
-              <article
-                key={module.number}
-                className="bg-white rounded-2xl border border-slate-200/90 shadow-[0_2px_8px_rgba(0,0,0,0.03)] p-6 sm:p-7 flex flex-col justify-start h-full hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-300 group"
-              >
-                {/* Top Row: Number Badge & Circular Icon */}
-                <div className="flex items-center justify-between">
-                  <span
-                    className={`inline-flex items-center justify-center px-2.5 py-1 rounded-md text-xs sm:text-[13px] font-bold leading-none ${module.badgeBg} ${module.badgeText}`}
-                  >
-                    {module.number}
-                  </span>
+          {/* =========================================================
+              LANDSCAPE COURSE POSTER SPACE
+              ========================================================= */}
+          <div className="mb-10 sm:mb-12 relative rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/90 bg-slate-900 shadow-lg group">
+            
+            {/* Aspect Ratio Landscape Frame */}
+            <div className="relative w-full aspect-[16/7.5] sm:aspect-[16/6.5] lg:aspect-[21/8] min-h-[250px] sm:min-h-[350px] lg:min-h-[420px] overflow-hidden bg-slate-950">
+              <img
+                src={posterUrl}
+                alt="AI Pro Digital Marketing Course Landscape Poster"
+                className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.02]"
+              />
 
-                  <div
-                    className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${module.circleBg} border border-slate-100 group-hover:scale-105 transition-transform duration-300`}
-                  >
-                    {module.renderIcon()}
-                  </div>
+              {/* Gradient Overlay for Sleek Contrast */}
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-black/25 pointer-events-none" />
+
+              {/* Top Bar: Live Badge & Poster Control Toolbar */}
+              <div className="absolute top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-4 flex items-center justify-between gap-2 z-10 pointer-events-auto">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#072B57]/85 backdrop-blur-md border border-white/20 text-white text-[11px] sm:text-xs font-bold uppercase tracking-wider shadow-sm">
+                  <span className="w-2 h-2 rounded-full bg-[#FF6B00] animate-pulse" />
+                  <span>COURSE POSTER (LANDSCAPE)</span>
                 </div>
 
-                {/* Bold Module Title */}
-                <h3 className="mt-5 sm:mt-6 text-[17px] sm:text-[18px] font-bold text-[#072B57] group-hover:text-[#FF6B00] transition-colors leading-[1.3]">
-                  {module.title}
-                </h3>
+                {/* Poster Action Controls */}
+                <div className="flex items-center gap-1.5 sm:gap-2 bg-black/65 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-white/15 shadow-md">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    title="Upload or Change Course Poster"
+                    className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-[#FF6B00] hover:bg-[#e05f00] text-white text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>Post / Change Poster</span>
+                  </button>
 
-                {/* Short Description */}
-                <p className="mt-2 text-[13px] sm:text-[13.5px] text-slate-500 leading-[1.55]">
-                  {module.description}
-                </p>
-              </article>
-            ))}
-          </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowUrlPrompt((prev) => !prev)}
+                    title="Enter Image URL"
+                    className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-medium transition-colors cursor-pointer"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline ml-1">URL</span>
+                  </button>
 
-          {/* Internal Links for SEO & Navigation */}
-          <div className="mt-10 pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4 text-xs font-semibold text-slate-600">
-            <div className="flex flex-wrap items-center gap-3">
-              <span>Related Resources:</span>
-              <a href="#blogs" className="text-[#FF6B00] hover:underline">
-                Digital Marketing & AI Insights
-              </a>
-              <span>&bull;</span>
-              <a href="#webinars" className="text-[#FF6B00] hover:underline">
-                Upcoming Webinars & Masterclasses
-              </a>
-              <span>&bull;</span>
-              <a href="#about" className="text-[#072B57] hover:underline">
-                About CBM Academy
-              </a>
+                  {isCustomPoster && (
+                    <button
+                      type="button"
+                      onClick={handleResetPoster}
+                      title="Reset to Default"
+                      className="p-1.5 sm:px-2 sm:py-1.5 rounded-lg bg-white/10 hover:bg-rose-500/80 text-white text-xs font-medium transition-colors cursor-pointer"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => setIsPreviewOpen(true)}
+                    title="View Fullscreen"
+                    className="p-1.5 sm:px-2 sm:py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-medium transition-colors cursor-pointer"
+                  >
+                    <Maximize2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Bottom Poster Caption & Meta */}
+              <div className="absolute bottom-3 sm:bottom-5 left-3 sm:left-6 right-3 sm:right-6 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-3 z-10">
+                <div className="max-w-2xl">
+                  <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-md bg-[#FF6B00]/95 text-white text-[11px] font-black uppercase tracking-wider mb-1.5 shadow-xs">
+                    OFFICIAL COURSE SYLLABUS POSTER
+                  </div>
+                  <h3 className="text-lg sm:text-2xl lg:text-3xl font-black text-white tracking-tight drop-shadow-md">
+                    AI Pro Digital Marketing Course
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-200 font-medium line-clamp-1 sm:line-clamp-none drop-shadow-xs">
+                    16 Weeks • 120+ Practical Hours • 25+ AI Tools • Live Client Ad Spend • 100% Placement Support
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => onOpenApply?.('AI Pro Digital Marketing Course')}
+                  className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-[#072B57] hover:bg-[#FF6B00] hover:text-white font-bold text-xs sm:text-sm transition-all shadow-md shrink-0 cursor-pointer"
+                >
+                  <span>Enroll Now</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Hidden File Input for Native File Browser */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+                aria-label="Upload Course Poster Image"
+              />
             </div>
-            <a href="#contact" className="text-[#072B57] hover:text-[#FF6B00] transition-colors inline-flex items-center gap-1 font-bold">
-              <span>Have Questions? Contact CBM Academy</span>
-              &rarr;
-            </a>
+
+            {/* Optional URL Input Popover */}
+            {showUrlPrompt && (
+              <div className="p-3 sm:p-4 bg-slate-900 border-t border-white/10 flex flex-wrap items-center gap-2 text-white">
+                <span className="text-xs font-semibold text-slate-300">Image URL:</span>
+                <input
+                  type="url"
+                  value={urlInput}
+                  onChange={(e) => setUrlInput(e.target.value)}
+                  placeholder="https://example.com/course-poster-landscape.jpg"
+                  className="flex-1 min-w-[220px] px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#FF6B00]"
+                />
+                <button
+                  type="button"
+                  onClick={handleUrlSubmit}
+                  className="px-3.5 py-1.5 rounded-lg bg-[#FF6B00] hover:bg-[#e05f00] text-xs font-bold text-white transition-colors cursor-pointer"
+                >
+                  Save Poster
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowUrlPrompt(false)}
+                  className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            )}
           </div>
+
+          {/* Fullscreen Poster Modal */}
+          {isPreviewOpen && (
+            <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+              <div className="relative max-w-6xl w-full max-h-[90vh] flex flex-col items-center">
+                <button
+                  type="button"
+                  onClick={() => setIsPreviewOpen(false)}
+                  className="absolute -top-12 right-0 p-2 text-white hover:text-[#FF6B00] transition-colors cursor-pointer"
+                  aria-label="Close Preview"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+                <img
+                  src={posterUrl}
+                  alt="Landscape Poster Preview"
+                  className="max-w-full max-h-[85vh] object-contain rounded-xl border border-white/20 shadow-2xl"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* =========================================================
+              COURSE QUICK HIGHLIGHTS / STATS BAR
+              ========================================================= */}
+          <div className="mb-10 sm:mb-12 bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 sm:p-6 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
+            
+            <div className="flex items-center gap-3 sm:gap-3.5 pt-2 sm:pt-0 sm:px-2">
+              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#FF6B00] shrink-0">
+                <Clock className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="block text-xs text-slate-500 font-medium">Duration</span>
+                <span className="text-sm sm:text-base font-bold text-[#072B57]">16 Weeks / 120+ Hrs</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 sm:gap-3.5 pt-3 sm:pt-0 sm:px-4">
+              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-[#1E60F2] shrink-0">
+                <Wrench className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="block text-xs text-slate-500 font-medium">Tools &amp; AI</span>
+                <span className="text-sm sm:text-base font-bold text-[#072B57]">25+ Industry Tools</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 sm:gap-3.5 pt-3 sm:pt-0 sm:px-4">
+              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-[#10B981] shrink-0">
+                <Layers className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="block text-xs text-slate-500 font-medium">Practical Work</span>
+                <span className="text-sm sm:text-base font-bold text-[#072B57]">10+ Live Projects</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 sm:gap-3.5 pt-3 sm:pt-0 sm:px-4">
+              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center text-[#7C3AED] shrink-0">
+                <Award className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="block text-xs text-slate-500 font-medium">Credentials</span>
+                <span className="text-sm sm:text-base font-bold text-[#072B57]">Dual Certifications</span>
+              </div>
+            </div>
+
+          </div>
+
+          {/* =========================================================
+              MODULES CURRICULUM SECTION
+              ========================================================= */}
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 pb-4">
+            <div>
+              <h3 className="text-xl sm:text-2xl font-black text-[#072B57] tracking-tight">
+                Curriculum Modules <span className="text-slate-400 font-medium text-base">(8 Modules • 16 Weeks)</span>
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                Step-by-step syllabus from fundamentals to high-growth campaign execution.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 text-xs font-bold">
+              <button
+                type="button"
+                onClick={expandAll}
+                className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:text-[#072B57] hover:border-slate-300 transition-colors cursor-pointer"
+              >
+                Expand All
+              </button>
+              <button
+                type="button"
+                onClick={collapseAll}
+                className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:text-[#072B57] hover:border-slate-300 transition-colors cursor-pointer"
+              >
+                Collapse All
+              </button>
+            </div>
+          </div>
+
+          {/* MODULE ACCORDION / EXPANDABLE LIST */}
+          <div className="space-y-4">
+            {COURSE_MODULES.map((module, index) => {
+              const isExpanded = !!expandedModules[module.id];
+
+              return (
+                <motion.div
+                  key={module.id}
+                  initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-40px' }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                  className="rounded-2xl bg-white border border-slate-200/90 shadow-2xs overflow-hidden transition-all duration-200 hover:border-slate-300"
+                >
+                  {/* Module Header Bar (Clickable) */}
+                  <button
+                    type="button"
+                    onClick={() => toggleModule(module.id)}
+                    aria-expanded={isExpanded}
+                    className="w-full p-4 sm:p-5 flex items-start sm:items-center justify-between gap-4 text-left cursor-pointer hover:bg-slate-50/70 transition-colors"
+                  >
+                    <div className="flex items-start sm:items-center gap-3.5 sm:gap-4 min-w-0">
+                      
+                      {/* Module Number & Icon */}
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span
+                          className={`inline-flex items-center justify-center px-2.5 py-1 rounded-md text-xs font-black tracking-wider uppercase ${module.badgeBg} ${module.badgeText}`}
+                        >
+                          MODULE {module.number}
+                        </span>
+                      </div>
+
+                      {/* Title & Tagline */}
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h4 className="text-base sm:text-lg font-bold text-[#072B57] leading-snug">
+                            {module.title}
+                          </h4>
+                          <span className="hidden sm:inline-flex text-[11px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+                            {module.week}
+                          </span>
+                        </div>
+                        <p className="text-xs sm:text-[13px] text-slate-500 font-normal mt-0.5 line-clamp-1 sm:line-clamp-none">
+                          {module.tagline}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Expand/Collapse Chevron */}
+                    <div className="shrink-0 flex items-center gap-2 pt-0.5 sm:pt-0">
+                      <span className="sm:hidden text-[10.5px] font-semibold text-slate-500">
+                        {module.week}
+                      </span>
+                      <div
+                        className={`w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 transition-transform duration-200 ${
+                          isExpanded ? 'rotate-180 bg-slate-100' : 'bg-white'
+                        }`}
+                      >
+                        <ChevronDown className="w-4 h-4" />
+                      </div>
+                    </div>
+                  </button>
+
+                  {/* Expanded Module Details */}
+                  {isExpanded && (
+                    <div className="px-4 sm:px-6 pb-5 pt-1 border-t border-slate-100/90 bg-slate-50/40">
+                      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 pt-3">
+                        
+                        {/* Left: Learning Topics */}
+                        <div className="lg:col-span-7 space-y-2.5">
+                          <span className="text-xs font-bold uppercase tracking-wider text-slate-600 block">
+                            Key Competencies &amp; Topics:
+                          </span>
+                          <ul className="space-y-2">
+                            {module.topics.map((topic, i) => (
+                              <li key={i} className="flex items-start gap-2.5 text-xs sm:text-[13.5px] text-slate-700 leading-relaxed">
+                                <CheckCircle2 className="w-4 h-4 text-[#FF6B00] shrink-0 mt-0.5" />
+                                <span>{topic}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        {/* Right: Hands-on Project & Tools */}
+                        <div className="lg:col-span-5 flex flex-col justify-between gap-4 p-4 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+                          {/* Project Box */}
+                          <div>
+                            <div className="flex items-center gap-1.5 text-xs font-bold text-[#072B57] uppercase tracking-wider mb-1.5">
+                              <Target className="w-3.5 h-3.5 text-[#FF6B00]" />
+                              <span>Hands-on Live Project:</span>
+                            </div>
+                            <p className="text-xs sm:text-[13px] text-slate-700 font-medium leading-relaxed bg-orange-50/50 p-2.5 rounded-lg border border-orange-100/70">
+                              {module.project}
+                            </p>
+                          </div>
+
+                          {/* Tools Box */}
+                          <div>
+                            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">
+                              Tools &amp; Platforms Mastered:
+                            </span>
+                            <div className="flex flex-wrap gap-1.5">
+                              {module.tools.map((t) => (
+                                <span
+                                  key={t}
+                                  className="text-[11px] font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-2 py-0.5 rounded-md transition-colors"
+                                >
+                                  {t}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              );
+            })}
+          </div>
+
+          {/* =========================================================
+              BOTTOM SYLLABUS CTA BANNER
+              ========================================================= */}
+          <div className="mt-10 sm:mt-12 rounded-2xl bg-gradient-to-r from-[#072B57] to-[#0A3D7C] text-white p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-md">
+            <div>
+              <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-orange-500/20 text-[#FF6B00] text-xs font-bold uppercase tracking-wider border border-orange-400/30 mb-2">
+                NEXT COHORT ADMISSIONS OPEN
+              </span>
+              <h4 className="text-xl sm:text-2xl font-black tracking-tight leading-snug">
+                Ready to Become an AI-Powered Digital Marketer?
+              </h4>
+              <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-xl">
+                Seats are limited to 20 learners per batch for personalized campaign mentorship and agency internship access.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3 shrink-0 w-full md:w-auto">
+              <button
+                type="button"
+                onClick={() => onOpenApply?.('AI Pro Digital Marketing Course')}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#FF6B00] text-white font-bold text-sm hover:bg-[#e05f00] shadow-md transition-all active:scale-98 cursor-pointer"
+              >
+                <span>Apply for Upcoming Batch</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onOpenBrochure?.()}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold text-sm border border-white/20 transition-all cursor-pointer"
+              >
+                <Download className="w-4 h-4 text-[#FF6B00]" />
+                <span>Get Syllabus</span>
+              </button>
+            </div>
+          </div>
+
         </div>
       </section>
 
-      {/* =================================================
-          AI & MARKETING TOOLS (UNCHANGED)
-      ================================================= */}
+      {/* =========================================================
+          AI & MARKETING TOOLS (SEAMLESSLY INTEGRATED BELOW)
+          ========================================================= */}
       <AITools onOpenApply={onOpenApply} />
     </>
   );
 };
+

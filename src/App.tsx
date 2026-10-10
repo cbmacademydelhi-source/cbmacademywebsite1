@@ -37,9 +37,9 @@ const PAGE_SEO_MAP: Record<string, PageSeoConfig> = {
     canonical: 'https://cbmacademy.in/',
   },
   course: {
-    title: 'Best Digital Marketing Courses in Delhi | CBM Academy',
+    title: 'AI Pro Digital Marketing Course | CBM Academy',
     description:
-      'Explore practical digital marketing courses in Delhi covering SEO, Google Ads, Meta Ads, social media, performance marketing, analytics and AI marketing.',
+      'Explore practical AI Pro Digital Marketing Course covering SEO, Google Ads, Meta Ads, social media, performance marketing, analytics and AI marketing.',
     canonical: 'https://cbmacademy.in/course',
   },
   webinars: {

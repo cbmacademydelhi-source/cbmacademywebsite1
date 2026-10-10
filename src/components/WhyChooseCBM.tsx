@@ -261,7 +261,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
         {/* =========================================================
             WHY CHOOSE CBM ACADEMY HEADING AREA
         ========================================================= */}
-        <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-10">
+        <div className="max-w-5xl mx-auto text-center mb-8 sm:mb-10">
           {/* Top Pill with Parallel Golden Horizontal Lines */}
           <motion.div
             initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
@@ -290,16 +290,16 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
             </div>
           </motion.div>
 
-          {/* Main Heading */}
+          {/* Main Heading - In single line */}
           <motion.h3
             initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={VIEWPORT_ONCE}
             transition={{ duration: 0.5, delay: 0.08, ease: SMOOTH_EASE_OUT }}
-            className="text-2xl sm:text-3xl lg:text-[36px] font-black text-[#072B57] tracking-tight leading-[1.15]"
+            className="text-lg min-[480px]:text-xl sm:text-2xl md:text-[28px] lg:text-[33px] xl:text-[36px] font-black text-[#072B57] tracking-tight leading-snug sm:whitespace-nowrap"
           >
             Practical Digital Marketing Training for{' '}
-            <span className="text-[#FF6B00]">Career Growth</span>
+            <span className="text-[#FF6B00] whitespace-nowrap">Career Growth</span>
           </motion.h3>
 
           {/* Subtitle */}
