@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import { ArrowRight, Download, Sparkles, Target, TrendingUp, Briefcase } from 'lucide-react';
+import { ArrowRight, Download, Upload, RotateCcw, X, CheckCircle2 } from 'lucide-react';
 import { SMOOTH_EASE_OUT, VIEWPORT_ONCE } from '../lib/animations';
 
 interface WhyChooseCBMProps {
@@ -100,6 +100,70 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
   onOpenBrochure,
 }) => {
   const shouldReduceMotion = useReducedMotion();
+  const bannerInputRef = useRef<HTMLInputElement>(null);
+
+  const DEFAULT_BANNER =
+    'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1600&auto=format&fit=crop';
+
+  const [bannerUrl, setBannerUrl] = useState<string>(DEFAULT_BANNER);
+  const [isCustomBanner, setIsCustomBanner] = useState<boolean>(false);
+  const [showUrlPrompt, setShowUrlPrompt] = useState<boolean>(false);
+  const [urlInput, setUrlInput] = useState<string>('');
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('cbm_mid_page_banner');
+      if (saved) {
+        setBannerUrl(saved);
+        setIsCustomBanner(true);
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  const handleBannerUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          setBannerUrl(reader.result);
+          setIsCustomBanner(true);
+          try {
+            localStorage.setItem('cbm_mid_page_banner', reader.result);
+          } catch {
+            // ignore
+          }
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleUrlSubmit = () => {
+    if (urlInput.trim()) {
+      setBannerUrl(urlInput.trim());
+      setIsCustomBanner(true);
+      try {
+        localStorage.setItem('cbm_mid_page_banner', urlInput.trim());
+      } catch {
+        // ignore
+      }
+      setShowUrlPrompt(false);
+      setUrlInput('');
+    }
+  };
+
+  const handleResetBanner = () => {
+    setBannerUrl(DEFAULT_BANNER);
+    setIsCustomBanner(false);
+    try {
+      localStorage.removeItem('cbm_mid_page_banner');
+    } catch {
+      // ignore
+    }
+  };
 
   return (
     <section
@@ -150,56 +214,12 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
                   referrerPolicy="no-referrer"
                   className="w-full h-72 sm:h-84 lg:h-96 object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                
-                {/* Subtle Navy Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#072B57]/80 via-[#072B57]/20 to-transparent pointer-events-none" />
 
-                {/* Bottom Overlay Badge */}
-                <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 text-white p-3 sm:p-3.5 rounded-xl bg-[#072B57]/85 backdrop-blur-md border border-white/10">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-[11px] font-bold tracking-wider text-[#FF6B00] uppercase block">
-                        CBM Classroom &amp; Projects
-                      </span>
-                      <p className="text-xs sm:text-sm font-semibold text-white">Interactive Training with Real Campaigns</p>
-                    </div>
-                    <span className="hidden sm:inline-flex items-center gap-1 bg-emerald-500/20 text-emerald-300 text-xs px-2.5 py-1 rounded-full font-bold">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> Active
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Floating Card 1: Practical Focus (Top Left) */}
-              <div className="absolute -top-1 sm:top-0 -left-1 sm:-left-2 bg-white/95 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl border border-slate-200/80 shadow-xl flex items-center gap-2.5 z-10">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#FF6B00] shrink-0">
-                  <Target className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
-                </div>
-                <div>
-                  <div className="text-[10px] text-slate-500 font-medium">Hands-On</div>
-                  <div className="text-xs sm:text-sm font-bold text-[#072B57]">Practical Focus</div>
-                </div>
-              </div>
-
-              {/* Floating Card 2: Skill Advancement (Top Right) */}
-              <div className="absolute -top-1 sm:top-2 -right-1 sm:-right-2 bg-white/95 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl border border-slate-200/80 shadow-xl flex items-center gap-2.5 z-10">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-[#072B57] shrink-0">
-                  <TrendingUp className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
-                </div>
-                <div>
-                  <div className="text-[10px] text-slate-500 font-medium">Modern Tools &amp; AI</div>
-                  <div className="text-xs sm:text-sm font-bold text-[#072B57]">Skill Advancement</div>
-                </div>
-              </div>
-
-              {/* Floating Card 3: Career Support (Bottom Right) */}
-              <div className="absolute -bottom-1 sm:bottom-0 -right-1 sm:-right-2 bg-white/95 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl border border-slate-200/80 shadow-xl flex items-center gap-2.5 z-10">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#FF6B00] shrink-0">
-                  <Briefcase className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
-                </div>
-                <div>
-                  <div className="text-[10px] text-slate-500 font-medium">Placement Guidance</div>
-                  <div className="text-xs sm:text-sm font-bold text-[#072B57]">Career Support</div>
+                {/* Single text in bottom */}
+                <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 text-white py-2.5 sm:py-3 px-4 rounded-xl bg-[#072B57]/85 backdrop-blur-md border border-white/10 shadow-lg text-center">
+                  <p className="text-xs sm:text-sm font-semibold text-white tracking-wide">
+                    Interactive Training with Real Campaigns
+                  </p>
                 </div>
               </div>
             </motion.div>
@@ -227,21 +247,53 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
                 <circle cx="50" cy="50" r="26" stroke="#072B57" strokeOpacity="0.08" strokeWidth="1.5" />
               </svg>
 
-              <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-orange-50 text-[#FF6B00] text-xs font-extrabold uppercase tracking-wider border border-orange-200 w-fit">
-                <Sparkles className="w-3.5 h-3.5 text-[#FF6B00]" />
-                <span>PRACTICAL LEARNING</span>
-              </div>
-
-              <h2 className="text-3xl sm:text-4xl lg:text-[44px] xl:text-[48px] font-black text-[#072B57] tracking-tight leading-[1.12]">
+              <h2 className="text-2xl min-[400px]:text-[26px] sm:text-[30px] md:text-[34px] lg:text-[32px] xl:text-[38px] font-black text-[#072B57] tracking-tight leading-tight whitespace-nowrap">
                 Digital Marketing <span className="text-[#FF6B00]">Academy</span>
               </h2>
 
-              <div className="space-y-3.5">
-                <p className="text-base sm:text-[17px] font-semibold text-[#072B57]/90 leading-relaxed">
-                  CBM Academy is a practical digital marketing academy designed for students, freshers, freelancers, entrepreneurs and working professionals. Learn modern digital marketing through hands-on projects, real marketing tools, AI-powered workflows and career-focused training.
+              <div className="space-y-4">
+                <p className="text-sm sm:text-base font-semibold text-[#072B57] leading-relaxed">
+                  Industry-first digital marketing training bridging the gap between classroom theory and live agency execution.
                 </p>
-                <p className="text-[14.5px] sm:text-[15.5px] font-normal text-slate-600 leading-relaxed">
-                  From SEO and Google Ads to Meta Ads, social media marketing, analytics, content marketing and AI automation, our courses help learners build practical skills they can apply in real-world campaigns.
+
+                {/* 4 Organised Key Pillars */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-0.5">
+                  <div className="flex items-start gap-2.5 p-3 rounded-xl bg-white border border-slate-200/90 shadow-2xs h-full">
+                    <CheckCircle2 className="w-4 h-4 text-[#FF6B00] shrink-0 mt-0.5" />
+                    <div>
+                      <span className="block text-xs sm:text-[13px] font-bold text-[#072B57]">Live Campaign Execution</span>
+                      <span className="block text-xs sm:text-[13px] text-slate-500 font-normal leading-relaxed mt-0.5">Real ad budgets, SEO audits &amp; Meta Ads</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-2.5 p-3 rounded-xl bg-white border border-slate-200/90 shadow-2xs h-full">
+                    <CheckCircle2 className="w-4 h-4 text-[#FF6B00] shrink-0 mt-0.5" />
+                    <div>
+                      <span className="block text-xs sm:text-[13px] font-bold text-[#072B57]">AI-Powered Workflows</span>
+                      <span className="block text-xs sm:text-[13px] text-slate-500 font-normal leading-relaxed mt-0.5">Prompt systems, GA4 &amp; marketing automations</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-2.5 p-3 rounded-xl bg-white border border-slate-200/90 shadow-2xs h-full">
+                    <CheckCircle2 className="w-4 h-4 text-[#FF6B00] shrink-0 mt-0.5" />
+                    <div>
+                      <span className="block text-xs sm:text-[13px] font-bold text-[#072B57]">Designed for All Learners</span>
+                      <span className="block text-xs sm:text-[13px] text-slate-500 font-normal leading-relaxed mt-0.5">Students, freshers, freelancers &amp; professionals</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-2.5 p-3 rounded-xl bg-white border border-slate-200/90 shadow-2xs h-full">
+                    <CheckCircle2 className="w-4 h-4 text-[#FF6B00] shrink-0 mt-0.5" />
+                    <div>
+                      <span className="block text-xs sm:text-[13px] font-bold text-[#072B57]">Career &amp; Placement Support</span>
+                      <span className="block text-xs sm:text-[13px] text-slate-500 font-normal leading-relaxed mt-0.5">Interview prep, portfolio building &amp; mentorship</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Scope Coverage Summary */}
+                <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed pt-0.5">
+                  Master SEO, Google Ads, Meta Ads, social media marketing, GA4 analytics, AI automation, and freelance agency blueprints.
                 </p>
               </div>
 
@@ -308,7 +360,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={VIEWPORT_ONCE}
             transition={{ duration: 0.5, delay: 0.15, ease: SMOOTH_EASE_OUT }}
-            className="mt-3 text-slate-600 text-sm sm:text-base font-normal leading-relaxed max-w-2xl mx-auto"
+            className="mt-3 text-slate-600 text-sm sm:text-base font-normal leading-relaxed max-w-2xl mx-auto text-left"
           >
             Learn digital marketing through practical assignments, live campaign simulations, industry tools and AI-powered workflows instead of relying only on classroom theory.
           </motion.p>
@@ -348,33 +400,105 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
           ))}
         </div>
 
-        {/* Mid-Page Conversion CTA: Apply Now & Brochure */}
+        {/* =========================================================
+            UPLOADABLE COURSE BANNER (SAME LANDSCAPE SIZE)
+            ========================================================= */}
         <motion.div
           initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={VIEWPORT_ONCE}
-          transition={{ duration: 0.5, delay: 0.2, ease: SMOOTH_EASE_OUT }}
-          className="mt-10 sm:mt-12 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4"
+          transition={{ duration: 0.5, delay: 0.25, ease: SMOOTH_EASE_OUT }}
+          className="mt-10 sm:mt-12 relative rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/90 bg-white shadow-md group"
         >
-          <button
-            onClick={onOpenApply}
-            id="why-cbm-apply-now-btn"
-            type="button"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-[#FF6B00] hover:bg-[#e05e00] text-white font-bold text-base px-7 py-3.5 rounded-xl shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 transition-all duration-150 active:scale-98 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:ring-offset-2"
-          >
-            <span>Apply Now</span>
-            <ArrowRight className="w-5 h-5" />
-          </button>
+          {/* Same Aspect Ratio Landscape Frame */}
+          <div className="relative w-full aspect-[16/7.5] sm:aspect-[16/6.5] lg:aspect-[21/8] min-h-[240px] sm:min-h-[340px] lg:min-h-[420px] overflow-hidden bg-slate-900">
+            <img
+              src={bannerUrl}
+              alt="Course Banner"
+              className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.01]"
+            />
 
-          <button
-            onClick={onOpenBrochure}
-            id="why-cbm-download-brochure-btn"
-            type="button"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-slate-50 text-[#072B57] font-bold text-base px-6 py-3.5 rounded-xl border border-slate-200 hover:border-slate-300 shadow-sm transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-slate-300"
-          >
-            <Download className="w-5 h-5 text-[#FF6B00]" />
-            <span>Download Brochure</span>
-          </button>
+            {/* If not custom banner yet, show helpful upload invite overlay */}
+            {!isCustomBanner ? (
+              <div
+                onClick={() => bannerInputRef.current?.click()}
+                className="absolute inset-0 bg-[#072B57]/60 backdrop-blur-[2px] flex flex-col items-center justify-center p-6 text-center text-white cursor-pointer hover:bg-[#072B57]/50 transition-colors"
+              >
+                <div className="w-14 h-14 rounded-2xl bg-white/15 border border-white/25 flex items-center justify-center text-white mb-3 shadow-md group-hover:scale-105 transition-transform">
+                  <Upload className="w-7 h-7 text-[#FF6B00]" />
+                </div>
+                <h4 className="text-lg sm:text-2xl font-black tracking-tight text-white mb-1">
+                  Upload Your Course Banner Here
+                </h4>
+                <p className="text-xs sm:text-sm text-slate-200 max-w-md mb-4 font-normal">
+                  Click anywhere on this banner to upload your image (PNG, JPG, WebP)
+                </p>
+                <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#FF6B00] hover:bg-[#e05e00] text-white font-bold text-xs sm:text-sm shadow-md transition-all active:scale-95">
+                  <Upload className="w-4 h-4" />
+                  <span>Choose Banner Image</span>
+                </div>
+              </div>
+            ) : (
+              /* When custom banner is uploaded: Keep only photo, with clean subtle hover controls in top right */
+              <div className="absolute top-3 sm:top-4 right-3 sm:right-4 flex items-center gap-2 z-10 opacity-90 group-hover:opacity-100 transition-opacity">
+                <button
+                  type="button"
+                  onClick={() => bannerInputRef.current?.click()}
+                  title="Change Banner Image"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FF6B00] hover:bg-[#e05e00] text-white text-xs font-bold transition-all shadow-md cursor-pointer active:scale-95"
+                >
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>Change Banner</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleResetBanner}
+                  title="Reset Banner"
+                  className="p-1.5 rounded-lg bg-black/60 hover:bg-rose-600 text-white text-xs transition-colors cursor-pointer"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+
+            {/* Hidden file input */}
+            <input
+              ref={bannerInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleBannerUpload}
+              className="hidden"
+              aria-label="Upload Course Banner Image"
+            />
+          </div>
+
+          {/* Optional URL Input Popover */}
+          {showUrlPrompt && (
+            <div className="p-3 sm:p-4 bg-slate-900 border-t border-white/10 flex flex-wrap items-center gap-2 text-white">
+              <span className="text-xs font-semibold text-slate-300">Banner Image URL:</span>
+              <input
+                type="url"
+                value={urlInput}
+                onChange={(e) => setUrlInput(e.target.value)}
+                placeholder="https://example.com/course-banner.jpg"
+                className="flex-1 min-w-[220px] px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#FF6B00]"
+              />
+              <button
+                type="button"
+                onClick={handleUrlSubmit}
+                className="px-3.5 py-1.5 rounded-lg bg-[#FF6B00] hover:bg-[#e05f00] text-xs font-bold text-white transition-colors cursor-pointer"
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowUrlPrompt(false)}
+                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </motion.div>
       </div>
     </section>

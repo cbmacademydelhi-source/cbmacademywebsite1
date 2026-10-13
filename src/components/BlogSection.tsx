@@ -212,7 +212,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
                   onClick={() => setSelectedPost(null)}
                   className="font-bold text-[#FF6B00] hover:underline inline-flex items-center gap-1"
                 >
-                  <span>Explore Digital Marketing Courses</span>
+                  <span>Explore Courses</span>
                   &rarr;
                 </a>
                 <a

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import {
   Clock,
@@ -17,13 +17,6 @@ import {
   BarChart3,
   Bot,
   Zap,
-  Upload,
-  Image as ImageIcon,
-  Maximize2,
-  RotateCcw,
-  Camera,
-  X,
-  ExternalLink,
 } from 'lucide-react';
 import { AITools } from './AITools';
 
@@ -216,71 +209,22 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
   isStandalonePage = false,
 }) => {
   const shouldReduceMotion = useReducedMotion();
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const DEFAULT_POSTER =
     'https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1600&auto=format&fit=crop';
 
   const [posterUrl, setPosterUrl] = useState<string>(DEFAULT_POSTER);
-  const [isCustomPoster, setIsCustomPoster] = useState<boolean>(false);
-  const [showUrlPrompt, setShowUrlPrompt] = useState<boolean>(false);
-  const [urlInput, setUrlInput] = useState<string>('');
-  const [isPreviewOpen, setIsPreviewOpen] = useState<boolean>(false);
 
   useEffect(() => {
     try {
       const saved = localStorage.getItem('cbm_course_landscape_poster');
       if (saved) {
         setPosterUrl(saved);
-        setIsCustomPoster(true);
       }
     } catch {
       // localStorage may fail in private mode
     }
   }, []);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === 'string') {
-          setPosterUrl(reader.result);
-          setIsCustomPoster(true);
-          try {
-            localStorage.setItem('cbm_course_landscape_poster', reader.result);
-          } catch {
-            // ignore quota errors
-          }
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleUrlSubmit = () => {
-    if (urlInput.trim()) {
-      setPosterUrl(urlInput.trim());
-      setIsCustomPoster(true);
-      try {
-        localStorage.setItem('cbm_course_landscape_poster', urlInput.trim());
-      } catch {
-        // ignore quota errors
-      }
-      setShowUrlPrompt(false);
-      setUrlInput('');
-    }
-  };
-
-  const handleResetPoster = () => {
-    setPosterUrl(DEFAULT_POSTER);
-    setIsCustomPoster(false);
-    try {
-      localStorage.removeItem('cbm_course_landscape_poster');
-    } catch {
-      // ignore
-    }
-  };
 
   const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>({
     'module-1': true,
@@ -364,156 +308,17 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
           </div>
 
           {/* =========================================================
-              LANDSCAPE COURSE POSTER SPACE
+              COURSE POSTER (LANDSCAPE) - PHOTO ONLY
               ========================================================= */}
-          <div className="mb-10 sm:mb-12 relative rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/90 bg-slate-900 shadow-lg group">
-            
-            {/* Aspect Ratio Landscape Frame */}
-            <div className="relative w-full aspect-[16/7.5] sm:aspect-[16/6.5] lg:aspect-[21/8] min-h-[250px] sm:min-h-[350px] lg:min-h-[420px] overflow-hidden bg-slate-950">
+          <div className="mb-10 sm:mb-12 relative rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/90 bg-white shadow-md">
+            <div className="relative w-full aspect-[16/7.5] sm:aspect-[16/6.5] lg:aspect-[21/8] min-h-[240px] sm:min-h-[340px] lg:min-h-[420px] overflow-hidden">
               <img
                 src={posterUrl}
-                alt="AI Pro Digital Marketing Course Landscape Poster"
-                className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.02]"
-              />
-
-              {/* Gradient Overlay for Sleek Contrast */}
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-black/25 pointer-events-none" />
-
-              {/* Top Bar: Live Badge & Poster Control Toolbar */}
-              <div className="absolute top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-4 flex items-center justify-between gap-2 z-10 pointer-events-auto">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#072B57]/85 backdrop-blur-md border border-white/20 text-white text-[11px] sm:text-xs font-bold uppercase tracking-wider shadow-sm">
-                  <span className="w-2 h-2 rounded-full bg-[#FF6B00] animate-pulse" />
-                  <span>COURSE POSTER (LANDSCAPE)</span>
-                </div>
-
-                {/* Poster Action Controls */}
-                <div className="flex items-center gap-1.5 sm:gap-2 bg-black/65 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-white/15 shadow-md">
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    title="Upload or Change Course Poster"
-                    className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-[#FF6B00] hover:bg-[#e05f00] text-white text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
-                  >
-                    <Upload className="w-3.5 h-3.5" />
-                    <span>Post / Change Poster</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setShowUrlPrompt((prev) => !prev)}
-                    title="Enter Image URL"
-                    className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-medium transition-colors cursor-pointer"
-                  >
-                    <ExternalLink className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline ml-1">URL</span>
-                  </button>
-
-                  {isCustomPoster && (
-                    <button
-                      type="button"
-                      onClick={handleResetPoster}
-                      title="Reset to Default"
-                      className="p-1.5 sm:px-2 sm:py-1.5 rounded-lg bg-white/10 hover:bg-rose-500/80 text-white text-xs font-medium transition-colors cursor-pointer"
-                    >
-                      <RotateCcw className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={() => setIsPreviewOpen(true)}
-                    title="View Fullscreen"
-                    className="p-1.5 sm:px-2 sm:py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-medium transition-colors cursor-pointer"
-                  >
-                    <Maximize2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Bottom Poster Caption & Meta */}
-              <div className="absolute bottom-3 sm:bottom-5 left-3 sm:left-6 right-3 sm:right-6 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-3 z-10">
-                <div className="max-w-2xl">
-                  <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-md bg-[#FF6B00]/95 text-white text-[11px] font-black uppercase tracking-wider mb-1.5 shadow-xs">
-                    OFFICIAL COURSE SYLLABUS POSTER
-                  </div>
-                  <h3 className="text-lg sm:text-2xl lg:text-3xl font-black text-white tracking-tight drop-shadow-md">
-                    AI Pro Digital Marketing Course
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-200 font-medium line-clamp-1 sm:line-clamp-none drop-shadow-xs">
-                    16 Weeks • 120+ Practical Hours • 25+ AI Tools • Live Client Ad Spend • 100% Placement Support
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => onOpenApply?.('AI Pro Digital Marketing Course')}
-                  className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-[#072B57] hover:bg-[#FF6B00] hover:text-white font-bold text-xs sm:text-sm transition-all shadow-md shrink-0 cursor-pointer"
-                >
-                  <span>Enroll Now</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* Hidden File Input for Native File Browser */}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                className="hidden"
-                aria-label="Upload Course Poster Image"
+                alt="AI Pro Digital Marketing Course Poster"
+                className="w-full h-full object-cover object-center"
               />
             </div>
-
-            {/* Optional URL Input Popover */}
-            {showUrlPrompt && (
-              <div className="p-3 sm:p-4 bg-slate-900 border-t border-white/10 flex flex-wrap items-center gap-2 text-white">
-                <span className="text-xs font-semibold text-slate-300">Image URL:</span>
-                <input
-                  type="url"
-                  value={urlInput}
-                  onChange={(e) => setUrlInput(e.target.value)}
-                  placeholder="https://example.com/course-poster-landscape.jpg"
-                  className="flex-1 min-w-[220px] px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#FF6B00]"
-                />
-                <button
-                  type="button"
-                  onClick={handleUrlSubmit}
-                  className="px-3.5 py-1.5 rounded-lg bg-[#FF6B00] hover:bg-[#e05f00] text-xs font-bold text-white transition-colors cursor-pointer"
-                >
-                  Save Poster
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowUrlPrompt(false)}
-                  className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            )}
           </div>
-
-          {/* Fullscreen Poster Modal */}
-          {isPreviewOpen && (
-            <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
-              <div className="relative max-w-6xl w-full max-h-[90vh] flex flex-col items-center">
-                <button
-                  type="button"
-                  onClick={() => setIsPreviewOpen(false)}
-                  className="absolute -top-12 right-0 p-2 text-white hover:text-[#FF6B00] transition-colors cursor-pointer"
-                  aria-label="Close Preview"
-                >
-                  <X className="w-6 h-6" />
-                </button>
-                <img
-                  src={posterUrl}
-                  alt="Landscape Poster Preview"
-                  className="max-w-full max-h-[85vh] object-contain rounded-xl border border-white/20 shadow-2xl"
-                />
-              </div>
-            </div>
-          )}
 
           {/* =========================================================
               COURSE QUICK HIGHLIGHTS / STATS BAR

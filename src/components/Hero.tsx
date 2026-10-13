@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import { ArrowRight, Download, CheckCircle2, Briefcase, TrendingUp } from 'lucide-react';
+import { ArrowRight, Download } from 'lucide-react';
 
 interface HeroProps {
   onOpenApply: () => void;
@@ -125,7 +125,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenApply, onOpenBrochure }) => {
                 type="button"
                 className="inline-flex items-center justify-center gap-2.5 bg-[#FF6B00] hover:bg-[#e05e00] text-white font-bold text-base px-7 py-3.5 rounded-xl shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 transition-all duration-150 active:scale-98 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:ring-offset-2"
               >
-                <span>Explore Digital Marketing Courses</span>
+                <span>Explore Courses</span>
                 <ArrowRight className="w-5 h-5" />
               </button>
 
@@ -139,35 +139,9 @@ export const Hero: React.FC<HeroProps> = ({ onOpenApply, onOpenBrochure }) => {
                 <span>Download Brochure</span>
               </button>
             </motion.div>
-
-            {/* Quick Highlights / Trust Badges */}
-            <motion.div
-              initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, delay: 0.39, ease: 'easeOut' }}
-              className="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 border-t border-slate-100"
-            >
-              <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
-                <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                <span>Practical Training</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
-                <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                <span>Live Projects</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
-                <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                <span>AI-Powered Learning</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
-                <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                <span>Career Support</span>
-              </div>
-            </motion.div>
-
           </div>
 
-          {/* Right Column: Realistic Classroom & Practical Training Visual */}
+          {/* Right Column: Realistic Classroom & Practical Training Visual - Photo Only */}
           <div className="lg:col-span-5 relative">
             <div className="relative mx-auto max-w-md lg:max-w-none">
               
@@ -187,59 +161,14 @@ export const Hero: React.FC<HeroProps> = ({ onOpenApply, onOpenBrochure }) => {
                   decoding="async"
                   fetchPriority="high"
                   referrerPolicy="no-referrer"
-                  className="w-full h-80 sm:h-96 object-cover transition-transform duration-500 hover:scale-105"
+                  className="w-full h-80 sm:h-96 lg:h-[420px] object-cover transition-transform duration-500 hover:scale-[1.02]"
                 />
-                
-                {/* Visual Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#072B57]/90 via-[#072B57]/20 to-transparent pointer-events-none" />
 
-                {/* Bottom Overlay Info */}
-                <div className="absolute bottom-4 left-4 right-4 text-white p-4 rounded-xl bg-[#072B57]/80 backdrop-blur-md border border-white/10">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-[11px] font-bold tracking-wider text-[#FF6B00] uppercase block">
-                        CBM Practical Masterclass
-                      </span>
-                      <p className="text-sm font-semibold text-white">Live Campaign Execution & AI Auditing in Okhla</p>
-                    </div>
-                    <div className="text-right">
-                      <span className="inline-flex items-center gap-1 bg-emerald-500/20 text-emerald-300 text-xs px-2.5 py-1 rounded-full font-bold">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> Active Session
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Floating Stat Card 1 (Top Left) */}
-              <motion.div
-                initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.42, ease: 'easeOut' }}
-                className="absolute -top-4 -left-4 bg-white/95 backdrop-blur-md p-3.5 rounded-2xl border border-slate-200/80 shadow-xl hidden sm:flex items-center gap-3"
-              >
-                <div className="w-10 h-10 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#FF6B00]">
-                  <TrendingUp className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-xs text-slate-500 font-medium">Practical Focus</div>
-                  <div className="text-sm font-bold text-[#072B57]">Skill Advancement</div>
-                </div>
-              </motion.div>
-
-              {/* Floating Stat Card 2 (Bottom Right) */}
-              <motion.div
-                initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5, ease: 'easeOut' }}
-                className="absolute -bottom-4 -right-4 bg-white/95 backdrop-blur-md p-3.5 rounded-2xl border border-slate-200/80 shadow-xl hidden sm:flex items-center gap-3"
-              >
-                <div className="w-10 h-10 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#FF6B00]">
-                  <Briefcase className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-xs text-slate-500 font-medium">Career Support</div>
-                  <div className="text-sm font-bold text-[#072B57]">Interview & Prep</div>
+                {/* Single text in bottom */}
+                <div className="absolute bottom-4 left-4 right-4 text-white py-2.5 sm:py-3 px-4 rounded-xl bg-[#072B57]/85 backdrop-blur-md border border-white/10 shadow-lg text-center">
+                  <p className="text-xs sm:text-sm font-semibold text-white tracking-wide">
+                    Live Campaign Execution &amp; AI Auditing in Okhla
+                  </p>
                 </div>
               </motion.div>
 
