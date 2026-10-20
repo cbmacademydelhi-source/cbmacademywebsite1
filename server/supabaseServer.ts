@@ -793,3 +793,48 @@ export async function saveContactSubmission(data: {
     return { success: false, error: err?.message || 'Database insert failed' };
   }
 }
+
+/**
+ * Save application form submission directly to form_submissions table
+ * Columns: Name, Email, Phone, Course, Message
+ */
+export async function saveFormSubmission(data: {
+  Name: string;
+  Email: string;
+  Phone: string;
+  Course: string;
+  Message: string;
+}): Promise<{ success: boolean; id?: string; error?: string }> {
+  const supabase = getSupabaseServer();
+  if (!supabase) {
+    return { success: false, error: 'Supabase server is not configured.' };
+  }
+
+  try {
+    const { data: records, error } = await withTimeout(
+      supabase
+        .from('form_submissions')
+        .insert([
+          {
+            Name: data.Name.trim(),
+            Email: data.Email.trim(),
+            Phone: data.Phone.trim(),
+            Course: data.Course.trim(),
+            Message: data.Message.trim(),
+          },
+        ])
+        .select()
+    );
+
+    if (error) {
+      console.error('[Supabase Server] saveFormSubmission error:', error);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true, id: records?.[0]?.Id || records?.[0]?.id };
+  } catch (err: any) {
+    console.error('[Supabase Server] saveFormSubmission exception:', err);
+    return { success: false, error: err?.message || 'Database insert failed' };
+  }
+}
+

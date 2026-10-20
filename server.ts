@@ -21,6 +21,7 @@ import {
   getAllReminderLogs,
   checkSupabaseHealth,
   saveContactSubmission,
+  saveFormSubmission,
   ServerWebinarRecord,
 } from './server/supabaseServer';
 import {
@@ -169,31 +170,50 @@ app.post('/api/forms/contact', async (req, res) => {
 });
 
 /**
- * COURSE APPLICATION FORM SUBMISSION (Supabase contact_submissions)
+ * COURSE APPLICATION FORM SUBMISSION (Supabase form_submissions)
  */
 app.post('/api/forms/apply', async (req, res) => {
   try {
-    const { fullName, email, phone, qualification, course, message, honeypot } = req.body;
+    const {
+      Name,
+      Email,
+      Phone,
+      Course,
+      Message,
+      fullName,
+      email,
+      phone,
+      qualification,
+      course,
+      message,
+      honeypot,
+    } = req.body;
 
     if (honeypot && String(honeypot).trim() !== '') {
       return res.status(400).json({ success: false, message: 'Spam detected. Submission blocked.' });
     }
 
-    if (!fullName?.trim() || !email?.trim() || !phone?.trim() || !qualification?.trim() || !course?.trim()) {
+    const candidateName = (Name || fullName || '').trim();
+    const candidateEmail = (Email || email || '').trim();
+    const candidatePhone = (Phone || phone || '').trim();
+    const candidateCourse = (Course || course || '').trim();
+    const candidateMessage = (
+      Message ||
+      (qualification
+        ? `Qualification: ${String(qualification).trim()}${message?.trim() ? `\nApplicant Note: ${message.trim()}` : ''}`
+        : (message || 'Course Application'))
+    ).trim();
+
+    if (!candidateName || !candidateEmail || !candidatePhone || !candidateCourse) {
       return res.status(400).json({ success: false, message: 'Please fill in all required fields.' });
     }
 
-    const formattedMessage = [
-      `Application Track: ${course.trim()}`,
-      `Qualification: ${qualification.trim()}`,
-      message?.trim() ? `Applicant Note: ${message.trim()}` : null,
-    ].filter(Boolean).join('\n');
-
-    const result = await saveContactSubmission({
-      fullName: fullName.trim(),
-      email: email.trim(),
-      phone: phone.trim(),
-      message: formattedMessage,
+    const result = await saveFormSubmission({
+      Name: candidateName,
+      Email: candidateEmail,
+      Phone: candidatePhone,
+      Course: candidateCourse,
+      Message: candidateMessage,
     });
 
     if (!result.success) {

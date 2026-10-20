@@ -111,8 +111,89 @@ async function sendNotificationEmail(payload: Record<string, any>): Promise<void
 }
 
 /**
+ * Real Supabase INSERT into 'form_submissions' table using @supabase/supabase-js.
+ * Columns: Name, Email, Phone, Course, Message
+ * First attempts direct insert using the official Supabase client.
+ * If direct insert encounters an RLS policy restriction, safely proxies to
+ * the server endpoint so student submissions are never lost.
+ */
+async function insertIntoFormSubmissions(record: {
+  Name: string;
+  Email: string;
+  Phone: string;
+  Course: string;
+  Message: string;
+}): Promise<{ success: boolean; error?: string }> {
+  let directErrorMsg = "";
+
+  // 1. Direct Supabase Client insertion with @supabase/supabase-js
+  try {
+    const { data, error } = await supabase
+      .from("form_submissions")
+      .insert([
+        {
+          Name: record.Name,
+          Email: record.Email,
+          Phone: record.Phone,
+          Course: record.Course,
+          Message: record.Message,
+        },
+      ])
+      .select();
+
+    if (!error && data && data.length > 0) {
+      return { success: true };
+    }
+
+    if (error) {
+      directErrorMsg = error.message;
+      console.warn("Direct Supabase form_submissions insert note:", error.message);
+    }
+  } catch (err: any) {
+    directErrorMsg = err?.message || "Supabase connection error";
+    console.warn("Direct Supabase form_submissions insert exception:", err);
+  }
+
+  // 2. Server-side proxy insertion fallback (ensures submission succeeds if RLS policy is pending)
+  try {
+    const response = await fetch("/api/forms/apply", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        Name: record.Name,
+        Email: record.Email,
+        Phone: record.Phone,
+        Course: record.Course,
+        Message: record.Message,
+      }),
+    });
+
+    if (response.ok) {
+      const serverResult = await response.json();
+      if (serverResult.success) {
+        return { success: true };
+      }
+      if (serverResult.message) {
+        directErrorMsg = serverResult.message;
+      }
+    }
+  } catch (serverErr) {
+    console.warn("Server fallback insert error:", serverErr);
+  }
+
+  return {
+    success: false,
+    error: directErrorMsg || "Database submission could not be completed.",
+  };
+}
+
+/**
  * Submit Course Application
- * Inserts directly into Supabase 'contact_submissions'
+ * Performs a real Supabase INSERT into the existing 'form_submissions' table.
+ * Fields mapped: Name, Email, Phone, Course, Message.
+ * Shows success ONLY after the Supabase INSERT succeeds.
  */
 export async function submitApplicationForm(
   data: ApplicationFormData
@@ -139,32 +220,39 @@ export async function submitApplicationForm(
     };
   }
 
-  const formattedMessage = [
-    `Application Track: ${data.course.trim()}`,
-    `Qualification: ${data.qualification.trim()}`,
-    data.message?.trim() ? `Applicant Note: ${data.message.trim()}` : null,
-  ]
-    .filter(Boolean)
-    .join("\n");
+  const formattedMessage = data.qualification
+    ? `Qualification: ${data.qualification.trim()}${data.message?.trim() ? `\nApplicant Note: ${data.message.trim()}` : ""}`
+    : (data.message?.trim() || "Course Application");
 
-  // Insert into Supabase contact_submissions table
-  const dbResult = await insertIntoContactSubmissions({
-    full_name: data.fullName.trim(),
-    email: data.email.trim(),
-    phone: data.phone.trim(),
-    message: formattedMessage,
+  // Perform real Supabase INSERT into form_submissions table
+  const dbResult = await insertIntoFormSubmissions({
+    Name: data.fullName.trim(),
+    Email: data.email.trim(),
+    Phone: data.phone.trim(),
+    Course: data.course.trim(),
+    Message: formattedMessage,
   });
 
+  // Success message must appear ONLY after Supabase INSERT succeeds.
+  // If the INSERT fails, return the error.
   if (!dbResult.success) {
     return {
       success: false,
       message:
         dbResult.error ||
-        "We could not save your application at this time. Please check your connection and try again.",
+        "We could not save your application to the database at this time. Please try again.",
     };
   }
 
-  // Send email notification to academy office in background
+  // Also sync to contact_submissions table in background
+  insertIntoContactSubmissions({
+    full_name: data.fullName.trim(),
+    email: data.email.trim(),
+    phone: data.phone.trim(),
+    message: `Application Track: ${data.course.trim()}\n${formattedMessage}`,
+  }).catch(() => {});
+
+  // Keep existing email submission (do not remove it)
   sendNotificationEmail({
     access_key: WEB3FORMS_ACCESS_KEY,
     subject: `New CBM Academy Course Application - ${data.fullName.trim()}`,
@@ -188,6 +276,7 @@ export async function submitApplicationForm(
       "Thank you! Your application has been sent to CBM Academy. Our admissions team will contact you within 24 hours.",
   };
 }
+
 
 /**
  * Submit Contact Inquiry
