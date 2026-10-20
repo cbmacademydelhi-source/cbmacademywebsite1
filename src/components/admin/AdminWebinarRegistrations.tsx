@@ -11,6 +11,9 @@ import {
   Users,
   DollarSign,
   Calendar,
+  Database,
+  Info,
+  ExternalLink,
 } from 'lucide-react';
 import { WebinarRegistration } from '../../types';
 import { fetchAdminRegistrations } from '../../services/webinarRegistrationService';
@@ -26,6 +29,14 @@ export const AdminWebinarRegistrations: React.FC<AdminWebinarRegistrationsProps>
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState<'all' | 'free' | 'paid'>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [configStatus, setConfigStatus] = useState<{
+    supabaseConnected?: boolean;
+    supabaseConfigured?: boolean;
+    supabaseUrl?: string;
+    supabaseError?: string | null;
+    fallbackModeActive?: boolean;
+  } | null>(null);
+  const [showDbHelp, setShowDbHelp] = useState(false);
 
   const loadData = async () => {
     setLoading(true);
@@ -43,6 +54,13 @@ export const AdminWebinarRegistrations: React.FC<AdminWebinarRegistrationsProps>
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetch('/api/webinars/config-status')
+      .then((r) => r.json())
+      .then((data) => setConfigStatus(data))
+      .catch(() => null);
+  }, []);
 
   useEffect(() => {
     loadData();
@@ -111,6 +129,82 @@ export const AdminWebinarRegistrations: React.FC<AdminWebinarRegistrationsProps>
 
   return (
     <div className="space-y-6">
+      {/* Database Connection Status Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
+        <div className="flex items-center gap-3">
+          <div
+            className={`flex h-8 w-8 items-center justify-center rounded-xl ${
+              configStatus?.supabaseConnected ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'
+            }`}
+          >
+            <Database className="h-4 w-4" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-slate-800">
+                {configStatus?.supabaseConnected ? 'Supabase Database: Live Connected' : 'Database: Local & Memory Fallback Engine'}
+              </span>
+              <span
+                className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                  configStatus?.supabaseConnected
+                    ? 'bg-emerald-100 text-emerald-800'
+                    : 'bg-amber-100 text-amber-800'
+                }`}
+              >
+                {configStatus?.supabaseConnected ? 'Live' : 'Fallback Active'}
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-500">
+              {configStatus?.supabaseConnected
+                ? 'Persistent PostgreSQL storage connected & syncing registrations in real-time.'
+                : 'Registrations and attendance are currently managed with in-memory and local storage.'}
+            </p>
+          </div>
+        </div>
+
+        {!configStatus?.supabaseConnected && (
+          <button
+            onClick={() => setShowDbHelp(!showDbHelp)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+          >
+            <Info className="h-3.5 w-3.5 text-slate-500" />
+            {showDbHelp ? 'Hide Setup Guide' : 'How to Connect Supabase'}
+          </button>
+        )}
+      </div>
+
+      {showDbHelp && (
+        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-700 space-y-2">
+          <h4 className="font-bold text-[#072B57]">3 Steps to Connect Your Supabase Database:</h4>
+          <ol className="list-decimal list-inside space-y-1 text-slate-600">
+            <li>
+              Create a free project at{' '}
+              <a href="https://supabase.com" target="_blank" rel="noreferrer" className="text-blue-600 underline font-medium">
+                supabase.com
+              </a>.
+            </li>
+            <li>
+              Copy the complete SQL schema from{' '}
+              <code className="bg-white px-1.5 py-0.5 rounded border border-slate-200 font-mono text-[11px]">
+                supabase_schema.sql
+              </code>{' '}
+              (in the project root) and run it in the Supabase SQL Editor.
+            </li>
+            <li>
+              Set the environment variables{' '}
+              <code className="bg-white px-1.5 py-0.5 rounded border border-slate-200 font-mono text-[11px]">
+                SUPABASE_URL
+              </code>{' '}
+              and{' '}
+              <code className="bg-white px-1.5 py-0.5 rounded border border-slate-200 font-mono text-[11px]">
+                SUPABASE_SERVICE_ROLE_KEY
+              </code>{' '}
+              (or <code className="bg-white px-1.5 py-0.5 rounded border border-slate-200 font-mono text-[11px]">SUPABASE_ANON_KEY</code>).
+            </li>
+          </ol>
+        </div>
+      )}
+
       {/* Top Metric Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">

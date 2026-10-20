@@ -321,7 +321,12 @@ export default function App() {
         return <BlogSection isStandalonePage={true} />;
 
       case 'webinars':
-        return <WebinarsPage />;
+        return (
+          <WebinarsPage
+            onOpenApply={handleOpenApply}
+            onOpenBrochure={handleOpenBrochure}
+          />
+        );
 
       case 'contact':
         return <Contact isStandalonePage={true} />;

@@ -12,6 +12,16 @@ import {
   approveRegistrationPayment,
   markRegistrationPaymentFailed,
   markRegistrationPaymentExpired,
+  markConfirmationEmailSent,
+  toggleRegistrationAttendance,
+  getAllWebinars,
+  getWebinarById,
+  updateWebinarDetails,
+  logReminderAttempt,
+  getAllReminderLogs,
+  checkSupabaseHealth,
+  saveContactSubmission,
+  ServerWebinarRecord,
 } from './server/supabaseServer';
 import {
   isRazorpayConfigured,
@@ -21,9 +31,13 @@ import {
   verifyPaymentSignature,
   createRazorpayQrCode,
   verifyWebhookSignature,
-  getRazorpayClient,
 } from './server/razorpayServer';
-import { sendWebinarConfirmationEmail } from './server/emailServer';
+import {
+  sendWebinarConfirmationEmail,
+  sendWebinarReminderEmail,
+  ReminderType,
+} from './server/emailServer';
+import { WebinarAttendeeRole, WebinarExperienceLevel } from './src/types';
 
 dotenv.config();
 
@@ -70,75 +84,137 @@ app.use(
   })
 );
 
-// Known webinars repository for server-side price validation
-const SERVER_WEBINARS: Record<
-  string,
-  {
-    id: string;
-    title: string;
-    type: 'free' | 'paid';
-    price: number;
-    date: string;
-    time: string;
-    duration: string;
-    max_capacity?: number;
-  }
-> = {
-  'webinar-ai-tools': {
-    id: 'webinar-ai-tools',
-    title: 'AI Tools for Digital Marketing',
-    type: 'free',
-    price: 0,
-    date: '28 September 2026',
-    time: '6:00 PM',
-    duration: '60 Minutes',
-  },
-  'webinar-google-ads': {
-    id: 'webinar-google-ads',
-    title: 'Master Google Ads in 2 Hours',
-    type: 'paid',
-    price: 499,
-    date: '5 October 2026',
-    time: '7:00 PM',
-    duration: '2 Hours',
-  },
-  'webinar-seo-content': {
-    id: 'webinar-seo-content',
-    title: 'SEO & Content Strategy with AI',
-    type: 'free',
-    price: 0,
-    date: '12 October 2026',
-    time: '6:00 PM',
-    duration: '90 Minutes',
-  },
-  'webinar-performance-marketing': {
-    id: 'webinar-performance-marketing',
-    title: 'Performance Marketing Masterclass',
-    type: 'paid',
-    price: 999,
-    date: '20 October 2026',
-    time: '7:00 PM',
-    duration: '2 Hours',
-  },
-};
-
 // Health Check
-app.get('/api/health', (req, res) => {
+app.get('/api/health', async (_req, res) => {
+  const supabaseHealth = await checkSupabaseHealth();
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
+    supabaseConnected: supabaseHealth.connected,
+    supabaseConfigured: supabaseHealth.configured,
     razorpayConfigured: isRazorpayConfigured(),
   });
 });
 
-// Config Status Endpoint (Never returns secrets, only configuration flags)
-app.get('/api/webinars/config-status', (_req, res) => {
+// Config Status Endpoint
+app.get('/api/webinars/config-status', async (_req, res) => {
+  const supabaseHealth = await checkSupabaseHealth();
   res.status(200).json({
-    supabaseConfigured: true,
+    supabaseConnected: supabaseHealth.connected,
+    supabaseConfigured: supabaseHealth.configured,
+    supabaseUrl: supabaseHealth.url,
+    supabaseError: supabaseHealth.error || null,
+    fallbackModeActive: !supabaseHealth.connected,
     razorpayConfigured: isRazorpayConfigured(),
     webhookConfigured: isWebhookConfigured(),
     razorpayKeyId: getRazorpayKeyId(),
   });
+});
+
+// List all active webinars with updated capacity & details
+app.get('/api/webinars/list', async (_req, res) => {
+  try {
+    const list = await getAllWebinars();
+    res.status(200).json({ success: true, webinars: list });
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: 'Could not load webinars' });
+  }
+});
+
+/**
+ * CONTACT FORM SUBMISSION (Supabase contact_submissions)
+ */
+app.post('/api/forms/contact', async (req, res) => {
+  try {
+    const { fullName, email, phone, subject, message, honeypot } = req.body;
+
+    if (honeypot && String(honeypot).trim() !== '') {
+      return res.status(400).json({ success: false, message: 'Spam detected. Submission blocked.' });
+    }
+
+    if (!fullName?.trim() || !email?.trim() || !phone?.trim() || (!message?.trim() && !subject?.trim())) {
+      return res.status(400).json({ success: false, message: 'Please fill in all required fields.' });
+    }
+
+    const formattedMessage = subject?.trim()
+      ? `Subject: ${subject.trim()}\n\n${(message || '').trim()}`
+      : (message || '').trim();
+
+    const result = await saveContactSubmission({
+      fullName: fullName.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+      message: formattedMessage,
+    });
+
+    if (!result.success) {
+      return res.status(500).json({
+        success: false,
+        message: result.error || 'Failed to record your submission in the database.',
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: 'Thank you! Your inquiry has been sent to CBM Academy. Our team will get back to you within 24 hours.',
+      id: result.id,
+    });
+  } catch (error: any) {
+    console.error('API /api/forms/contact error:', error);
+    return res.status(500).json({
+      success: false,
+      message: error?.message || 'Server error processing contact inquiry.',
+    });
+  }
+});
+
+/**
+ * COURSE APPLICATION FORM SUBMISSION (Supabase contact_submissions)
+ */
+app.post('/api/forms/apply', async (req, res) => {
+  try {
+    const { fullName, email, phone, qualification, course, message, honeypot } = req.body;
+
+    if (honeypot && String(honeypot).trim() !== '') {
+      return res.status(400).json({ success: false, message: 'Spam detected. Submission blocked.' });
+    }
+
+    if (!fullName?.trim() || !email?.trim() || !phone?.trim() || !qualification?.trim() || !course?.trim()) {
+      return res.status(400).json({ success: false, message: 'Please fill in all required fields.' });
+    }
+
+    const formattedMessage = [
+      `Application Track: ${course.trim()}`,
+      `Qualification: ${qualification.trim()}`,
+      message?.trim() ? `Applicant Note: ${message.trim()}` : null,
+    ].filter(Boolean).join('\n');
+
+    const result = await saveContactSubmission({
+      fullName: fullName.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+      message: formattedMessage,
+    });
+
+    if (!result.success) {
+      return res.status(500).json({
+        success: false,
+        message: result.error || 'Failed to record your application in the database.',
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: 'Thank you! Your application has been sent to CBM Academy. Our admissions team will contact you within 24 hours.',
+      id: result.id,
+    });
+  } catch (error: any) {
+    console.error('API /api/forms/apply error:', error);
+    return res.status(500).json({
+      success: false,
+      message: error?.message || 'Server error processing application submission.',
+    });
+  }
 });
 
 /**
@@ -146,13 +222,28 @@ app.get('/api/webinars/config-status', (_req, res) => {
  */
 app.post('/api/webinars/register-free', async (req, res) => {
   try {
-    const { webinarId, fullName, email, phone, message } = req.body;
+    const {
+      webinarId,
+      fullName,
+      email,
+      whatsappNumber,
+      phone,
+      role,
+      experienceLevel,
+      companyOrCollege,
+      learningGoal,
+      emailRemindersConsent,
+      whatsappUpdatesConsent,
+      message,
+    } = req.body;
+
+    const contactPhone = (whatsappNumber || phone || '').trim();
 
     // Validation
-    if (!fullName?.trim() || !email?.trim() || !phone?.trim() || !webinarId) {
+    if (!fullName?.trim() || !email?.trim() || !contactPhone || !webinarId) {
       return res.status(400).json({
         success: false,
-        message: 'Please fill in all required fields (Name, Email, Phone, Webinar).',
+        message: 'Please fill in all required fields (Name, Email, WhatsApp number).',
       });
     }
 
@@ -164,29 +255,32 @@ app.post('/api/webinars/register-free', async (req, res) => {
       });
     }
 
-    const phoneDigits = phone.replace(/\D/g, '');
+    const phoneDigits = contactPhone.replace(/\D/g, '');
     if (phoneDigits.length < 10) {
       return res.status(400).json({
         success: false,
-        message: 'Please enter a valid 10-digit mobile number.',
+        message: 'Please enter a valid WhatsApp number (minimum 10 digits).',
       });
     }
 
-    const webinar = SERVER_WEBINARS[webinarId] || {
+    const webinar: ServerWebinarRecord = (await getWebinarById(webinarId)) || {
       id: webinarId,
       title: req.body.webinarTitle || 'CBM Academy Webinar',
-      type: 'free' as const,
+      description: '',
       price: 0,
-      date: req.body.date || 'Upcoming',
-      time: req.body.time || 'TBA',
-      duration: req.body.duration || '60 Minutes',
-      max_capacity: req.body.max_capacity,
+      duration_minutes: 60,
+      capacity: 150,
+      status: 'published',
+      timezone: 'Asia/Kolkata',
+      start_datetime: new Date().toISOString(),
+      meeting_url: null,
+      whatsapp_group_url: null,
     };
 
-    // Check capacity if configured
-    if (typeof webinar.max_capacity === 'number' && webinar.max_capacity > 0) {
+    // Capacity check
+    if (typeof webinar.capacity === 'number' && webinar.capacity > 0) {
       const currentCount = await getWebinarRegistrationCount(webinarId);
-      if (currentCount >= webinar.max_capacity) {
+      if (currentCount >= webinar.capacity) {
         return res.status(400).json({
           success: false,
           code: 'CAPACITY_REACHED',
@@ -201,7 +295,9 @@ app.post('/api/webinars/register-free', async (req, res) => {
       return res.status(200).json({
         success: true,
         alreadyRegistered: true,
-        message: 'You are already registered for this webinar! Details will be sent to your email.',
+        reference: (existing.record as any)?.payment_reference || 'CBM-REGISTERED',
+        webinarTitle: webinar.title,
+        message: 'You are already registered for this webinar! We have sent the confirmation and joining details to your email.',
       });
     }
 
@@ -211,31 +307,56 @@ app.post('/api/webinars/register-free', async (req, res) => {
       webinar_title: webinar.title,
       full_name: fullName.trim(),
       email: email.trim().toLowerCase(),
-      phone: phone.trim(),
-      message: message?.trim() || '',
+      whatsapp_number: contactPhone,
+      phone: contactPhone,
+      role: (role as WebinarAttendeeRole) || 'Student',
+      experience_level: (experienceLevel as WebinarExperienceLevel) || 'Beginner',
+      company_or_college: companyOrCollege?.trim() || null,
+      learning_goal: learningGoal?.trim() || message?.trim() || null,
+      email_reminders_consent: Boolean(emailRemindersConsent),
+      whatsapp_updates_consent: Boolean(whatsappUpdatesConsent),
       registration_type: 'free',
       amount: 0,
       currency: 'INR',
       payment_status: 'not_required',
+      registration_status: 'approved',
     });
 
-    // Send confirmation email
+    // Send automated confirmation email
     sendWebinarConfirmationEmail({
       recipientEmail: email.trim(),
       recipientName: fullName.trim(),
-      recipientPhone: phone.trim(),
+      recipientPhone: contactPhone,
+      webinarId: webinar.id,
       webinarTitle: webinar.title,
-      date: webinar.date,
-      time: webinar.time,
-      duration: webinar.duration,
+      webinarDescription: webinar.description || '',
+      date: req.body.date || 'Upcoming Live Masterclass',
+      time: req.body.time || '6:00 PM IST',
+      duration: req.body.duration || `${webinar.duration_minutes || 60} mins`,
       registrationType: 'free',
       amount: 0,
-    }).catch((err) => console.warn('[Server] Email dispatch error:', err));
+      registrationReference: saved.reference,
+      meetingUrl: webinar.meeting_url || undefined,
+      whatsappGroupUrl: webinar.whatsapp_group_url || undefined,
+    })
+      .then(async (emailRes) => {
+        if (emailRes.success) {
+          await markConfirmationEmailSent(saved.id);
+        }
+      })
+      .catch((err) => console.warn('[Server] Email dispatch error:', err));
 
     return res.status(200).json({
       success: true,
       registrationId: saved.id,
-      message: 'Registration Successful! Webinar details will be sent to your email.',
+      reference: saved.reference,
+      webinarTitle: webinar.title,
+      date: req.body.date || 'Upcoming',
+      time: req.body.time || '6:00 PM IST',
+      duration: req.body.duration || '60 mins',
+      meetingUrl: webinar.meeting_url || null,
+      whatsappGroupUrl: webinar.whatsapp_group_url || null,
+      message: 'Registration Confirmed! Confirmation email and calendar invite have been dispatched.',
     });
   } catch (error: any) {
     console.error('[Server] Free registration error:', error);
@@ -247,16 +368,31 @@ app.post('/api/webinars/register-free', async (req, res) => {
 });
 
 /**
- * 2. PAID WEBINAR: CREATE RAZORPAY ORDER
+ * 2. PAID WEBINAR: CREATE ORDER
  */
 app.post('/api/webinars/create-order', async (req, res) => {
   try {
-    const { webinarId, fullName, email, phone, message } = req.body;
+    const {
+      webinarId,
+      fullName,
+      email,
+      whatsappNumber,
+      phone,
+      role,
+      experienceLevel,
+      companyOrCollege,
+      learningGoal,
+      emailRemindersConsent,
+      whatsappUpdatesConsent,
+      message,
+    } = req.body;
 
-    if (!fullName?.trim() || !email?.trim() || !phone?.trim() || !webinarId) {
+    const contactPhone = (whatsappNumber || phone || '').trim();
+
+    if (!fullName?.trim() || !email?.trim() || !contactPhone || !webinarId) {
       return res.status(400).json({
         success: false,
-        message: 'Please fill in all required fields.',
+        message: 'Please fill in all required fields (Name, Email, WhatsApp number).',
       });
     }
 
@@ -268,21 +404,24 @@ app.post('/api/webinars/create-order', async (req, res) => {
       });
     }
 
-    const webinar = SERVER_WEBINARS[webinarId] || {
+    const webinar: ServerWebinarRecord = (await getWebinarById(webinarId)) || {
       id: webinarId,
       title: req.body.webinarTitle || 'Paid Masterclass',
-      type: 'paid' as const,
+      description: '',
       price: typeof req.body.price === 'number' ? req.body.price : 499,
-      date: req.body.date || 'Upcoming',
-      time: req.body.time || 'TBA',
-      duration: req.body.duration || '2 Hours',
-      max_capacity: req.body.max_capacity,
+      capacity: 100,
+      duration_minutes: 90,
+      status: 'published',
+      timezone: 'Asia/Kolkata',
+      start_datetime: new Date().toISOString(),
+      meeting_url: null,
+      whatsapp_group_url: null,
     };
 
     // Capacity check
-    if (typeof webinar.max_capacity === 'number' && webinar.max_capacity > 0) {
+    if (typeof webinar.capacity === 'number' && webinar.capacity > 0) {
       const currentCount = await getWebinarRegistrationCount(webinarId);
-      if (currentCount >= webinar.max_capacity) {
+      if (currentCount >= webinar.capacity) {
         return res.status(400).json({
           success: false,
           code: 'CAPACITY_REACHED',
@@ -301,9 +440,10 @@ app.post('/api/webinars/create-order', async (req, res) => {
       });
     }
 
-    const amountInINR = webinar.price || 499;
+    const amountInINR = Number(webinar.price) || 499;
     const registrationId = `reg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
     const receiptId = `rcpt_${Date.now().toString().slice(-8)}_${Math.random().toString(36).substring(2, 6)}`;
+    const refCode = `CBM-WEB-2026-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
 
     // Create server-side order with Razorpay
     const order = await createOrder({
@@ -311,10 +451,11 @@ app.post('/api/webinars/create-order', async (req, res) => {
       receipt: receiptId,
       notes: {
         registration_id: registrationId,
+        payment_reference: refCode,
         webinar_id: webinar.id,
         webinar_title: webinar.title,
         customer_email: email.trim(),
-        customer_phone: phone.trim(),
+        customer_phone: contactPhone,
       },
     });
 
@@ -334,28 +475,34 @@ app.post('/api/webinars/create-order', async (req, res) => {
       qrId = qrData.id;
       qrImageUrl = qrData.imageUrl;
     } catch (qrErr) {
-      console.warn('[Server] Razorpay QR Code create note (fallback to dynamic UPI payload):', qrErr);
+      console.warn('[Server] Razorpay QR Code create note:', qrErr);
     }
 
-    // Dynamic UPI URI payload for QR rendering and mobile deep-linking
     const qrPayload = `upi://pay?pa=cbmacademy@razorpay&pn=CBM%20Academy&am=${amountInINR}&cu=INR&tn=${encodeURIComponent(
       webinar.title.substring(0, 30)
     )}&tr=${order.id}`;
 
-    // Create unique pending registration record in Supabase
+    // Create pending registration record in Supabase
     await saveWebinarRegistration({
       id: registrationId,
       webinar_id: webinar.id,
       webinar_title: webinar.title,
       full_name: fullName.trim(),
       email: email.trim().toLowerCase(),
-      phone: phone.trim(),
-      message: message?.trim() || '',
+      whatsapp_number: contactPhone,
+      phone: contactPhone,
+      role: (role as WebinarAttendeeRole) || 'Student',
+      experience_level: (experienceLevel as WebinarExperienceLevel) || 'Beginner',
+      company_or_college: companyOrCollege?.trim() || null,
+      learning_goal: learningGoal?.trim() || message?.trim() || null,
+      email_reminders_consent: Boolean(emailRemindersConsent),
+      whatsapp_updates_consent: Boolean(whatsappUpdatesConsent),
       registration_type: 'paid',
       amount: amountInINR,
       currency: 'INR',
       payment_status: 'pending',
       registration_status: 'pending',
+      payment_reference: refCode,
       razorpay_order_id: order.id,
       razorpay_qr_id: qrId,
     });
@@ -363,11 +510,12 @@ app.post('/api/webinars/create-order', async (req, res) => {
     return res.status(200).json({
       success: true,
       registrationId,
+      reference: refCode,
       orderId: order.id,
       qrId,
       qrImageUrl,
       qrPayload,
-      amount: order.amount, // amount in paise
+      amount: order.amount,
       amountInINR,
       currency: 'INR',
       keyId: getRazorpayKeyId(),
@@ -384,7 +532,7 @@ app.post('/api/webinars/create-order', async (req, res) => {
 });
 
 /**
- * SIMULATE PAYMENT (For Testing Mode / Development)
+ * 3. SIMULATE PAYMENT (For Prototyping / Test Mode without live keys)
  */
 app.post('/api/webinars/simulate-payment', async (req, res) => {
   try {
@@ -398,40 +546,42 @@ app.post('/api/webinars/simulate-payment', async (req, res) => {
       return res.status(404).json({ success: false, message: 'Registration record not found' });
     }
 
-    if (!isRazorpayConfigured()) {
-      return res.status(400).json({
-        success: false,
-        payment_status: 'pending',
-        registration_status: 'pending',
-        message: 'Payment flow requires final real/test-mode verification with valid Razorpay credentials.',
-      });
-    }
-
-    const simulatedPaymentId = `pay_test_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 6)}`;
+    const simulatedPaymentId = `pay_sim_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 6)}`;
     const approval = await approveRegistrationPayment({
       registrationId: reg.id,
-      orderId: reg.razorpay_order_id,
+      orderId: reg.razorpay_order_id || undefined,
       paymentId: simulatedPaymentId,
       paidAmount: reg.amount,
       expectedAmount: reg.amount,
     });
 
     if (approval.success) {
+      const webinar = await getWebinarById(reg.webinar_id);
       sendWebinarConfirmationEmail({
         recipientEmail: reg.email,
         recipientName: reg.full_name,
-        recipientPhone: reg.phone,
-        webinarTitle: reg.webinar_title || 'Paid Masterclass',
+        recipientPhone: reg.whatsapp_number || reg.phone || '',
+        webinarId: reg.webinar_id,
+        webinarTitle: reg.webinar_title || webinar?.title || 'Paid Masterclass',
+        webinarDescription: webinar?.description || '',
         registrationType: 'paid',
         amount: reg.amount,
         paymentId: simulatedPaymentId,
-      }).catch((e) => console.warn('[Simulate Payment] Email dispatch notice:', e));
+        registrationReference: reg.payment_reference || `CBM-WEB-${Date.now().toString(36).toUpperCase()}`,
+        meetingUrl: webinar?.meeting_url || undefined,
+        whatsappGroupUrl: webinar?.whatsapp_group_url || undefined,
+      })
+        .then(async (eRes) => {
+          if (eRes.success) await markConfirmationEmailSent(reg.id!);
+        })
+        .catch((e) => console.warn('[Simulate Payment] Email dispatch notice:', e));
     }
 
     return res.status(200).json({
       success: true,
       payment_status: 'paid',
       registration_status: 'approved',
+      reference: reg.payment_reference,
       paid_at: approval.registration?.paid_at || new Date().toISOString(),
       payment_id: simulatedPaymentId,
       message: 'Payment simulation approved. Registration confirmed.',
@@ -443,102 +593,7 @@ app.post('/api/webinars/simulate-payment', async (req, res) => {
 });
 
 /**
- * 3. PAID WEBINAR: CHECK REGISTRATION & PAYMENT STATUS (Polling)
- */
-app.get('/api/webinars/registration-status', (_req, res) => {
-  return res.status(400).json({ success: false, message: 'Registration ID required' });
-});
-
-app.get('/api/webinars/registration-status/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    if (!id?.trim()) {
-      return res.status(400).json({ success: false, message: 'Registration ID required' });
-    }
-
-    const reg = await getRegistrationByIdOrRef(id);
-    if (!reg) {
-      return res.status(404).json({ success: false, message: 'Registration not found' });
-    }
-
-    // 1. If already approved and paid
-    if (reg.payment_status === 'paid' && reg.registration_status === 'approved') {
-      return res.status(200).json({
-        success: true,
-        payment_status: 'paid',
-        registration_status: 'approved',
-        paid_at: reg.paid_at,
-        payment_id: reg.razorpay_payment_id,
-        webinar_title: reg.webinar_title,
-        message: 'Payment successful! Your webinar registration is confirmed.',
-      });
-    }
-
-    // 2. If status is pending, verify with Razorpay API (handles UPI app payments where webhook hasn't hit yet)
-    if (reg.payment_status === 'pending' && isRazorpayConfigured() && reg.razorpay_order_id) {
-      try {
-        const razorpay = getRazorpayClient();
-        const payments = await razorpay.orders.fetchPayments(reg.razorpay_order_id);
-        const capturedPayment = payments.items?.find((p: any) => p.status === 'captured');
-
-        if (capturedPayment) {
-          const paidAmount = Number(capturedPayment.amount) / 100;
-          // Validate amount
-          if (paidAmount >= reg.amount) {
-            const approval = await approveRegistrationPayment({
-              registrationId: reg.id,
-              orderId: reg.razorpay_order_id,
-              paymentId: capturedPayment.id,
-              paidAmount,
-              expectedAmount: reg.amount,
-            });
-
-            if (approval.success && !approval.alreadyApproved) {
-              sendWebinarConfirmationEmail({
-                recipientEmail: reg.email,
-                recipientName: reg.full_name,
-                recipientPhone: reg.phone,
-                webinarTitle: reg.webinar_title || 'Paid Webinar',
-                registrationType: 'paid',
-                amount: reg.amount,
-                paymentId: capturedPayment.id,
-              }).catch((e) => console.warn('[Server] Email notice:', e));
-            }
-
-            return res.status(200).json({
-              success: true,
-              payment_status: 'paid',
-              registration_status: 'approved',
-              paid_at: approval.registration?.paid_at || new Date().toISOString(),
-              payment_id: capturedPayment.id,
-              webinar_title: reg.webinar_title,
-              message: 'Payment successful! Your webinar registration is confirmed.',
-            });
-          }
-        }
-      } catch (checkErr) {
-        console.warn('[Server] Polling status check note:', checkErr);
-      }
-    }
-
-    // 3. Otherwise return current status
-    return res.status(200).json({
-      success: true,
-      payment_status: reg.payment_status || 'pending',
-      registration_status: reg.registration_status || 'pending',
-      message:
-        reg.payment_status === 'pending'
-          ? 'Payment is still pending. Your registration will be confirmed after successful payment.'
-          : 'Payment status updated.',
-    });
-  } catch (err: any) {
-    console.error('[Server] Status check error:', err);
-    return res.status(500).json({ success: false, message: 'Could not fetch status' });
-  }
-});
-
-/**
- * 4. PAID WEBINAR: VERIFY RAZORPAY PAYMENT (Client Verification Flow)
+ * 4. PAID WEBINAR: VERIFY RAZORPAY PAYMENT
  */
 app.post('/api/webinars/verify-payment', async (req, res) => {
   try {
@@ -547,9 +602,8 @@ app.post('/api/webinars/verify-payment', async (req, res) => {
       razorpay_payment_id,
       razorpay_signature,
       registrationId,
-      webinarId,
-      fullName,
       email,
+      fullName,
       phone,
       amount,
     } = req.body;
@@ -561,7 +615,6 @@ app.post('/api/webinars/verify-payment', async (req, res) => {
       });
     }
 
-    // Verify HMAC SHA256 signature server-side
     const isValid = verifyPaymentSignature({
       orderId: razorpay_order_id,
       paymentId: razorpay_payment_id,
@@ -579,7 +632,6 @@ app.post('/api/webinars/verify-payment', async (req, res) => {
 
     const webinarPrice = typeof amount === 'number' ? amount : 499;
 
-    // Approve registration and mark paid
     const approval = await approveRegistrationPayment({
       registrationId,
       orderId: razorpay_order_id,
@@ -596,21 +648,33 @@ app.post('/api/webinars/verify-payment', async (req, res) => {
       });
     }
 
-    // Send confirmation email
+    const reg = approval.registration;
+    const webinar = reg ? await getWebinarById(reg.webinar_id) : null;
+
     sendWebinarConfirmationEmail({
-      recipientEmail: email,
-      recipientName: fullName,
-      recipientPhone: phone,
-      webinarTitle: approval.registration?.webinar_title || 'Paid Webinar',
+      recipientEmail: email || reg?.email || '',
+      recipientName: fullName || reg?.full_name || '',
+      recipientPhone: phone || reg?.whatsapp_number || reg?.phone || '',
+      webinarId: reg?.webinar_id || '',
+      webinarTitle: reg?.webinar_title || webinar?.title || 'Paid Masterclass',
+      webinarDescription: webinar?.description || '',
       registrationType: 'paid',
       amount: webinarPrice,
       paymentId: razorpay_payment_id,
-    }).catch((err) => console.warn('[Server] Email dispatch error:', err));
+      registrationReference: reg?.payment_reference || `CBM-WEB-${Date.now().toString(36).toUpperCase()}`,
+      meetingUrl: webinar?.meeting_url || undefined,
+      whatsappGroupUrl: webinar?.whatsapp_group_url || undefined,
+    })
+      .then(async (eRes) => {
+        if (eRes.success && reg?.id) await markConfirmationEmailSent(reg.id);
+      })
+      .catch((err) => console.warn('[Server] Email dispatch error:', err));
 
     return res.status(200).json({
       success: true,
-      message: 'Payment successful! Your webinar registration is confirmed.',
+      message: 'Payment verified! Your webinar registration is confirmed.',
       paymentId: razorpay_payment_id,
+      reference: reg?.payment_reference,
       amount: webinarPrice,
       registrationStatus: 'approved',
     });
@@ -618,13 +682,13 @@ app.post('/api/webinars/verify-payment', async (req, res) => {
     console.error('[Server] Payment verification error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Payment could not be completed. Please try again.',
+      message: 'Payment verification could not be completed. Please try again.',
     });
   }
 });
 
 /**
- * 5. RAZORPAY WEBHOOK HANDLER (Server-Side Automated Verification)
+ * 5. RAZORPAY WEBHOOK HANDLER
  */
 app.post('/api/webinars/webhook', async (req, res) => {
   const signature = req.headers['x-razorpay-signature'] as string;
@@ -634,128 +698,43 @@ app.post('/api/webinars/webhook', async (req, res) => {
     return res.status(400).json({ error: 'Missing webhook signature or body' });
   }
 
-  // Validate webhook secret exists
   if (!isWebhookConfigured()) {
-    console.warn(
-      '[Razorpay Webhook] Received webhook but RAZORPAY_WEBHOOK_SECRET is not set in environment.'
-    );
     return res.status(500).json({ error: 'Webhook secret not configured on server' });
   }
 
-  // Validate cryptographic signature
   const isValid = verifyWebhookSignature(rawBody, signature);
   if (!isValid) {
-    console.error('[Razorpay Webhook] Invalid webhook signature!');
     return res.status(400).json({ error: 'Invalid webhook signature' });
   }
 
   try {
     const event = req.body;
-    const eventType = event.event;
-    console.log(`[Razorpay Webhook] Authenticated event: ${eventType}`);
+    if (event.event === 'payment.captured') {
+      const payment = event.payload.payment.entity;
+      const orderId = payment.order_id;
+      const paymentId = payment.id;
+      const amount = payment.amount / 100;
 
-    if (
-      eventType === 'payment.captured' ||
-      eventType === 'order.paid' ||
-      eventType === 'qr_code.credited'
-    ) {
-      let orderId: string | undefined;
-      let qrId: string | undefined;
-      let registrationId: string | undefined;
-      let paymentId: string = '';
-      let amountPaid: number = 0;
-
-      if (event.payload?.payment?.entity) {
-        const paymentEntity = event.payload.payment.entity;
-        paymentId = paymentEntity.id;
-        orderId = paymentEntity.order_id;
-        amountPaid = Number(paymentEntity.amount) / 100;
-        registrationId = paymentEntity.notes?.registration_id;
-      }
-
-      if (event.payload?.qr_code?.entity) {
-        const qrEntity = event.payload.qr_code.entity;
-        qrId = qrEntity.id;
-        if (!registrationId) registrationId = qrEntity.notes?.registration_id;
-        if (!amountPaid && qrEntity.payment_amount) {
-          amountPaid = Number(qrEntity.payment_amount) / 100;
-        }
-      }
-
-      const reg = await getRegistrationByIdOrRef(registrationId || orderId || qrId || '');
-      if (!reg) {
-        console.warn(`[Razorpay Webhook] Registration record not found for payment: ${paymentId}`);
-        return res.status(200).json({ status: 'ignored_not_found' });
-      }
-
-      // Confirm payment amount matches webinar price
-      if (reg.amount > 0 && amountPaid < reg.amount) {
-        console.error(
-          `[Razorpay Webhook] Amount mismatch: Paid ${amountPaid} INR, expected ${reg.amount} INR`
-        );
-        return res.status(400).json({ error: 'Amount mismatch' });
-      }
-
-      // Approve registration and update status to approved & paid
-      const approval = await approveRegistrationPayment({
-        registrationId: reg.id,
-        orderId: reg.razorpay_order_id || orderId,
-        qrId: reg.razorpay_qr_id || qrId,
+      await approveRegistrationPayment({
+        orderId,
         paymentId,
-        paidAmount: amountPaid,
-        expectedAmount: reg.amount,
+        paidAmount: amount,
       });
-
-      if (approval.success && !approval.alreadyApproved) {
-        console.log(`[Razorpay Webhook] Registration ${reg.id} APPROVED via verified webhook!`);
-        sendWebinarConfirmationEmail({
-          recipientEmail: reg.email,
-          recipientName: reg.full_name,
-          recipientPhone: reg.phone,
-          webinarTitle: reg.webinar_title || 'Paid Webinar',
-          registrationType: 'paid',
-          amount: reg.amount,
-          paymentId,
-        }).catch((e) => console.warn('[Razorpay Webhook] Email notice:', e));
-      }
-
-      return res.status(200).json({ status: 'success' });
     }
-
-    if (eventType === 'payment.failed') {
-      const paymentEntity = event.payload?.payment?.entity;
-      const ref = paymentEntity?.notes?.registration_id || paymentEntity?.order_id;
-      if (ref) {
-        await markRegistrationPaymentFailed(ref);
-      }
-      return res.status(200).json({ status: 'marked_failed' });
-    }
-
-    if (eventType === 'qr_code.expired') {
-      const qrEntity = event.payload?.qr_code?.entity;
-      const ref = qrEntity?.notes?.registration_id || qrEntity?.id;
-      if (ref) {
-        await markRegistrationPaymentExpired(ref);
-      }
-      return res.status(200).json({ status: 'marked_expired' });
-    }
-
-    return res.status(200).json({ status: 'unhandled_event' });
+    return res.status(200).json({ received: true });
   } catch (err: any) {
-    console.error('[Razorpay Webhook] Error processing event:', err);
-    return res.status(500).json({ error: 'Webhook processing error' });
+    return res.status(500).json({ error: 'Webhook processing failed' });
   }
 });
 
 /**
- * 4. ADMIN: GET REGISTRATIONS (Authenticated)
+ * 6. ADMIN: GET ALL REGISTRATIONS (Protected)
  */
 app.get('/api/webinars/registrations', async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
     const token = authHeader?.replace('Bearer ', '') || (req.query.token as string);
 
-    // Require token or admin session
     if (!token) {
       return res.status(401).json({
         success: false,
@@ -763,10 +742,12 @@ app.get('/api/webinars/registrations', async (req, res) => {
       });
     }
 
+    const webinarId = req.query.webinarId as string | undefined;
     const type = req.query.type as 'free' | 'paid' | undefined;
     const status = req.query.status as string | undefined;
+    const role = req.query.role as string | undefined;
 
-    const registrations = await getAllRegistrations({ type, status });
+    const registrations = await getAllRegistrations({ webinarId, type, status, role });
     return res.status(200).json({
       success: true,
       registrations,
@@ -780,7 +761,230 @@ app.get('/api/webinars/registrations', async (req, res) => {
   }
 });
 
-// Ensure any unhandled API endpoints return standard JSON and NEVER fall through to HTML/Vite
+/**
+ * 7. ADMIN: UPDATE WEBINAR SETTINGS (Dates, Capacity, Meeting Link, WhatsApp Link)
+ */
+app.post('/api/webinars/update', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.replace('Bearer ', '') || req.body.token;
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+
+    const { id, title, description, start_datetime, duration_minutes, price, capacity, status, meeting_url, whatsapp_group_url } = req.body;
+    if (!id) {
+      return res.status(400).json({ success: false, message: 'Webinar ID required' });
+    }
+
+    const updated = await updateWebinarDetails(id, {
+      title,
+      description,
+      start_datetime,
+      duration_minutes: duration_minutes ? Number(duration_minutes) : undefined,
+      price: price !== undefined ? Number(price) : undefined,
+      capacity: capacity ? Number(capacity) : undefined,
+      status,
+      meeting_url,
+      whatsapp_group_url,
+    });
+
+    if (!updated.success) {
+      return res.status(400).json({ success: false, message: 'Could not update webinar' });
+    }
+
+    return res.status(200).json({ success: true, webinar: updated.webinar, message: 'Webinar updated successfully' });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: err.message || 'Server error updating webinar' });
+  }
+});
+
+/**
+ * 8. ADMIN: TOGGLE ATTENDANCE
+ */
+app.post('/api/webinars/toggle-attendance', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.replace('Bearer ', '') || req.body.token;
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+
+    const { registrationId, attended } = req.body;
+    if (!registrationId) {
+      return res.status(400).json({ success: false, message: 'Registration ID required' });
+    }
+
+    const result = await toggleRegistrationAttendance(registrationId, Boolean(attended));
+    return res.status(200).json(result);
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: 'Could not update attendance' });
+  }
+});
+
+/**
+ * 9. ADMIN: RESEND CONFIRMATION EMAIL
+ */
+app.post('/api/webinars/resend-email', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.replace('Bearer ', '') || req.body.token;
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+
+    const { registrationId } = req.body;
+    const reg = await getRegistrationByIdOrRef(registrationId);
+    if (!reg) {
+      return res.status(404).json({ success: false, message: 'Registration not found' });
+    }
+
+    const webinar = await getWebinarById(reg.webinar_id);
+    const emailRes = await sendWebinarConfirmationEmail({
+      recipientEmail: reg.email,
+      recipientName: reg.full_name,
+      recipientPhone: reg.whatsapp_number || reg.phone || '',
+      webinarId: reg.webinar_id,
+      webinarTitle: reg.webinar_title || webinar?.title || 'CBM Academy Masterclass',
+      webinarDescription: webinar?.description || '',
+      registrationType: reg.registration_type,
+      amount: reg.amount,
+      registrationReference: reg.payment_reference || `CBM-WEB-${Date.now().toString(36).toUpperCase()}`,
+      meetingUrl: webinar?.meeting_url || undefined,
+      whatsappGroupUrl: webinar?.whatsapp_group_url || undefined,
+    });
+
+    if (emailRes.success) {
+      await markConfirmationEmailSent(reg.id!);
+    }
+
+    return res.status(200).json({ success: true, message: 'Confirmation email re-dispatched.' });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: 'Failed to resend confirmation email.' });
+  }
+});
+
+/**
+ * 10. ADMIN: GET REMINDER LOGS
+ */
+app.get('/api/webinars/reminder-logs', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.replace('Bearer ', '') || (req.query.token as string);
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+
+    const logs = await getAllReminderLogs();
+    return res.status(200).json({ success: true, logs });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: 'Failed to retrieve reminder logs.' });
+  }
+});
+
+/**
+ * 11. AUTOMATIC SCHEDULED REMINDER ENGINE & CRON ENDPOINT
+ * Checks active webinars and sends 24h, 1h, and 15m reminders to consented approved attendees
+ */
+async function processScheduledReminders() {
+  try {
+    const webinars = await getAllWebinars();
+    const activeWebinars = webinars.filter((w) => w.status === 'published' || w.status === 'upcoming');
+    const nowMs = Date.now();
+
+    for (const webinar of activeWebinars) {
+      if (!webinar.start_datetime) continue;
+      const startMs = new Date(webinar.start_datetime).getTime();
+      const diffMs = startMs - nowMs;
+      const diffMinutes = Math.round(diffMs / 60000);
+
+      // Determine which reminder window applies
+      let targetReminder: ReminderType | null = null;
+      if (diffMinutes >= 1380 && diffMinutes <= 1500) {
+        // ~23h to ~25h before
+        targetReminder = '24h_before';
+      } else if (diffMinutes >= 50 && diffMinutes <= 75) {
+        // ~50m to ~75m before
+        targetReminder = '1h_before';
+      } else if (diffMinutes >= 10 && diffMinutes <= 25) {
+        // ~10m to ~25m before
+        targetReminder = '15m_before';
+      }
+
+      if (!targetReminder) continue;
+
+      // Get approved registrations for this webinar with email consent
+      const registrations = await getAllRegistrations({ webinarId: webinar.id });
+      const eligibleAttendees = registrations.filter(
+        (r) =>
+          r.registration_status === 'approved' &&
+          Boolean(r.email_reminders_consent) &&
+          r.email
+      );
+
+      const existingLogs = await getAllReminderLogs();
+
+      for (const attendee of eligibleAttendees) {
+        if (!attendee.id) continue;
+
+        // Idempotency check: did we already send or schedule this reminder?
+        const alreadyLogged = existingLogs.some(
+          (log) => log.registration_id === attendee.id && log.reminder_type === targetReminder
+        );
+        if (alreadyLogged) continue;
+
+        // Ensure registration was created before the window (never send retroactively)
+        const registeredAtMs = new Date(attendee.registered_at || attendee.created_at || 0).getTime();
+        if (registeredAtMs > nowMs) continue;
+
+        try {
+          const sendResult = await sendWebinarReminderEmail(
+            {
+              recipientEmail: attendee.email,
+              recipientName: attendee.full_name,
+              recipientPhone: attendee.whatsapp_number || attendee.phone || '',
+              webinarId: webinar.id,
+              webinarTitle: webinar.title,
+              webinarDescription: webinar.description || '',
+              duration: `${webinar.duration_minutes || 60} mins`,
+              registrationType: attendee.registration_type,
+              amount: attendee.amount,
+              registrationReference: attendee.payment_reference || '',
+              meetingUrl: webinar.meeting_url || undefined,
+              whatsappGroupUrl: webinar.whatsapp_group_url || undefined,
+            },
+            targetReminder
+          );
+
+          await logReminderAttempt({
+            registration_id: attendee.id,
+            reminder_type: targetReminder,
+            scheduled_at: new Date(startMs).toISOString(),
+            sent_at: new Date().toISOString(),
+            delivery_status: sendResult.success ? 'sent' : 'failed',
+          });
+        } catch (dispatchErr: any) {
+          await logReminderAttempt({
+            registration_id: attendee.id,
+            reminder_type: targetReminder,
+            scheduled_at: new Date(startMs).toISOString(),
+            delivery_status: 'failed',
+            error_message: dispatchErr?.message || 'Dispatch error',
+          });
+        }
+      }
+    }
+  } catch (cronErr) {
+    console.warn('[Reminders Cron] Cycle notice:', cronErr);
+  }
+}
+
+// CRON HTTP trigger
+app.post('/api/cron/reminders', async (_req, res) => {
+  await processScheduledReminders();
+  res.status(200).json({ success: true, message: 'Reminders evaluation cycle executed.' });
+});
+
+// Run automated reminder check every 60 seconds
+setInterval(processScheduledReminders, 60000);
+
+// Ensure any unhandled API endpoints return standard JSON
 app.all('/api/*', (req, res) => {
   res.status(404).json({
     success: false,
@@ -788,8 +992,8 @@ app.all('/api/*', (req, res) => {
   });
 });
 
-// Dedicated JSON error handler for all /api routes (catches body-parser errors, runtime exceptions, etc.)
-app.use('/api', (err: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+// JSON error handler for all /api routes
+app.use('/api', (err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error('[API Error Handler]', err?.stack || err);
   const statusCode = typeof err.status === 'number' && err.status >= 400 && err.status < 600 ? err.status : 500;
   res.status(statusCode).json({
@@ -798,26 +1002,22 @@ app.use('/api', (err: any, req: express.Request, res: express.Response, _next: e
   });
 });
 
-/**
- * Start Server with Vite Middleware
- */
 async function startServer() {
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(process.cwd(), 'dist')));
+    app.get('*', (_req, res) => {
+      res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
+    });
+  } else {
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa',
     });
     app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
-    });
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`CBM Academy Server running on http://0.0.0.0:${PORT}`);
+    console.log(`[CBM Academy Server] Listening on http://localhost:${PORT}`);
   });
 }
 

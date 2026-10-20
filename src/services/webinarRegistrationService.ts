@@ -287,7 +287,7 @@ export async function launchRazorpayCheckout({
     currency,
     name: 'CBM Academy',
     description: webinarTitle,
-    image: 'https://cxeztsvgaeytdljoned.supabase.co/storage/v1/object/public/assets/cbm_logo.png',
+    image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=200&h=200&q=80',
     order_id: orderId,
     prefill: {
       name: userName,

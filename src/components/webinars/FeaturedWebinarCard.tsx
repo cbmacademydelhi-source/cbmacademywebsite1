@@ -1,11 +1,23 @@
 import React from 'react';
-import { Calendar, Clock, Timer, User, ArrowRight } from 'lucide-react';
+import { Calendar, Clock, Timer, User, ArrowRight, CheckCircle2, Video, Sparkles } from 'lucide-react';
 import { Webinar } from '../../types';
 
 interface FeaturedWebinarCardProps {
   webinar: Webinar;
   onSelect: (webinar: Webinar) => void;
   onRegister: (webinar: Webinar) => void;
+}
+
+function parseDateBadge(dateStr: string) {
+  const parts = dateStr.trim().split(' ');
+  if (parts.length >= 3) {
+    return {
+      day: parts[0],
+      month: parts[1].slice(0, 3).toUpperCase(),
+      year: parts[2],
+    };
+  }
+  return { day: 'LIVE', month: 'SESSION', year: '' };
 }
 
 export const FeaturedWebinarCard: React.FC<FeaturedWebinarCardProps> = ({
@@ -20,15 +32,20 @@ export const FeaturedWebinarCard: React.FC<FeaturedWebinarCardProps> = ({
     ? `₹${webinar.price}`
     : webinar.price || '₹499';
 
+  const dateParts = parseDateBadge(webinar.date);
+
   return (
-    <div
+    <article
       id={`featured-webinar-${webinar.id}`}
       onClick={() => onSelect(webinar)}
-      className="group relative overflow-hidden rounded-[16px] border border-[#E5E7EB] bg-white shadow-[0_4px_20px_rgba(7,43,87,0.06)] transition-all duration-200 ease-out hover:-translate-y-[3px] hover:shadow-[0_12px_30px_rgba(7,43,87,0.1)] cursor-pointer"
+      className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-[#FED7AA]/80 bg-white shadow-sm transition-all duration-300 hover:border-[#FF6B00]/60 hover:shadow-xl hover:shadow-[#072B57]/6 cursor-pointer"
     >
-      <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch">
-        {/* Left: Large Image (~58% width on desktop, clean 16:9 aspect ratio, controlled max height) */}
-        <div className="relative lg:col-span-7 aspect-[16/9] max-h-[340px] sm:max-h-[360px] lg:max-h-[380px] w-full overflow-hidden bg-slate-100 flex items-center justify-center">
+      {/* Featured Accent Strip */}
+      <div className="h-1 w-full bg-gradient-to-r from-[#FF6B00] via-[#FFA450] to-[#072B57]" />
+
+      <div className="flex flex-col sm:flex-row items-stretch">
+        {/* Left: Photo / Poster (Photo strictly on Left) */}
+        <div className="relative w-full sm:w-[320px] md:w-[380px] lg:w-[420px] shrink-0 bg-[#072B57] overflow-hidden flex items-center justify-center min-h-[220px] sm:min-h-full">
           <img
             src={
               webinar.posterUrl ||
@@ -39,109 +56,148 @@ export const FeaturedWebinarCard: React.FC<FeaturedWebinarCardProps> = ({
             width={1200}
             height={675}
             decoding="async"
-            className="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.02]"
+            className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             referrerPolicy="no-referrer"
             loading="lazy"
           />
 
-          {/* Badges on poster */}
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 flex flex-wrap items-center gap-2 pointer-events-none">
-            <span className="inline-block rounded-md bg-[#072B57] px-2.5 py-1 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-white shadow-xs">
-              FEATURED WEBINAR
+          {/* Vignette gradient for text legibility */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#072B57]/85 via-transparent to-black/20 pointer-events-none" />
+
+          {/* Calendar Badge (Website Colors: Warm White, Navy Day, Orange Month) */}
+          <div className="absolute top-4 left-4 flex flex-col items-center justify-center rounded-xl bg-white/95 px-3 py-2 shadow-md border border-[#FED7AA] backdrop-blur-xs pointer-events-none">
+            <span className="text-[11px] font-black uppercase tracking-wider text-[#FF6B00]">
+              {dateParts.month}
+            </span>
+            <span className="text-xl font-black text-[#072B57] leading-none">
+              {dateParts.day}
+            </span>
+          </div>
+
+          {/* Format indicator on image */}
+          <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white pointer-events-none">
+            <span className="inline-flex items-center gap-1.5 rounded-lg bg-[#072B57]/90 backdrop-blur-md px-2.5 py-1 text-xs font-semibold text-slate-100 border border-white/15 shadow-sm">
+              <Video className="h-3.5 w-3.5 text-[#FF6B00]" />
+              Live Interactive
             </span>
 
             {isFree ? (
-              <span className="inline-block rounded-md bg-emerald-600 px-2.5 py-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-white shadow-xs">
-                FREE WEBINAR
+              <span className="rounded-lg bg-emerald-600 px-3 py-1 text-xs font-bold text-white shadow-xs">
+                Free Access
               </span>
             ) : (
-              <span className="inline-block rounded-md bg-[#FF6B00] px-2.5 py-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-white shadow-xs">
-                PAID WEBINAR
+              <span className="rounded-lg bg-[#FF6B00] px-3 py-1 text-xs font-bold text-white shadow-xs">
+                {priceDisplay}
               </span>
             )}
           </div>
         </div>
 
-        {/* Right: Detailed Information (~42% width on desktop) */}
-        <div className="lg:col-span-5 flex flex-col justify-between p-5 sm:p-6">
+        {/* Right: Details (Details on Right) */}
+        <div className="flex-1 p-6 sm:p-7 lg:p-8 flex flex-col justify-between">
           <div>
-            {/* Small eyebrow badge */}
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className="text-[10px] sm:text-[11px] font-extrabold text-[#FF6B00] tracking-wider uppercase">
-                EXCLUSIVE LIVE WORKSHOP
+            {/* Website Color Accent Tag */}
+            <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 font-medium mb-2.5">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-[#FFF5EC] text-[#FF6B00] font-bold uppercase tracking-wider text-[11px] border border-[#FED7AA]">
+                <Sparkles className="h-3 w-3" />
+                Featured Masterclass
               </span>
+              <span aria-hidden="true" className="text-slate-300">·</span>
+              <span className="font-semibold text-slate-600">CBM Academy Faculty</span>
+              <span aria-hidden="true" className="text-slate-300">·</span>
+              <span className="font-semibold text-slate-600">Live Q&amp;A Included</span>
             </div>
 
             {/* Title */}
-            <h2 className="text-lg sm:text-xl lg:text-[22px] font-extrabold text-[#072B57] leading-snug tracking-tight group-hover:text-[#FF6B00] transition-colors line-clamp-2">
+            <h2 className="text-xl sm:text-2xl lg:text-[26px] font-black text-[#072B57] leading-snug tracking-tight group-hover:text-[#FF6B00] transition-colors">
               {webinar.title}
             </h2>
 
-            {/* Short description */}
-            <p className="mt-1.5 text-xs sm:text-sm text-[#1E293B]/80 leading-relaxed line-clamp-2">
+            {/* Description */}
+            <p className="mt-2.5 text-sm sm:text-base text-slate-600 leading-relaxed">
               {webinar.description}
             </p>
 
-            {/* Date, Time, Duration, Host in compact 2x2 grid */}
-            <div className="mt-3.5 pt-3 border-t border-[#E5E7EB] grid grid-cols-2 gap-2 text-xs text-[#1E293B]">
-              <div className="flex items-center gap-1.5 min-w-0">
-                <Calendar className="h-3.5 w-3.5 text-[#FF6B00] shrink-0" />
-                <span className="font-semibold text-slate-800">Date:</span>
-                <span className="text-slate-600 truncate">{webinar.date}</span>
+            {/* Date, Time, Duration & Host strip */}
+            <div className="mt-4 pt-3.5 border-t border-orange-100 flex flex-wrap items-center gap-y-2 gap-x-5 text-xs sm:text-sm text-slate-700">
+              <div className="flex items-center gap-1.5 font-medium">
+                <Calendar className="h-4 w-4 text-[#FF6B00] shrink-0" />
+                <span className="font-semibold text-[#072B57]">{webinar.date}</span>
               </div>
-
-              <div className="flex items-center gap-1.5 min-w-0">
-                <Clock className="h-3.5 w-3.5 text-[#FF6B00] shrink-0" />
-                <span className="font-semibold text-slate-800">Time:</span>
-                <span className="text-slate-600 truncate">{webinar.time}</span>
+              <div className="flex items-center gap-1.5 font-medium">
+                <Clock className="h-4 w-4 text-[#FF6B00] shrink-0" />
+                <span>{webinar.time} IST</span>
               </div>
-
-              <div className="flex items-center gap-1.5 min-w-0">
-                <Timer className="h-3.5 w-3.5 text-[#FF6B00] shrink-0" />
-                <span className="font-semibold text-slate-800">Duration:</span>
-                <span className="text-slate-600 truncate">{webinar.duration || '60 Min'}</span>
+              <div className="flex items-center gap-1.5 font-medium">
+                <Timer className="h-4 w-4 text-[#FF6B00] shrink-0" />
+                <span>{webinar.duration || '60 Mins'}</span>
               </div>
-
-              <div className="flex items-center gap-1.5 min-w-0">
-                <User className="h-3.5 w-3.5 text-[#FF6B00] shrink-0" />
-                <span className="font-semibold text-slate-800">Host:</span>
-                <span className="text-slate-600 truncate">{webinar.host || 'CBM Academy'}</span>
+              <div className="flex items-center gap-1.5 font-medium">
+                <User className="h-4 w-4 text-[#FF6B00] shrink-0" />
+                <span>{webinar.host || 'CBM Academy'}</span>
               </div>
             </div>
+
+            {/* What you will learn key highlights */}
+            {webinar.whatYouWillLearn && webinar.whatYouWillLearn.length > 0 && (
+              <div className="mt-4 pt-3 border-t border-orange-100">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-2">
+                  Session Highlights
+                </span>
+                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm text-slate-700">
+                  {webinar.whatYouWillLearn.slice(0, 4).map((item, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                      <span className="line-clamp-1">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
 
-          {/* Bottom Pricing & CTAs */}
-          <div className="mt-4 pt-3 border-t border-[#E5E7EB] flex flex-wrap items-center justify-between gap-3">
+          {/* Bottom Action strip */}
+          <div className="mt-6 pt-4 border-t border-orange-100 flex flex-wrap items-center justify-between gap-4">
             <div>
-              <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">
-                Registration Fee
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
+                {isFree ? '100% Free Live Access' : 'Full Workshop Access'}
               </span>
-              <span
-                className={`text-xl sm:text-2xl font-black ${
-                  isFree ? 'text-emerald-600' : 'text-[#072B57]'
-                }`}
-              >
-                {priceDisplay}
-              </span>
+              <div className="flex items-baseline gap-2">
+                <span
+                  className={`text-2xl font-black ${
+                    isFree ? 'text-emerald-600' : 'text-[#072B57]'
+                  }`}
+                >
+                  {priceDisplay}
+                </span>
+                {!isFree && (
+                  <span className="text-xs text-slate-400 line-through">
+                    ₹1,499
+                  </span>
+                )}
+                <span className="text-xs text-slate-500">
+                  · Includes session resources &amp; deck
+                </span>
+              </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   onSelect(webinar);
                 }}
-                className="inline-flex items-center justify-center rounded-[8px] border border-[#E5E7EB] bg-white px-3 py-2 text-xs font-bold text-[#072B57] transition-colors hover:border-[#072B57] hover:bg-slate-50 cursor-pointer"
+                className="inline-flex items-center justify-center rounded-xl border-2 border-[#072B57]/20 bg-white px-4 py-2.5 text-xs sm:text-sm font-bold text-[#072B57] transition-all hover:border-[#072B57] hover:bg-[#FFF5EC] cursor-pointer"
               >
-                View Details →
+                View Syllabus
               </button>
 
               {typeof webinar.max_capacity === 'number' &&
               typeof webinar.current_registrations === 'number' &&
               webinar.current_registrations >= webinar.max_capacity ? (
-                <span className="inline-flex items-center justify-center rounded-[8px] bg-slate-200 px-4 py-2 text-xs sm:text-sm font-bold text-slate-500 cursor-not-allowed">
-                  Registration Closed
+                <span className="inline-flex items-center justify-center rounded-xl bg-slate-100 px-5 py-2.5 text-xs sm:text-sm font-bold text-slate-400 cursor-not-allowed">
+                  Session Full
                 </span>
               ) : (
                 <button
@@ -151,9 +207,9 @@ export const FeaturedWebinarCard: React.FC<FeaturedWebinarCardProps> = ({
                     e.stopPropagation();
                     onRegister(webinar);
                   }}
-                  className="inline-flex items-center justify-center gap-1.5 rounded-[8px] bg-[#FF6B00] px-4 py-2 text-xs sm:text-sm font-bold text-white transition-all duration-150 hover:bg-[#e05f00] cursor-pointer shadow-xs active:scale-[0.98]"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#FF6B00] px-5 py-2.5 text-xs sm:text-sm font-bold text-white transition-all duration-150 hover:bg-[#e05f00] cursor-pointer shadow-sm hover:shadow-md active:scale-[0.98]"
                 >
-                  <span>Register Now</span>
+                  <span>Reserve Your Seat</span>
                   <ArrowRight className="h-4 w-4" />
                 </button>
               )}
@@ -161,6 +217,6 @@ export const FeaturedWebinarCard: React.FC<FeaturedWebinarCardProps> = ({
           </div>
         </div>
       </div>
-    </div>
+    </article>
   );
 };

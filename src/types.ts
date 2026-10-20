@@ -87,9 +87,18 @@ export interface BlogPost {
 }
 
 export type WebinarType = 'free' | 'paid';
-export type WebinarStatus = 'upcoming' | 'published' | 'draft' | 'completed';
+export type WebinarStatus = 'upcoming' | 'published' | 'draft' | 'completed' | 'cancelled';
 export type WebinarPaymentStatus = 'not_required' | 'pending' | 'paid' | 'failed' | 'expired';
-export type WebinarRegistrationStatus = 'pending' | 'approved' | 'cancelled';
+export type WebinarRegistrationStatus = 'pending' | 'approved' | 'cancelled' | 'attended';
+
+export type WebinarAttendeeRole =
+  | 'Student'
+  | 'Working Professional'
+  | 'Business Owner'
+  | 'Freelancer'
+  | 'Other';
+
+export type WebinarExperienceLevel = 'Beginner' | 'Intermediate' | 'Advanced';
 
 export interface Webinar {
   id: string;
@@ -106,8 +115,16 @@ export interface Webinar {
   registrationLink?: string;
   status: WebinarStatus;
   max_capacity?: number;
+  capacity?: number;
   current_registrations?: number;
   createdAt: string;
+  start_datetime?: string;
+  timezone?: string;
+  duration_minutes?: number;
+  registration_deadline?: string;
+  meeting_url?: string;
+  whatsapp_group_url?: string;
+  thumbnail_url?: string;
 }
 
 export interface WebinarRegistration {
@@ -120,19 +137,41 @@ export interface WebinarRegistration {
   fullName?: string;
   email: string;
   phone: string;
+  whatsapp_number?: string;
+  role?: WebinarAttendeeRole;
+  experience_level?: WebinarExperienceLevel;
+  company_or_college?: string;
+  learning_goal?: string;
+  email_reminders_consent?: boolean;
+  whatsapp_updates_consent?: boolean;
   message?: string;
   registration_type: 'free' | 'paid';
   amount: number;
   currency: string;
   payment_status: WebinarPaymentStatus;
   registration_status?: WebinarRegistrationStatus;
+  payment_reference?: string | null;
   razorpay_order_id?: string | null;
   razorpay_payment_id?: string | null;
   razorpay_signature?: string | null;
   razorpay_qr_id?: string | null;
   created_at: string;
+  registered_at?: string;
   registeredAt?: string;
   paid_at?: string | null;
+  confirmation_email_sent_at?: string | null;
+  attendance_status?: 'attended' | 'not_attended';
+}
+
+export interface ReminderLog {
+  id: string;
+  registration_id: string;
+  reminder_type: '24h_before' | '1h_before' | '15m_before';
+  scheduled_at: string;
+  sent_at?: string | null;
+  delivery_status: 'pending' | 'sent' | 'failed' | 'skipped';
+  error_message?: string | null;
+  created_at?: string;
 }
 
 export interface FormSubmissionResult {

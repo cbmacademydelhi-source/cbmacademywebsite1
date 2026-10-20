@@ -1,3 +1,4 @@
+import { supabase } from "../lib/supabase";
 import {
   ApplicationFormData,
   ContactFormData,
@@ -17,21 +18,114 @@ const JOBS_API =
   "https://cbm-jobs-api.cbmacademydelhi.workers.dev";
 
 /**
+ * Helper to securely insert into Supabase 'contact_submissions' table.
+ * First tries direct client-side insert with the publishable key.
+ * If direct insert encounters an RLS policy restriction or network error,
+ * securely falls back to the server endpoint so data is never lost.
+ */
+async function insertIntoContactSubmissions(record: {
+  full_name: string;
+  email: string;
+  phone: string;
+  message: string;
+}): Promise<{ success: boolean; error?: string }> {
+  let directErrorMsg = "";
+
+  // 1. Direct Supabase Client insertion (Publishable key)
+  try {
+    const { data, error } = await supabase
+      .from("contact_submissions")
+      .insert([
+        {
+          full_name: record.full_name,
+          email: record.email,
+          phone: record.phone,
+          message: record.message,
+        },
+      ])
+      .select();
+
+    if (!error && data && data.length > 0) {
+      return { success: true };
+    }
+
+    if (error) {
+      directErrorMsg = error.message;
+      console.warn("Direct Supabase insert notice:", error.message);
+    }
+  } catch (err: any) {
+    directErrorMsg = err?.message || "Supabase connection error";
+    console.warn("Direct Supabase insert exception:", err);
+  }
+
+  // 2. Server-side proxy insertion fallback
+  try {
+    const response = await fetch("/api/forms/contact", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        fullName: record.full_name,
+        email: record.email,
+        phone: record.phone,
+        message: record.message,
+      }),
+    });
+
+    if (response.ok) {
+      const serverResult = await response.json();
+      if (serverResult.success) {
+        return { success: true };
+      }
+      if (serverResult.message) {
+        directErrorMsg = serverResult.message;
+      }
+    }
+  } catch (serverErr) {
+    console.warn("Server fallback insert error:", serverErr);
+  }
+
+  return {
+    success: false,
+    error: directErrorMsg || "Database submission could not be completed.",
+  };
+}
+
+/**
+ * Send backup email notification via Web3Forms (non-blocking)
+ */
+async function sendNotificationEmail(payload: Record<string, any>): Promise<void> {
+  try {
+    await fetch(WEB3FORMS_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+  } catch (err) {
+    console.warn("Web3Forms email notification background note:", err);
+  }
+}
+
+/**
  * Submit Course Application
+ * Inserts directly into Supabase 'contact_submissions'
  */
 export async function submitApplicationForm(
   data: ApplicationFormData
 ): Promise<FormSubmissionResult> {
-  if (
-    data.honeypot &&
-    data.honeypot.trim() !== ""
-  ) {
+  // Honeypot / Spam Protection
+  if (data.honeypot && data.honeypot.trim() !== "") {
     return {
       success: false,
       message: "Spam detected. Submission blocked.",
     };
   }
 
+  // Input Validation
   if (
     !data.fullName?.trim() ||
     !data.email?.trim() ||
@@ -45,118 +139,77 @@ export async function submitApplicationForm(
     };
   }
 
-  const payload = {
-    access_key: WEB3FORMS_ACCESS_KEY,
+  const formattedMessage = [
+    `Application Track: ${data.course.trim()}`,
+    `Qualification: ${data.qualification.trim()}`,
+    data.message?.trim() ? `Applicant Note: ${data.message.trim()}` : null,
+  ]
+    .filter(Boolean)
+    .join("\n");
 
-    subject:
-      `New CBM Academy Course Application - ${data.fullName.trim()}`,
-
-    from_name: "CBM Academy Website",
-
-    name: data.fullName.trim(),
-
+  // Insert into Supabase contact_submissions table
+  const dbResult = await insertIntoContactSubmissions({
+    full_name: data.fullName.trim(),
     email: data.email.trim(),
-
     phone: data.phone.trim(),
+    message: formattedMessage,
+  });
 
-    qualification:
-      data.qualification.trim(),
-
-    course:
-      data.course.trim(),
-
-    message:
-      data.message?.trim() ||
-      "None provided",
-
-    submission_source:
-      "CBM Academy Official Website - Apply Now",
-
-    submitted_at:
-      new Date().toLocaleString(
-        "en-IN",
-        {
-          timeZone: "Asia/Kolkata",
-        }
-      ),
-
-    botcheck: "",
-  };
-
-  try {
-    const response =
-      await fetch(
-        WEB3FORMS_URL,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json",
-            Accept:
-              "application/json",
-          },
-          body:
-            JSON.stringify(payload),
-        }
-      );
-
-    const result =
-      await response.json();
-
-    if (
-      response.ok &&
-      result.success
-    ) {
-      return {
-        success: true,
-        message:
-          "Thank you! Your application has been sent to CBM Academy. Our admissions team will contact you within 24 hours.",
-      };
-    }
-
+  if (!dbResult.success) {
     return {
       success: false,
       message:
-        result.message ||
-        "We couldn't send your application right now. Please try again.",
-    };
-  } catch (error) {
-    console.error(
-      "Application form submission error:",
-      error
-    );
-
-    return {
-      success: false,
-      message:
-        "We couldn't send your application right now. Please check your internet connection and try again.",
+        dbResult.error ||
+        "We could not save your application at this time. Please check your connection and try again.",
     };
   }
-}
 
+  // Send email notification to academy office in background
+  sendNotificationEmail({
+    access_key: WEB3FORMS_ACCESS_KEY,
+    subject: `New CBM Academy Course Application - ${data.fullName.trim()}`,
+    from_name: "CBM Academy Website",
+    name: data.fullName.trim(),
+    email: data.email.trim(),
+    phone: data.phone.trim(),
+    qualification: data.qualification.trim(),
+    course: data.course.trim(),
+    message: data.message?.trim() || "None provided",
+    submission_source: "CBM Academy Official Website - Apply Now",
+    submitted_at: new Date().toLocaleString("en-IN", {
+      timeZone: "Asia/Kolkata",
+    }),
+    botcheck: "",
+  });
+
+  return {
+    success: true,
+    message:
+      "Thank you! Your application has been sent to CBM Academy. Our admissions team will contact you within 24 hours.",
+  };
+}
 
 /**
  * Submit Contact Inquiry
+ * Inserts directly into Supabase 'contact_submissions'
  */
 export async function submitContactForm(
   data: ContactFormData
 ): Promise<FormSubmissionResult> {
-  if (
-    data.honeypot &&
-    data.honeypot.trim() !== ""
-  ) {
+  // Honeypot / Spam Protection
+  if (data.honeypot && data.honeypot.trim() !== "") {
     return {
       success: false,
       message: "Spam detected. Submission blocked.",
     };
   }
 
+  // Input Validation
   if (
     !data.fullName?.trim() ||
     !data.email?.trim() ||
     !data.phone?.trim() ||
-    !data.subject?.trim() ||
-    !data.message?.trim()
+    (!data.message?.trim() && !data.subject?.trim())
   ) {
     return {
       success: false,
@@ -164,93 +217,49 @@ export async function submitContactForm(
     };
   }
 
-  const payload = {
-    access_key: WEB3FORMS_ACCESS_KEY,
+  const formattedMessage = data.subject?.trim()
+    ? `Subject: ${data.subject.trim()}\n\n${(data.message || "").trim()}`
+    : (data.message || "").trim();
 
-    subject:
-      `New CBM Academy Website Inquiry - ${data.subject.trim()}`,
+  // Insert into Supabase contact_submissions table
+  const dbResult = await insertIntoContactSubmissions({
+    full_name: data.fullName.trim(),
+    email: data.email.trim(),
+    phone: data.phone.trim(),
+    message: formattedMessage,
+  });
 
-    from_name:
-      "CBM Academy Website",
-
-    name:
-      data.fullName.trim(),
-
-    email:
-      data.email.trim(),
-
-    phone:
-      data.phone.trim(),
-
-    inquiry_subject:
-      data.subject.trim(),
-
-    message:
-      data.message.trim(),
-
-    submission_source:
-      "CBM Academy Official Website - Contact",
-
-    submitted_at:
-      new Date().toLocaleString(
-        "en-IN",
-        {
-          timeZone: "Asia/Kolkata",
-        }
-      ),
-
-    botcheck: "",
-  };
-
-  try {
-    const response =
-      await fetch(
-        WEB3FORMS_URL,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json",
-            Accept:
-              "application/json",
-          },
-          body:
-            JSON.stringify(payload),
-        }
-      );
-
-    const result =
-      await response.json();
-
-    if (
-      response.ok &&
-      result.success
-    ) {
-      return {
-        success: true,
-        message:
-          "Thank you! Your inquiry has been sent to CBM Academy. Our team will get back to you within 24 hours.",
-      };
-    }
-
+  if (!dbResult.success) {
     return {
       success: false,
       message:
-        result.message ||
-        "We couldn't send your message right now. Please try again.",
-    };
-  } catch (error) {
-    console.error(
-      "Contact form submission error:",
-      error
-    );
-
-    return {
-      success: false,
-      message:
-        "We couldn't send your message right now. Please check your internet connection and try again.",
+        dbResult.error ||
+        "We could not send your message right now. Please try again.",
     };
   }
+
+  // Send email notification to academy office in background
+  sendNotificationEmail({
+    access_key: WEB3FORMS_ACCESS_KEY,
+    subject: `New CBM Academy Website Inquiry - ${(data.subject || "General Inquiry").trim()}`,
+    from_name: "CBM Academy Website",
+    name: data.fullName.trim(),
+    email: data.email.trim(),
+    phone: data.phone.trim(),
+    inquiry_subject: (data.subject || "General Inquiry").trim(),
+    message: data.message?.trim() || "",
+    submission_source: "CBM Academy Official Website - Contact",
+    submitted_at: new Date().toLocaleString("en-IN", {
+      timeZone: "Asia/Kolkata",
+    }),
+    botcheck: "",
+  });
+
+  return {
+    success: true,
+    message:
+      "Thank you! Your inquiry has been sent to CBM Academy. Our team will get back to you within 24 hours.",
+  };
 }
 
 

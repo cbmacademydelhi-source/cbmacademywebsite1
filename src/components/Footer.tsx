@@ -11,23 +11,35 @@ interface FooterProps {
 export const Footer: React.FC<FooterProps> = ({ onOpenApply, onOpenBrochure }) => {
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newsletterEmail.trim()) return;
+    if (isSubmitting || !newsletterEmail.trim()) return;
+
+    setIsSubmitting(true);
+    setErrorMsg('');
 
     try {
-      await submitContactForm({
+      const result = await submitContactForm({
         fullName: 'Newsletter Subscriber',
         email: newsletterEmail.trim(),
         phone: '9876543210',
         subject: 'Newsletter Subscription (Weekly Growth Insights)',
         message: 'Subscribed to CBM Academy Weekly Digital Marketing Newsletter',
       });
+
+      if (result.success) {
+        setSubscribed(true);
+      } else {
+        setErrorMsg(result.message || 'Subscription failed. Please try again.');
+      }
     } catch (e) {
       console.error(e);
+      setErrorMsg('Subscription failed. Please check your connection and try again.');
     } finally {
-      setSubscribed(true);
+      setIsSubmitting(false);
     }
   };
 
@@ -145,17 +157,24 @@ export const Footer: React.FC<FooterProps> = ({ onOpenApply, onOpenBrochure }) =
                   <input
                     type="email"
                     required
+                    disabled={isSubmitting}
                     value={newsletterEmail}
                     onChange={(e) => setNewsletterEmail(e.target.value)}
                     placeholder="Enter your email"
-                    className="w-full bg-white/10 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:border-transparent"
+                    className="w-full bg-white/10 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:border-transparent disabled:opacity-60"
                   />
                 </div>
+                {errorMsg && (
+                  <p className="text-xs text-red-300 bg-red-950/40 p-2 rounded-lg border border-red-500/20">
+                    {errorMsg}
+                  </p>
+                )}
                 <button
                   type="submit"
-                  className="w-full bg-[#FF6B00] hover:bg-[#e05f00] text-white font-bold text-xs py-2.5 rounded-xl transition-colors shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
+                  disabled={isSubmitting}
+                  className="w-full bg-[#FF6B00] hover:bg-[#e05f00] text-white font-bold text-xs py-2.5 rounded-xl transition-colors shadow-sm flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  <span>Subscribe to Newsletter</span>
+                  <span>{isSubmitting ? 'Subscribing...' : 'Subscribe to Newsletter'}</span>
                   <Send className="w-3 h-3" />
                 </button>
               </form>

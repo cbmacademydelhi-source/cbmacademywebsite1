@@ -8,6 +8,8 @@ import {
   PhoneCall,
   ShieldCheck,
   Sparkles,
+  GraduationCap,
+  Search,
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -27,26 +29,26 @@ export const Header: React.FC<HeaderProps> = ({
   const shouldReduceMotion = useReducedMotion();
   const shouldAnimate = isHomePage && !shouldReduceMotion;
 
-  const navLinks = [
+  const primaryNavLinks = [
     { name: 'Home', href: '#home', id: 'home' },
     { name: 'Courses', href: '#course', id: 'course' },
     { name: 'Webinars', href: '#webinars', id: 'webinars' },
     { name: 'About', href: '#about', id: 'about' },
-    {
-      name: 'Certificate Verification',
-      href: '#certificate',
-      id: 'certificate',
-    },
-    { name: 'Jobs', href: '#jobs', id: 'jobs' },
-    { name: 'Blogs', href: '#blogs', id: 'blogs' },
+    { name: 'Blog', href: '#blogs', id: 'blogs' },
     { name: 'Contact', href: '#contact', id: 'contact' },
+  ];
+
+  const allNavLinks = [
+    ...primaryNavLinks,
+    { name: 'Certificate Verification', href: '#certificate', id: 'certificate' },
+    { name: 'Jobs', href: '#jobs', id: 'jobs' },
   ];
 
   useEffect(() => {
     const updatePage = () => {
       const hash = window.location.hash.replace('#', '');
 
-      if (hash && navLinks.some((link) => link.id === hash)) {
+      if (hash && allNavLinks.some((link) => link.id === hash)) {
         setActivePage(hash);
       } else if (hash === 'services') {
         setActivePage('about');
@@ -140,32 +142,37 @@ export const Header: React.FC<HeaderProps> = ({
         initial={shouldAnimate ? { opacity: 0 } : false}
         animate={shouldAnimate ? { opacity: 1 } : undefined}
         transition={{ duration: 0.5, delay: 0.05, ease: 'easeOut' }}
-        className={`sticky top-0 z-40 w-full transition-all duration-200 bg-white/95 backdrop-blur-md border-b ${
-          isScrolled
-            ? 'border-slate-200 shadow-md py-2'
-            : 'border-slate-100 py-3.5'
+        className={`sticky top-0 z-40 w-full transition-all duration-150 bg-white border-b border-gray-200 ${
+          isScrolled ? 'shadow-xs py-2' : 'py-2.5'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
 
-          {/* Logo */}
+          {/* Logo with Graduation Cap & Tagline */}
           <a
             href="#home"
             onClick={(e) => handleNavigation(e, '#home')}
-            className="flex-shrink-0 flex items-center group focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:ring-offset-2 rounded-lg"
+            className="flex-shrink-0 flex items-center gap-2.5 group focus:outline-none"
             id="header-logo-link"
             aria-label="CBM Academy Home"
           >
-            <CbmLogo
-              variant="light"
-              height={isScrolled ? 42 : 48}
-              showTagline={true}
-            />
+            <div className="w-8 h-8 rounded-lg bg-[#073B8C] text-white flex items-center justify-center shrink-0 shadow-xs">
+              <GraduationCap className="w-4.5 h-4.5" />
+            </div>
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1 leading-none">
+                <span className="font-extrabold text-[#FF6B00] text-base sm:text-lg tracking-tight">CBM</span>
+                <span className="font-extrabold text-[#073B8C] text-base sm:text-lg tracking-tight">Academy</span>
+              </div>
+              <span className="text-[10px] text-gray-500 font-medium tracking-wide leading-none mt-0.5">
+                Learn. Practice. Grow.
+              </span>
+            </div>
           </a>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
-            {navLinks.map((link) => {
+          <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
+            {primaryNavLinks.map((link) => {
               const isActive = activePage === link.id;
 
               return (
@@ -173,13 +180,11 @@ export const Header: React.FC<HeaderProps> = ({
                   key={link.id}
                   href={link.href}
                   id={`nav-link-${link.id}`}
-                  onClick={(e) =>
-                    handleNavigation(e, link.href)
-                  }
-                  className={`px-3 py-2 rounded-lg text-sm font-semibold transition-colors duration-150 whitespace-nowrap ${
+                  onClick={(e) => handleNavigation(e, link.href)}
+                  className={`py-1 text-sm transition-colors duration-150 whitespace-nowrap ${
                     isActive
-                      ? 'text-[#FF6B00] bg-orange-50 font-bold border-b-2 border-[#FF6B00]'
-                      : 'text-slate-600 hover:text-[#072B57] hover:bg-slate-50'
+                      ? 'text-[#072B57] font-bold border-b-2 border-[#FF6B00]'
+                      : 'text-slate-600 hover:text-[#FF6B00]'
                   }`}
                 >
                   {link.name}
@@ -188,25 +193,36 @@ export const Header: React.FC<HeaderProps> = ({
             })}
           </nav>
 
-          {/* Desktop Buttons */}
+          {/* Desktop Actions: Search Icon & Navy Enquire Now Button */}
           <div className="hidden sm:flex items-center gap-3">
             <button
-              onClick={onOpenBrochure}
-              id="header-brochure-btn"
               type="button"
-              className="text-xs font-bold text-[#072B57] hover:text-[#FF6B00] px-3.5 py-2 rounded-lg border border-slate-200 hover:border-slate-300 transition-colors cursor-pointer"
+              id="header-search-icon-btn"
+              onClick={() => {
+                if (activePage === 'webinars') {
+                  const searchInput = document.querySelector('input[placeholder*="Search webinars"]') as HTMLInputElement;
+                  searchInput?.focus();
+                } else {
+                  window.location.hash = 'webinars';
+                  setTimeout(() => {
+                    const searchInput = document.querySelector('input[placeholder*="Search webinars"]') as HTMLInputElement;
+                    searchInput?.focus();
+                  }, 100);
+                }
+              }}
+              aria-label="Search webinars"
+              className="p-2 text-gray-500 hover:text-[#073B8C] hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
             >
-              Brochure
+              <Search className="w-4 h-4" />
             </button>
 
             <button
               onClick={() => onOpenApply()}
-              id="header-apply-btn"
+              id="header-enquire-btn"
               type="button"
-              className="inline-flex items-center justify-center gap-2 bg-[#FF6B00] hover:bg-[#e05e00] text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow-sm hover:shadow transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:ring-offset-2"
+              className="inline-flex items-center justify-center bg-[#073B8C] hover:bg-[#052c6b] text-white font-medium text-xs sm:text-sm px-4 py-2 rounded-md shadow-xs transition-colors cursor-pointer active:scale-98"
             >
-              <span>Apply Now</span>
-              <ArrowRight className="w-4 h-4" />
+              Enquire Now
             </button>
           </div>
 
@@ -249,7 +265,7 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
 
             <div className="flex flex-col space-y-1 pt-2">
-              {navLinks.map((link) => {
+              {allNavLinks.map((link) => {
                 const isActive = activePage === link.id;
 
                 return (
