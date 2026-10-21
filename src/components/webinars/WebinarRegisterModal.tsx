@@ -459,7 +459,6 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
                     if (errors.fullName) setErrors((prev) => ({ ...prev, fullName: '' }));
                     if (serverError) setServerError('');
                   }}
-                  placeholder="e.g. Rahul Sharma"
                   disabled={isSubmitting}
                   className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-xs sm:text-sm text-[#072B57] placeholder:text-slate-400 focus:outline-none focus:ring-2 transition-all [text-decoration:none] ${
                     errors.fullName
@@ -497,7 +496,6 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
                     if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
                     if (serverError) setServerError('');
                   }}
-                  placeholder="e.g. rahul@example.com"
                   disabled={isSubmitting}
                   className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-xs sm:text-sm text-[#072B57] placeholder:text-slate-400 focus:outline-none focus:ring-2 transition-all [text-decoration:none] ${
                     errors.email
@@ -535,7 +533,6 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
                     if (errors.phone) setErrors((prev) => ({ ...prev, phone: '' }));
                     if (serverError) setServerError('');
                   }}
-                  placeholder="e.g. 9876543210"
                   disabled={isSubmitting}
                   className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-xs sm:text-sm text-[#072B57] placeholder:text-slate-400 focus:outline-none focus:ring-2 transition-all [text-decoration:none] ${
                     errors.phone
