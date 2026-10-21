@@ -186,6 +186,24 @@ export const WebinarsPage: React.FC<WebinarsPageProps> = ({
             <p className="mt-2 sm:mt-2.5 text-xs sm:text-sm text-slate-600 leading-relaxed max-w-md">
               Live sessions on digital marketing, AI tools and career growth.
             </p>
+
+            {/* Register Now CTA Button */}
+            <div className="mt-3.5 sm:mt-4">
+              <button
+                type="button"
+                id="btn-hero-register-now"
+                onClick={() => {
+                  const targetWebinar = latestWebinar || publicWebinars[0] || webinars[0];
+                  if (targetWebinar) {
+                    handleOpenRegister(targetWebinar);
+                  }
+                }}
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold text-white bg-[#FF6B00] hover:bg-[#e05f00] shadow-xs hover:shadow-md transition-all cursor-pointer active:scale-98"
+              >
+                <span>Register Now</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           {/* Right Side: Upcoming or Latest Webinar Card */}

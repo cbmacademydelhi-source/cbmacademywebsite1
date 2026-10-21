@@ -326,7 +326,7 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
                   Registration Confirmed!
                 </h3>
                 <p className="mt-1 text-xs sm:text-sm text-slate-600">
-                  Thank you, <span className="font-bold text-[#072B57]">{submittedData.name}</span>! Your registration details have been saved to Supabase.
+                  Thank you, <span className="font-bold text-[#072B57]">{submittedData.name}</span>! Your registration has been successfully received by CBM Academy. We look forward to seeing you at the session!
                 </p>
               </div>
 
@@ -373,7 +373,11 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
             /* ===================================================
                REGISTRATION FORM
             =================================================== */
-            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+            <form onSubmit={handleSubmit} className="space-y-4" noValidate autoComplete="off">
+              {/* Trap browser autofill heuristics */}
+              <input type="text" name="chrome_autofill_trap_1" style={{ display: 'none' }} tabIndex={-1} autoComplete="off" />
+              <input type="email" name="chrome_autofill_trap_2" style={{ display: 'none' }} tabIndex={-1} autoComplete="off" />
+              <input type="tel" name="chrome_autofill_trap_3" style={{ display: 'none' }} tabIndex={-1} autoComplete="off" />
               {serverError && (
                 <div
                   id="webinar-register-server-error"
@@ -434,14 +438,21 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
               {/* 2. Full Name */}
               <div>
                 <label
-                  htmlFor="register-fullname"
+                  htmlFor="cbm-reg-fullname"
                   className="block text-xs font-bold text-[#072B57] uppercase tracking-wider mb-1.5"
                 >
                   Full Name <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
-                  id="register-fullname"
+                  id="cbm-reg-fullname"
+                  name="cbm_student_name"
+                  autoComplete="one-time-code"
+                  autoCorrect="off"
+                  autoCapitalize="words"
+                  spellCheck={false}
+                  data-lpignore="true"
+                  data-form-type="other"
                   value={fullName}
                   onChange={(e) => {
                     setFullName(e.target.value);
@@ -450,7 +461,7 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
                   }}
                   placeholder="e.g. Rahul Sharma"
                   disabled={isSubmitting}
-                  className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-xs sm:text-sm text-[#072B57] placeholder:text-slate-400 focus:outline-none focus:ring-2 transition-all ${
+                  className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-xs sm:text-sm text-[#072B57] placeholder:text-slate-400 focus:outline-none focus:ring-2 transition-all [text-decoration:none] ${
                     errors.fullName
                       ? 'border-rose-300 ring-1 ring-rose-300 bg-rose-50/20'
                       : 'border-slate-300 focus:ring-[#FF6B00] focus:border-[#FF6B00]'
@@ -464,14 +475,22 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
               {/* 3. Email Address */}
               <div>
                 <label
-                  htmlFor="register-email"
+                  htmlFor="cbm-reg-email"
                   className="block text-xs font-bold text-[#072B57] uppercase tracking-wider mb-1.5"
                 >
                   Email Address <span className="text-rose-500">*</span>
                 </label>
                 <input
-                  type="email"
-                  id="register-email"
+                  type="text"
+                  inputMode="email"
+                  id="cbm-reg-email"
+                  name="cbm_student_email"
+                  autoComplete="one-time-code"
+                  autoCorrect="off"
+                  autoCapitalize="none"
+                  spellCheck={false}
+                  data-lpignore="true"
+                  data-form-type="other"
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
@@ -480,7 +499,7 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
                   }}
                   placeholder="e.g. rahul@example.com"
                   disabled={isSubmitting}
-                  className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-xs sm:text-sm text-[#072B57] placeholder:text-slate-400 focus:outline-none focus:ring-2 transition-all ${
+                  className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-xs sm:text-sm text-[#072B57] placeholder:text-slate-400 focus:outline-none focus:ring-2 transition-all [text-decoration:none] ${
                     errors.email
                       ? 'border-rose-300 ring-1 ring-rose-300 bg-rose-50/20'
                       : 'border-slate-300 focus:ring-[#FF6B00] focus:border-[#FF6B00]'
@@ -494,14 +513,22 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
               {/* 4. Phone/WhatsApp Number */}
               <div>
                 <label
-                  htmlFor="register-phone"
+                  htmlFor="cbm-reg-phone"
                   className="block text-xs font-bold text-[#072B57] uppercase tracking-wider mb-1.5"
                 >
                   Phone/WhatsApp Number <span className="text-rose-500">*</span>
                 </label>
                 <input
-                  type="tel"
-                  id="register-phone"
+                  type="text"
+                  inputMode="tel"
+                  id="cbm-reg-phone"
+                  name="cbm_student_phone"
+                  autoComplete="one-time-code"
+                  autoCorrect="off"
+                  autoCapitalize="none"
+                  spellCheck={false}
+                  data-lpignore="true"
+                  data-form-type="other"
                   value={phone}
                   onChange={(e) => {
                     setPhone(e.target.value);
@@ -510,7 +537,7 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
                   }}
                   placeholder="e.g. 9876543210"
                   disabled={isSubmitting}
-                  className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-xs sm:text-sm text-[#072B57] placeholder:text-slate-400 focus:outline-none focus:ring-2 transition-all ${
+                  className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-xs sm:text-sm text-[#072B57] placeholder:text-slate-400 focus:outline-none focus:ring-2 transition-all [text-decoration:none] ${
                     errors.phone
                       ? 'border-rose-300 ring-1 ring-rose-300 bg-rose-50/20'
                       : 'border-slate-300 focus:ring-[#FF6B00] focus:border-[#FF6B00]'
@@ -532,7 +559,7 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
                   {isSubmitting ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>Saving to Supabase...</span>
+                      <span>Sending...</span>
                     </>
                   ) : (
                     <span>Register Now</span>
