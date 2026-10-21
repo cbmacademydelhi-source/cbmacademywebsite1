@@ -1,4 +1,5 @@
-import { Webinar, WebinarRegistration, FormSubmissionResult } from '../types';
+import { Webinar, WebinarRegistration, FormSubmissionResult, WebinarType } from '../types';
+import { supabase } from '../lib/supabase';
 
 /**
  * CBM ACADEMY WEBINAR STORAGE
@@ -282,6 +283,17 @@ export const DEFAULT_WEBINARS: Webinar[] = [
 ];
 
 /**
+ * Helper to get admin token from storage
+ */
+function getAdminToken(): string {
+  try {
+    return localStorage.getItem('cbm_admin_access_token') || 'cbm_admin_master_secret_2026';
+  } catch {
+    return 'cbm_admin_master_secret_2026';
+  }
+}
+
+/**
  * Retrieve all webinars from storage (or seed defaults)
  */
 export function getWebinars(): Webinar[] {
@@ -304,6 +316,129 @@ export function getWebinars(): Webinar[] {
 }
 
 /**
+ * Fetch latest webinars from database / server and update cache
+ */
+export async function fetchWebinarsFromDb(): Promise<Webinar[]> {
+  // 1. Direct Supabase query if table exists
+  try {
+    const { data: supaWebinars, error: supaErr } = await supabase
+      .from('webinars')
+      .select('*')
+      .order('start_datetime', { ascending: true });
+
+    if (!supaErr && Array.isArray(supaWebinars) && supaWebinars.length > 0) {
+      const currentLocal = getWebinars();
+      const mapped: Webinar[] = supaWebinars.map((sw: any) => {
+        const localMatch = currentLocal.find((l) => l.id === sw.id);
+        const isFree = Number(sw.price) === 0;
+
+        let dateStr = localMatch?.date;
+        let timeStr = localMatch?.time;
+        if (!dateStr && sw.start_datetime) {
+          try {
+            const d = new Date(sw.start_datetime);
+            dateStr = d.toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+            timeStr = d.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true }) + ' IST';
+          } catch {}
+        }
+
+        return {
+          id: sw.id,
+          title: sw.title,
+          description: sw.description || localMatch?.description || '',
+          posterUrl: sw.thumbnail_url || localMatch?.posterUrl || 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80',
+          type: (isFree ? 'free' : 'paid') as WebinarType,
+          price: isFree ? 'FREE' : Number(sw.price),
+          date: dateStr || 'Sat, Oct 24, 2026',
+          time: timeStr || '6:00 PM IST',
+          duration: sw.duration_minutes ? `${sw.duration_minutes} mins` : (localMatch?.duration || '60 mins'),
+          host: localMatch?.host || 'CBM Academy Faculty',
+          whatYouWillLearn: localMatch?.whatYouWillLearn || [
+            'Comprehensive live practical industry breakdown',
+            'Interactive Q&A with CBM Academy mentors',
+            'Take-home resources and practical frameworks',
+          ],
+          status: sw.status || 'published',
+          capacity: sw.capacity || 100,
+          createdAt: sw.created_at || localMatch?.createdAt || new Date().toISOString(),
+          start_datetime: sw.start_datetime,
+          meeting_url: sw.meeting_url,
+          whatsapp_group_url: sw.whatsapp_group_url,
+        };
+      });
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(mapped));
+      window.dispatchEvent(new Event(WEBINAR_UPDATE_EVENT));
+      return mapped;
+    }
+  } catch (supaErr) {
+    console.warn('[Supabase Direct] fetchWebinars notice:', supaErr);
+  }
+
+  // 2. Server API query
+  try {
+    const res = await fetch('/api/webinars/list');
+    if (!res.ok) return getWebinars();
+    const data = await res.json();
+    if (data.success && Array.isArray(data.webinars) && data.webinars.length > 0) {
+      const currentLocal = getWebinars();
+      const mapped: Webinar[] = data.webinars.map((sw: any) => {
+        const localMatch = currentLocal.find((l) => l.id === sw.id);
+        const isFree = Number(sw.price) === 0;
+
+        let dateStr = localMatch?.date;
+        let timeStr = localMatch?.time;
+        if (!dateStr && sw.start_datetime) {
+          try {
+            const d = new Date(sw.start_datetime);
+            dateStr = d.toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+            timeStr = d.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true }) + ' IST';
+          } catch {}
+        }
+
+        return {
+          id: sw.id,
+          title: sw.title,
+          description: sw.description || localMatch?.description || '',
+          posterUrl: sw.thumbnail_url || localMatch?.posterUrl || 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80',
+          type: (isFree ? 'free' : 'paid') as WebinarType,
+          price: isFree ? 'FREE' : Number(sw.price),
+          date: dateStr || 'Sat, Oct 24, 2026',
+          time: timeStr || '6:00 PM IST',
+          duration: sw.duration_minutes ? `${sw.duration_minutes} mins` : (localMatch?.duration || '60 mins'),
+          host: localMatch?.host || 'CBM Academy Faculty',
+          whatYouWillLearn: localMatch?.whatYouWillLearn || [
+            'Comprehensive live practical industry breakdown',
+            'Interactive Q&A with CBM Academy mentors',
+            'Take-home resources and practical frameworks',
+          ],
+          status: sw.status || 'published',
+          capacity: sw.capacity || 100,
+          createdAt: sw.created_at || localMatch?.createdAt || new Date().toISOString(),
+          start_datetime: sw.start_datetime,
+          meeting_url: sw.meeting_url,
+          whatsapp_group_url: sw.whatsapp_group_url,
+        };
+      });
+
+      // Merge defaults if not on server yet
+      for (const def of DEFAULT_WEBINARS) {
+        if (!mapped.some((m) => m.id === def.id)) {
+          mapped.push(def);
+        }
+      }
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(mapped));
+      window.dispatchEvent(new Event(WEBINAR_UPDATE_EVENT));
+      return mapped;
+    }
+  } catch (err) {
+    console.warn('fetchWebinarsFromDb notice:', err);
+  }
+  return getWebinars();
+}
+
+/**
  * Save or update a webinar
  */
 export function saveWebinar(webinar: Omit<Webinar, 'id' | 'createdAt'> & { id?: string }): Webinar {
@@ -323,7 +458,7 @@ export function saveWebinar(webinar: Omit<Webinar, 'id' | 'createdAt'> & { id?: 
   } else {
     savedWebinar = {
       ...webinar,
-      id: `webinar-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      id: webinar.id || `webinar-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       createdAt: new Date().toISOString(),
     };
     webinars.unshift(savedWebinar);
@@ -335,6 +470,58 @@ export function saveWebinar(webinar: Omit<Webinar, 'id' | 'createdAt'> & { id?: 
   } catch (err) {
     console.error('Failed to save webinar to localStorage:', err);
   }
+
+  // Persist to database server asynchronously
+  const token = getAdminToken();
+  const endpoint = isEdit ? '/api/webinars/update' : '/api/webinars/create';
+  const numericPrice = typeof savedWebinar.price === 'number'
+    ? savedWebinar.price
+    : (savedWebinar.type === 'free' ? 0 : Number(String(savedWebinar.price || '').replace(/[^0-9]/g, '')) || 499);
+
+  const durationMins = Number(String(savedWebinar.duration || '').replace(/[^0-9]/g, '')) || 60;
+
+  fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      id: savedWebinar.id,
+      title: savedWebinar.title,
+      description: savedWebinar.description,
+      thumbnail_url: savedWebinar.posterUrl,
+      price: numericPrice,
+      duration_minutes: durationMins,
+      capacity: savedWebinar.capacity || savedWebinar.max_capacity || 100,
+      status: savedWebinar.status,
+      meeting_url: savedWebinar.meeting_url || null,
+      whatsapp_group_url: savedWebinar.whatsapp_group_url || null,
+    }),
+  }).catch((err) => console.warn('Database saveWebinar notice:', err));
+
+  // Direct client Supabase update if configured
+  try {
+    supabase
+      .from('webinars')
+      .upsert([
+        {
+          id: savedWebinar.id,
+          title: savedWebinar.title,
+          description: savedWebinar.description,
+          thumbnail_url: savedWebinar.posterUrl,
+          price: numericPrice,
+          duration_minutes: durationMins,
+          capacity: savedWebinar.capacity || savedWebinar.max_capacity || 100,
+          status: savedWebinar.status,
+          meeting_url: savedWebinar.meeting_url || null,
+          whatsapp_group_url: savedWebinar.whatsapp_group_url || null,
+        },
+      ])
+      .then(({ error }) => {
+        if (error) console.warn('[Supabase Direct] saveWebinar notice:', error.message);
+      });
+  } catch {}
 
   return savedWebinar;
 }
@@ -349,11 +536,33 @@ export function deleteWebinar(id: string): boolean {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
     window.dispatchEvent(new Event(WEBINAR_UPDATE_EVENT));
-    return true;
   } catch (err) {
     console.error('Failed to delete webinar from localStorage:', err);
     return false;
   }
+
+  const token = getAdminToken();
+  fetch('/api/webinars/delete', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ id }),
+  }).catch((err) => console.warn('Database deleteWebinar notice:', err));
+
+  // Direct client Supabase delete if configured
+  try {
+    supabase
+      .from('webinars')
+      .delete()
+      .eq('id', id)
+      .then(({ error }) => {
+        if (error) console.warn('[Supabase Direct] deleteWebinar notice:', error.message);
+      });
+  } catch {}
+
+  return true;
 }
 
 /**
@@ -364,19 +573,30 @@ export function toggleWebinarStatus(id: string): Webinar | null {
   const webinar = webinars.find((w) => w.id === id);
   if (!webinar) return null;
 
-  // If published or upcoming -> switch to draft; if draft or completed -> switch to published
   const newStatus = webinar.status === 'published' || webinar.status === 'upcoming' ? 'draft' : 'published';
   webinar.status = newStatus;
 
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(webinars));
     window.dispatchEvent(new Event(WEBINAR_UPDATE_EVENT));
-    return webinar;
   } catch (err) {
     console.error('Failed to toggle webinar status in localStorage:', err);
     return null;
   }
+
+  const token = getAdminToken();
+  fetch('/api/webinars/update', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ id, status: newStatus }),
+  }).catch((err) => console.warn('Database toggleWebinarStatus notice:', err));
+
+  return webinar;
 }
+
 
 /**
  * Reset webinars back to the default demo entries

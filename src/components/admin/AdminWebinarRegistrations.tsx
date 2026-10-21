@@ -14,6 +14,8 @@ import {
   Database,
   Info,
   ExternalLink,
+  Eye,
+  X,
 } from 'lucide-react';
 import { WebinarRegistration } from '../../types';
 import { fetchAdminRegistrations } from '../../services/webinarRegistrationService';
@@ -29,6 +31,7 @@ export const AdminWebinarRegistrations: React.FC<AdminWebinarRegistrationsProps>
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState<'all' | 'free' | 'paid'>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [selectedAttendee, setSelectedAttendee] = useState<WebinarRegistration | null>(null);
   const [configStatus, setConfigStatus] = useState<{
     supabaseConnected?: boolean;
     supabaseConfigured?: boolean;
@@ -362,9 +365,8 @@ export const AdminWebinarRegistrations: React.FC<AdminWebinarRegistrationsProps>
                 <th className="px-5 py-3.5">Amount</th>
                 <th className="px-5 py-3.5">Payment Status</th>
                 <th className="px-5 py-3.5">Registration Status</th>
-                <th className="px-5 py-3.5">Payment ID</th>
                 <th className="px-5 py-3.5">Registered At</th>
-                <th className="px-5 py-3.5">Paid At</th>
+                <th className="px-5 py-3.5 text-center">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-slate-700">
@@ -486,16 +488,19 @@ export const AdminWebinarRegistrations: React.FC<AdminWebinarRegistrationsProps>
                         )}
                       </td>
 
-                      <td className="px-5 py-3.5 whitespace-nowrap font-mono text-[11px] text-slate-500">
-                        {reg.razorpay_payment_id || '—'}
-                      </td>
-
                       <td className="px-5 py-3.5 whitespace-nowrap text-slate-500">
                         {dateFormatted}
                       </td>
 
-                      <td className="px-5 py-3.5 whitespace-nowrap text-slate-500">
-                        {paidDateFormatted}
+                      <td className="px-5 py-3.5 whitespace-nowrap text-center">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedAttendee(reg)}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#072B57] hover:bg-[#FF6B00] text-white text-xs font-semibold transition-colors cursor-pointer shadow-xs"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>Details</span>
+                        </button>
                       </td>
                     </tr>
                   );
@@ -505,6 +510,120 @@ export const AdminWebinarRegistrations: React.FC<AdminWebinarRegistrationsProps>
           </table>
         </div>
       </div>
+
+      {/* Attendee Details Modal */}
+      {selectedAttendee && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4"
+          onClick={() => setSelectedAttendee(null)}
+        >
+          <div
+            className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl border border-slate-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+              <h3 className="text-base font-bold text-[#072B57]">
+                Webinar Registration Details
+              </h3>
+              <button
+                type="button"
+                onClick={() => setSelectedAttendee(null)}
+                className="text-slate-400 hover:text-slate-700 p-1 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3.5 text-xs">
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Webinar</span>
+                  <span className="text-sm font-bold text-[#072B57]">{selectedAttendee.webinar_title || selectedAttendee.webinar_id}</span>
+                </div>
+                <span
+                  className={`px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase ${
+                    selectedAttendee.registration_type === 'paid'
+                      ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                      : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                  }`}
+                >
+                  {selectedAttendee.registration_type}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <span className="text-[11px] font-bold text-slate-400 uppercase block">Full Name</span>
+                  <span className="text-sm font-bold text-slate-800">{selectedAttendee.full_name}</span>
+                </div>
+                <div>
+                  <span className="text-[11px] font-bold text-slate-400 uppercase block">Email Address</span>
+                  <a href={`mailto:${selectedAttendee.email}`} className="text-sm font-medium text-indigo-600 hover:underline">
+                    {selectedAttendee.email}
+                  </a>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <span className="text-[11px] font-bold text-slate-400 uppercase block">Phone / WhatsApp</span>
+                  <a href={`tel:${selectedAttendee.phone || selectedAttendee.whatsapp_number}`} className="text-sm font-medium text-slate-800">
+                    {selectedAttendee.phone || selectedAttendee.whatsapp_number || 'N/A'}
+                  </a>
+                </div>
+                <div>
+                  <span className="text-[11px] font-bold text-slate-400 uppercase block">Submission Date</span>
+                  <span className="text-xs text-slate-700">
+                    {selectedAttendee.created_at
+                      ? new Date(selectedAttendee.created_at).toLocaleString('en-IN')
+                      : 'N/A'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Message / Question */}
+              <div>
+                <span className="text-[11px] font-bold text-slate-400 uppercase block mb-1">Message / Question from Attendee</span>
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 text-slate-700 leading-relaxed italic">
+                  {selectedAttendee.message || selectedAttendee.learning_goal || 'No specific question provided.'}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100">
+                <div>
+                  <span className="text-[10px] text-slate-400 uppercase block">Amount</span>
+                  <span className="font-bold text-slate-800">₹{selectedAttendee.amount || 0}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 uppercase block">Payment Status</span>
+                  <span className="font-bold capitalize text-slate-800">{selectedAttendee.payment_status || 'not_required'}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 uppercase block">Reg Status</span>
+                  <span className="font-bold capitalize text-slate-800">{selectedAttendee.registration_status || 'approved'}</span>
+                </div>
+              </div>
+
+              {selectedAttendee.razorpay_payment_id && (
+                <div className="pt-2">
+                  <span className="text-[10px] text-slate-400 uppercase block">Payment Transaction ID</span>
+                  <span className="font-mono text-xs text-slate-600">{selectedAttendee.razorpay_payment_id}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-5 pt-3 border-t border-slate-100 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setSelectedAttendee(null)}
+                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

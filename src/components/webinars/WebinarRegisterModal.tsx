@@ -1,470 +1,310 @@
 import React, { useState, useEffect } from 'react';
-import {
-  X,
-  CheckCircle2,
-  AlertCircle,
-  Loader2,
-  ShieldCheck,
-  Lock,
-  CreditCard,
-  QrCode,
-  Smartphone,
-  ArrowLeft,
-} from 'lucide-react';
+import { X, CheckCircle2, AlertCircle, Calendar, Clock, Loader2, Sparkles } from 'lucide-react';
 import { Webinar } from '../../types';
-import {
-  fetchWebinarConfigStatus,
-  submitFreeRegistration,
-  createPaidWebinarOrder,
-  verifyPaidWebinarPayment,
-  checkRegistrationStatus,
-  launchRazorpayCheckout,
-  ConfigStatusResponse,
-} from '../../services/webinarRegistrationService';
+import { supabase } from '../../lib/supabase';
 
-interface WebinarRegisterModalProps {
+export interface WebinarRegisterModalProps {
   isOpen: boolean;
   onClose: () => void;
-  selectedWebinar: Webinar | null;
-  availableWebinars: Webinar[];
-}
-
-interface QrSessionData {
-  registrationId: string;
-  orderId: string;
-  qrId?: string | null;
-  qrImageUrl?: string | null;
-  qrPayload?: string | null;
-  amount: number;
-  amountInINR: number;
-  keyId: string;
-  webinarTitle: string;
-  webinarDate: string;
-  webinarTime: string;
-  webinarDuration: string;
-  isTestMode?: boolean;
+  webinar?: Webinar | null;
+  selectedWebinar?: Webinar | null;
+  availableWebinars?: Webinar[];
 }
 
 export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
   isOpen,
   onClose,
+  webinar,
   selectedWebinar,
   availableWebinars,
 }) => {
+  // Resolve the active webinar from either prop or fallback to first available
+  const activeWebinar: Webinar | null =
+    webinar ||
+    selectedWebinar ||
+    (availableWebinars && availableWebinars.length > 0 ? availableWebinars[0] : null);
+
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [webinarId, setWebinarId] = useState('');
-  const [message, setMessage] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [submittingStep, setSubmittingStep] = useState<string>('');
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [serverError, setServerError] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [successDetails, setSuccessDetails] = useState<{
+  const [submittedData, setSubmittedData] = useState<{
+    name: string;
+    email: string;
+    phone: string;
     webinarTitle: string;
     date: string;
     time: string;
     duration: string;
-    isPaid: boolean;
-    amount: number;
-    paymentId?: string;
   } | null>(null);
 
-  // Active Razorpay QR Session State
-  const [qrSession, setQrSession] = useState<QrSessionData | null>(null);
-
-  const [configStatus, setConfigStatus] = useState<ConfigStatusResponse>({
-    supabaseConfigured: true,
-    razorpayConfigured: false,
-    razorpayKeyId: null,
-  });
-
-  useEffect(() => {
-    if (selectedWebinar) {
-      setWebinarId(selectedWebinar.id);
-    } else if (availableWebinars.length > 0 && !webinarId) {
-      setWebinarId(availableWebinars[0].id);
-    }
-  }, [selectedWebinar, availableWebinars]);
-
+  // Reset form when modal opens or active webinar changes
   useEffect(() => {
     if (isOpen) {
-      setError('');
+      setFullName('');
+      setEmail('');
+      setPhone('');
+      setErrors({});
+      setServerError('');
+      setIsSubmitting(false);
       setIsSuccess(false);
-      setSuccessDetails(null);
-      setQrSession(null);
-      fetchWebinarConfigStatus().then((cfg) => setConfigStatus(cfg));
+      setSubmittedData(null);
     }
-  }, [isOpen]);
+  }, [isOpen, activeWebinar?.id]);
 
-  // ==========================================
-  // POLLING LISTENER FOR QR CODE PAYMENT
-  // ==========================================
+  // Handle escape key
   useEffect(() => {
-    if (!qrSession?.registrationId) return;
-
-    let isSubscribed = true;
-    const interval = setInterval(async () => {
-      try {
-        const statusRes = await checkRegistrationStatus(qrSession.registrationId);
-        if (!isSubscribed) return;
-
-        // Payment confirmed & verified server-side
-        if (
-          statusRes.payment_status === 'paid' &&
-          statusRes.registration_status === 'approved'
-        ) {
-          clearInterval(interval);
-          setSuccessDetails({
-            webinarTitle: qrSession.webinarTitle,
-            date: qrSession.webinarDate,
-            time: qrSession.webinarTime,
-            duration: qrSession.webinarDuration,
-            isPaid: true,
-            amount: qrSession.amountInINR,
-            paymentId: statusRes.payment_id || undefined,
-          });
-          setQrSession(null);
-          setIsSuccess(true);
-          setFullName('');
-          setEmail('');
-          setPhone('');
-          setMessage('');
-        } else if (statusRes.payment_status === 'failed') {
-          clearInterval(interval);
-          setError('Payment could not be completed. Please try again.');
-          setQrSession(null);
-        } else if (statusRes.payment_status === 'expired') {
-          clearInterval(interval);
-          setError('Payment QR has expired. Please try again.');
-          setQrSession(null);
-        }
-      } catch (pollErr) {
-        console.warn('[Polling] Registration status check notice:', pollErr);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
       }
-    }, 2500);
-
-    return () => {
-      isSubscribed = false;
-      clearInterval(interval);
     };
-  }, [qrSession]);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
-  const currentWebinar = availableWebinars.find((w) => w.id === webinarId) || selectedWebinar;
-  const isPaid = currentWebinar?.type === 'paid';
-  const webinarPrice = typeof currentWebinar?.price === 'number' ? currentWebinar.price : 499;
+  const webinarTitle = activeWebinar?.title || 'Digital Marketing Live Masterclass';
+  const webinarDate = activeWebinar?.date || 'Upcoming Live Session';
+  const webinarTime = activeWebinar?.time || '6:00 PM IST';
+  const webinarDuration = activeWebinar?.duration || '60 mins';
+  const webinarId = activeWebinar?.id || 'webinar-live-masterclass';
 
-  // Capacity evaluation
-  const isCapacityReached =
-    typeof currentWebinar?.max_capacity === 'number' &&
-    typeof currentWebinar?.current_registrations === 'number' &&
-    currentWebinar.current_registrations >= currentWebinar.max_capacity;
+  const validatePhone = (value: string): boolean => {
+    const cleaned = value.replace(/[\s\-\(\)\+]/g, '');
+    if (cleaned.length === 10 && /^[6-9]\d{9}$/.test(cleaned)) return true;
+    if (cleaned.length === 12 && cleaned.startsWith('91') && /^91[6-9]\d{9}$/.test(cleaned)) return true;
+    // Allow standard 10+ digits international format as well
+    if (cleaned.length >= 10 && /^\d{10,13}$/.test(cleaned)) return true;
+    return false;
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    if (!fullName.trim()) {
+      newErrors.fullName = 'Full Name is required';
+    }
+
+    if (!email.trim()) {
+      newErrors.email = 'Email Address is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
+    if (!phone.trim()) {
+      newErrors.phone = 'Phone / WhatsApp Number is required';
+    } else if (!validatePhone(phone.trim())) {
+      newErrors.phone = 'Please enter a valid 10-digit mobile number';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (submitting) return; // Prevent double submission
-    setError('');
+    if (isSubmitting) return;
+    setServerError('');
 
-    // Form validation
-    if (!fullName.trim()) {
-      setError('Please enter your full name.');
+    if (!validateForm()) {
       return;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email.trim() || !emailRegex.test(email.trim())) {
-      setError('Please enter a valid email address.');
-      return;
-    }
+    setIsSubmitting(true);
 
-    const phoneDigits = phone.replace(/\D/g, '');
-    if (!phone.trim() || phoneDigits.length < 10) {
-      setError('Please enter a valid 10-digit mobile number.');
-      return;
-    }
+    const cleanFullName = fullName.trim();
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanPhone = phone.trim();
 
-    if (!webinarId || !currentWebinar) {
-      setError('Please select a webinar.');
-      return;
-    }
+    let savedSuccessfully = false;
+    let submissionErrorMessage = '';
 
-    if (isCapacityReached) {
-      setError('Registration Closed: This webinar has reached maximum capacity.');
-      return;
-    }
-
-    setSubmitting(true);
-
-    // ==========================================
-    // 1. FREE WEBINAR FLOW
-    // ==========================================
-    if (!isPaid) {
-      setSubmittingStep('Confirming free registration in Supabase...');
-      try {
-        const result = await submitFreeRegistration({
-          webinarId: currentWebinar.id,
-          webinarTitle: currentWebinar.title,
-          fullName: fullName.trim(),
-          email: email.trim(),
-          phone: phone.trim(),
-          message: message.trim(),
-          date: currentWebinar.date,
-          time: currentWebinar.time,
-          duration: currentWebinar.duration,
-        });
-
-        if (result.success) {
-          setSuccessDetails({
-            webinarTitle: currentWebinar.title,
-            date: currentWebinar.date,
-            time: currentWebinar.time,
-            duration: currentWebinar.duration,
-            isPaid: false,
-            amount: 0,
-          });
-          setIsSuccess(true);
-          setFullName('');
-          setEmail('');
-          setPhone('');
-          setMessage('');
-        } else {
-          setError(
-            result.message ||
-              'Something went wrong while completing your registration. Please try again.'
-          );
-        }
-      } catch (err: any) {
-        console.error('Free registration error:', err);
-        setError(
-          err.message ||
-            'Something went wrong while completing your registration. Please try again.'
-        );
-      } finally {
-        setSubmitting(false);
-        setSubmittingStep('');
-      }
-      return;
-    }
-
-    // ==========================================
-    // 2. PAID WEBINAR FLOW (Razorpay QR Session)
-    // ==========================================
-    setSubmittingStep('Creating secure Razorpay QR session...');
-
+    // =========================================================================
+    // 1. Direct Supabase Client Insertion (Uses existing Supabase setup & RLS)
+    // =========================================================================
     try {
-      const orderData = await createPaidWebinarOrder({
-        webinarId: currentWebinar.id,
-        webinarTitle: currentWebinar.title,
-        fullName: fullName.trim(),
-        email: email.trim(),
-        phone: phone.trim(),
-        message: message.trim(),
-        price: webinarPrice,
-        date: currentWebinar.date,
-        time: currentWebinar.time,
-        duration: currentWebinar.duration,
-      });
-
-      if (!orderData.orderId || !orderData.registrationId) {
-        throw new Error('Order creation was incomplete.');
-      }
-
-      // Enter QR Payment State
-      setQrSession({
-        registrationId: orderData.registrationId,
-        orderId: orderData.orderId,
-        qrId: orderData.qrId,
-        qrImageUrl: orderData.qrImageUrl,
-        qrPayload: orderData.qrPayload,
-        amount: orderData.amount,
-        amountInINR: orderData.amountInINR,
-        keyId: orderData.keyId,
-        webinarTitle: currentWebinar.title,
-        webinarDate: currentWebinar.date,
-        webinarTime: currentWebinar.time,
-        webinarDuration: currentWebinar.duration,
-        isTestMode: orderData.isTestMode,
-      });
-    } catch (err: any) {
-      console.warn('Paid registration initiation notice:', err);
-      setError(err?.message || 'Payment could not be completed. Please try again.');
-    } finally {
-      setSubmitting(false);
-      setSubmittingStep('');
-    }
-  };
-
-  /**
-   * Verify Payment Status in Test/Live Mode with Razorpay
-   */
-  const handleCheckPaymentStatus = async () => {
-    if (!qrSession) return;
-    setSubmitting(true);
-    setSubmittingStep('Verifying payment with Razorpay...');
-
-    try {
-      const statusRes = await checkRegistrationStatus(qrSession.registrationId);
-      if (statusRes.success && statusRes.payment_status === 'paid') {
-        setSuccessDetails({
-          webinarTitle: qrSession.webinarTitle,
-          date: qrSession.webinarDate,
-          time: qrSession.webinarTime,
-          duration: qrSession.webinarDuration,
-          isPaid: true,
-          amount: qrSession.amountInINR,
-          paymentId: statusRes.payment_id || `pay_${Date.now().toString(36)}`,
-        });
-        setQrSession(null);
-        setIsSuccess(true);
-        setFullName('');
-        setEmail('');
-        setPhone('');
-        setMessage('');
-      } else {
-        setError(
-          statusRes.message ||
-            'Payment is pending. Please complete the transaction in your UPI app or using cards/netbanking.'
-        );
-      }
-    } catch (err: any) {
-      console.warn('Payment check error:', err);
-      setError(err?.message || 'Payment status could not be verified. Please try again.');
-    } finally {
-      setSubmitting(false);
-      setSubmittingStep('');
-    }
-  };
-
-  /**
-   * Optional Fallback: Launch Razorpay Checkout Modal for Cards/Netbanking
-   */
-  const handleLaunchCheckoutModal = async () => {
-    if (!qrSession) return;
-    setSubmitting(true);
-    setSubmittingStep('Opening Razorpay Gateway...');
-
-    try {
-      await launchRazorpayCheckout({
-        keyId: qrSession.keyId,
-        orderId: qrSession.orderId,
-        amountInPaise: qrSession.amount,
+      // Primary: Insert into webinar_registrations table (without .select() to respect RLS INSERT policy)
+      const regRecord = {
+        webinar_id: webinarId,
+        webinar_title: webinarTitle,
+        full_name: cleanFullName,
+        email: cleanEmail,
+        whatsapp_number: cleanPhone,
+        phone: cleanPhone,
+        registration_type: 'free',
+        amount: 0,
         currency: 'INR',
-        webinarTitle: qrSession.webinarTitle,
-        userName: fullName.trim(),
-        userEmail: email.trim(),
-        userPhone: phone.trim(),
-        onSuccess: async (rzpResponse) => {
-          setSubmittingStep('Verifying payment securely on server...');
-          try {
-            const verifyResult = await verifyPaidWebinarPayment({
-              razorpay_order_id: rzpResponse.razorpay_order_id,
-              razorpay_payment_id: rzpResponse.razorpay_payment_id,
-              razorpay_signature: rzpResponse.razorpay_signature,
-              registrationId: qrSession.registrationId,
-              webinarId: currentWebinar?.id || '',
-              webinarTitle: qrSession.webinarTitle,
-              fullName: fullName.trim(),
-              email: email.trim(),
-              phone: phone.trim(),
-              message: message.trim(),
-              amount: qrSession.amountInINR,
-            });
+        payment_status: 'not_required',
+        registration_status: 'approved',
+      };
 
-            if (verifyResult.success) {
-              setSuccessDetails({
-                webinarTitle: qrSession.webinarTitle,
-                date: qrSession.webinarDate,
-                time: qrSession.webinarTime,
-                duration: qrSession.webinarDuration,
-                isPaid: true,
-                amount: qrSession.amountInINR,
-                paymentId: rzpResponse.razorpay_payment_id,
-              });
-              setQrSession(null);
-              setIsSuccess(true);
-              setFullName('');
-              setEmail('');
-              setPhone('');
-              setMessage('');
-            } else {
-              setError('Payment could not be completed. Please try again.');
-            }
-          } catch (verErr: any) {
-            console.error('Payment verification error:', verErr);
-            setError('Payment could not be completed. Please try again.');
-          } finally {
-            setSubmitting(false);
-            setSubmittingStep('');
-          }
-        },
-        onFailure: (errorMsg) => {
-          console.warn('[Razorpay] Payment declined or failed:', errorMsg);
-          setError('Payment could not be completed. Please try again.');
-          setSubmitting(false);
-          setSubmittingStep('');
-        },
-        onDismiss: () => {
-          setError('Payment was cancelled. Your registration has not been confirmed.');
-          setSubmitting(false);
-          setSubmittingStep('');
-        },
+      const { error: regError } = await supabase
+        .from('webinar_registrations')
+        .insert([regRecord]);
+
+      if (!regError) {
+        savedSuccessfully = true;
+      } else {
+        console.warn('webinar_registrations table insert notice:', regError.message);
+      }
+
+      // Also persist to website_submissions table
+      const { error: subError } = await supabase
+        .from('website_submissions')
+        .insert([
+          {
+            form_type: 'webinar_registration',
+            name: cleanFullName,
+            email: cleanEmail,
+            phone: cleanPhone,
+            course: webinarTitle,
+            message: `[Webinar Registration] ${webinarTitle} - Date: ${webinarDate} ${webinarTime}`,
+            form_data: {
+              full_name: cleanFullName,
+              email: cleanEmail,
+              phone: cleanPhone,
+              webinar_id: webinarId,
+              webinar_title: webinarTitle,
+              date: webinarDate,
+              time: webinarTime,
+              duration: webinarDuration,
+              registration_type: 'free',
+            },
+          },
+        ]);
+
+      if (!subError) {
+        savedSuccessfully = true;
+      }
+
+      // Also persist to contact_submissions table
+      const { error: contactError } = await supabase
+        .from('contact_submissions')
+        .insert([
+          {
+            full_name: cleanFullName,
+            email: cleanEmail,
+            phone: cleanPhone,
+            message: `[Webinar Registration]\nWebinar: ${webinarTitle}\nStatus: Approved (Free Access)`,
+          },
+        ]);
+
+      if (!contactError) {
+        savedSuccessfully = true;
+      }
+    } catch (dbErr: any) {
+      console.warn('Direct Supabase insert exception:', dbErr);
+    }
+
+    // =========================================================================
+    // 2. Server API fallback & automated notification trigger
+    // =========================================================================
+    try {
+      const response = await fetch('/api/webinars/register-free', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          webinarId,
+          webinarTitle,
+          fullName: cleanFullName,
+          email: cleanEmail,
+          whatsappNumber: cleanPhone,
+          phone: cleanPhone,
+          date: webinarDate,
+          time: webinarTime,
+          duration: webinarDuration,
+        }),
       });
-    } catch (err: any) {
-      console.error('Launch checkout error:', err);
-      setError('Payment could not be completed. Please try again.');
-      setSubmitting(false);
-      setSubmittingStep('');
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          savedSuccessfully = true;
+        } else if (result.message) {
+          submissionErrorMessage = result.message;
+        }
+      } else {
+        const errorData = await response.json().catch(() => null);
+        if (errorData?.message) {
+          submissionErrorMessage = errorData.message;
+        }
+      }
+    } catch (apiErr: any) {
+      console.warn('Server registration dispatch notice:', apiErr);
+    }
+
+    setIsSubmitting(false);
+
+    if (savedSuccessfully) {
+      setSubmittedData({
+        name: cleanFullName,
+        email: cleanEmail,
+        phone: cleanPhone,
+        webinarTitle,
+        date: webinarDate,
+        time: webinarTime,
+        duration: webinarDuration,
+      });
+      setIsSuccess(true);
+    } else {
+      setServerError(
+        submissionErrorMessage ||
+          'Failed to record your registration in the database. Please check your network connection and try again.'
+      );
     }
   };
 
-  const handleCancelQrSession = () => {
-    setQrSession(null);
-    setError('Payment was cancelled. Your registration has not been confirmed.');
-  };
-
-  const handleClose = () => {
-    setError('');
+  const handleCloseModal = () => {
     setIsSuccess(false);
-    setSuccessDetails(null);
-    setQrSession(null);
+    setErrors({});
+    setServerError('');
     onClose();
   };
 
   return (
     <div
       id="webinar-register-modal-overlay"
-      className="fixed inset-0 z-[10020] flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs overflow-y-auto"
-      onClick={handleClose}
+      className="fixed inset-0 z-[10020] flex items-center justify-center bg-slate-900/70 backdrop-blur-xs p-4 overflow-y-auto"
+      onClick={handleCloseModal}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="webinar-register-title"
     >
       <div
         id="webinar-register-modal-content"
-        className="relative my-8 w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl border border-[#E5E7EB]"
+        className="relative my-8 w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl border border-slate-200 animate-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="webinar-register-title"
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#E5E7EB] bg-[#072B57] px-6 py-4 text-white">
-          <div>
-            <h3 id="webinar-register-title" className="text-lg font-bold">
-              {qrSession ? 'Complete Your Webinar Registration' : 'Reserve Your Webinar Seat'}
-            </h3>
-            <p className="text-xs text-slate-300">
-              {qrSession
-                ? 'Complete the payment to confirm your registration for this premium webinar.'
-                : 'Choose your webinar, complete the registration form and secure your place for the upcoming session.'}
+        <div className="flex items-start justify-between border-b border-slate-100 bg-[#072B57] px-6 py-5 text-white">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider bg-[#FF6B00] text-white">
+                <Sparkles className="w-3 h-3" />
+                Free Masterclass
+              </span>
+            </div>
+            <h2 id="webinar-register-title" className="text-lg sm:text-xl font-black tracking-tight text-white">
+              {isSuccess ? 'Registration Confirmed' : 'Register for Webinar'}
+            </h2>
+            <p className="text-xs text-slate-300 leading-snug">
+              {isSuccess
+                ? 'Your seat has been reserved. See you at the live session!'
+                : 'Fill in your details below to secure your free live access.'}
             </p>
           </div>
 
           <button
             type="button"
             id="btn-close-register-modal"
-            onClick={handleClose}
-            aria-label="Close"
-            className="rounded-lg p-1.5 text-slate-300 transition-colors hover:bg-white/10 hover:text-white cursor-pointer"
+            onClick={handleCloseModal}
+            aria-label="Close modal"
+            className="rounded-xl p-1.5 text-slate-300 transition-colors hover:bg-white/10 hover:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
           >
             <X className="h-5 w-5" />
           </button>
@@ -472,256 +312,60 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
 
         {/* Modal Body */}
         <div className="p-6 sm:p-7">
-          {isSuccess && successDetails ? (
+          {isSuccess && submittedData ? (
             /* ===================================================
-               SUCCESS SCREEN (Per User Requirement 8 & 14)
-               - "Payment successful! Your webinar registration is confirmed."
-               - "You're Registered!"
-               - Webinar Title
-               - Date, Time, Duration
-               - Amount Paid (for paid)
-               - Payment ID
-               - "Webinar details will be sent to your registered email."
+               SUCCESS VIEW
             =================================================== */
-            <div id="webinar-registration-success-state" className="text-center py-4">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 mb-4 animate-bounce-short">
+            <div id="webinar-register-success-view" className="text-center py-3 space-y-4">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
                 <CheckCircle2 className="h-9 w-9" />
               </div>
 
-              <h4 className="text-2xl font-black text-[#072B57]">
-                Registration Confirmed!
-              </h4>
-
-              <div className="mt-2 inline-block rounded-full bg-emerald-50 px-4 py-1 text-xs font-extrabold text-emerald-700 border border-emerald-200">
-                {successDetails.isPaid
-                  ? 'Payment successful! Your webinar registration is confirmed.'
-                  : 'Free Registration Confirmed'}
-              </div>
-
-              {/* Webinar Details Card */}
-              <div className="mt-5 rounded-xl bg-[#F8FAFC] border border-[#E5E7EB] p-4 text-left max-w-md mx-auto space-y-2">
-                <div className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                  Webinar Details
-                </div>
-                <div className="text-base font-extrabold text-[#072B57]">
-                  {successDetails.webinarTitle}
-                </div>
-                <div className="text-xs text-slate-600 grid grid-cols-2 gap-2 pt-1 border-t border-slate-200">
-                  <div>
-                    <span className="font-semibold text-slate-700">Date:</span>{' '}
-                    {successDetails.date}
-                  </div>
-                  <div>
-                    <span className="font-semibold text-slate-700">Time:</span>{' '}
-                    {successDetails.time}
-                  </div>
-                  <div className="col-span-2">
-                    <span className="font-semibold text-slate-700">Duration:</span>{' '}
-                    {successDetails.duration}
-                  </div>
-                </div>
-
-                {successDetails.isPaid && (
-                  <div className="mt-2 pt-2 border-t border-slate-200 flex items-center justify-between text-xs">
-                    <span className="font-semibold text-slate-700">Amount Paid:</span>
-                    <span className="text-sm font-extrabold text-[#072B57]">
-                      ₹{successDetails.amount}
-                    </span>
-                  </div>
-                )}
-
-                {successDetails.paymentId && (
-                  <div className="text-[11px] text-slate-500 pt-1">
-                    <span className="font-semibold">Payment ID:</span>{' '}
-                    {successDetails.paymentId}
-                  </div>
-                )}
-              </div>
-
-              <p className="mt-4 text-xs sm:text-sm text-slate-600 max-w-sm mx-auto leading-relaxed">
-                Your registration for the webinar has been successfully confirmed. Webinar details and joining instructions will be shared with you on your registered email address.
-              </p>
-
-              <button
-                type="button"
-                id="btn-registration-done-close"
-                onClick={handleClose}
-                className="mt-6 inline-flex items-center justify-center rounded-xl bg-[#072B57] px-8 py-2.5 text-xs sm:text-sm font-bold text-white transition-colors hover:bg-[#0c3c78] cursor-pointer shadow-sm"
-              >
-                Explore More Webinars
-              </button>
-            </div>
-          ) : qrSession ? (
-            /* ===================================================
-               RAZORPAY QR PAYMENT INTERFACE (User Requirement 3 & 4)
-               - Scan QR code using your UPI app
-               - Waiting for payment...
-               - Real-time server-side verified confirmation
-            =================================================== */
-            <div id="razorpay-qr-payment-view" className="text-center py-2 space-y-4">
-              {/* Back / Cancel button */}
-              <div className="flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={handleCancelQrSession}
-                  className="flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
-                >
-                  <ArrowLeft className="h-3.5 w-3.5" />
-                  <span>Back to details</span>
-                </button>
-                <span className="text-xs font-bold text-slate-400">Order #{qrSession.orderId.slice(-6)}</span>
-              </div>
-
-              {/* Amount and Webinar Header */}
-              <div className="rounded-xl bg-[#072B57]/5 border border-[#072B57]/15 p-3 flex items-center justify-between text-left">
-                <div>
-                  <div className="text-xs font-bold text-[#072B57] line-clamp-1">
-                    {qrSession.webinarTitle}
-                  </div>
-                  <div className="text-[11px] text-slate-500">
-                    Live Session Seat Reservation
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-xs text-slate-400 font-semibold uppercase">Amount</div>
-                  <div className="text-xl font-black text-[#072B57]">
-                    ₹{qrSession.amountInINR}
-                  </div>
-                </div>
-              </div>
-
-              {/* QR Code Container */}
-              <div className="mx-auto flex flex-col items-center justify-center p-4 bg-white rounded-2xl border-2 border-slate-200 shadow-sm max-w-[260px]">
-                <div className="relative w-[210px] h-[210px] flex items-center justify-center bg-white rounded-xl overflow-hidden">
-                  <img
-                    src={
-                      qrSession.qrImageUrl ||
-                      `https://api.qrserver.com/v1/create-qr-code/?size=210x210&margin=4&data=${encodeURIComponent(
-                        qrSession.qrPayload || `upi://pay?am=${qrSession.amountInINR}&cu=INR`
-                      )}`
-                    }
-                    alt="CBM Academy Webinar Registration Razorpay UPI Payment QR Code"
-                    title="Scan to pay for CBM Academy Webinar"
-                    width={210}
-                    height={210}
-                    decoding="async"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <div className="mt-2 text-[10px] font-bold tracking-wider text-slate-500 uppercase flex items-center gap-1">
-                  <QrCode className="h-3 w-3 text-[#FF6B00]" />
-                  <span>Razorpay Verified UPI QR</span>
-                </div>
-              </div>
-
-              {/* Primary Instruction Messages (Exact User Requirement) */}
-              <div className="space-y-1.5 pt-1">
-                <div className="text-sm font-bold text-[#072B57]">
-                  Scan the QR code using your preferred UPI app to complete the payment.
-                </div>
-
-                {/* Animated status beacon */}
-                <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 border border-emerald-200">
-                  <span className="relative flex h-2.5 w-2.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                  </span>
-                  <span className="text-xs font-semibold text-emerald-800">
-                    Waiting for payment...
-                  </span>
-                </div>
-
-                <p className="text-[11px] text-slate-500 max-w-xs mx-auto pt-1 leading-snug">
-                  Payment is pending. Your registration will be confirmed after successful payment verification.
+              <div>
+                <h3 className="text-xl sm:text-2xl font-black text-[#072B57]">
+                  Registration Confirmed!
+                </h3>
+                <p className="mt-1 text-xs sm:text-sm text-slate-600">
+                  Thank you, <span className="font-bold text-[#072B57]">{submittedData.name}</span>! Your registration details have been saved to Supabase.
                 </p>
               </div>
 
-              {/* Supported UPI Apps Banner */}
-              <div className="rounded-xl bg-slate-50 p-2.5 border border-slate-200/80">
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
-                  Supported UPI Apps
+              {/* Webinar Details Card */}
+              <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 text-left space-y-2 max-w-md mx-auto">
+                <div className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                  Confirmed Webinar
                 </div>
-                <div className="flex items-center justify-center gap-4 text-xs font-bold text-slate-600">
-                  <span className="flex items-center gap-1">Google Pay</span>
-                  <span className="text-slate-300">•</span>
-                  <span className="flex items-center gap-1">PhonePe</span>
-                  <span className="text-slate-300">•</span>
-                  <span className="flex items-center gap-1">Paytm</span>
-                  <span className="text-slate-300">•</span>
-                  <span className="flex items-center gap-1">BHIM</span>
-                  <span className="text-slate-300">•</span>
-                  <span className="flex items-center gap-1">CRED</span>
+                <div className="text-sm font-extrabold text-[#072B57] leading-snug">
+                  {submittedData.webinarTitle}
+                </div>
+                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200 text-xs text-slate-600">
+                  <div className="flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-[#FF6B00] shrink-0" />
+                    <span>{submittedData.date}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-[#FF6B00] shrink-0" />
+                    <span>{submittedData.time}</span>
+                  </div>
+                  <div className="col-span-2 text-[11px] text-slate-500">
+                    Duration: <span className="font-semibold text-slate-700">{submittedData.duration}</span>
+                  </div>
                 </div>
               </div>
 
-              {/* Action buttons */}
-              <div className="space-y-2 pt-1">
-                {/* Razorpay Verification Status */}
-                {(qrSession.isTestMode || !configStatus.razorpayConfigured) && (
-                  <div className="rounded-xl border border-amber-300 bg-amber-50/90 p-3 text-left space-y-2 shadow-xs">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-bold text-amber-900 flex items-center gap-1.5">
-                        <ShieldCheck className="h-3.5 w-3.5 text-amber-700" />
-                        Razorpay Verification
-                      </span>
-                      <span className="rounded-full bg-amber-200 px-2 py-0.5 text-[10px] font-extrabold text-amber-800">
-                        {configStatus.razorpayConfigured ? 'Test Mode Active' : 'Setup Required'}
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-amber-800 leading-snug">
-                      {configStatus.razorpayConfigured
-                        ? 'Razorpay Test Mode is active. Complete payment via UPI or Test Card for genuine verification.'
-                        : 'Payment flow requires final real/test-mode verification with valid Razorpay credentials.'}
-                    </p>
-                    <button
-                      type="button"
-                      onClick={handleCheckPaymentStatus}
-                      disabled={submitting}
-                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-[#FF6B00] py-2.5 text-xs font-bold text-white hover:opacity-95 transition-opacity shadow-xs cursor-pointer"
-                    >
-                      {submitting ? (
-                        <>
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                          <span>Verifying Payment Status...</span>
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle2 className="h-3.5 w-3.5" />
-                          <span>Check / Verify Payment Status</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                )}
+              <p className="text-xs text-slate-500 leading-relaxed max-w-sm mx-auto">
+                Webinar details and Google Meet joining link will be shared with you on{' '}
+                <span className="font-semibold text-[#072B57]">{submittedData.email}</span> and WhatsApp ({submittedData.phone}).
+              </p>
 
-                {/* Mobile Intent link for direct app open */}
-                {qrSession.qrPayload && (
-                  <a
-                    href={qrSession.qrPayload}
-                    className="sm:hidden w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-600 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 transition-colors"
-                  >
-                    <Smartphone className="h-4 w-4" />
-                    <span>Pay in UPI App Directly</span>
-                  </a>
-                )}
-
-                {/* Alternative: Pay with Cards / Netbanking */}
+              <div className="pt-2">
                 <button
                   type="button"
-                  onClick={handleLaunchCheckoutModal}
-                  disabled={submitting}
-                  className="w-full flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+                  id="btn-close-register-success"
+                  onClick={handleCloseModal}
+                  className="inline-flex items-center justify-center rounded-xl bg-[#072B57] px-8 py-3 text-xs sm:text-sm font-bold text-white transition-all hover:bg-[#0c3c78] cursor-pointer shadow-sm active:scale-98"
                 >
-                  <CreditCard className="h-3.5 w-3.5 text-slate-500" />
-                  <span>Pay with Cards / Netbanking instead</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleCancelQrSession}
-                  className="text-xs text-slate-400 hover:text-red-600 transition-colors cursor-pointer pt-1"
-                >
-                  Cancel Registration
+                  Explore More Webinars
                 </button>
               </div>
             </div>
@@ -729,176 +373,176 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
             /* ===================================================
                REGISTRATION FORM
             =================================================== */
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {error && (
+            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+              {serverError && (
                 <div
-                  id="webinar-register-error"
-                  className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-700"
+                  id="webinar-register-server-error"
+                  className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 flex items-start gap-2.5"
                 >
-                  <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-                  <span>{error}</span>
-                </div>
-              )}
-
-              {/* Webinar Selection */}
-              <div>
-                <label className="block text-xs font-bold text-[#072B57] mb-1">
-                  Selected Webinar <span className="text-red-500">*</span>
-                </label>
-                <select
-                  id="register-select-webinar"
-                  value={webinarId}
-                  onChange={(e) => setWebinarId(e.target.value)}
-                  className="w-full rounded-xl border border-[#E5E7EB] bg-white px-3.5 py-2.5 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
-                  required
-                >
-                  {availableWebinars.map((w) => (
-                    <option key={w.id} value={w.id}>
-                      {w.title} ({w.type === 'free' ? 'FREE' : `PAID ₹${w.price || 499}`}) - {w.date}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Price / Amount Payable Display */}
-              <div className="rounded-xl border border-[#E5E7EB] bg-[#F8FAFC] p-3 flex items-center justify-between">
-                <div>
-                  <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
-                    Amount Payable
-                  </span>
-                  <span className="text-xs text-slate-500">
-                    {isPaid ? 'Live Workshop + Verified Certificate' : 'Free Live Access'}
-                  </span>
-                </div>
-                <div>
-                  <span
-                    className={`text-xl font-black ${
-                      isPaid ? 'text-[#072B57]' : 'text-emerald-600'
-                    }`}
-                  >
-                    {isPaid ? `₹${webinarPrice}` : 'FREE'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Test Mode / Credentials Notice for Paid Webinars */}
-              {isPaid && !configStatus.razorpayConfigured && (
-                <div className="rounded-xl border border-indigo-200 bg-indigo-50/80 p-3 text-xs text-indigo-900 flex items-start gap-2">
-                  <ShieldCheck className="h-4 w-4 text-indigo-600 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-bold block">
-                      Razorpay Test Mode Active
-                    </span>
-                    <span className="text-[11px] text-indigo-700 block mt-0.5 leading-snug">
-                      Test UPI QR generation and instant payment simulation are enabled so you can test registrations. For live payments, set <code className="bg-indigo-100 px-1 py-0.5 rounded font-mono text-[10px]">RAZORPAY_KEY_ID</code> &amp; <code className="bg-indigo-100 px-1 py-0.5 rounded font-mono text-[10px]">RAZORPAY_KEY_SECRET</code> in environment variables.
-                    </span>
+                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                  <div className="text-xs font-medium leading-relaxed">
+                    {serverError}
                   </div>
                 </div>
               )}
 
-              {/* Full Name */}
-              <div>
-                <label className="block text-xs font-bold text-[#072B57] mb-1">
-                  Full Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="register-input-fullname"
-                  type="text"
-                  required
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="e.g. Rahul Sharma"
-                  disabled={submitting}
-                  className="w-full rounded-xl border border-[#E5E7EB] px-3.5 py-2.5 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100 disabled:bg-slate-100"
-                />
-              </div>
-
-              {/* Email Address */}
-              <div>
-                <label className="block text-xs font-bold text-[#072B57] mb-1">
-                  Email Address <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="register-input-email"
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="e.g. rahul@example.com"
-                  disabled={submitting}
-                  className="w-full rounded-xl border border-[#E5E7EB] px-3.5 py-2.5 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100 disabled:bg-slate-100"
-                />
-              </div>
-
-              {/* Phone Number */}
-              <div>
-                <label className="block text-xs font-bold text-[#072B57] mb-1">
-                  Phone Number <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="register-input-phone"
-                  type="tel"
-                  required
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="e.g. 9876543210"
-                  disabled={submitting}
-                  className="w-full rounded-xl border border-[#E5E7EB] px-3.5 py-2.5 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100 disabled:bg-slate-100"
-                />
-              </div>
-
-              {/* Message / Question */}
-              <div>
-                <label className="block text-xs font-bold text-[#072B57] mb-1">
-                  Message / Question <span className="text-slate-400 font-normal">(optional)</span>
-                </label>
-                <textarea
-                  id="register-input-message"
-                  rows={2}
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Any specific topic or question for the instructor?"
-                  disabled={submitting}
-                  className="w-full rounded-xl border border-[#E5E7EB] px-3.5 py-2 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100 resize-none disabled:bg-slate-100"
-                />
-              </div>
-
-              {/* Submit Button */}
-              {isCapacityReached ? (
-                <div className="w-full rounded-xl bg-slate-200 py-3 text-center text-xs sm:text-sm font-bold text-slate-500">
-                  Registration Closed (Capacity Reached)
+              {Object.keys(errors).length > 0 && (
+                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 flex items-start gap-2.5">
+                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                  <div className="text-xs font-medium leading-relaxed">
+                    Please correct the highlighted fields below.
+                  </div>
                 </div>
-              ) : (
-                <button
-                  id="btn-submit-registration"
-                  type="submit"
-                  disabled={submitting}
-                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#FF6B00] py-3 text-xs sm:text-sm font-bold text-white transition-colors hover:bg-[#e05f00] disabled:bg-slate-300 disabled:cursor-not-allowed cursor-pointer shadow-md active:scale-98"
-                >
-                  {submitting ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>{submittingStep || 'Processing...'}</span>
-                    </>
-                  ) : isPaid ? (
-                    <>
-                      <QrCode className="h-4 w-4" />
-                      <span>Proceed to Payment</span>
-                    </>
-                  ) : (
-                    <span>Register for Free</span>
-                  )}
-                </button>
               )}
 
-              <div className="flex items-center justify-center gap-2 text-[11px] text-slate-400 pt-1">
-                <Lock className="h-3 w-3" />
-                <span>
-                  {isPaid
-                    ? 'Secured with Razorpay 256-bit encryption. No banking PINs stored.'
-                    : 'We will send the webinar joining link to your registered email.'}
-                </span>
+              {/* 1. Selected Webinar (Pre-filled automatically) */}
+              <div>
+                <label
+                  htmlFor="register-webinar-prefilled"
+                  className="block text-xs font-bold text-[#072B57] uppercase tracking-wider mb-1.5"
+                >
+                  Selected Webinar
+                </label>
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <p
+                        id="register-webinar-prefilled"
+                        className="text-xs sm:text-sm font-extrabold text-[#072B57] leading-snug"
+                      >
+                        {webinarTitle}
+                      </p>
+                      <div className="flex items-center gap-3 mt-1.5 text-xs text-slate-500 flex-wrap">
+                        <span className="inline-flex items-center gap-1">
+                          <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                          <span>{webinarDate}</span>
+                        </span>
+                        <span>•</span>
+                        <span className="inline-flex items-center gap-1">
+                          <Clock className="w-3.5 h-3.5 text-slate-400" />
+                          <span>{webinarTime} ({webinarDuration})</span>
+                        </span>
+                      </div>
+                    </div>
+                    <span className="shrink-0 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      FREE
+                    </span>
+                  </div>
+                </div>
               </div>
+
+              {/* 2. Full Name */}
+              <div>
+                <label
+                  htmlFor="register-fullname"
+                  className="block text-xs font-bold text-[#072B57] uppercase tracking-wider mb-1.5"
+                >
+                  Full Name <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="register-fullname"
+                  value={fullName}
+                  onChange={(e) => {
+                    setFullName(e.target.value);
+                    if (errors.fullName) setErrors((prev) => ({ ...prev, fullName: '' }));
+                    if (serverError) setServerError('');
+                  }}
+                  placeholder="e.g. Rahul Sharma"
+                  disabled={isSubmitting}
+                  className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-xs sm:text-sm text-[#072B57] placeholder:text-slate-400 focus:outline-none focus:ring-2 transition-all ${
+                    errors.fullName
+                      ? 'border-rose-300 ring-1 ring-rose-300 bg-rose-50/20'
+                      : 'border-slate-300 focus:ring-[#FF6B00] focus:border-[#FF6B00]'
+                  }`}
+                />
+                {errors.fullName && (
+                  <p className="text-xs text-rose-600 mt-1 font-medium">{errors.fullName}</p>
+                )}
+              </div>
+
+              {/* 3. Email Address */}
+              <div>
+                <label
+                  htmlFor="register-email"
+                  className="block text-xs font-bold text-[#072B57] uppercase tracking-wider mb-1.5"
+                >
+                  Email Address <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  id="register-email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
+                    if (serverError) setServerError('');
+                  }}
+                  placeholder="e.g. rahul@example.com"
+                  disabled={isSubmitting}
+                  className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-xs sm:text-sm text-[#072B57] placeholder:text-slate-400 focus:outline-none focus:ring-2 transition-all ${
+                    errors.email
+                      ? 'border-rose-300 ring-1 ring-rose-300 bg-rose-50/20'
+                      : 'border-slate-300 focus:ring-[#FF6B00] focus:border-[#FF6B00]'
+                  }`}
+                />
+                {errors.email && (
+                  <p className="text-xs text-rose-600 mt-1 font-medium">{errors.email}</p>
+                )}
+              </div>
+
+              {/* 4. Phone/WhatsApp Number */}
+              <div>
+                <label
+                  htmlFor="register-phone"
+                  className="block text-xs font-bold text-[#072B57] uppercase tracking-wider mb-1.5"
+                >
+                  Phone/WhatsApp Number <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="tel"
+                  id="register-phone"
+                  value={phone}
+                  onChange={(e) => {
+                    setPhone(e.target.value);
+                    if (errors.phone) setErrors((prev) => ({ ...prev, phone: '' }));
+                    if (serverError) setServerError('');
+                  }}
+                  placeholder="e.g. 9876543210"
+                  disabled={isSubmitting}
+                  className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-xs sm:text-sm text-[#072B57] placeholder:text-slate-400 focus:outline-none focus:ring-2 transition-all ${
+                    errors.phone
+                      ? 'border-rose-300 ring-1 ring-rose-300 bg-rose-50/20'
+                      : 'border-slate-300 focus:ring-[#FF6B00] focus:border-[#FF6B00]'
+                  }`}
+                />
+                {errors.phone && (
+                  <p className="text-xs text-rose-600 mt-1 font-medium">{errors.phone}</p>
+                )}
+              </div>
+
+              {/* Clear "Register Now" Submit Button */}
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  id="btn-register-now"
+                  disabled={isSubmitting}
+                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#FF6B00] py-3.5 text-xs sm:text-sm font-bold text-white transition-all hover:bg-[#e05f00] disabled:bg-slate-300 disabled:cursor-not-allowed cursor-pointer shadow-md active:scale-98"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Saving to Supabase...</span>
+                    </>
+                  ) : (
+                    <span>Register Now</span>
+                  )}
+                </button>
+              </div>
+
+              <p className="text-center text-[11px] text-slate-400">
+                100% Free Live Session &bull; Details will be recorded in Supabase and shared to your email.
+              </p>
             </form>
           )}
         </div>
@@ -906,4 +550,3 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
     </div>
   );
 };
-

@@ -9,7 +9,7 @@ import {
   SlidersHorizontal,
 } from 'lucide-react';
 import { Webinar } from '../types';
-import { getWebinars, WEBINAR_UPDATE_EVENT } from '../services/webinarStorage';
+import { getWebinars, fetchWebinarsFromDb, WEBINAR_UPDATE_EVENT } from '../services/webinarStorage';
 import { WebinarDetailsModal } from './webinars/WebinarDetailsModal';
 import { WebinarRegisterModal } from './webinars/WebinarRegisterModal';
 import { ManageWebinarsModal } from './webinars/ManageWebinarsModal';
@@ -67,6 +67,13 @@ export const WebinarsPage: React.FC<WebinarsPageProps> = ({
 
   useEffect(() => {
     loadWebinars();
+
+    // Fetch live webinars from database
+    fetchWebinarsFromDb().then((fresh) => {
+      if (fresh && fresh.length > 0) {
+        setWebinars(fresh);
+      }
+    });
 
     const handleUpdate = () => {
       loadWebinars();

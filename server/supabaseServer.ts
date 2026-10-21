@@ -364,7 +364,10 @@ export async function saveWebinarRegistration(
   };
 
   const supabase = getSupabaseServer();
+  let savedToSupabase = false;
+
   if (supabase) {
+    // 1. Primary: Try webinar_registrations table
     try {
       const query = supabase
         .from('webinar_registrations')
@@ -373,22 +376,85 @@ export async function saveWebinarRegistration(
         .single();
 
       const { data, error } = await withTimeout(query, 2500);
-
-      if (error) {
-        console.warn('[Supabase] Insert notice (cached in memory):', error.message);
+      if (!error && data) {
+        savedToSupabase = true;
         memoryRegistrations.unshift(finalRecord);
-        return { success: true, id: finalRecord.id!, reference: refCode };
+        return { success: true, id: data.id || finalRecord.id!, reference: refCode };
       }
-
-      return { success: true, id: data?.id || finalRecord.id!, reference: refCode };
     } catch (err: any) {
-      console.warn('[Supabase] Insert error caught (saved to in-memory store):', err?.message);
-      memoryRegistrations.unshift(finalRecord);
-      return { success: true, id: finalRecord.id!, reference: refCode };
+      console.warn('[Supabase] webinar_registrations table notice:', err?.message);
+    }
+
+    // 2. Guaranteed Persistence: Save to existing website_submissions table
+    try {
+      const { data: subData, error: subError } = await supabase
+        .from('website_submissions')
+        .insert([
+          {
+            form_type: 'webinar_registration',
+            name: finalRecord.full_name,
+            email: finalRecord.email,
+            phone: finalRecord.whatsapp_number,
+            course: finalRecord.webinar_title || finalRecord.webinar_id,
+            message: finalRecord.message || finalRecord.learning_goal || `Registered for ${finalRecord.webinar_title || finalRecord.webinar_id}`,
+            form_data: {
+              ...finalRecord,
+              reference: refCode,
+            },
+          },
+        ])
+        .select();
+
+      if (!subError && subData && subData.length > 0) {
+        savedToSupabase = true;
+      }
+    } catch (subErr) {
+      console.warn('[Supabase] website_submissions insert notice:', subErr);
+    }
+
+    // 3. Backup to contact_submissions table
+    try {
+      await supabase.from('contact_submissions').insert([
+        {
+          full_name: finalRecord.full_name,
+          email: finalRecord.email,
+          phone: finalRecord.whatsapp_number,
+          message: `[Webinar Registration]\nWebinar: ${finalRecord.webinar_title || finalRecord.webinar_id}\nRef: ${refCode}\nStatus: ${finalRecord.registration_status}\n${finalRecord.message ? 'Note: ' + finalRecord.message : ''}`,
+        },
+      ]);
+      savedToSupabase = true;
+    } catch (csErr) {
+      console.warn('[Supabase] contact_submissions backup notice:', csErr);
+    }
+
+    // 4. Backup to form_submissions table
+    try {
+      await supabase.from('form_submissions').insert([
+        {
+          Name: finalRecord.full_name,
+          Email: finalRecord.email,
+          Phone: finalRecord.whatsapp_number,
+          Course: `[Webinar] ${finalRecord.webinar_title || finalRecord.webinar_id}`,
+          Message: `[Webinar Registration]\nWebinar: ${finalRecord.webinar_title || finalRecord.webinar_id}\nRef: ${refCode}\nStatus: ${finalRecord.registration_status}\n${finalRecord.message ? 'Note: ' + finalRecord.message : ''}`,
+        },
+      ]);
+      savedToSupabase = true;
+    } catch (fsErr) {
+      console.warn('[Supabase] form_submissions backup notice:', fsErr);
     }
   }
 
   memoryRegistrations.unshift(finalRecord);
+
+  if (supabase && !savedToSupabase) {
+    return {
+      success: false,
+      id: finalRecord.id!,
+      reference: refCode,
+      error: 'Could not write registration to Supabase database. Please try again.',
+    };
+  }
+
   return { success: true, id: finalRecord.id!, reference: refCode };
 }
 
@@ -657,6 +723,75 @@ export async function updateWebinarDetails(
 }
 
 /**
+ * Create a new webinar in Supabase and memory
+ */
+export async function createWebinar(
+  data: Partial<ServerWebinarRecord>
+): Promise<{ success: boolean; webinar: ServerWebinarRecord; error?: string }> {
+  const newId = data.id || `webinar-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+  const nowIso = new Date().toISOString();
+
+  const newWebinar: ServerWebinarRecord = {
+    id: newId,
+    title: (data.title || 'Untitled Webinar').trim(),
+    description: (data.description || '').trim(),
+    start_datetime: data.start_datetime || nowIso,
+    timezone: data.timezone || 'Asia/Kolkata',
+    duration_minutes: data.duration_minutes ? Number(data.duration_minutes) : 60,
+    price: data.price !== undefined ? Number(data.price) : 0,
+    capacity: data.capacity ? Number(data.capacity) : 100,
+    status: (data.status as any) || 'published',
+    thumbnail_url: data.thumbnail_url || 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80',
+    meeting_url: data.meeting_url || null,
+    whatsapp_group_url: data.whatsapp_group_url || null,
+    created_at: nowIso,
+  };
+
+  const supabase = getSupabaseServer();
+  if (supabase) {
+    try {
+      const { data: dbData, error } = await supabase
+        .from('webinars')
+        .insert([newWebinar])
+        .select()
+        .single();
+
+      if (!error && dbData) {
+        memoryWebinars.unshift(dbData as ServerWebinarRecord);
+        return { success: true, webinar: dbData as ServerWebinarRecord };
+      }
+    } catch (err: any) {
+      console.warn('[Supabase] createWebinar notice:', err?.message);
+    }
+  }
+
+  memoryWebinars.unshift(newWebinar);
+  return { success: true, webinar: newWebinar };
+}
+
+/**
+ * Delete or deactivate webinar by ID
+ */
+export async function deleteWebinarServer(
+  id: string
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = getSupabaseServer();
+  if (supabase) {
+    try {
+      await supabase.from('webinars').delete().eq('id', id);
+    } catch (err: any) {
+      console.warn('[Supabase] deleteWebinar notice:', err?.message);
+    }
+  }
+
+  const idx = memoryWebinars.findIndex((w) => w.id === id);
+  if (idx !== -1) {
+    memoryWebinars.splice(idx, 1);
+  }
+  return { success: true };
+}
+
+/**
  * Fetch all registrations for admin with optional filters
  */
 export async function getAllRegistrations(filters?: {
@@ -687,10 +822,56 @@ export async function getAllRegistrations(filters?: {
       }
 
       const { data, error } = await withTimeout(query, 2500);
-      if (!error && Array.isArray(data)) {
+      if (!error && Array.isArray(data) && data.length > 0) {
         const dbIds = new Set(data.map((r: any) => r.id));
         const extraMem = memoryRegistrations.filter((m) => m.id && !dbIds.has(m.id));
         return [...data, ...extraMem];
+      }
+
+      // Fallback: Query website_submissions table for webinar registrations
+      try {
+        const { data: subData } = await supabase
+          .from('website_submissions')
+          .select('*')
+          .eq('form_type', 'webinar_registration')
+          .order('created_at', { ascending: false });
+
+        if (subData && subData.length > 0) {
+          const mappedSub: NewRegistrationRecord[] = subData.map((s: any) => {
+            const fd = s.form_data || {};
+            return {
+              id: fd.id || s.id,
+              webinar_id: fd.webinar_id || 'webinar-ai-tools-2026',
+              webinar_title: fd.webinar_title || s.course || 'Live Webinar',
+              full_name: s.name || fd.full_name || '',
+              email: s.email || fd.email || '',
+              whatsapp_number: s.phone || fd.whatsapp_number || '',
+              phone: s.phone || fd.phone || '',
+              role: fd.role || 'Student',
+              experience_level: fd.experience_level || 'Beginner',
+              company_or_college: fd.company_or_college || null,
+              learning_goal: fd.learning_goal || s.message || null,
+              message: s.message || fd.message || null,
+              email_reminders_consent: fd.email_reminders_consent ?? true,
+              whatsapp_updates_consent: fd.whatsapp_updates_consent ?? true,
+              registration_type: fd.registration_type || 'free',
+              amount: fd.amount || 0,
+              currency: fd.currency || 'INR',
+              payment_status: fd.payment_status || 'not_required',
+              registration_status: fd.registration_status || 'approved',
+              payment_reference: fd.reference || fd.payment_reference || 'CBM-WEB',
+              razorpay_order_id: fd.razorpay_order_id || null,
+              razorpay_payment_id: fd.razorpay_payment_id || null,
+              registered_at: s.created_at || fd.registered_at || new Date().toISOString(),
+              created_at: s.created_at || new Date().toISOString(),
+            };
+          });
+          const dbIds = new Set(mappedSub.map((r: any) => r.id));
+          const extraMem = memoryRegistrations.filter((m) => m.id && !dbIds.has(m.id));
+          return [...mappedSub, ...extraMem];
+        }
+      } catch (wsErr) {
+        console.warn('[Supabase] website_submissions query notice:', wsErr);
       }
     } catch (err) {
       console.warn('[Supabase] Error querying registrations:', err);

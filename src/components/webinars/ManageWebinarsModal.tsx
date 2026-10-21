@@ -47,6 +47,7 @@ export const ManageWebinarsModal: React.FC<ManageWebinarsModalProps> = ({
   const [host, setHost] = useState('CBM Academy');
   const [whatYouWillLearn, setWhatYouWillLearn] = useState('');
   const [registrationLink, setRegistrationLink] = useState('');
+  const [capacity, setCapacity] = useState('100');
   const [status, setStatus] = useState<WebinarStatus>('published');
 
   const [notification, setNotification] = useState<{
@@ -81,6 +82,7 @@ export const ManageWebinarsModal: React.FC<ManageWebinarsModalProps> = ({
     setHost('CBM Academy');
     setWhatYouWillLearn('');
     setRegistrationLink('');
+    setCapacity('100');
     setStatus('published');
     setShowForm(false);
   };
@@ -100,6 +102,7 @@ export const ManageWebinarsModal: React.FC<ManageWebinarsModalProps> = ({
       Array.isArray(w.whatYouWillLearn) ? w.whatYouWillLearn.join('\n') : ''
     );
     setRegistrationLink(w.registrationLink || '');
+    setCapacity(String(w.capacity || w.max_capacity || 100));
     setStatus(w.status);
     setShowForm(true);
 
@@ -147,6 +150,7 @@ export const ManageWebinarsModal: React.FC<ManageWebinarsModalProps> = ({
               'Live execution strategy and campaign optimization',
             ],
       registrationLink: registrationLink.trim() || undefined,
+      capacity: Number(capacity) || 100,
       status,
     });
 
@@ -491,21 +495,37 @@ export const ManageWebinarsModal: React.FC<ManageWebinarsModalProps> = ({
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-bold text-[#072B57] mb-1">
-                      Status <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      id="select-webinar-status"
-                      value={status}
-                      onChange={(e) => setStatus(e.target.value as WebinarStatus)}
-                      className="w-full rounded-xl border border-[#E5E7EB] bg-white px-3 py-2 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00]"
-                    >
-                      <option value="upcoming">Upcoming</option>
-                      <option value="published">Published</option>
-                      <option value="draft">Draft</option>
-                      <option value="completed">Completed</option>
-                    </select>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold text-[#072B57] mb-1">
+                        Available Seats
+                      </label>
+                      <input
+                        id="input-webinar-capacity"
+                        type="number"
+                        value={capacity}
+                        onChange={(e) => setCapacity(e.target.value)}
+                        placeholder="100"
+                        className="w-full rounded-xl border border-[#E5E7EB] bg-white px-3.5 py-2 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-[#072B57] mb-1">
+                        Status <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        id="select-webinar-status"
+                        value={status}
+                        onChange={(e) => setStatus(e.target.value as WebinarStatus)}
+                        className="w-full rounded-xl border border-[#E5E7EB] bg-white px-3 py-2 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00]"
+                      >
+                        <option value="upcoming">Upcoming</option>
+                        <option value="published">Published</option>
+                        <option value="draft">Draft</option>
+                        <option value="completed">Completed</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
 
