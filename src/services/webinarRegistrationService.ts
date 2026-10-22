@@ -198,7 +198,7 @@ export async function checkRegistrationStatus(
  */
 export async function createPaidWebinarOrder(data: PaidOrderParams): Promise<PaidOrderResponse> {
   return await safeFetchJson<PaidOrderResponse>(
-    '/api/webinars/create-order',
+    'https://cxeztssvgaeytdljoned.supabase.co/functions/v1/create-razorpay-order',
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
