@@ -1,4 +1,5 @@
 import { WebinarRegistration } from '../types';
+import { apiFetch } from '../utils/apiConfig';
 
 declare global {
   interface Window {
@@ -64,7 +65,7 @@ async function safeFetchJson<T = any>(
 ): Promise<T> {
   let res: Response;
   try {
-    res = await fetch(url, options);
+    res = await apiFetch(url, options);
   } catch (netErr: any) {
     console.error(`[Webinar Service Network Error] ${url}:`, netErr?.message || netErr);
     throw new Error('Unable to connect to the server. Please check your internet connection and try again.');

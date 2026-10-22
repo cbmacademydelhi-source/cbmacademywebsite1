@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, CheckCircle2, AlertCircle, Calendar, Clock, Loader2, Sparkles } from 'lucide-react';
 import { Webinar } from '../../types';
 import { supabase } from '../../lib/supabase';
+import { apiFetch } from '../../utils/apiConfig';
 
 export interface WebinarRegisterModalProps {
   isOpen: boolean;
@@ -149,7 +150,7 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
     if (isPaid) {
       try {
         // Step A: Create order on server with dynamic webinar price
-        const orderRes = await fetch('/api/webinars/create-order', {
+        const orderRes = await apiFetch('/api/webinars/create-order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -255,7 +256,7 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
             try {
               setIsSubmitting(true);
               // Step D: Server-side payment signature verification
-              const verifyRes = await fetch('/api/webinars/verify-payment', {
+              const verifyRes = await apiFetch('/api/webinars/verify-payment', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -426,7 +427,7 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
 
     // Server API fallback & automated notification trigger
     try {
-      const response = await fetch('/api/webinars/register-free', {
+      const response = await apiFetch('/api/webinars/register-free', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

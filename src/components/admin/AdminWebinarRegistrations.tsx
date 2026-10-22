@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { WebinarRegistration } from '../../types';
 import { fetchAdminRegistrations } from '../../services/webinarRegistrationService';
+import { apiFetch } from '../../utils/apiConfig';
 
 interface AdminWebinarRegistrationsProps {
   token: string;
@@ -59,7 +60,7 @@ export const AdminWebinarRegistrations: React.FC<AdminWebinarRegistrationsProps>
   };
 
   useEffect(() => {
-    fetch('/api/webinars/config-status')
+    apiFetch('/api/webinars/config-status')
       .then((r) => r.json())
       .then((data) => setConfigStatus(data))
       .catch(() => null);

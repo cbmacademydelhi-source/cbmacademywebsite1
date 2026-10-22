@@ -45,24 +45,27 @@ import { WebinarAttendeeRole, WebinarExperienceLevel } from './src/types';
 dotenv.config();
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
 app.disable('x-powered-by');
 
+// Global CORS & security headers for all requests (allows live custom domains, web apps & preview environments)
 app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+  res.setHeader('Access-Control-Max-Age', '86400');
   res.setHeader('X-Content-Type-Options', 'nosniff');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+  }
   next();
 });
 
-// Ensure all /api requests default to application/json and properly handle CORS preflight
-app.use('/api', (req, res, next) => {
+// Ensure all /api requests default to application/json
+app.use('/api', (_req, res, next) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    return res.status(204).end();
-  }
   next();
 });
 
@@ -1170,6 +1173,7 @@ setInterval(processScheduledReminders, 60000);
 
 // Ensure any unhandled API endpoints return standard JSON
 app.all('/api/*', (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.status(404).json({
     success: false,
     message: `API endpoint not found: ${req.method} ${req.path}`,
@@ -1180,6 +1184,7 @@ app.all('/api/*', (req, res) => {
 app.use('/api', (err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error('[API Error Handler]', err?.stack || err);
   const statusCode = typeof err.status === 'number' && err.status >= 400 && err.status < 600 ? err.status : 500;
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.status(statusCode).json({
     success: false,
     message: err.message || 'An unexpected server error occurred. Please try again.',

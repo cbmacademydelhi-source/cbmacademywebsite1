@@ -1,5 +1,6 @@
 import { Webinar, WebinarRegistration, FormSubmissionResult, WebinarType } from '../types';
 import { supabase } from '../lib/supabase';
+import { apiFetch } from '../utils/apiConfig';
 
 /**
  * CBM ACADEMY WEBINAR STORAGE
@@ -377,7 +378,7 @@ export async function fetchWebinarsFromDb(): Promise<Webinar[]> {
 
   // 2. Server API query
   try {
-    const res = await fetch('/api/webinars/list');
+    const res = await apiFetch('/api/webinars/list');
     if (!res.ok) return getWebinars();
     const data = await res.json();
     if (data.success && Array.isArray(data.webinars) && data.webinars.length > 0) {
@@ -542,7 +543,7 @@ export function deleteWebinar(id: string): boolean {
   }
 
   const token = getAdminToken();
-  fetch('/api/webinars/delete', {
+  apiFetch('/api/webinars/delete', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -585,7 +586,7 @@ export function toggleWebinarStatus(id: string): Webinar | null {
   }
 
   const token = getAdminToken();
-  fetch('/api/webinars/update', {
+  apiFetch('/api/webinars/update', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
