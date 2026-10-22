@@ -50,19 +50,38 @@ export interface CreateOrderParams {
 }
 
 export async function createOrder({ amountInINR, receipt, notes }: CreateOrderParams) {
-  const amountInPaise = Math.round(amountInINR * 100);
+  const numericAmount = typeof amountInINR === 'number' && !isNaN(amountInINR)
+    ? amountInINR
+    : Number(String(amountInINR || '').replace(/[^0-9.]/g, '')) || 499;
+  const amountInPaise = Math.round(numericAmount * 100);
   const razorpay = getRazorpayClient();
+
+  // Sanitize notes: Razorpay accepts at most 15 keys, alphanumeric keys <= 40 chars, values strings <= 256 chars
+  const sanitizedNotes: Record<string, string> = {};
+  if (notes && typeof notes === 'object') {
+    Object.entries(notes).slice(0, 15).forEach(([k, v]) => {
+      if (k && v !== undefined && v !== null) {
+        const cleanKey = String(k).replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 40);
+        const cleanVal = String(v).substring(0, 255);
+        if (cleanKey) {
+          sanitizedNotes[cleanKey] = cleanVal;
+        }
+      }
+    });
+  }
+
+  const cleanReceipt = String(receipt || `rcpt_${Date.now()}`).substring(0, 40);
 
   try {
     const order = await razorpay.orders.create({
       amount: amountInPaise,
       currency: 'INR',
-      receipt: receipt.substring(0, 40),
-      notes: notes || {},
+      receipt: cleanReceipt,
+      notes: sanitizedNotes,
     });
     return order;
   } catch (orderErr: any) {
-    console.error('[Razorpay] Order creation error:', orderErr?.message || orderErr);
+    console.error('[Razorpay] Order creation error:', orderErr?.error || orderErr?.message || orderErr);
     throw orderErr;
   }
 }

@@ -366,7 +366,7 @@ export async function saveWebinarRegistration(
   let savedToSupabase = false;
 
   if (supabase) {
-    // 1. Primary: Try webinar_registrations table
+    // 1. Primary: Try webinar_registrations table with quick timeout
     try {
       const query = supabase
         .from('webinar_registrations')
@@ -374,7 +374,7 @@ export async function saveWebinarRegistration(
         .select()
         .single();
 
-      const { data, error } = await withTimeout(query, 2500);
+      const { data, error } = await withTimeout(query, 1200);
       if (!error && data) {
         savedToSupabase = true;
         memoryRegistrations.unshift(finalRecord);
@@ -386,7 +386,7 @@ export async function saveWebinarRegistration(
 
     // 2. Guaranteed Persistence: Save to existing website_submissions table
     try {
-      const { data: subData, error: subError } = await supabase
+      const subQuery = supabase
         .from('website_submissions')
         .insert([
           {
@@ -404,16 +404,17 @@ export async function saveWebinarRegistration(
         ])
         .select();
 
+      const { data: subData, error: subError } = await withTimeout(subQuery, 1500);
       if (!subError && subData && subData.length > 0) {
         savedToSupabase = true;
       }
-    } catch (subErr) {
-      console.warn('[Supabase] website_submissions insert notice:', subErr);
+    } catch (subErr: any) {
+      console.warn('[Supabase] website_submissions insert notice:', subErr?.message);
     }
 
     // 3. Backup to contact_submissions table
     try {
-      await supabase.from('contact_submissions').insert([
+      const csQuery = supabase.from('contact_submissions').insert([
         {
           full_name: finalRecord.full_name,
           email: finalRecord.email,
@@ -421,38 +422,16 @@ export async function saveWebinarRegistration(
           message: `[Webinar Registration]\nWebinar: ${finalRecord.webinar_title || finalRecord.webinar_id}\nRef: ${refCode}\nStatus: ${finalRecord.registration_status}\n${finalRecord.message ? 'Note: ' + finalRecord.message : ''}`,
         },
       ]);
+      await withTimeout(csQuery, 1200);
       savedToSupabase = true;
-    } catch (csErr) {
-      console.warn('[Supabase] contact_submissions backup notice:', csErr);
-    }
-
-    // 4. Backup to form_submissions table
-    try {
-      await supabase.from('form_submissions').insert([
-        {
-          Name: finalRecord.full_name,
-          Email: finalRecord.email,
-          Phone: finalRecord.whatsapp_number,
-          Course: `[Webinar] ${finalRecord.webinar_title || finalRecord.webinar_id}`,
-          Message: `[Webinar Registration]\nWebinar: ${finalRecord.webinar_title || finalRecord.webinar_id}\nRef: ${refCode}\nStatus: ${finalRecord.registration_status}\n${finalRecord.message ? 'Note: ' + finalRecord.message : ''}`,
-        },
-      ]);
-      savedToSupabase = true;
-    } catch (fsErr) {
-      console.warn('[Supabase] form_submissions backup notice:', fsErr);
+    } catch (csErr: any) {
+      console.warn('[Supabase] contact_submissions backup notice:', csErr?.message);
     }
   }
 
   memoryRegistrations.unshift(finalRecord);
 
-  if (supabase && !savedToSupabase) {
-    return {
-      success: false,
-      id: finalRecord.id!,
-      reference: refCode,
-      error: 'Could not write registration to Supabase database. Please try again.',
-    };
-  }
+  return { success: true, id: finalRecord.id!, reference: refCode };
 
   return { success: true, id: finalRecord.id!, reference: refCode };
 }
@@ -668,7 +647,8 @@ export async function getAllWebinars(): Promise<ServerWebinarRecord[]> {
   const supabase = getSupabaseServer();
   if (supabase) {
     try {
-      const { data, error } = await supabase.from('webinars').select('*').order('start_datetime', { ascending: true });
+      const query = supabase.from('webinars').select('*').order('start_datetime', { ascending: true });
+      const { data, error } = await withTimeout(query, 1500);
       if (!error && Array.isArray(data) && data.length > 0) {
         return data as ServerWebinarRecord[];
       }

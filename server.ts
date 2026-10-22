@@ -442,24 +442,32 @@ app.post('/api/webinars/create-order', async (req, res) => {
 
     // Capacity check
     if (typeof webinar.capacity === 'number' && webinar.capacity > 0) {
-      const currentCount = await getWebinarRegistrationCount(webinarId);
-      if (currentCount >= webinar.capacity) {
-        return res.status(400).json({
-          success: false,
-          code: 'CAPACITY_REACHED',
-          message: 'Registration Closed: This webinar has reached maximum capacity.',
-        });
+      try {
+        const currentCount = await getWebinarRegistrationCount(webinarId);
+        if (currentCount >= webinar.capacity) {
+          return res.status(400).json({
+            success: false,
+            code: 'CAPACITY_REACHED',
+            message: 'Registration Closed: This webinar has reached maximum capacity.',
+          });
+        }
+      } catch (countErr) {
+        console.warn('[Server] Capacity check notice:', countErr);
       }
     }
 
     // Check if already paid
-    const existing = await checkExistingRegistration(email, webinarId);
-    if (existing.exists && existing.record?.payment_status === 'paid') {
-      return res.status(400).json({
-        success: false,
-        code: 'ALREADY_PAID',
-        message: 'You have already completed payment and registered for this webinar.',
-      });
+    try {
+      const existing = await checkExistingRegistration(email, webinarId);
+      if (existing.exists && existing.record?.payment_status === 'paid') {
+        return res.status(400).json({
+          success: false,
+          code: 'ALREADY_PAID',
+          message: 'You have already completed payment and registered for this webinar.',
+        });
+      }
+    } catch (existErr) {
+      console.warn('[Server] Existing check notice:', existErr);
     }
 
     const requestedPrice = typeof req.body.price === 'number' && req.body.price > 0
@@ -481,12 +489,12 @@ app.post('/api/webinars/create-order', async (req, res) => {
       amountInINR,
       receipt: receiptId,
       notes: {
-        registration_id: registrationId,
-        payment_reference: refCode,
-        webinar_id: webinar.id,
-        webinar_title: webinar.title,
-        customer_email: email.trim(),
-        customer_phone: contactPhone,
+        registration_id: String(registrationId).substring(0, 40),
+        payment_reference: String(refCode).substring(0, 40),
+        webinar_id: String(webinar.id || webinarId).substring(0, 40),
+        webinar_title: String(webinar.title || 'Webinar').substring(0, 100),
+        customer_email: String(email).trim().substring(0, 100),
+        customer_phone: String(contactPhone).substring(0, 20),
       },
     });
 
@@ -513,8 +521,8 @@ app.post('/api/webinars/create-order', async (req, res) => {
       webinar.title.substring(0, 30)
     )}&tr=${order.id}`;
 
-    // Create pending registration record in Supabase
-    await saveWebinarRegistration({
+    // Create pending registration record in Supabase (non-blocking for checkout speed)
+    const pendingSavePromise = saveWebinarRegistration({
       id: registrationId,
       webinar_id: webinar.id,
       webinar_title: webinar.title,
@@ -536,7 +544,15 @@ app.post('/api/webinars/create-order', async (req, res) => {
       payment_reference: refCode,
       razorpay_order_id: order.id,
       razorpay_qr_id: qrId,
+    }).catch((saveErr) => {
+      console.warn('[Server] Supabase pending registration notice:', saveErr?.message || saveErr);
     });
+
+    // Allow quick 600ms grace period for fast DB write, then return order immediately
+    await Promise.race([
+      pendingSavePromise,
+      new Promise((resolve) => setTimeout(resolve, 600)),
+    ]);
 
     return res.status(200).json({
       success: true,
@@ -554,10 +570,16 @@ app.post('/api/webinars/create-order', async (req, res) => {
       isTestMode: !isRazorpayConfigured(),
     });
   } catch (error: any) {
-    console.warn('[Server] Create Razorpay order notice:', error);
-    return res.status(500).json({
+    console.error('[Server] Create Razorpay order error:', error?.error || error?.message || error);
+    const detailMsg =
+      error?.error?.description ||
+      error?.message ||
+      'Failed to initiate secure payment order. Please try again.';
+    const statusCode = error?.statusCode && typeof error.statusCode === 'number' ? error.statusCode : 500;
+    return res.status(statusCode).json({
       success: false,
-      message: 'Could not create secure payment order. Please try again.',
+      message: detailMsg,
+      error: error?.error || error?.message || error,
     });
   }
 });

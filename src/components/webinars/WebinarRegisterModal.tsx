@@ -167,14 +167,16 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
           }),
         });
 
-        if (!orderRes.ok) {
-          const errData = await orderRes.json().catch(() => null);
-          throw new Error(errData?.message || 'Failed to initiate secure payment order. Please try again.');
-        }
+        const orderData = await orderRes.json().catch(() => null);
 
-        const orderData = await orderRes.json();
-        if (!orderData?.success || !orderData?.orderId) {
-          throw new Error(orderData?.message || 'Could not generate Razorpay order.');
+        if (!orderRes.ok || !orderData?.success || !orderData?.orderId) {
+          const errMsg =
+            orderData?.message ||
+            orderData?.error?.description ||
+            (orderRes.status === 400
+              ? 'Please verify your registration details and try again.'
+              : 'Failed to initiate secure payment order. Please try again.');
+          throw new Error(errMsg);
         }
 
         // Step B: Ensure Razorpay Checkout script is ready
@@ -182,6 +184,22 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
           return new Promise((resolve) => {
             if (typeof (window as any).Razorpay !== 'undefined') {
               resolve(true);
+              return;
+            }
+            const existingScript = document.querySelector('script[src*="checkout.razorpay.com"]');
+            if (existingScript) {
+              existingScript.addEventListener('load', () => resolve(true));
+              let attempts = 0;
+              const poll = setInterval(() => {
+                attempts++;
+                if (typeof (window as any).Razorpay !== 'undefined') {
+                  clearInterval(poll);
+                  resolve(true);
+                } else if (attempts >= 20) {
+                  clearInterval(poll);
+                  resolve(false);
+                }
+              }, 100);
               return;
             }
             const script = document.createElement('script');
@@ -198,10 +216,11 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
           throw new Error('Unable to open payment gateway. Please check your internet connection.');
         }
 
-        const razorpayKey =
+        const razorpayKey = (
           orderData.keyId ||
           (import.meta as any).env?.VITE_RAZORPAY_KEY_ID ||
-          'rzp_live_TqufyQXW4P2Don';
+          'rzp_live_TqufyQXW4P2Don'
+        ).trim();
 
         // Step C: Open Razorpay Checkout Modal
         const options = {
