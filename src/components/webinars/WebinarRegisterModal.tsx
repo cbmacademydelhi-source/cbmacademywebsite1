@@ -150,7 +150,7 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
     if (isPaid) {
       try {
         // Step A: Create order on server with dynamic webinar price
-        const orderRes = await apiFetch('/api/webinars/create-order', {
+        const orderRes = await apiFetch('https://cxeztssvgaeytdljoned.supabase.co/functions/v1/create-razorpay-order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
