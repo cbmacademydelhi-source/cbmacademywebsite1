@@ -564,7 +564,19 @@ export const ManageWebinarsModal: React.FC<ManageWebinarsModalProps> = ({
             ) : (
               <div className="divide-y divide-slate-100 rounded-xl border border-[#E5E7EB] bg-white">
                 {webinars.map((w) => {
-                  const isFree = w.type === 'free';
+                  const rawPrice = w.price;
+                  const numPrice = typeof rawPrice === 'number'
+                    ? rawPrice
+                    : Number(String(rawPrice || '').replace(/[^0-9.]/g, ''));
+                  const isPaid = (typeof rawPrice === 'number' && rawPrice > 0) ||
+                    (!isNaN(numPrice) && numPrice > 0) ||
+                    w.type === 'paid';
+                  const priceValue = typeof rawPrice === 'number' && rawPrice > 0
+                    ? rawPrice
+                    : !isNaN(numPrice) && numPrice > 0
+                    ? numPrice
+                    : 499;
+                  const isFree = !isPaid;
                   const isPublished = w.status === 'published' || w.status === 'upcoming';
 
                   return (
@@ -598,7 +610,7 @@ export const ManageWebinarsModal: React.FC<ManageWebinarsModalProps> = ({
                               </span>
                             ) : (
                               <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-bold text-[#FF6B00]">
-                                PAID (₹{w.price || 499})
+                                PAID • ₹{priceValue}
                               </span>
                             )}
 

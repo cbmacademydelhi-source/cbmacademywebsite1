@@ -29,12 +29,20 @@ export const WebinarDetailsModal: React.FC<WebinarDetailsModalProps> = ({
 }) => {
   if (!isOpen || !webinar) return null;
 
-  const isFree = webinar.type === 'free';
-  const priceDisplay = isFree
-    ? 'FREE'
-    : typeof webinar.price === 'number'
-    ? `₹${webinar.price}`
-    : webinar.price || '₹499';
+  const rawPrice = webinar.price;
+  const numPrice = typeof rawPrice === 'number'
+    ? rawPrice
+    : Number(String(rawPrice || '').replace(/[^0-9.]/g, ''));
+  const isPaid = (typeof rawPrice === 'number' && rawPrice > 0) ||
+    (!isNaN(numPrice) && numPrice > 0) ||
+    webinar.type === 'paid';
+  const priceValue = typeof rawPrice === 'number' && rawPrice > 0
+    ? rawPrice
+    : !isNaN(numPrice) && numPrice > 0
+    ? numPrice
+    : 499;
+  const isFree = !isPaid;
+  const priceDisplay = isFree ? 'FREE' : `₹${priceValue}`;
 
   const dateParts = parseDateBadge(webinar.date);
 
@@ -95,11 +103,11 @@ export const WebinarDetailsModal: React.FC<WebinarDetailsModalProps> = ({
 
               {isFree ? (
                 <span className="rounded-lg bg-emerald-600 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white shadow-xs">
-                  Free Live Session
+                  FREE
                 </span>
               ) : (
                 <span className="rounded-lg bg-[#FF6B00] px-3 py-1 text-xs font-bold uppercase tracking-wider text-white shadow-xs">
-                  Masterclass
+                  PAID • {priceDisplay}
                 </span>
               )}
             </div>
@@ -126,7 +134,7 @@ export const WebinarDetailsModal: React.FC<WebinarDetailsModalProps> = ({
               <div className="pt-2">
                 <span className="text-[11px] text-slate-400 block uppercase tracking-wider">Access Fee</span>
                 <span className={`text-2xl font-black ${isFree ? 'text-emerald-400' : 'text-white'}`}>
-                  {priceDisplay}
+                  {isFree ? 'FREE' : `PAID • ${priceDisplay}`}
                 </span>
               </div>
             </div>

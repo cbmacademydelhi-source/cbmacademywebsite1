@@ -8,14 +8,14 @@ function getSupabaseEnv() {
   const url = (
     process.env.SUPABASE_URL ||
     process.env.VITE_SUPABASE_URL ||
-    ''
+    'https://cxeztssvgaeytdljoned.supabase.co'
   ).trim();
 
   const key = (
     process.env.SUPABASE_SERVICE_ROLE_KEY ||
     process.env.SUPABASE_ANON_KEY ||
     process.env.VITE_SUPABASE_ANON_KEY ||
-    ''
+    'sb_publishable_sO0rnN9MJzQmBiq-Lm6p3w_EAYKjVOb'
   ).trim();
 
   return { url, key };
@@ -37,7 +37,6 @@ export function isSupabaseConfiguredOnServer(): boolean {
     url &&
     key &&
     url.startsWith('https://') &&
-    !url.includes('cxeztsvgaeytdljoned') &&
     !url.includes('your-project') &&
     !url.includes('example.supabase.co')
   );

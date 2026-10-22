@@ -228,7 +228,7 @@ export const WebinarsPage: React.FC<WebinarsPageProps> = ({
                       </span>
                     ) : (
                       <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider bg-orange-50 text-[#FF6B00] border border-orange-200 shadow-xs">
-                        PAID
+                        PAID • ₹{latestWebinar.price || 499}
                       </span>
                     )}
                   </div>
@@ -458,7 +458,7 @@ export const WebinarsPage: React.FC<WebinarsPageProps> = ({
                         </span>
                       ) : (
                         <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-orange-50 text-[#FF6B00] border border-orange-200 shadow-xs">
-                          PAID
+                          PAID • ₹{webinar.price || 499}
                         </span>
                       )}
                     </div>
@@ -518,7 +518,7 @@ export const WebinarsPage: React.FC<WebinarsPageProps> = ({
                           onClick={() => handleOpenRegister(webinar)}
                           className="inline-flex items-center justify-center bg-[#072B57] hover:bg-[#FF6B00] text-white text-xs font-semibold px-4 py-2 rounded-md shadow-xs transition-colors cursor-pointer active:scale-98"
                         >
-                          {webinar.type === 'free' ? 'Register Free' : 'Book Seat — ₹499'}
+                          {webinar.type === 'free' ? 'Register Free' : `Book Seat — ₹${webinar.price || 499}`}
                         </button>
                       </div>
                     </div>

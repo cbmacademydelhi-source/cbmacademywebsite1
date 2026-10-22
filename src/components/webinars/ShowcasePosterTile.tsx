@@ -24,12 +24,20 @@ export const ShowcasePosterTile: React.FC<ShowcasePosterTileProps> = ({
   onSelect,
   onRegister,
 }) => {
-  const isFree = webinar.type === 'free';
-  const priceDisplay = isFree
-    ? 'FREE'
-    : typeof webinar.price === 'number'
-    ? `₹${webinar.price}`
-    : webinar.price || '₹499';
+  const rawPrice = webinar.price;
+  const numPrice = typeof rawPrice === 'number'
+    ? rawPrice
+    : Number(String(rawPrice || '').replace(/[^0-9.]/g, ''));
+  const isPaid = (typeof rawPrice === 'number' && rawPrice > 0) ||
+    (!isNaN(numPrice) && numPrice > 0) ||
+    webinar.type === 'paid';
+  const priceValue = typeof rawPrice === 'number' && rawPrice > 0
+    ? rawPrice
+    : !isNaN(numPrice) && numPrice > 0
+    ? numPrice
+    : 499;
+  const isFree = !isPaid;
+  const priceDisplay = isFree ? 'FREE' : `₹${priceValue}`;
 
   const compactDate = formatCompactDate(webinar.date);
 
@@ -66,7 +74,7 @@ export const ShowcasePosterTile: React.FC<ShowcasePosterTileProps> = ({
           </span>
         ) : (
           <span className="inline-block rounded-md bg-[#FF6B00] px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-white shadow-xs">
-            PAID
+            PAID • {priceDisplay}
           </span>
         )}
       </div>

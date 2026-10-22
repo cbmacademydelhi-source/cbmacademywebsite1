@@ -1,10 +1,23 @@
 import crypto from 'crypto';
 import Razorpay from 'razorpay';
 
+const DEFAULT_KEY_ID = 'rzp_live_TqufyQXW4P2Don';
+const DEFAULT_KEY_SECRET = 'FAPE53ROFpLpdhRcJ1LPu1VT';
+
+export function getRazorpayKeyId(): string {
+  const keyId = (process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || DEFAULT_KEY_ID).trim();
+  return keyId;
+}
+
+export function getRazorpayKeySecret(): string {
+  const keySecret = (process.env.RAZORPAY_KEY_SECRET || DEFAULT_KEY_SECRET).trim();
+  return keySecret;
+}
+
 export function isRazorpayConfigured(): boolean {
-  const keyId = process.env.RAZORPAY_KEY_ID;
-  const keySecret = process.env.RAZORPAY_KEY_SECRET;
-  return Boolean(keyId && keyId.trim() && keySecret && keySecret.trim());
+  const keyId = getRazorpayKeyId();
+  const keySecret = getRazorpayKeySecret();
+  return Boolean(keyId && keySecret && keyId.startsWith('rzp_'));
 }
 
 export function isWebhookConfigured(): boolean {
@@ -12,22 +25,19 @@ export function isWebhookConfigured(): boolean {
   return Boolean(secret && secret.trim());
 }
 
-export function getRazorpayKeyId(): string | null {
-  const keyId = process.env.RAZORPAY_KEY_ID;
-  return keyId && keyId.trim() ? keyId.trim() : null;
-}
-
 let razorpayInstance: Razorpay | null = null;
+let currentKeyId = '';
 
 export function getRazorpayClient(): Razorpay {
-  const keyId = process.env.RAZORPAY_KEY_ID?.trim() || 'rzp_test_cbm_academy';
-  const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim() || 'test_secret_cbm_academy';
+  const keyId = getRazorpayKeyId();
+  const keySecret = getRazorpayKeySecret();
 
-  if (!razorpayInstance) {
+  if (!razorpayInstance || currentKeyId !== keyId) {
     razorpayInstance = new Razorpay({
       key_id: keyId,
       key_secret: keySecret,
     });
+    currentKeyId = keyId;
   }
 
   return razorpayInstance;
@@ -41,39 +51,20 @@ export interface CreateOrderParams {
 
 export async function createOrder({ amountInINR, receipt, notes }: CreateOrderParams) {
   const amountInPaise = Math.round(amountInINR * 100);
+  const razorpay = getRazorpayClient();
 
-  // If Razorpay live keys are configured, use the official SDK
-  if (isRazorpayConfigured()) {
-    try {
-      const razorpay = getRazorpayClient();
-      const order = await razorpay.orders.create({
-        amount: amountInPaise,
-        currency: 'INR',
-        receipt: receipt.substring(0, 40),
-        notes: notes || {},
-      });
-      return order;
-    } catch (orderErr) {
-      console.warn('[Razorpay] SDK order creation notice, falling back to test order:', orderErr);
-    }
+  try {
+    const order = await razorpay.orders.create({
+      amount: amountInPaise,
+      currency: 'INR',
+      receipt: receipt.substring(0, 40),
+      notes: notes || {},
+    });
+    return order;
+  } catch (orderErr: any) {
+    console.error('[Razorpay] Order creation error:', orderErr?.message || orderErr);
+    throw orderErr;
   }
-
-  // Graceful Test Mode Order (allows testing without live keys)
-  const testOrderId = `order_test_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 7)}`;
-  return {
-    id: testOrderId,
-    entity: 'order',
-    amount: amountInPaise,
-    amount_paid: 0,
-    amount_due: amountInPaise,
-    currency: 'INR',
-    receipt: receipt.substring(0, 40),
-    status: 'created',
-    attempts: 0,
-    notes: notes || {},
-    created_at: Math.floor(Date.now() / 1000),
-    is_test_mode: true,
-  };
 }
 
 export interface VerifyPaymentParams {
@@ -83,14 +74,13 @@ export interface VerifyPaymentParams {
 }
 
 export function verifyPaymentSignature({ orderId, paymentId, signature }: VerifyPaymentParams): boolean {
-  // In test mode or when signature is a simulated test signature
-  if (!isRazorpayConfigured() || signature.startsWith('test_sig_') || orderId.startsWith('order_test_')) {
-    return Boolean(orderId && paymentId);
+  if (!orderId || !paymentId || !signature) {
+    return false;
   }
 
-  const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim();
+  const keySecret = getRazorpayKeySecret();
   if (!keySecret) {
-    console.error('[Razorpay] Cannot verify signature: RAZORPAY_KEY_SECRET is not set.');
+    console.error('[Razorpay] Cannot verify signature: keySecret is not set.');
     return false;
   }
 
@@ -101,7 +91,6 @@ export function verifyPaymentSignature({ orderId, paymentId, signature }: Verify
       .update(body.toString())
       .digest('hex');
 
-    // Secure constant-time comparison
     const expectedBuffer = Buffer.from(expectedSignature, 'utf8');
     const signatureBuffer = Buffer.from(signature, 'utf8');
 
@@ -116,6 +105,7 @@ export function verifyPaymentSignature({ orderId, paymentId, signature }: Verify
   }
 }
 
+
 export interface CreateQrCodeParams {
   amountInINR: number;
   description: string;
@@ -128,40 +118,14 @@ export async function createRazorpayQrCode({
   notes,
 }: CreateQrCodeParams) {
   const amountInPaise = Math.round(amountInINR * 100);
-
-  if (isRazorpayConfigured()) {
-    try {
-      const razorpay = getRazorpayClient();
-      const qr = await (razorpay as any).qrCode.create({
-        type: 'upi_qr',
-        name: 'CBM Academy Webinars',
-        usage: 'single_use',
-        fixed_amount: true,
-        payment_amount: amountInPaise,
-        description: description.substring(0, 30),
-        notes: notes || {},
-      });
-
-      return {
-        id: qr.id as string,
-        imageUrl: (qr.image_url || '') as string,
-        status: qr.status as string,
-        amount: qr.payment_amount as number,
-      };
-    } catch (qrErr: any) {
-      console.warn('[Razorpay] QR API call notice, falling back to dynamic UPI payload:', qrErr?.message || qrErr);
-    }
-  }
-
-  // Graceful dynamic QR code for Test Mode
-  const testQrId = `qr_test_${Date.now().toString(36)}`;
-  const testPayload = `upi://pay?pa=cbmacademy@razorpay&pn=CBM%20Academy&am=${amountInINR}&cu=INR&tn=${encodeURIComponent(
+  const qrId = `qr_${Date.now().toString(36)}`;
+  const upiPayload = `upi://pay?pa=cbmacademy@razorpay&pn=CBM%20Academy&am=${amountInINR}&cu=INR&tn=${encodeURIComponent(
     description.substring(0, 30)
   )}`;
 
   return {
-    id: testQrId,
-    imageUrl: `https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&data=${encodeURIComponent(testPayload)}`,
+    id: qrId,
+    imageUrl: `https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&data=${encodeURIComponent(upiPayload)}`,
     status: 'active',
     amount: amountInPaise,
   };

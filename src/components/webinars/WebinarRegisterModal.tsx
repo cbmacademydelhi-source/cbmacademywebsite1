@@ -74,6 +74,25 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
   const webinarDuration = activeWebinar?.duration || '60 mins';
   const webinarId = activeWebinar?.id || 'webinar-live-masterclass';
 
+  // Dynamic pricing calculation from activeWebinar
+  const rawPrice = activeWebinar?.price;
+  const numPrice = typeof rawPrice === 'number'
+    ? rawPrice
+    : Number(String(rawPrice || '').replace(/[^0-9.]/g, ''));
+
+  // FREE ONLY when price is explicitly 0, '0', 'FREE', or webinar.type is 'free' (and numeric price is not > 0)
+  const isPaid = (typeof rawPrice === 'number' && rawPrice > 0) ||
+    (!isNaN(numPrice) && numPrice > 0) ||
+    activeWebinar?.type === 'paid';
+
+  const priceValue = typeof rawPrice === 'number' && rawPrice > 0
+    ? rawPrice
+    : !isNaN(numPrice) && numPrice > 0
+    ? numPrice
+    : 499;
+
+  const displayPrice = isPaid ? `₹${priceValue}` : 'FREE';
+
   const validatePhone = (value: string): boolean => {
     const cleaned = value.replace(/[\s\-\(\)\+]/g, '');
     if (cleaned.length === 10 && /^[6-9]\d{9}$/.test(cleaned)) return true;
@@ -125,7 +144,191 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
     let submissionErrorMessage = '';
 
     // =========================================================================
-    // 1. Direct Supabase Client Insertion (Uses existing Supabase setup & RLS)
+    // 1. PAID WEBINAR FLOW (Razorpay Checkout & Server Verification)
+    // =========================================================================
+    if (isPaid) {
+      try {
+        // Step A: Create order on server with dynamic webinar price
+        const orderRes = await fetch('/api/webinars/create-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            webinarId,
+            webinarTitle,
+            fullName: cleanFullName,
+            email: cleanEmail,
+            whatsappNumber: cleanPhone,
+            phone: cleanPhone,
+            price: priceValue,
+            date: webinarDate,
+            time: webinarTime,
+            duration: webinarDuration,
+            type: 'paid',
+          }),
+        });
+
+        if (!orderRes.ok) {
+          const errData = await orderRes.json().catch(() => null);
+          throw new Error(errData?.message || 'Failed to initiate secure payment order. Please try again.');
+        }
+
+        const orderData = await orderRes.json();
+        if (!orderData?.success || !orderData?.orderId) {
+          throw new Error(orderData?.message || 'Could not generate Razorpay order.');
+        }
+
+        // Step B: Ensure Razorpay Checkout script is ready
+        const loadRazorpay = (): Promise<boolean> => {
+          return new Promise((resolve) => {
+            if (typeof (window as any).Razorpay !== 'undefined') {
+              resolve(true);
+              return;
+            }
+            const script = document.createElement('script');
+            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+            script.async = true;
+            script.onload = () => resolve(true);
+            script.onerror = () => resolve(false);
+            document.body.appendChild(script);
+          });
+        };
+
+        const isLoaded = await loadRazorpay();
+        if (!isLoaded || typeof (window as any).Razorpay === 'undefined') {
+          throw new Error('Unable to open payment gateway. Please check your internet connection.');
+        }
+
+        const razorpayKey =
+          orderData.keyId ||
+          (import.meta as any).env?.VITE_RAZORPAY_KEY_ID ||
+          'rzp_live_TqufyQXW4P2Don';
+
+        // Step C: Open Razorpay Checkout Modal
+        const options = {
+          key: razorpayKey,
+          amount: orderData.amount, // in paise
+          currency: orderData.currency || 'INR',
+          name: 'CBM Academy',
+          description: `${webinarTitle} • Live Access`,
+          order_id: orderData.orderId,
+          prefill: {
+            name: cleanFullName,
+            email: cleanEmail,
+            contact: cleanPhone,
+          },
+          notes: {
+            webinar_id: webinarId,
+            registration_id: orderData.registrationId,
+          },
+          theme: {
+            color: '#FF6B00',
+          },
+          modal: {
+            ondismiss: () => {
+              setIsSubmitting(false);
+            },
+          },
+          handler: async (paymentResponse: {
+            razorpay_payment_id: string;
+            razorpay_order_id: string;
+            razorpay_signature: string;
+          }) => {
+            try {
+              setIsSubmitting(true);
+              // Step D: Server-side payment signature verification
+              const verifyRes = await fetch('/api/webinars/verify-payment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  razorpay_order_id: paymentResponse.razorpay_order_id,
+                  razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                  razorpay_signature: paymentResponse.razorpay_signature,
+                  registrationId: orderData.registrationId,
+                  email: cleanEmail,
+                  fullName: cleanFullName,
+                  phone: cleanPhone,
+                  amount: priceValue,
+                  webinarId,
+                  webinarTitle,
+                }),
+              });
+
+              const verifyData = await verifyRes.json().catch(() => null);
+
+              if (verifyRes.ok && verifyData?.success) {
+                // Step E: Save registration in Supabase (client-side backup)
+                try {
+                  await supabase.from('webinar_registrations').insert([
+                    {
+                      id: orderData.registrationId,
+                      webinar_id: webinarId,
+                      webinar_title: webinarTitle,
+                      full_name: cleanFullName,
+                      email: cleanEmail,
+                      whatsapp_number: cleanPhone,
+                      phone: cleanPhone,
+                      registration_type: 'paid',
+                      amount: priceValue,
+                      currency: 'INR',
+                      payment_status: 'paid',
+                      registration_status: 'approved',
+                      razorpay_order_id: paymentResponse.razorpay_order_id,
+                      razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                      razorpay_signature: paymentResponse.razorpay_signature,
+                      payment_reference: orderData.reference,
+                      paid_at: new Date().toISOString(),
+                    },
+                  ]);
+                } catch (dbErr) {
+                  console.warn('Supabase client insert backup notice:', dbErr);
+                }
+
+                setSubmittedData({
+                  name: cleanFullName,
+                  email: cleanEmail,
+                  phone: cleanPhone,
+                  webinarTitle,
+                  date: webinarDate,
+                  time: webinarTime,
+                  duration: webinarDuration,
+                });
+                setIsSuccess(true);
+              } else {
+                setServerError(
+                  verifyData?.message ||
+                    'Payment signature verification failed. Please contact admissions support if your card or UPI was charged.'
+                );
+              }
+            } catch (vErr: any) {
+              console.error('Payment verification failed:', vErr);
+              setServerError(
+                'Could not verify payment status with server. If your account was debited, your seat will be confirmed automatically.'
+              );
+            } finally {
+              setIsSubmitting(false);
+            }
+          },
+        };
+
+        const rzp = new (window as any).Razorpay(options);
+        rzp.on('payment.failed', (resp: any) => {
+          setIsSubmitting(false);
+          setServerError(
+            resp?.error?.description || 'Payment was unsuccessful or cancelled. Please try again.'
+          );
+        });
+        rzp.open();
+        return;
+      } catch (payErr: any) {
+        console.error('Razorpay order initiation failed:', payErr);
+        setIsSubmitting(false);
+        setServerError(payErr?.message || 'Could not connect to payment gateway. Please try again.');
+        return;
+      }
+    }
+
+    // =========================================================================
+    // 2. FREE WEBINAR FLOW (Keep existing free registration flow)
     // =========================================================================
     try {
       // Primary: Insert into webinar_registrations table (without .select() to respect RLS INSERT policy)
@@ -163,7 +366,7 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
             email: cleanEmail,
             phone: cleanPhone,
             course: webinarTitle,
-            message: `[Webinar Registration] ${webinarTitle} - Date: ${webinarDate} ${webinarTime}`,
+            message: `[Webinar Registration] ${webinarTitle} - Date: ${webinarDate} ${webinarTime} (FREE)`,
             form_data: {
               full_name: cleanFullName,
               email: cleanEmail,
@@ -174,6 +377,7 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
               time: webinarTime,
               duration: webinarDuration,
               registration_type: 'free',
+              amount: 0,
             },
           },
         ]);
@@ -201,9 +405,7 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
       console.warn('Direct Supabase insert exception:', dbErr);
     }
 
-    // =========================================================================
-    // 2. Server API fallback & automated notification trigger
-    // =========================================================================
+    // Server API fallback & automated notification trigger
     try {
       const response = await fetch('/api/webinars/register-free', {
         method: 'POST',
@@ -218,6 +420,8 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
           date: webinarDate,
           time: webinarTime,
           duration: webinarDuration,
+          price: 0,
+          type: 'free',
         }),
       });
 
@@ -284,9 +488,11 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
         <div className="flex items-start justify-between border-b border-slate-100 bg-[#072B57] px-6 py-5 text-white">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider bg-[#FF6B00] text-white">
+              <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider ${
+                isPaid ? 'bg-orange-500 text-white font-extrabold' : 'bg-emerald-600 text-white'
+              }`}>
                 <Sparkles className="w-3 h-3" />
-                Free Masterclass
+                {isPaid ? `PAID • ${displayPrice}` : 'FREE'}
               </span>
             </div>
             <h2 id="webinar-register-title" className="text-lg sm:text-xl font-black tracking-tight text-white">
@@ -295,6 +501,8 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
             <p className="text-xs text-slate-300 leading-snug">
               {isSuccess
                 ? 'Your seat has been reserved. See you at the live session!'
+                : isPaid
+                ? `Fill in your details below to secure your seat for ${displayPrice}.`
                 : 'Fill in your details below to secure your free live access.'}
             </p>
           </div>
@@ -347,8 +555,9 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
                     <Clock className="w-3.5 h-3.5 text-[#FF6B00] shrink-0" />
                     <span>{submittedData.time}</span>
                   </div>
-                  <div className="col-span-2 text-[11px] text-slate-500">
-                    Duration: <span className="font-semibold text-slate-700">{submittedData.duration}</span>
+                  <div className="col-span-2 text-[11px] text-slate-500 flex items-center justify-between">
+                    <span>Duration: <span className="font-semibold text-slate-700">{submittedData.duration}</span></span>
+                    <span className="font-extrabold text-[#072B57]">{isPaid ? `PAID • ${displayPrice}` : 'FREE'}</span>
                   </div>
                 </div>
               </div>
@@ -428,8 +637,12 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
                         </span>
                       </div>
                     </div>
-                    <span className="shrink-0 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200">
-                      FREE
+                    <span className={`shrink-0 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider ${
+                      isPaid
+                        ? 'bg-orange-50 text-[#FF6B00] border border-orange-200'
+                        : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                    }`}>
+                      {isPaid ? `PAID • ${displayPrice}` : 'FREE'}
                     </span>
                   </div>
                 </div>
@@ -556,16 +769,18 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
                   {isSubmitting ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>Sending...</span>
+                      <span>{isPaid ? 'Connecting to Payment...' : 'Sending...'}</span>
                     </>
                   ) : (
-                    <span>Register Now</span>
+                    <span>{isPaid ? `Book Seat / Pay ${displayPrice}` : 'Register Now'}</span>
                   )}
                 </button>
               </div>
 
               <p className="text-center text-[11px] text-slate-400">
-                100% Free Live Session &bull; Details will be recorded in Supabase and shared to your email.
+                {isPaid
+                  ? `Official Live Masterclass (${displayPrice}) • Details will be recorded in Supabase and shared to your email.`
+                  : '100% Free Live Session • Details will be recorded in Supabase and shared to your email.'}
               </p>
             </form>
           )}

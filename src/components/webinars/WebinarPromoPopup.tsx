@@ -61,12 +61,20 @@ export const WebinarPromoPopup: React.FC<WebinarPromoPopupProps> = ({
 
   if (!isOpen || !upcomingWebinar) return null;
 
-  const isFree = upcomingWebinar.type === 'free';
-  const priceDisplay = isFree
-    ? 'FREE ACCESS'
-    : typeof upcomingWebinar.price === 'number'
-    ? `₹${upcomingWebinar.price}`
-    : upcomingWebinar.price || 'PAID';
+  const rawPrice = upcomingWebinar.price;
+  const numPrice = typeof rawPrice === 'number'
+    ? rawPrice
+    : Number(String(rawPrice || '').replace(/[^0-9.]/g, ''));
+  const isPaid = (typeof rawPrice === 'number' && rawPrice > 0) ||
+    (!isNaN(numPrice) && numPrice > 0) ||
+    upcomingWebinar.type === 'paid';
+  const priceValue = typeof rawPrice === 'number' && rawPrice > 0
+    ? rawPrice
+    : !isNaN(numPrice) && numPrice > 0
+    ? numPrice
+    : 499;
+  const isFree = !isPaid;
+  const priceDisplay = isFree ? 'FREE' : `PAID • ₹${priceValue}`;
 
   const dateParts = parseDateBadge(upcomingWebinar.date);
 
@@ -123,8 +131,10 @@ export const WebinarPromoPopup: React.FC<WebinarPromoPopupProps> = ({
             </div>
 
             <div className="absolute bottom-2.5 left-2.5">
-              <span className="rounded-md bg-[#072B57] px-2 py-0.5 text-[10px] font-bold text-white shadow-xs">
-                Live Workshop
+              <span className={`rounded-md px-2 py-0.5 text-[10px] font-bold text-white shadow-xs ${
+                isPaid ? 'bg-[#FF6B00]' : 'bg-emerald-600'
+              }`}>
+                {priceDisplay}
               </span>
             </div>
           </div>
