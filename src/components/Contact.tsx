@@ -168,13 +168,12 @@ export const Contact: React.FC<ContactProps> = ({
             <div className="h-full min-h-[360px] lg:min-h-full rounded-[20px] overflow-hidden border border-orange-200/80 shadow-sm bg-white relative">
               <iframe
                 title="CBM Academy Delhi Location"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d112061.7618210352!2d77.12781682974558!3d28.631853516544976!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390cfd37b92bb18b%3A0xe5a36371a539eb87!2sConnaught%20Place%2C%20New%20Delhi%2C%20Delhi!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
-                className="w-full h-full border-0 min-h-[380px]"
+               src="https://www.google.com/maps?q=Hari+Kothi+E-111,+Abul+Fazal+Enclave,+Okhla,+New+Delhi&output=embed"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
               />
               <div className="absolute bottom-3 left-3 bg-[#072B57]/90 backdrop-blur-xs px-3.5 py-1.5 rounded-lg text-xs font-bold text-white shadow-md">
-                📍 CBM Academy Campus &bull; Okhla, New Delhi
+               📍 CBM Academy Campus · Hari Kothi, E-111, Abul Fazal Enclave, Okhla, New Delhi
               </div>
             </div>
           </motion.div>
