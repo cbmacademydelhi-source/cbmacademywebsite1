@@ -168,12 +168,12 @@ export const Contact: React.FC<ContactProps> = ({
             <div className="h-full min-h-[360px] lg:min-h-full rounded-[20px] overflow-hidden border border-orange-200/80 shadow-sm bg-white relative">
               <iframe
                 title="CBM Academy Delhi Location"
-               src="https://www.google.com/maps?q=Hari+Kothi+E-111,+Abul+Fazal+Enclave,+Okhla,+New+Delhi&output=embed"
+               src="https://www.google.com/maps?q=CBM+Academy+-+AI+Integrated+Digital+Marketing+Institute&output=embed"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
               />
               <div className="absolute bottom-3 left-3 bg-[#072B57]/90 backdrop-blur-xs px-3.5 py-1.5 rounded-lg text-xs font-bold text-white shadow-md">
-               📍 CBM Academy Campus · Hari Kothi, E-111, Abul Fazal Enclave, Okhla, New Delhi
+               📍 Upper Ground Floor, Abul Fazal, E-111, Hari Kothi Rd, Abul Fazal Enclave, Jamia Nagar, Okhla, New Delhi
               </div>
             </div>
           </motion.div>
