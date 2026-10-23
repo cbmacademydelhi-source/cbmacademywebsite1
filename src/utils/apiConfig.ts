@@ -20,6 +20,11 @@ export function getApiBaseUrl(): string {
  * Fetch from API with automatic fallback to live backend if relative endpoint returns 404 or HTML (e.g. on static hosting)
  */
 export async function apiFetch(endpoint: string, options?: RequestInit): Promise<Response> {
+  // Keep absolute URLs exactly as provided
+  if (/^https?:\/\//i.test(endpoint)) {
+    return fetch(endpoint, options);
+  }
+
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
   const customBase = getApiBaseUrl();
 
@@ -31,41 +36,49 @@ export async function apiFetch(endpoint: string, options?: RequestInit): Promise
 
   const isLocalhost =
     typeof window !== 'undefined' &&
-    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+    (window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1');
 
   const isLiveBackendHost =
     typeof window !== 'undefined' &&
-    (window.location.hostname.includes('6ruqk6q33c4f3mamycvwcd') || window.location.hostname.includes('run.app'));
+    (window.location.hostname.includes('6ruqk6q33c4f3mamycvwcd') ||
+      window.location.hostname.includes('run.app'));
 
-  // 1. Try relative endpoint first
+  // Try relative endpoint first
   try {
     const res = await fetch(cleanEndpoint, options);
 
     const contentType = res.headers.get('content-type') || '';
     const isHtml = contentType.includes('text/html');
 
-    // If ok and returned actual JSON (not an SPA index.html fallback), return response
     if (res.ok && !isHtml) {
       return res;
     }
 
-    // If 404 or returned HTML on a live custom domain / separate host, fallback to LIVE backend
+    // Fallback to live backend for static hosting
     if (!isLocalhost && !isLiveBackendHost && (res.status === 404 || isHtml)) {
       console.warn(
         `[API] Relative endpoint ${cleanEndpoint} returned status ${res.status} (${contentType}), falling back to LIVE backend...`
       );
+
       const fallbackUrl = `${LIVE_BACKEND_URL}${cleanEndpoint}`;
       return await fetch(fallbackUrl, options);
     }
 
     return res;
   } catch (netErr) {
-    // If network error (e.g. relative URL rejected or host unreachable), retry with LIVE backend
+    // Network error → retry with live backend
     if (!isLocalhost && !isLiveBackendHost) {
-      console.warn(`[API] Relative fetch failed for ${cleanEndpoint}, retrying with LIVE backend:`, netErr);
+      console.warn(
+        `[API] Relative fetch failed for ${cleanEndpoint}, retrying with LIVE backend:`,
+        netErr
+      );
+
       const fallbackUrl = `${LIVE_BACKEND_URL}${cleanEndpoint}`;
       return await fetch(fallbackUrl, options);
     }
+
     throw netErr;
   }
+}
 }
