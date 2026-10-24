@@ -295,7 +295,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
 
                 {/* Scope Coverage Summary */}
                 <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed pt-0.5">
-                  Master SEO, Google Ads, Meta Ads, social media marketing, GA4 analytics, AI automation, and freelance agency blueprints.
+                 Learn like a mentor, stay updated, and master digital marketing independently.
                 </p>
               </div>
 
