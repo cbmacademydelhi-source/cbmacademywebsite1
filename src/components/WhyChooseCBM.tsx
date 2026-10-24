@@ -372,7 +372,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
             transition={{ duration: 0.5, delay: 0.15, ease: SMOOTH_EASE_OUT }}
             className="mt-3 text-slate-600 text-sm sm:text-base font-normal leading-relaxed max-w-2xl mx-auto text-left"
           >
-            Learn digital marketing through practical assignments, live campaign simulations, industry tools and AI-powered workflows instead of relying only on classroom theory.
+            Learn digital marketing through practical experience, AI-powered tools, and self-learning techniques that help you adapt to industry changes independently.
           </motion.p>
         </div>
 
