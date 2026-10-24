@@ -362,9 +362,19 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
             transition={{ duration: 0.5, delay: 0.08, ease: SMOOTH_EASE_OUT }}
             className="text-lg min-[480px]:text-xl sm:text-2xl md:text-[28px] lg:text-[33px] xl:text-[36px] font-black text-[#072B57] tracking-tight leading-snug sm:whitespace-nowrap"
           >
-            Practical Digital Marketing Training for{' '}
-            <span className="text-[#FF6B00] whitespace-nowrap">Career Growth</span>
+            HOW YOU’LL <span className="text-[#FF6B00] whitespace-nowrap">LEARN</span>
           </motion.h3>
+
+          {/* Subheading immediately below it */}
+          <motion.p
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT_ONCE}
+            transition={{ duration: 0.5, delay: 0.12, ease: SMOOTH_EASE_OUT }}
+            className="mt-2 text-base sm:text-lg md:text-xl font-bold text-[#072B57] tracking-tight"
+          >
+            Learn Skills. Build Projects. Grow Your Career.
+          </motion.p>
 
           {/* Subtitle */}
           <motion.p
@@ -372,7 +382,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={VIEWPORT_ONCE}
             transition={{ duration: 0.5, delay: 0.15, ease: SMOOTH_EASE_OUT }}
-            className="mt-3 text-slate-600 text-sm sm:text-base font-normal leading-relaxed max-w-2xl mx-auto text-left"
+            className="mt-2.5 text-slate-600 text-sm sm:text-base font-normal leading-relaxed max-w-2xl mx-auto text-left"
           >
             Learn digital marketing through practical experience, AI-powered tools, and self-learning techniques that help you adapt to industry changes independently.
           </motion.p>

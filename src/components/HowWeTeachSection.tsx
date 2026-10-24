@@ -97,11 +97,11 @@ export const HowWeTeachSection: React.FC<HowWeTeachSectionProps> = () => {
         <div className="flex flex-col lg:flex-row gap-12 lg:gap-16 items-start">
           {/* LEFT COLUMN: ~48% width */}
           <div className="w-full lg:w-[48%] shrink-0">
-            {/* 1. Eyebrow heading */}
+            {/* 1. Section Label */}
             <div className="inline-flex items-center gap-2 mb-3">
               <span className="w-2 h-2 rounded-full bg-[#F4772B]"></span>
               <span className="text-xs sm:text-sm font-bold tracking-widest uppercase text-[#F4772B]">
-                HOW YOU'LL LEARN
+                HOW YOU’LL LEARN
               </span>
             </div>
 
@@ -133,11 +133,9 @@ export const HowWeTeachSection: React.FC<HowWeTeachSectionProps> = () => {
               </div>
             </div>
 
-            {/* 3. Description */}
+            {/* 3. Description (Unchanged) */}
             <p className="text-slate-600 text-base sm:text-lg leading-relaxed max-w-xl mb-8">
-              Learn Skills. Build Projects. Grow Your Career.
-
-Learn digital marketing through practical experience, AI-powered tools, and self-learning techniques that help you adapt to industry changes independently
+              Learn digital marketing through practical experience, AI-powered tools, and self-learning techniques that help you adapt to industry changes independently.
             </p>
 
             {/* 4. Large, authentic classroom photograph with asymmetrical frame */}
