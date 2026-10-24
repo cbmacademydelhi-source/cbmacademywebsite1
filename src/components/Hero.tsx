@@ -93,7 +93,7 @@ export const Hero: React.FC<HeroProps> = ({
                 className="font-['Plus_Jakarta_Sans',sans-serif] text-3xl sm:text-4xl lg:text-[44px] xl:text-[48px] tracking-tight leading-[1.2] sm:leading-[1.16]"
               >
                 <span className="text-[#072B57] font-extrabold sm:font-black">
-                  Master Digital Marketing
+                  Master Digital Marketing in Delhi
                 </span>{' '}
                 <span className="relative inline-block text-[#FF6B00] font-extrabold sm:font-black">
                   with AI
