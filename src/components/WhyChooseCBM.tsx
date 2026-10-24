@@ -6,6 +6,7 @@ import { SMOOTH_EASE_OUT, VIEWPORT_ONCE } from '../lib/animations';
 interface WhyChooseCBMProps {
   onOpenApply?: () => void;
   onOpenBrochure?: () => void;
+  onExploreCourses?: () => void;
 }
 
 interface CardItem {
@@ -98,6 +99,7 @@ const CARDS: CardItem[] = [
 export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
   onOpenApply,
   onOpenBrochure,
+  onExploreCourses,
 }) => {
   const shouldReduceMotion = useReducedMotion();
   const bannerInputRef = useRef<HTMLInputElement>(null);
@@ -253,7 +255,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
 
               <div className="space-y-4">
                 <p className="text-sm sm:text-base font-semibold text-[#072B57] leading-relaxed">
-                  Industry-first digital marketing training bridging the gap between classroom theory and live agency execution.
+                  Learn like a mentor, stay updated, and master digital marketing independently.
                 </p>
 
                 {/* 4 Organised Key Pillars */}
@@ -300,6 +302,14 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
               <div className="pt-2 flex flex-wrap items-center gap-3">
                 <a
                   href="#course"
+                  onClick={(e) => {
+                    if (onExploreCourses) {
+                      e.preventDefault();
+                      onExploreCourses();
+                    } else {
+                      window.location.hash = 'course';
+                    }
+                  }}
                   className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#FF6B00] px-6 py-3.5 text-sm font-bold text-white transition-all hover:bg-[#e05f00] cursor-pointer shadow-md hover:shadow-lg active:scale-98"
                 >
                   <span>Explore Courses</span>

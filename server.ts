@@ -24,8 +24,8 @@ import {
   saveFormSubmission,
   createWebinar,
   deleteWebinarServer,
-  ServerWebinarRecord,
-} from './server/supabaseServer';
+} from './server/supabaseServer.ts';
+import type { ServerWebinarRecord } from './server/supabaseServer.ts';
 import {
   isRazorpayConfigured,
   isWebhookConfigured,
@@ -34,13 +34,13 @@ import {
   verifyPaymentSignature,
   createRazorpayQrCode,
   verifyWebhookSignature,
-} from './server/razorpayServer';
+} from './server/razorpayServer.ts';
 import {
   sendWebinarConfirmationEmail,
   sendWebinarReminderEmail,
-  ReminderType,
-} from './server/emailServer';
-import { WebinarAttendeeRole, WebinarExperienceLevel } from './src/types';
+} from './server/emailServer.ts';
+import type { ReminderType } from './server/emailServer.ts';
+import type { WebinarAttendeeRole, WebinarExperienceLevel } from './src/types.ts';
 
 dotenv.config();
 
@@ -238,6 +238,71 @@ app.post('/api/forms/apply', async (req, res) => {
     return res.status(500).json({
       success: false,
       message: error?.message || 'Server error processing application submission.',
+    });
+  }
+});
+
+/**
+ * BROCHURE DOWNLOAD FORM SUBMISSION (Supabase form_submissions & contact_submissions)
+ */
+app.post('/api/forms/brochure', async (req, res) => {
+  try {
+    const {
+      studentName,
+      Name,
+      fullName,
+      email,
+      Email,
+      phone,
+      Phone,
+      honeypot,
+    } = req.body;
+
+    if (honeypot && String(honeypot).trim() !== '') {
+      return res.status(400).json({ success: false, message: 'Spam detected. Submission blocked.' });
+    }
+
+    const candidateName = (studentName || Name || fullName || '').trim();
+    const candidateEmail = (email || Email || '').trim();
+    const candidatePhone = (phone || Phone || '').trim();
+
+    if (!candidateName || !candidateEmail || !candidatePhone) {
+      return res.status(400).json({ success: false, message: 'Please provide student name, email, and phone number.' });
+    }
+
+    const formResult = await saveFormSubmission({
+      Name: candidateName,
+      Email: candidateEmail,
+      Phone: candidatePhone,
+      Course: '2026 Course Brochure',
+      Message: 'Student requested 2026 Course Brochure download',
+    });
+
+    // Also sync to contact_submissions
+    await saveContactSubmission({
+      fullName: candidateName,
+      email: candidateEmail,
+      phone: candidatePhone,
+      message: 'Student requested 2026 Course Brochure download',
+    }).catch(() => {});
+
+    if (!formResult.success) {
+      return res.status(500).json({
+        success: false,
+        message: formResult.error || 'Failed to record brochure request in the database.',
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: 'Brochure details saved successfully.',
+      id: formResult.id,
+    });
+  } catch (error: any) {
+    console.error('API /api/forms/brochure error:', error);
+    return res.status(500).json({
+      success: false,
+      message: error?.message || 'Server error processing brochure request.',
     });
   }
 });

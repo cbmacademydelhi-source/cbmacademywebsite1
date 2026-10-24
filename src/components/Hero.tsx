@@ -3,12 +3,30 @@ import { motion, useReducedMotion } from 'motion/react';
 import { ArrowRight, Download } from 'lucide-react';
 
 interface HeroProps {
-  onOpenApply: () => void;
+  onOpenApply?: () => void;
   onOpenBrochure: () => void;
+  onExploreCourses?: () => void;
 }
 
-export const Hero: React.FC<HeroProps> = ({ onOpenApply, onOpenBrochure }) => {
+export const Hero: React.FC<HeroProps> = ({
+  onOpenApply,
+  onOpenBrochure,
+  onExploreCourses,
+}) => {
   const shouldReduceMotion = useReducedMotion();
+
+  const handleExploreCourses = () => {
+    if (onExploreCourses) {
+      onExploreCourses();
+    } else {
+      window.location.hash = 'course';
+      const courseElement =
+        document.getElementById('course') || document.getElementById('courses');
+      if (courseElement) {
+        courseElement.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
 
   return (
     <section
@@ -120,8 +138,8 @@ export const Hero: React.FC<HeroProps> = ({ onOpenApply, onOpenBrochure }) => {
               className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4"
             >
               <button
-                onClick={onOpenApply}
-                id="hero-apply-now-btn"
+                onClick={handleExploreCourses}
+                id="hero-explore-courses-btn"
                 type="button"
                 className="inline-flex items-center justify-center gap-2.5 bg-[#FF6B00] hover:bg-[#e05e00] text-white font-bold text-base px-7 py-3.5 rounded-xl shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 transition-all duration-150 active:scale-98 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:ring-offset-2"
               >

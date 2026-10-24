@@ -1,6 +1,6 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
-import { WebinarAttendeeRole, WebinarExperienceLevel } from '../src/types';
+import type { WebinarAttendeeRole, WebinarExperienceLevel } from '../src/types.ts';
 
 dotenv.config();
 

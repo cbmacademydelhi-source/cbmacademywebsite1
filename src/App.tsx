@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { WhyChooseCBM } from './components/WhyChooseCBM';
+import { HowWeTeachSection } from './components/HowWeTeachSection';
 import { CourseSection } from './components/CourseSection';
 import { Testimonials } from './components/Testimonials';
 import { JobBoard } from './components/JobBoard';
@@ -275,12 +276,22 @@ export default function App() {
         <Hero
           onOpenApply={() => handleOpenApply()}
           onOpenBrochure={handleOpenBrochure}
+          onExploreCourses={() => {
+            window.location.hash = 'course';
+            setCurrentPage('course');
+          }}
         />
 
         <WhyChooseCBM
           onOpenApply={() => handleOpenApply()}
           onOpenBrochure={handleOpenBrochure}
+          onExploreCourses={() => {
+            window.location.hash = 'course';
+            setCurrentPage('course');
+          }}
         />
+
+        <HowWeTeachSection />
 
         <Testimonials />
 

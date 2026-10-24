@@ -697,3 +697,108 @@ export async function submitJobPosting(
       "Your job has been submitted successfully for CBM Academy's review. We will review the details before publishing the job.",
   };
 }
+
+export interface BrochureLeadData {
+  studentName: string;
+  email: string;
+  phone: string;
+  honeypot?: string;
+}
+
+/**
+ * Submit Brochure Download Request
+ * Saves student details (Student Name, Email ID, Phone Number) securely in Supabase.
+ */
+export async function submitBrochureRequest(
+  data: BrochureLeadData
+): Promise<FormSubmissionResult> {
+  if (data.honeypot && data.honeypot.trim() !== '') {
+    return {
+      success: false,
+      message: 'Spam detected. Submission blocked.',
+    };
+  }
+
+  if (
+    !data.studentName?.trim() ||
+    !data.email?.trim() ||
+    !data.phone?.trim()
+  ) {
+    return {
+      success: false,
+      message: 'Please provide Student Name, Email ID, and Phone Number.',
+    };
+  }
+
+  // 1. Direct Supabase insert into form_submissions
+  let dbResult = await insertIntoFormSubmissions({
+    Name: data.studentName.trim(),
+    Email: data.email.trim(),
+    Phone: data.phone.trim(),
+    Course: '2026 Course Brochure',
+    Message: 'Student downloaded 2026 Digital Marketing Course Brochure',
+  });
+
+  // If direct client insert was blocked or failed, use server proxy
+  if (!dbResult.success) {
+    try {
+      const resp = await fetch('/api/forms/brochure', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentName: data.studentName.trim(),
+          email: data.email.trim(),
+          phone: data.phone.trim(),
+        }),
+      });
+      if (resp.ok) {
+        const json = await resp.json();
+        if (json.success) {
+          dbResult = { success: true };
+        }
+      }
+    } catch (err) {
+      console.warn('Brochure server proxy error:', err);
+    }
+  }
+
+  if (!dbResult.success) {
+    return {
+      success: false,
+      message:
+        dbResult.error ||
+        'Could not save details to database. Please check your connection and try again.',
+    };
+  }
+
+  // Also sync to contact_submissions in background
+  insertIntoContactSubmissions({
+    full_name: data.studentName.trim(),
+    email: data.email.trim(),
+    phone: data.phone.trim(),
+    message: 'Student downloaded 2026 Digital Marketing Course Brochure',
+  }).catch(() => {});
+
+  // Background email notification
+  sendNotificationEmail({
+    access_key: WEB3FORMS_ACCESS_KEY,
+    subject: `New Brochure Download - ${data.studentName.trim()}`,
+    from_name: 'CBM Academy Website',
+    name: data.studentName.trim(),
+    email: data.email.trim(),
+    phone: data.phone.trim(),
+    course: '2026 Course Brochure',
+    message: 'Student requested and unlocked 2026 Course Brochure download',
+    submission_source: 'CBM Academy Official Website - Download Brochure',
+    submitted_at: new Date().toLocaleString('en-IN', {
+      timeZone: 'Asia/Kolkata',
+    }),
+    botcheck: '',
+  });
+
+  return {
+    success: true,
+    message: 'Details saved successfully.',
+  };
+}
+
