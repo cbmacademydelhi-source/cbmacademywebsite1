@@ -101,7 +101,7 @@ export const HowWeTeachSection: React.FC<HowWeTeachSectionProps> = () => {
             <div className="inline-flex items-center gap-2 mb-3">
               <span className="w-2 h-2 rounded-full bg-[#F4772B]"></span>
               <span className="text-xs sm:text-sm font-bold tracking-widest uppercase text-[#F4772B]">
-                Practical Digital Marketing Training for Career Growth
+                HOW YOU'LL LEARN
               </span>
             </div>
 
@@ -135,7 +135,9 @@ export const HowWeTeachSection: React.FC<HowWeTeachSectionProps> = () => {
 
             {/* 3. Description */}
             <p className="text-slate-600 text-base sm:text-lg leading-relaxed max-w-xl mb-8">
-              Learn digital marketing through practical experience, AI-powered tools, and self-learning techniques that help you adapt to industry changes independently.
+              Learn Skills. Build Projects. Grow Your Career.
+
+Learn digital marketing through practical experience, AI-powered tools, and self-learning techniques that help you adapt to industry changes independently
             </p>
 
             {/* 4. Large, authentic classroom photograph with asymmetrical frame */}
