@@ -192,7 +192,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* =========================================================
-            INTRO / VALUE SECTION (DIGITAL MARKETING ACADEMY)
+            INTRO / VALUE SECTION (Why Choose CBM Academy?)
         ========================================================= */}
         <div className="relative mb-14 sm:mb-18 pb-10 sm:pb-14 border-b border-slate-200/80">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-14 items-center">
@@ -255,7 +255,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
 
               <div className="space-y-4">
                 <p className="text-sm sm:text-base font-semibold text-[#072B57] leading-relaxed">
-                  Learn like a mentor, stay updated, and master digital marketing independently.
+                  Industry-first digital marketing training bridging the gap between classroom theory and live agency execution.
                 </p>
 
                 {/* 4 Organised Key Pillars */}
