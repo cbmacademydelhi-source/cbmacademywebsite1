@@ -250,7 +250,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
               </svg>
 
               <h2 className="text-2xl min-[400px]:text-[26px] sm:text-[30px] md:text-[34px] lg:text-[32px] xl:text-[38px] font-black text-[#072B57] tracking-tight leading-tight whitespace-nowrap">
-                Digital Marketing <span className="text-[#FF6B00]">Academy</span>
+              Why Choose CBM <span className="text-[#FF6B00]">Academy?</span>
               </h2>
 
               <div className="space-y-4">
@@ -318,6 +318,8 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
               </div>
             </motion.div>
           </div>
+
+
         </div>
 
         {/* =========================================================
