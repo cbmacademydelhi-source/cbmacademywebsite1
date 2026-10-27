@@ -334,7 +334,6 @@ export const ManageWebinarsModal: React.FC<ManageWebinarsModalProps> = ({
                       required
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      placeholder="e.g. AI Tools for Digital Marketing"
                       className="w-full rounded-xl border border-[#E5E7EB] bg-white px-3.5 py-2 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00]"
                     />
                   </div>
@@ -350,7 +349,6 @@ export const ManageWebinarsModal: React.FC<ManageWebinarsModalProps> = ({
                       required
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
-                      placeholder="Short summary of what attendees will learn"
                       className="w-full rounded-xl border border-[#E5E7EB] bg-white px-3.5 py-2 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00] resize-none"
                     />
                   </div>
@@ -365,7 +363,6 @@ export const ManageWebinarsModal: React.FC<ManageWebinarsModalProps> = ({
                       type="url"
                       value={posterUrl}
                       onChange={(e) => setPosterUrl(e.target.value)}
-                      placeholder="https://images.unsplash.com/..."
                       className="w-full rounded-xl border border-[#E5E7EB] bg-white px-3.5 py-2 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00]"
                     />
                   </div>
@@ -397,7 +394,6 @@ export const ManageWebinarsModal: React.FC<ManageWebinarsModalProps> = ({
                         disabled={type === 'free'}
                         value={type === 'free' ? '' : price}
                         onChange={(e) => setPrice(e.target.value)}
-                        placeholder={type === 'free' ? '0' : '499'}
                         className="w-full rounded-xl border border-[#E5E7EB] bg-white px-3 py-2 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00] disabled:bg-slate-100 disabled:text-slate-400"
                       />
                     </div>
@@ -414,7 +410,6 @@ export const ManageWebinarsModal: React.FC<ManageWebinarsModalProps> = ({
                       required
                       value={date}
                       onChange={(e) => setDate(e.target.value)}
-                      placeholder="e.g. 28 September 2026"
                       className="w-full rounded-xl border border-[#E5E7EB] bg-white px-3.5 py-2 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00]"
                     />
                   </div>
@@ -430,7 +425,6 @@ export const ManageWebinarsModal: React.FC<ManageWebinarsModalProps> = ({
                       required
                       value={time}
                       onChange={(e) => setTime(e.target.value)}
-                      placeholder="e.g. 6:00 PM"
                       className="w-full rounded-xl border border-[#E5E7EB] bg-white px-3.5 py-2 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00]"
                     />
                   </div>
@@ -445,7 +439,6 @@ export const ManageWebinarsModal: React.FC<ManageWebinarsModalProps> = ({
                       type="text"
                       value={duration}
                       onChange={(e) => setDuration(e.target.value)}
-                      placeholder="e.g. 60 Minutes or 2 Hours"
                       className="w-full rounded-xl border border-[#E5E7EB] bg-white px-3.5 py-2 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00]"
                     />
                   </div>
@@ -460,7 +453,6 @@ export const ManageWebinarsModal: React.FC<ManageWebinarsModalProps> = ({
                       type="text"
                       value={host}
                       onChange={(e) => setHost(e.target.value)}
-                      placeholder="e.g. CBM Academy"
                       className="w-full rounded-xl border border-[#E5E7EB] bg-white px-3.5 py-2 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00]"
                     />
                   </div>
@@ -475,7 +467,6 @@ export const ManageWebinarsModal: React.FC<ManageWebinarsModalProps> = ({
                       rows={3}
                       value={whatYouWillLearn}
                       onChange={(e) => setWhatYouWillLearn(e.target.value)}
-                      placeholder={"AI prompt engineering for marketers\nCreating high-converting ad copy\nGA4 conversion tracking"}
                       className="w-full rounded-xl border border-[#E5E7EB] bg-white px-3.5 py-2 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00] resize-none"
                     />
                   </div>
@@ -490,7 +481,6 @@ export const ManageWebinarsModal: React.FC<ManageWebinarsModalProps> = ({
                       type="url"
                       value={registrationLink}
                       onChange={(e) => setRegistrationLink(e.target.value)}
-                      placeholder="https://meet.google.com/..."
                       className="w-full rounded-xl border border-[#E5E7EB] bg-white px-3.5 py-2 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00]"
                     />
                   </div>
@@ -505,7 +495,6 @@ export const ManageWebinarsModal: React.FC<ManageWebinarsModalProps> = ({
                         type="number"
                         value={capacity}
                         onChange={(e) => setCapacity(e.target.value)}
-                        placeholder="100"
                         className="w-full rounded-xl border border-[#E5E7EB] bg-white px-3.5 py-2 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00]"
                       />
                     </div>

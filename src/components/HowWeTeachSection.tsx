@@ -101,42 +101,17 @@ export const HowWeTeachSection: React.FC<HowWeTeachSectionProps> = () => {
             <div className="inline-flex items-center gap-2 mb-3">
               <span className="w-2 h-2 rounded-full bg-[#F4772B]"></span>
               <span className="text-xs sm:text-sm font-bold tracking-widest uppercase text-[#F4772B]">
-              Learn Skills. Build Projects. Grow Your Career.
+                HOW YOU’LL LEARN
               </span>
             </div>
 
             {/* 2. Main heading */}
-            <div className="relative mb-5">
+            <div className="relative mb-6">
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.12]">
-                <span className="block text-[#172E59]">.</span>
-                <span className="block text-[#F4772B]">.</span>
+                <span className="block text-[#172E59]">Learn Skills. Build Projects.</span>
+                <span className="block text-[#F4772B]">Grow Your Career.</span>
               </h2>
-
-              {/* Small handwritten-style annotation near headline */}
-              <div className="mt-3.5 inline-flex items-center gap-2">
-                <span className="font-['Caveat',cursive] text-lg sm:text-xl font-bold text-[#172E59] tracking-wide transform -rotate-1 select-none">
-                  Practical. AI-Powered. Career Focused.
-                </span>
-                <svg
-                  className="w-16 h-2 text-[#F4772B] hidden sm:inline-block"
-                  viewBox="0 0 80 8"
-                  fill="none"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M1 5.5C24 2 56 2 79 5"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </div>
             </div>
-
-            {/* 3. Description (Unchanged) */}
-            <p className="text-slate-600 text-base sm:text-lg leading-relaxed max-w-xl mb-8">
-              Learn digital marketing through practical experience, AI-powered tools, and self-learning techniques that help you adapt to industry changes independently.
-            </p>
 
             {/* 4. Large, authentic classroom photograph with asymmetrical frame */}
             <div className="relative rounded-3xl rounded-tl-xl overflow-hidden shadow-xl border border-slate-100 bg-slate-900 aspect-[4/3] sm:aspect-[16/11]">

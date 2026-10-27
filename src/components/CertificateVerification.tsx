@@ -123,7 +123,6 @@ export const CertificateVerification: React.FC = () => {
                     id="certificate-id-input"
                     value={certId}
                     onChange={(e) => setCertId(e.target.value.toUpperCase())}
-                    placeholder="e.g. CBM-2025-8841"
                     className="w-full pl-11 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-sm font-semibold tracking-wider text-[#072B57] focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:border-[#FF6B00] uppercase placeholder:normal-case placeholder:tracking-normal placeholder:text-slate-400"
                   />
                 </div>

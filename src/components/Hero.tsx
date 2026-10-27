@@ -182,10 +182,13 @@ export const Hero: React.FC<HeroProps> = ({
                   className="w-full h-80 sm:h-96 lg:h-[420px] object-cover transition-transform duration-500 hover:scale-[1.02]"
                 />
 
-                {/* Single text in bottom */}
+                {/* Text in bottom */}
                 <div className="absolute bottom-4 left-4 right-4 text-white py-2.5 sm:py-3 px-4 rounded-xl bg-[#072B57]/85 backdrop-blur-md border border-white/10 shadow-lg text-center">
-                  <p className="text-xs sm:text-sm font-semibold text-white tracking-wide">
-                    Live Campaign Execution &amp; AI Auditing in Okhla
+                  <p className="text-xs sm:text-sm font-bold text-white tracking-wide">
+                    Watch This Video
+                  </p>
+                  <p className="text-[11px] sm:text-xs text-slate-200 font-medium mt-0.5">
+                    Your Journey Starts Here
                   </p>
                 </div>
               </motion.div>

@@ -297,7 +297,7 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                         value
                       )
                     }
-                    placeholder="ABC Digital Pvt. Ltd."
+                    placeholder=""
                     required
                   />
 
@@ -311,7 +311,7 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                         value
                       )
                     }
-                    placeholder="Priya Sharma"
+                    placeholder=""
                     required
                   />
 
@@ -326,7 +326,7 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                         value
                       )
                     }
-                    placeholder="hr@company.com"
+                    placeholder=""
                     required
                   />
 
@@ -341,7 +341,7 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                         value
                       )
                     }
-                    placeholder="+91 98765 43210"
+                    placeholder=""
                     required
                   />
 
@@ -372,7 +372,7 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                         value
                       )
                     }
-                    placeholder="Performance Marketing Executive"
+                    placeholder=""
                     required
                   />
 
@@ -392,7 +392,7 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                         )
                       }
                       rows={5}
-                      placeholder="Describe responsibilities, requirements and important details..."
+                      placeholder=""
                       className="w-full resize-none rounded-xl border border-slate-200 px-3 py-3 text-sm text-[#072B57] outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-100"
                       required
                     />
@@ -412,7 +412,7 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                           value
                         )
                       }
-                      placeholder="Delhi NCR / Remote"
+                      placeholder=""
                       required
                     />
 
@@ -427,7 +427,7 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                           value
                         )
                       }
-                      placeholder="₹4–6 LPA"
+                      placeholder=""
                     />
 
                     {/* Experience */}
@@ -441,7 +441,7 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                           value
                         )
                       }
-                      placeholder="0–2 years"
+                      placeholder=""
                     />
 
                     {/* Work Type */}
@@ -507,7 +507,7 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                         value
                       )
                     }
-                    placeholder="Google Ads, Meta Ads, SEO, Analytics"
+                    placeholder=""
                   />
 
                   <p className="text-[11px] text-slate-400">

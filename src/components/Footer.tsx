@@ -160,7 +160,6 @@ export const Footer: React.FC<FooterProps> = ({ onOpenApply, onOpenBrochure }) =
                     disabled={isSubmitting}
                     value={newsletterEmail}
                     onChange={(e) => setNewsletterEmail(e.target.value)}
-                    placeholder="Enter your email"
                     className="w-full bg-white/10 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:border-transparent disabled:opacity-60"
                   />
                 </div>

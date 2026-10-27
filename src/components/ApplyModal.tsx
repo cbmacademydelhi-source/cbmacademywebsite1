@@ -230,7 +230,6 @@ export const ApplyModal: React.FC<ApplyModalProps> = ({
                   setFormData({ ...formData, fullName: e.target.value });
                   if (errors.fullName) setErrors({ ...errors, fullName: '' });
                 }}
-                placeholder="e.g. Priya Sharma"
                 className={`w-full px-4 py-3 rounded-xl border text-sm text-[#072B57] placeholder:text-slate-400 focus:outline-none focus:ring-2 ${
                   errors.fullName ? 'border-rose-300 ring-1 ring-rose-300 bg-rose-50/20' : 'border-slate-300 focus:ring-[#FF6B00] focus:border-[#FF6B00]'
                 }`}
@@ -252,7 +251,6 @@ export const ApplyModal: React.FC<ApplyModalProps> = ({
                     setFormData({ ...formData, email: e.target.value });
                     if (errors.email) setErrors({ ...errors, email: '' });
                   }}
-                  placeholder="e.g. priya@gmail.com"
                   className={`w-full px-4 py-3 rounded-xl border text-sm text-[#072B57] placeholder:text-slate-400 focus:outline-none focus:ring-2 ${
                     errors.email ? 'border-rose-300 ring-1 ring-rose-300 bg-rose-50/20' : 'border-slate-300 focus:ring-[#FF6B00] focus:border-[#FF6B00]'
                   }`}
@@ -272,7 +270,6 @@ export const ApplyModal: React.FC<ApplyModalProps> = ({
                     setFormData({ ...formData, phone: e.target.value });
                     if (errors.phone) setErrors({ ...errors, phone: '' });
                   }}
-                  placeholder="10-digit number (e.g. 9876543210)"
                   className={`w-full px-4 py-3 rounded-xl border text-sm text-[#072B57] placeholder:text-slate-400 focus:outline-none focus:ring-2 ${
                     errors.phone ? 'border-rose-300 ring-1 ring-rose-300 bg-rose-50/20' : 'border-slate-300 focus:ring-[#FF6B00] focus:border-[#FF6B00]'
                   }`}
@@ -341,7 +338,6 @@ export const ApplyModal: React.FC<ApplyModalProps> = ({
                 rows={2}
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                placeholder="Any specific batch timing preferences, career expectations, or questions?"
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm text-[#072B57] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:border-[#FF6B00]"
               />
             </div>

@@ -275,7 +275,6 @@ export const AIBot: React.FC = () => {
                     setInput(event.target.value)
                   }
                   onKeyDown={handleKeyDown}
-                  placeholder="Ask your question..."
                   disabled={loading}
                   className="min-w-0 flex-1 rounded-xl border border-slate-200 px-4 py-3 text-sm text-[#072B57] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 disabled:bg-slate-100"
                 />

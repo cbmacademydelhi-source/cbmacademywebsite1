@@ -82,6 +82,24 @@ app.get('/sitemap.xml', (_req, res) => {
   res.sendFile(sitemapPath);
 });
 
+// Explicit route for brochure PDF downloads & inline viewing with full HTTP range support
+const brochurePdfHandler = (_req: express.Request, res: express.Response) => {
+  const brochurePath = path.join(process.cwd(), 'public', 'Digital_Marketing_Course_Brochure.pdf');
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', 'inline; filename="Digital Marketing Course Brochure.pdf"');
+  res.setHeader('Accept-Ranges', 'bytes');
+  res.sendFile(brochurePath, {
+    acceptRanges: true,
+  });
+};
+
+app.get('/Digital%20Marketing%20Course%20Brochure.pdf', brochurePdfHandler);
+app.get('/Digital Marketing Course Brochure.pdf', brochurePdfHandler);
+app.get('/Digital_Marketing_Course_Brochure.pdf', brochurePdfHandler);
+app.get('/brochure.pdf', brochurePdfHandler);
+app.get('/assets/aistudio/Digital_Marketing_Course_Brochure__ab42c061.pdf', brochurePdfHandler);
+app.get('/api/brochure', brochurePdfHandler);
+
 app.use(
   express.json({
     verify: (req: any, _res, buf) => {

@@ -40,7 +40,7 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
    * import.meta.env.BASE_URL automatically uses the
    * correct path for the current Vite deployment.
    */
-  const brochurePdf = `${import.meta.env.BASE_URL}CBM_Academy_2026_Course_Brochure.pdf`;
+  const brochurePdf = `${import.meta.env.BASE_URL}Digital_Marketing_Course_Brochure.pdf`;
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -74,7 +74,7 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
     try {
       const link = document.createElement('a');
       link.href = brochurePdf;
-      link.download = 'CBM_Academy_2026_Course_Brochure.pdf';
+      link.download = 'Digital Marketing Course Brochure.pdf';
       link.target = '_blank';
       link.rel = 'noopener noreferrer';
 
@@ -252,7 +252,6 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
                   required
                   value={studentName}
                   onChange={(e) => setStudentName(e.target.value)}
-                  placeholder="e.g. Rahul Sharma"
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm text-[#072B57] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:border-transparent transition-all"
                 />
               </div>
@@ -276,7 +275,6 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@example.com"
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm text-[#072B57] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:border-transparent transition-all"
                 />
               </div>
@@ -300,7 +298,6 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
                   required
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="e.g. +91 98765 43210"
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm text-[#072B57] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:border-transparent transition-all"
                 />
               </div>
@@ -365,15 +362,16 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
               </button>
 
               {/* View PDF */}
-              <button
+              <a
                 id="view-brochure-pdf-btn"
-                onClick={handleViewPdf}
-                type="button"
+                href={brochurePdf}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#072B57] font-semibold text-sm transition-colors cursor-pointer"
               >
                 <Eye className="w-4 h-4" />
                 View PDF
-              </button>
+              </a>
             </div>
 
             <div className="text-center pt-2">

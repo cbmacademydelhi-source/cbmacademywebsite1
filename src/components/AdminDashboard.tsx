@@ -635,7 +635,6 @@ export default function AdminDashboard() {
                   )
                 }
                 className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="office@cbmacademy.in"
                 required
               />
             </div>
@@ -654,7 +653,6 @@ export default function AdminDashboard() {
                   )
                 }
                 className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Enter admin password"
                 required
               />
             </div>
@@ -857,7 +855,6 @@ export default function AdminDashboard() {
                         required
                         value={formTitle}
                         onChange={(e) => setFormTitle(e.target.value)}
-                        placeholder="e.g. AI Tools Every Digital Marketer Should Know in 2026"
                         className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00]"
                       />
                     </div>
@@ -872,7 +869,6 @@ export default function AdminDashboard() {
                         required
                         value={formDescription}
                         onChange={(e) => setFormDescription(e.target.value)}
-                        placeholder="Key insights, tools covered, and who should attend..."
                         className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00] resize-none"
                       />
                     </div>
@@ -886,7 +882,6 @@ export default function AdminDashboard() {
                         type="url"
                         value={formPosterUrl}
                         onChange={(e) => setFormPosterUrl(e.target.value)}
-                        placeholder="https://images.unsplash.com/photo-..."
                         className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00]"
                       />
                     </div>
@@ -916,7 +911,6 @@ export default function AdminDashboard() {
                           disabled={formType === 'free'}
                           value={formType === 'free' ? '' : formPrice}
                           onChange={(e) => setFormPrice(e.target.value)}
-                          placeholder={formType === 'free' ? '0' : '499'}
                           className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00] disabled:bg-slate-100 disabled:text-slate-400"
                         />
                       </div>
@@ -932,7 +926,6 @@ export default function AdminDashboard() {
                         required
                         value={formDate}
                         onChange={(e) => setFormDate(e.target.value)}
-                        placeholder="e.g. Sat, Oct 24, 2026"
                         className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00]"
                       />
                     </div>
@@ -947,7 +940,6 @@ export default function AdminDashboard() {
                         required
                         value={formTime}
                         onChange={(e) => setFormTime(e.target.value)}
-                        placeholder="e.g. 6:00 PM IST"
                         className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00]"
                       />
                     </div>
@@ -961,7 +953,6 @@ export default function AdminDashboard() {
                         type="text"
                         value={formDuration}
                         onChange={(e) => setFormDuration(e.target.value)}
-                        placeholder="e.g. 60 mins or 90 mins"
                         className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00]"
                       />
                     </div>
@@ -976,7 +967,6 @@ export default function AdminDashboard() {
                           type="number"
                           value={formCapacity}
                           onChange={(e) => setFormCapacity(e.target.value)}
-                          placeholder="100"
                           className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs sm:text-sm text-[#072B57] outline-none focus:border-[#FF6B00]"
                         />
                       </div>
