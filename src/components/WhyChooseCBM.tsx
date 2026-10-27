@@ -343,7 +343,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
             {/* Pill Container */}
             <div className="px-5 sm:px-6 py-1.5 rounded-full border border-orange-200 bg-orange-50 shadow-2xs">
               <span className="text-[#FF6B00] font-extrabold text-[11.5px] sm:text-[13px] tracking-wider uppercase">
-                WHY CBM ACADEMY
+                HOW YOU’LL LEARN
               </span>
             </div>
 
@@ -362,7 +362,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
             transition={{ duration: 0.5, delay: 0.08, ease: SMOOTH_EASE_OUT }}
             className="text-lg min-[480px]:text-xl sm:text-2xl md:text-[28px] lg:text-[33px] xl:text-[36px] font-black text-[#072B57] tracking-tight leading-snug sm:whitespace-nowrap"
           >
-            HOW YOU’LL <span className="text-[#FF6B00] whitespace-nowrap">LEARN</span>
+             <span Learn Skills. Build Projects. className="text-[#FF6B00] whitespace-nowrap"> Grow Your Career.</span>
           </motion.h3>
 
           {/* Subheading immediately below it */}
@@ -373,7 +373,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
             transition={{ duration: 0.5, delay: 0.12, ease: SMOOTH_EASE_OUT }}
             className="mt-2 text-base sm:text-lg md:text-xl font-bold text-[#072B57] tracking-tight"
           >
-            Learn Skills. Build Projects. Grow Your Career.
+           
           </motion.p>
 
           {/* Subtitle */}
