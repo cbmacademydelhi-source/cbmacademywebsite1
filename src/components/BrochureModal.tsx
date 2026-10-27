@@ -314,7 +314,7 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Saving in Supabase &amp; Preparing...</span>
+                    <span>Saving... </span>
                   </>
                 ) : (
                   <>
