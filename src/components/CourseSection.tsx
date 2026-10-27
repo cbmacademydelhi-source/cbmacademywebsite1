@@ -202,7 +202,7 @@ const MODULES: CurriculumModule[] = [
     phase: 'Phase 3: Performance Ads',
     duration: 'Week 7 • 10h',
     title: 'Performance Marketing & Paid Ads',
-    summary: 'Meta Ads, Google Ads, audience targeting, ad creatives, budget allocation, and campaign scaling.',
+    summary: 'Meta Ads, Google Ads, audience targeting, retargeting, A/B testing, and campaign optimisation.',
     topics: [
       'Meta Advantage+ Shopping & Lead Gen Ads',
       'Google Search & Performance Max (PMax)',
@@ -223,7 +223,7 @@ const MODULES: CurriculumModule[] = [
     phase: 'Phase 3: Analytics & Data',
     duration: 'Week 8 • 8h',
     title: 'Marketing Analytics & Performance Tracking',
-    summary: 'Google Analytics 4 (GA4), conversion tracking, pixel setup, data reporting, and KPI analysis.',
+    summary: 'Google Analytics 4, Google Tag Manager, conversion tracking, campaign reporting, and ROI measurement.',
     topics: [
       'GA4 Event-Based Data Models & Custom Dimensions',
       'Google Tag Manager (GTM) E-Commerce DataLayer',
@@ -244,7 +244,7 @@ const MODULES: CurriculumModule[] = [
     phase: 'Phase 4: E-Commerce Growth',
     duration: 'Week 9 • 8h',
     title: 'E-commerce & Online Business Growth',
-    summary: 'Shopify, online store optimisation, product listing, e-commerce ads, and customer retention.',
+    summary: 'Online store setup, product listings, e-commerce marketing, shopping campaigns, and customer retention.',
     topics: [
       'Shopify Store Setup & High-Converting Themes',
       'Product Page CRO & Catalog Optimization',
@@ -265,7 +265,7 @@ const MODULES: CurriculumModule[] = [
     phase: 'Phase 4: Email & CRM',
     duration: 'Week 10 • 8h',
     title: 'Email Marketing & Customer Automation',
-    summary: 'Automated drip campaigns, email sequencing, lead nurturing, list building, and newsletter marketing.',
+    summary: 'Email campaigns, newsletters, automated follow-ups, audience segmentation, and lead nurturing.',
     topics: [
       'Lead Magnet Funnels & List Building',
       'Automated Welcome & Nurture Drip Sequences',
@@ -286,7 +286,7 @@ const MODULES: CurriculumModule[] = [
     phase: 'Phase 4: WhatsApp Funnels',
     duration: 'Week 11 • 8h',
     title: 'WhatsApp Marketing & Lead Generation',
-    summary: 'WhatsApp Business API, automated messaging, chat funnels, broadcast campaigns, and lead conversions.',
+    summary: 'WhatsApp Business, customer enquiries, lead follow-ups, broadcast campaigns, and messaging automation.',
     topics: [
       'WhatsApp Business API Setup & Verification',
       'Automated Greeting, Away & Quick Reply Sequences',
@@ -307,7 +307,7 @@ const MODULES: CurriculumModule[] = [
     phase: 'Phase 5: AI & Automation',
     duration: 'Week 12 • 8h',
     title: 'AI Automation, Agents & Workflow Design',
-    summary: 'AI tools, workflow automation, marketing automations, custom AI prompts, and productivity systems.',
+    summary: 'AI tools, chatbots, no-code automation, AI-assisted workflows, and business process automation.',
     topics: [
       'Zapier Multi-Step Automated Marketing Paths',
       'Custom AI Prompt Architecture & System Instructions',
@@ -328,7 +328,7 @@ const MODULES: CurriculumModule[] = [
     phase: 'Phase 5: Sales & CRM Pipelines',
     duration: 'Week 13 • 8h',
     title: 'CRM, Lead Management & Sales',
-    summary: 'HubSpot, lead nurturing, sales pipelines, client follow-ups, and customer lifecycle management.',
+    summary: 'Customer relationship management, lead qualification, sales pipelines, objection handling, and closing techniques.',
     topics: [
       'HubSpot Deal Pipeline & Stage Architecture',
       'Lead Scoring, Routing & Qualification Criteria',
@@ -349,7 +349,7 @@ const MODULES: CurriculumModule[] = [
     phase: 'Phase 6: Digital Products & Funnels',
     duration: 'Week 14 • 8h',
     title: 'Digital Products, Funnels & Online Sales',
-    summary: 'Course creation, eBook publishing, digital downloads, high-converting sales funnels, and landing page offers.',
+    summary: 'E-books, templates, online courses, digital product marketing, sales funnels, pricing, and upselling.',
     topics: [
       'Digital Product Ideation, Pricing & Packaging',
       'High-Converting Sales Funnel Wireframes & Copy',
@@ -370,7 +370,7 @@ const MODULES: CurriculumModule[] = [
     phase: 'Phase 6: Career & Client Retainers',
     duration: 'Weeks 15–16 • 12h',
     title: 'Communication, Client Management & Career Readiness',
-    summary: 'Freelancing, client proposals, portfolio building, interview preparation, communication skills, and agency workflows.',
+    summary: 'Professional communication, client presentations, proposal writing, interview preparation, portfolio building, and workplace readiness.',
     topics: [
       'High-Ticket Freelance Proposals & Retainers',
       'Live Portfolio Case Studies & Agency Workflows',

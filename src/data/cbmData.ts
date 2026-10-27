@@ -121,7 +121,7 @@ export const COURSE_MODULES: CourseModule[] = [
     title: 'Performance Marketing & Paid Ads',
     iconName: 'Target',
     shortDescription:
-      'Meta Ads, Google Ads, audience targeting, ad creatives, budget allocation, and campaign scaling.',
+      'Meta Ads, Google Ads, audience targeting, retargeting, A/B testing, and campaign optimisation.',
     syllabus: [
       'Meta Advantage+ Shopping & Custom Audiences',
       'Google Search Network & Performance Max (PMax)',
@@ -139,7 +139,7 @@ export const COURSE_MODULES: CourseModule[] = [
     title: 'Marketing Analytics & Performance Tracking',
     iconName: 'BarChart3',
     shortDescription:
-      'Google Analytics 4 (GA4), conversion tracking, pixel setup, data reporting, and KPI analysis.',
+      'Google Analytics 4, Google Tag Manager, conversion tracking, campaign reporting, and ROI measurement.',
     syllabus: [
       'GA4 Event-Based Data Models & Custom Events',
       'Google Tag Manager (GTM) Conversion Triggers',
@@ -157,7 +157,7 @@ export const COURSE_MODULES: CourseModule[] = [
     title: 'E-commerce & Online Business Growth',
     iconName: 'ShoppingBag',
     shortDescription:
-      'Shopify, online store optimisation, product listing, e-commerce ads, and customer retention.',
+      'Online store setup, product listings, e-commerce marketing, shopping campaigns, and customer retention.',
     syllabus: [
       'Shopify Store Architecture & High-Converting Themes',
       'Product Page CRO & Catalog Optimization',
@@ -175,7 +175,7 @@ export const COURSE_MODULES: CourseModule[] = [
     title: 'Email Marketing & Customer Automation',
     iconName: 'Mail',
     shortDescription:
-      'Automated drip campaigns, email sequencing, lead nurturing, list building, and newsletter marketing.',
+      'Email campaigns, newsletters, automated follow-ups, audience segmentation, and lead nurturing.',
     syllabus: [
       'High-Converting Lead Magnet Funnel Architecture',
       'Automated Welcome, Nurture & Promotional Sequences',
@@ -193,7 +193,7 @@ export const COURSE_MODULES: CourseModule[] = [
     title: 'WhatsApp Marketing & Lead Generation',
     iconName: 'MessageSquare',
     shortDescription:
-      'WhatsApp Business API, automated messaging, chat funnels, broadcast campaigns, and lead conversions.',
+      'WhatsApp Business, customer enquiries, lead follow-ups, broadcast campaigns, and messaging automation.',
     syllabus: [
       'WhatsApp Business API & Cloud API Setup',
       'Automated Welcome, FAQ & Conversational Funnels',
@@ -211,7 +211,7 @@ export const COURSE_MODULES: CourseModule[] = [
     title: 'AI Automation, Agents & Workflow Design',
     iconName: 'Cpu',
     shortDescription:
-      'AI tools, workflow automation, marketing automations, custom AI prompts, and productivity systems.',
+      'AI tools, chatbots, no-code automation, AI-assisted workflows, and business process automation.',
     syllabus: [
       'Multi-Step Automated Workflows with Zapier & Webhooks',
       'Custom GPT & System Prompt Design for Marketing Ops',
@@ -229,7 +229,7 @@ export const COURSE_MODULES: CourseModule[] = [
     title: 'CRM, Lead Management & Sales',
     iconName: 'Users',
     shortDescription:
-      'HubSpot, lead nurturing, sales pipelines, client follow-ups, and customer lifecycle management.',
+      'Customer relationship management, lead qualification, sales pipelines, objection handling, and closing techniques.',
     syllabus: [
       'HubSpot CRM Deal Stages & Pipeline Structuring',
       'Lead Scoring, Routing & MQL/SQL Qualification',
@@ -247,7 +247,7 @@ export const COURSE_MODULES: CourseModule[] = [
     title: 'Digital Products, Funnels & Online Sales',
     iconName: 'Layers',
     shortDescription:
-      'Course creation, eBook publishing, digital downloads, high-converting sales funnels, and landing page offers.',
+      'E-books, templates, online courses, digital product marketing, sales funnels, pricing, and upselling.',
     syllabus: [
       'Digital Product Packaging & Pricing Strategy',
       'High-Converting Funnel Architecture & Sales Copy',
@@ -265,7 +265,7 @@ export const COURSE_MODULES: CourseModule[] = [
     title: 'Communication, Client Management & Career Readiness',
     iconName: 'Briefcase',
     shortDescription:
-      'Freelancing, client proposals, portfolio building, interview preparation, communication skills, and agency workflows.',
+      'Professional communication, client presentations, proposal writing, interview preparation, portfolio building, and workplace readiness.',
     syllabus: [
       'High-Ticket Freelance Client Acquisition on Upwork & LinkedIn',
       'Agency Retainer Proposals, Scope Decks & Pricing Models',
