@@ -325,10 +325,7 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
               </button>
             </div>
 
-            <div className="flex items-center justify-center gap-1.5 text-xs text-slate-400 pt-1">
-              <Lock className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Details saved securely in Supabase • No spam guarantee</span>
-            </div>
+           
           </form>
         ) : (
           /* Success & Download Options */
