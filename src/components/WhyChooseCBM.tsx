@@ -362,19 +362,9 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
             transition={{ duration: 0.5, delay: 0.08, ease: SMOOTH_EASE_OUT }}
             className="text-lg min-[480px]:text-xl sm:text-2xl md:text-[28px] lg:text-[33px] xl:text-[36px] font-black text-[#072B57] tracking-tight leading-snug sm:whitespace-nowrap"
           >
-             <span Learn Skills. Build Projects. className="text-[#FF6B00] whitespace-nowrap"> Grow Your Career.</span>
+            Learn Skills. Build Projects.{' '}
+            <span className="text-[#FF6B00] whitespace-nowrap">Grow Your Career.</span>
           </motion.h3>
-
-          {/* Subheading immediately below it */}
-          <motion.p
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={VIEWPORT_ONCE}
-            transition={{ duration: 0.5, delay: 0.12, ease: SMOOTH_EASE_OUT }}
-            className="mt-2 text-base sm:text-lg md:text-xl font-bold text-[#072B57] tracking-tight"
-          >
-           
-          </motion.p>
 
           {/* Subtitle */}
           <motion.p
