@@ -90,7 +90,7 @@ export const HowWeTeachSection: React.FC<HowWeTeachSectionProps> = () => {
   return (
     <section
       id="teaching-method"
-      aria-label="How We Will Teach You at CBM Academy"
+      aria-label="HOW YOU’LL LEARN"
       className="relative bg-white text-[#172E59] py-16 sm:py-20 lg:py-28 overflow-hidden border-t border-b border-slate-100"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -101,15 +101,15 @@ export const HowWeTeachSection: React.FC<HowWeTeachSectionProps> = () => {
             <div className="inline-flex items-center gap-2 mb-3">
               <span className="w-2 h-2 rounded-full bg-[#F4772B]"></span>
               <span className="text-xs sm:text-sm font-bold tracking-widest uppercase text-[#F4772B]">
-                HOW YOU’LL LEARN
+              Learn Skills. Build Projects. Grow Your Career.
               </span>
             </div>
 
             {/* 2. Main heading */}
             <div className="relative mb-5">
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.12]">
-                <span className="block text-[#172E59]">Learn Skills. Build Projects.</span>
-                <span className="block text-[#F4772B]">Grow Your Career.</span>
+                <span className="block text-[#172E59]">.</span>
+                <span className="block text-[#F4772B]">.</span>
               </h2>
 
               {/* Small handwritten-style annotation near headline */}
