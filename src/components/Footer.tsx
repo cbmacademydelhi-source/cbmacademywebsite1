@@ -21,13 +21,15 @@ export const Footer: React.FC<FooterProps> = ({ onOpenApply, onOpenBrochure }) =
 
   return (
     <footer className="bg-[#072B57] text-white border-t border-[#041a35]">
-      {/* Main Compact Footer Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-9 pb-6 sm:pb-7">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 items-start">
+      {/* Compact Main Footer Grid */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-7 pb-5 sm:pb-6">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-start">
           
           {/* Col 1: Branding & Key Contact Details (5 Cols) */}
-          <div className="md:col-span-5 space-y-3.5">
-            <CbmLogo variant="dark" height={44} />
+          <div className="md:col-span-5 space-y-3">
+            <div className="flex items-center">
+              <CbmLogo variant="dark" height={40} />
+            </div>
 
             <p className="text-slate-300 text-xs leading-relaxed max-w-sm">
               Practical digital marketing academy in Okhla, New Delhi. Learn SEO, performance ads, generative AI, and campaign strategy with dedicated placement assistance.
@@ -35,17 +37,17 @@ export const Footer: React.FC<FooterProps> = ({ onOpenApply, onOpenBrochure }) =
 
             <div className="space-y-1.5 text-xs text-slate-300 pt-0.5">
               <div className="flex items-start gap-2">
-                <MapPin className="w-3.5 h-3.5 text-[#FF6B00] mt-0.5 flex-shrink-0" />
-                <span>E-111, Hari Kothi, Abul Fazal Enclave, Okhla, New Delhi - 110025</span>
+                <MapPin className="w-3.5 h-3.5 text-[#FF6B00] mt-0.5 shrink-0" />
+                <span className="leading-snug">E-111, Hari Kothi, Abul Fazal Enclave, Okhla, New Delhi - 110025</span>
               </div>
               <div className="flex items-center gap-2">
-                <Mail className="w-3.5 h-3.5 text-[#FF6B00] flex-shrink-0" />
+                <Mail className="w-3.5 h-3.5 text-[#FF6B00] shrink-0" />
                 <a href="mailto:office@cbmacademy.in" className="hover:text-white transition-colors">
                   office@cbmacademy.in
                 </a>
               </div>
               <div className="flex items-center gap-2">
-                <Phone className="w-3.5 h-3.5 text-[#FF6B00] flex-shrink-0" />
+                <Phone className="w-3.5 h-3.5 text-[#FF6B00] shrink-0" />
                 <a href="tel:+919211583150" className="hover:text-white transition-colors font-medium">
                   +91 92115 83150
                 </a>
@@ -55,15 +57,15 @@ export const Footer: React.FC<FooterProps> = ({ onOpenApply, onOpenBrochure }) =
 
           {/* Col 2: Essential Navigation Links (4 Cols - 2 column subgrid) */}
           <div className="md:col-span-4 space-y-2.5">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider border-b border-white/10 pb-1.5">
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider border-b border-white/10 pb-1.5 flex items-center min-h-[24px]">
               Quick Links
             </h4>
-            <ul className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs text-slate-300">
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs text-slate-300">
               {navLinks.map((link) => (
                 <li key={link.name}>
                   <a
                     href={link.href}
-                    className="hover:text-[#FF6B00] transition-colors inline-block py-0.5"
+                    className="hover:text-[#FF6B00] transition-colors inline-block py-0.5 leading-snug"
                   >
                     {link.name}
                   </a>
@@ -74,13 +76,13 @@ export const Footer: React.FC<FooterProps> = ({ onOpenApply, onOpenBrochure }) =
 
           {/* Col 3: Important CTAs (3 Cols) */}
           <div className="md:col-span-3 space-y-2.5">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider border-b border-white/10 pb-1.5">
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider border-b border-white/10 pb-1.5 flex items-center min-h-[24px]">
               Next Batch &amp; Syllabus
             </h4>
             <p className="text-xs text-slate-300 leading-relaxed">
               New weekend &amp; weekday batches starting soon. Reserve your seat or download the 2026 syllabus.
             </p>
-            <div className="space-y-2 pt-1">
+            <div className="space-y-2 pt-0.5">
               <button
                 type="button"
                 onClick={onOpenApply}
@@ -105,8 +107,8 @@ export const Footer: React.FC<FooterProps> = ({ onOpenApply, onOpenBrochure }) =
       </div>
 
       {/* Bottom Compact Bar */}
-      <div className="border-t border-white/10 bg-[#041a35] py-3.5 text-[11px] text-slate-400">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2.5 text-center sm:text-left">
+      <div className="border-t border-white/10 bg-[#041a35] py-2.5 sm:py-3 text-[11px] text-slate-400">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
           <div>
             <span>&copy; {new Date().getFullYear()} CBM Academy. All rights reserved.</span>
           </div>

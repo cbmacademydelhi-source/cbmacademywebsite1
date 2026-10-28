@@ -155,7 +155,7 @@ export const Header: React.FC<HeaderProps> = ({
             id="header-logo-link"
             aria-label="CBM Academy Home"
           >
-            <CbmLogo height={52} className="hover:opacity-95 transition-opacity" />
+            <CbmLogo height={73} className="my-[-5px] hover:opacity-95 transition-opacity" />
           </a>
 
           {/* Desktop Navigation */}
@@ -249,7 +249,7 @@ export const Header: React.FC<HeaderProps> = ({
             className="lg:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-6 space-y-2 shadow-xl"
           >
             <div className="py-2 border-b border-slate-100">
-              <CbmLogo variant="light" height={48} />
+              <CbmLogo variant="light" height={54} />
             </div>
 
             <div className="flex flex-col space-y-1 pt-2">
