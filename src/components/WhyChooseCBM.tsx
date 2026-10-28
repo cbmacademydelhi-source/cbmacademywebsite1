@@ -305,7 +305,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
             {/* Pill Container */}
             <div className="px-5 sm:px-6 py-1.5 rounded-full border border-orange-200 bg-orange-50 shadow-2xs">
               <span className="text-[#FF6B00] font-extrabold text-[11.5px] sm:text-[13px] tracking-wider uppercase">
-                HOW YOU’LL LEARN
+                WHAT YOU’LL LEARN
               </span>
             </div>
 

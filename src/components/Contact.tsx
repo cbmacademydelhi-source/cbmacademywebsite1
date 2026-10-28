@@ -148,6 +148,10 @@ export const Contact: React.FC<ContactProps> = ({
                 </a>
                 <a
                   href="mailto:office@cbmacademy.in"
+                  target="_top"
+                  onClick={() => {
+                    window.location.href = 'mailto:office@cbmacademy.in';
+                  }}
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-[#FF6B00] border border-orange-200 text-xs sm:text-sm font-bold transition-all"
                 >
                   <Mail className="w-4 h-4" />
