@@ -32,16 +32,14 @@ export const Header: React.FC<HeaderProps> = ({
     { name: 'Home', href: '#home', id: 'home' },
     { name: 'Courses', href: '#course', id: 'course' },
     { name: 'Webinars', href: '#webinars', id: 'webinars' },
+    { name: 'Jobs', href: '#jobs', id: 'jobs' },
+    { name: 'Certificate Verification', href: '#certificate', id: 'certificate' },
     { name: 'About', href: '#about', id: 'about' },
     { name: 'Blog', href: '#blogs', id: 'blogs' },
     { name: 'Contact', href: '#contact', id: 'contact' },
   ];
 
-  const allNavLinks = [
-    ...primaryNavLinks,
-    { name: 'Certificate Verification', href: '#certificate', id: 'certificate' },
-    { name: 'Jobs', href: '#jobs', id: 'jobs' },
-  ];
+  const allNavLinks = primaryNavLinks;
 
   useEffect(() => {
     const updatePage = () => {
@@ -159,7 +157,7 @@ export const Header: React.FC<HeaderProps> = ({
           </a>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
+          <nav className="hidden lg:flex items-center gap-3.5 xl:gap-5 2xl:gap-6">
             {primaryNavLinks.map((link) => {
               const isActive = activePage === link.id;
 
@@ -169,7 +167,7 @@ export const Header: React.FC<HeaderProps> = ({
                   href={link.href}
                   id={`nav-link-${link.id}`}
                   onClick={(e) => handleNavigation(e, link.href)}
-                  className={`py-1 text-sm transition-colors duration-150 whitespace-nowrap ${
+                  className={`py-1 text-xs xl:text-sm font-medium transition-colors duration-150 whitespace-nowrap ${
                     isActive
                       ? 'text-[#072B57] font-bold border-b-2 border-[#FF6B00]'
                       : 'text-slate-600 hover:text-[#FF6B00]'

@@ -848,24 +848,6 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
                           ))}
                         </div>
                       </div>
-
-                      {/* Tool/Platform Logos in the space where buttons were removed */}
-                      <div className="mt-5 pt-4 border-t border-slate-200/80 flex items-center justify-between sm:justify-evenly gap-2 overflow-x-auto no-scrollbar py-0.5">
-                        {activeModule.tools.map((tool) => (
-                          <div
-                            key={tool.name}
-                            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-slate-200/80 shadow-2xs hover:border-[#FF6B00]/40 transition-all shrink-0"
-                            title={`${tool.name} - ${tool.role}`}
-                          >
-                            <span className="w-5 h-5 flex items-center justify-center shrink-0">
-                              {tool.logo}
-                            </span>
-                            <span className="text-xs font-bold text-slate-700">
-                              {tool.name}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
                     </div>
                   </div>
                 </motion.div>
