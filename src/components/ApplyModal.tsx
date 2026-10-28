@@ -158,7 +158,7 @@ export const ApplyModal: React.FC<ApplyModalProps> = ({
         {/* Modal Header */}
         <div className="mb-6">
           <div className="mb-2">
-            <CbmLogo height={38} showTagline={false} />
+            <CbmLogo height={44} />
           </div>
           <h2 id="apply-modal-title" className="text-xl sm:text-2xl font-extrabold text-[#072B57] tracking-tight">
             Apply for CBM Academy

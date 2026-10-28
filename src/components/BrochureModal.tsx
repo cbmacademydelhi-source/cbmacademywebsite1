@@ -10,7 +10,6 @@ import {
   Mail,
   Phone,
   Loader2,
-  Lock,
 } from 'lucide-react';
 import { submitBrochureRequest } from '../services/formService';
 

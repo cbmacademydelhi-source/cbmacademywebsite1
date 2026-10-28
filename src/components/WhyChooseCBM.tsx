@@ -1,6 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import { ArrowRight, Download, Upload, RotateCcw, X, CheckCircle2 } from 'lucide-react';
+import {
+  ArrowRight,
+  Download,
+  Upload,
+  RotateCcw,
+  X,
+  CheckCircle2,
+  Workflow,
+  BarChart3,
+  BrainCircuit,
+  Users,
+} from 'lucide-react';
 import { SMOOTH_EASE_OUT, VIEWPORT_ONCE } from '../lib/animations';
 
 interface WhyChooseCBMProps {
@@ -13,86 +24,37 @@ interface CardItem {
   id: string;
   title: string;
   description: string;
-  renderIcon: () => React.ReactNode;
+  icon: React.ElementType;
 }
 
 const CARDS: CardItem[] = [
   {
-    id: 'card-career-growth',
-    title: 'Career Growth',
+    id: 'card-build-automate-business',
+    title: 'Build & Automate Your Business',
     description:
-      'Practical assignments, live campaign simulations and AI-powered workflows.',
-    renderIcon: () => (
-      <svg
-        className="w-7 h-7"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
-      >
-        <path d="M3 20L21 20" stroke="#072B57" strokeWidth="1.8" strokeLinecap="round" />
-        <rect x="5" y="13" width="3" height="7" rx="1" fill="#072B57" />
-        <rect x="10.5" y="9" width="3" height="11" rx="1" fill="#072B57" />
-        <rect x="16" y="5" width="3" height="15" rx="1" fill="#FF6B00" />
-        <path d="M4 14L10 8L15 12L20 4M20 4H15M20 4V9" stroke="#FF6B00" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
+      'Learn to launch online businesses, build digital systems, and automate everyday marketing tasks.',
+    icon: Workflow,
   },
   {
-    id: 'card-experienced-trainers',
-    title: 'Experienced Trainers',
+    id: 'card-master-digital-marketing',
+    title: 'Master Digital Marketing',
     description:
-      'Learn from experienced digital marketing professionals.',
-    renderIcon: () => (
-      <svg
-        className="w-7 h-7"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
-      >
-        <path d="M22 10V16M2 10L12 5L22 10L12 15L2 10Z" stroke="#072B57" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M6 12.5V17C6 17 8.5 19.5 12 19.5C15.5 19.5 18 17 18 17V12.5" stroke="#FF6B00" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
+      'Develop practical skills in SEO, paid advertising, social media, WordPress, analytics, and lead generation.',
+    icon: BarChart3,
   },
   {
-    id: 'card-hands-on-learning',
-    title: 'Hands-On Learning',
+    id: 'card-ai-powered-marketing',
+    title: 'AI-Powered Marketing',
     description:
-      'Build skills through practical campaigns, assignments and real-world projects.',
-    renderIcon: () => (
-      <svg
-        className="w-7 h-7"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
-      >
-        <rect x="3" y="4" width="18" height="12" rx="2" stroke="#072B57" strokeWidth="1.8" />
-        <path d="M2 18H22" stroke="#072B57" strokeWidth="1.8" strokeLinecap="round" />
-        <polygon points="10,8 15,10 10,12" fill="#FF6B00" />
-      </svg>
-    ),
+      'Use AI tools to create content, optimise campaigns, analyse data, and work smarter.',
+    icon: BrainCircuit,
   },
   {
-    id: 'card-ai-powered-skills',
-    title: 'AI-Powered Skills',
+    id: 'card-career-communication-skills',
+    title: 'Career & Communication Skills',
     description:
-      'Learn modern AI tools for content, research, analytics and automation.',
-    renderIcon: () => (
-      <svg
-        className="w-7 h-7"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
-      >
-        <rect x="4" y="4" width="16" height="16" rx="3" stroke="#072B57" strokeWidth="1.8" />
-        <rect x="8.5" y="8.5" width="7" height="7" rx="1.5" fill="#FF6B00" />
-        <path d="M9 1V4M15 1V4M9 20V23M15 20V23M1 9H4M1 15H4M20 9H23M20 15H23" stroke="#072B57" strokeWidth="1.8" strokeLinecap="round" />
-      </svg>
-    ),
+      'Build confidence in communication, client management, interviews, presentations, and workplace collaboration.',
+    icon: Users,
   },
 ];
 
@@ -380,36 +342,39 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
 
         {/* 4 EQUAL CARDS HORIZONTALLY ON DESKTOP */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 items-stretch">
-          {CARDS.map((card, index) => (
-            <motion.article
-              key={card.id}
-              initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={VIEWPORT_ONCE}
-              transition={{
-                duration: 0.45,
-                delay: 0.06 * (index + 1),
-                ease: SMOOTH_EASE_OUT,
-              }}
-              onClick={onOpenApply}
-              className="group relative bg-white hover:bg-white rounded-2xl border border-slate-200/90 hover:border-[#FF6B00]/40 shadow-xs hover:shadow-md hover:-translate-y-1 transition-all duration-200 p-5 sm:p-6 flex flex-col justify-start cursor-pointer h-full"
-            >
-              {/* Top Graphic */}
-              <div className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-100/90 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-200 shrink-0">
-                {card.renderIcon()}
-              </div>
+          {CARDS.map((card, index) => {
+            const Icon = card.icon;
+            return (
+              <motion.article
+                key={card.id}
+                initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={VIEWPORT_ONCE}
+                transition={{
+                  duration: 0.45,
+                  delay: 0.06 * (index + 1),
+                  ease: SMOOTH_EASE_OUT,
+                }}
+                onClick={onOpenApply}
+                className="group relative bg-white hover:bg-white rounded-2xl border border-slate-200/90 hover:border-[#FF6B00]/40 shadow-xs hover:shadow-md hover:-translate-y-1 transition-all duration-200 p-5 sm:p-6 flex flex-col justify-start cursor-pointer h-full"
+              >
+                {/* Top Graphic */}
+                <div className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-100/90 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-200 shrink-0 text-[#FF6B00]">
+                  <Icon className="w-6 h-6 stroke-[1.8]" />
+                </div>
 
-              {/* Card Title */}
-              <h3 className="text-base sm:text-lg font-bold text-[#072B57] group-hover:text-[#FF6B00] transition-colors tracking-tight leading-snug mb-2">
-                {card.title}
-              </h3>
+                {/* Card Title */}
+                <h3 className="text-base sm:text-lg font-bold text-[#072B57] group-hover:text-[#FF6B00] transition-colors tracking-tight leading-snug mb-2">
+                  {card.title}
+                </h3>
 
-              {/* Body Text */}
-              <p className="text-xs sm:text-[13.5px] text-slate-600 font-normal leading-relaxed">
-                {card.description}
-              </p>
-            </motion.article>
-          ))}
+                {/* Body Text */}
+                <p className="text-xs sm:text-[13.5px] text-slate-600 font-normal leading-relaxed">
+                  {card.description}
+                </p>
+              </motion.article>
+            );
+          })}
         </div>
 
         {/* =========================================================

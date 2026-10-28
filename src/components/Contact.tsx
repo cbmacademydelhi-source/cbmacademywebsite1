@@ -112,10 +112,10 @@ export const Contact: React.FC<ContactProps> = ({
                     <div>
                       <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-0.5">Helpline &amp; WhatsApp</h4>
                       <a
-                        href="tel:+919876543210"
+                        href="tel:+919211583150"
                         className="text-sm font-bold text-[#072B57] hover:text-[#FF6B00] transition-colors block"
                       >
-                        +91 98765 43210 / +91 11 4567 8900
+                        +91 92115 83150
                       </a>
                       <p className="text-xs text-slate-500 mt-0.5">Available on WhatsApp for instant guidance</p>
                     </div>
@@ -140,7 +140,7 @@ export const Contact: React.FC<ContactProps> = ({
               {/* Direct Action Links */}
               <div className="pt-4 border-t border-slate-100 flex flex-wrap gap-3">
                 <a
-                  href="tel:+919876543210"
+                  href="tel:+919211583150"
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#FF6B00] hover:bg-[#e05f00] text-white text-xs sm:text-sm font-bold shadow-sm transition-all"
                 >
                   <Phone className="w-4 h-4" />

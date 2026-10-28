@@ -26,6 +26,7 @@ import {
   X,
   Sparkles,
 } from "lucide-react";
+import { CbmLogo } from "./CbmLogo";
 import { supabase } from "../lib/supabase";
 
 const JOBS_API =
@@ -586,8 +587,8 @@ export default function AdminDashboard() {
         <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-8">
 
           <div className="text-center mb-7">
-            <div className="w-16 h-16 bg-indigo-600 rounded-2xl mx-auto flex items-center justify-center text-white text-xl font-bold">
-              CBM
+            <div className="flex justify-center">
+              <CbmLogo height={64} />
             </div>
 
             <h1 className="text-3xl font-bold text-[#072B57] mt-5">

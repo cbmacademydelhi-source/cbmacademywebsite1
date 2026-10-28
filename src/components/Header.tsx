@@ -8,7 +8,6 @@ import {
   PhoneCall,
   ShieldCheck,
   Sparkles,
-  GraduationCap,
   Search,
 } from 'lucide-react';
 
@@ -148,26 +147,15 @@ export const Header: React.FC<HeaderProps> = ({
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
 
-          {/* Logo with Graduation Cap & Tagline */}
+          {/* Official CBM Academy Logo */}
           <a
             href="#home"
             onClick={(e) => handleNavigation(e, '#home')}
-            className="flex-shrink-0 flex items-center gap-2.5 group focus:outline-none"
+            className="flex-shrink-0 flex items-center group focus:outline-none"
             id="header-logo-link"
             aria-label="CBM Academy Home"
           >
-            <div className="w-8 h-8 rounded-lg bg-[#073B8C] text-white flex items-center justify-center shrink-0 shadow-xs">
-              <GraduationCap className="w-4.5 h-4.5" />
-            </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1 leading-none">
-                <span className="font-extrabold text-[#FF6B00] text-base sm:text-lg tracking-tight">CBM</span>
-                <span className="font-extrabold text-[#073B8C] text-base sm:text-lg tracking-tight">Academy</span>
-              </div>
-              <span className="text-[10px] text-gray-500 font-medium tracking-wide leading-none mt-0.5">
-                Learn. Practice. Grow.
-              </span>
-            </div>
+            <CbmLogo height={52} className="hover:opacity-95 transition-opacity" />
           </a>
 
           {/* Desktop Navigation */}
@@ -261,7 +249,7 @@ export const Header: React.FC<HeaderProps> = ({
             className="lg:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-6 space-y-2 shadow-xl"
           >
             <div className="py-2 border-b border-slate-100">
-              <CbmLogo variant="light" height={38} showTagline={true} />
+              <CbmLogo variant="light" height={48} />
             </div>
 
             <div className="flex flex-col space-y-1 pt-2">

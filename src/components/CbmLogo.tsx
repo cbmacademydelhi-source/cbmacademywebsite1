@@ -1,5 +1,7 @@
 import React from 'react';
 
+export const CBM_LOGO_URL = '/assets/aistudio/CBM_Academy_Logo___Editable_z_e96afc7b.png';
+
 interface CbmLogoProps {
   className?: string;
   variant?: 'light' | 'dark' | 'footer';
@@ -9,129 +11,46 @@ interface CbmLogoProps {
 
 /**
  * Official CBM Academy Logo Component
- * Exactly preserves:
- * - "CBM" in bold orange (#FF6B00)
- * - "Academy" in clean bold black/dark charcoal (#111827)
- * - Full Tagline: "Your Digital Marketing Journey Begins Here"
- * - Maintains 100% original aspect ratio and generous viewBox boundaries to prevent any clipping.
+ * Renders the uploaded official CBM Academy brand logo:
+ * - 3D glossy gradient deep navy blue CBM with orange play triangle and growth arrow
+ * - Bold uppercase ACADEMY
+ * - "AI Integrated Digital Marketing Institute" tagline
  */
 export const CbmLogo: React.FC<CbmLogoProps> = ({
   className = '',
   variant = 'light',
-  height = 46,
-  showTagline = true,
+  height = 52,
 }) => {
-  const isDark = variant === 'dark';
+  const isDark = variant === 'dark' || variant === 'footer';
+  const computedHeight = typeof height === 'number' ? `${height}px` : height;
 
-  if (variant === 'footer') {
+  if (isDark) {
     return (
-      <div className={`inline-flex items-center bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-sm max-w-full ${className}`}>
-        <svg
-          viewBox="0 0 720 160"
-          className="w-auto h-auto max-w-full select-none"
-          style={{ height: typeof height === 'number' ? `${height}px` : height, minWidth: '160px' }}
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-label="CBM Academy - Your Digital Marketing Journey Begins Here"
-        >
-          <title>CBM Academy digital marketing academy logo</title>
-          {/* CBM in exact Orange */}
-          <text
-            x="8"
-            y="94"
-            fill="#FF6B00"
-            fontFamily="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
-            fontWeight="800"
-            fontSize="96"
-            letterSpacing="-1px"
-          >
-            CBM
-          </text>
-          
-          {/* Academy in exact Black */}
-          <text
-            x="245"
-            y="94"
-            fill="#111827"
-            fontFamily="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
-            fontWeight="700"
-            fontSize="96"
-            letterSpacing="-0.5px"
-          >
-            Academy
-          </text>
-
-          {/* Exact Full Tagline */}
-          {showTagline && (
-            <text
-              x="10"
-              y="142"
-              fill="#1E293B"
-              fontFamily="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
-              fontWeight="600"
-              fontSize="28"
-              letterSpacing="0.2px"
-            >
-              Your Digital Marketing Journey Begins Here
-            </text>
-          )}
-        </svg>
+      <div
+        className={`inline-flex items-center justify-center bg-white px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl border border-white/20 shadow-xs max-w-full flex-shrink-0 select-none ${className}`}
+      >
+        <img
+          src={CBM_LOGO_URL}
+          alt="CBM Academy - AI Integrated Digital Marketing Institute"
+          style={{ height: computedHeight, width: 'auto' }}
+          className="max-w-full object-contain block"
+          loading="eager"
+          decoding="async"
+        />
       </div>
     );
   }
 
   return (
-    <div className={`inline-flex items-center select-none flex-shrink-0 ${className}`}>
-      <svg
-        viewBox="0 0 720 160"
-        className="w-auto h-auto max-w-full transition-transform"
-        style={{ height: typeof height === 'number' ? `${height}px` : height, minWidth: '160px' }}
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-label="CBM Academy - Your Digital Marketing Journey Begins Here"
-      >
-        <title>CBM Academy digital marketing academy logo</title>
-        {/* CBM in exact Orange #FF6B00 */}
-        <text
-          x="8"
-          y="94"
-          fill="#FF6B00"
-          fontFamily="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
-          fontWeight="800"
-          fontSize="96"
-          letterSpacing="-1px"
-        >
-          CBM
-        </text>
-
-        {/* Academy */}
-        <text
-          x="245"
-          y="94"
-          fill={isDark ? '#FFFFFF' : '#111827'}
-          fontFamily="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
-          fontWeight="700"
-          fontSize="96"
-          letterSpacing="-0.5px"
-        >
-          Academy
-        </text>
-
-        {/* Full Tagline */}
-        {showTagline && (
-          <text
-            x="10"
-            y="142"
-            fill={isDark ? '#E2E8F0' : '#1E293B'}
-            fontFamily="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
-            fontWeight="600"
-            fontSize="28"
-            letterSpacing="0.2px"
-          >
-            Your Digital Marketing Journey Begins Here
-          </text>
-        )}
-      </svg>
+    <div className={`inline-flex items-center flex-shrink-0 select-none ${className}`}>
+      <img
+        src={CBM_LOGO_URL}
+        alt="CBM Academy - AI Integrated Digital Marketing Institute"
+        style={{ height: computedHeight, width: 'auto' }}
+        className="max-w-full object-contain block"
+        loading="eager"
+        decoding="async"
+      />
     </div>
   );
 };

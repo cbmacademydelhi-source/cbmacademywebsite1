@@ -89,6 +89,7 @@ const MODULES: CurriculumModule[] = [
       { name: 'ChatGPT', role: 'Persona Simulator', logo: <ChatGPTLogo className="w-5 h-5" /> },
       { name: 'Claude', role: 'Strategic Analysis', logo: <ClaudeLogo className="w-5 h-5" /> },
       { name: 'Google', role: 'Market Intel', logo: <GoogleLogo className="w-5 h-5" /> },
+      { name: 'Notion', role: 'Strategy Playbook Hub', logo: <NotionLogo className="w-5 h-5" /> },
     ],
   },
   {
@@ -110,6 +111,7 @@ const MODULES: CurriculumModule[] = [
       { name: 'Midjourney', role: 'Photorealistic Ad Art', logo: <MidjourneyLogo className="w-5 h-5" /> },
       { name: 'Canva', role: 'Creative Asset Production', logo: <CanvaLogo className="w-6 h-auto" /> },
       { name: 'Figma', role: 'Visual Layouts & Frames', logo: <FigmaLogo className="w-4 h-5" /> },
+      { name: 'ChatGPT', role: 'Generative AI Prompts', logo: <ChatGPTLogo className="w-5 h-5" /> },
     ],
   },
   {
@@ -131,6 +133,7 @@ const MODULES: CurriculumModule[] = [
       { name: 'ElevenLabs', role: 'AI Voice & Speech', logo: <ElevenLabsLogo className="w-5 h-5" /> },
       { name: 'YouTube', role: 'Shorts & Long-Form', logo: <YouTubeLogo className="w-5 h-5" /> },
       { name: 'Instagram', role: 'Reels Video Formats', logo: <InstagramLogo className="w-5 h-5" /> },
+      { name: 'Canva', role: 'Shorts Video & Graphics', logo: <CanvaLogo className="w-6 h-auto" /> },
     ],
   },
   {
@@ -152,6 +155,7 @@ const MODULES: CurriculumModule[] = [
       { name: 'Instagram', role: 'Visual Social Growth', logo: <InstagramLogo className="w-5 h-5" /> },
       { name: 'LinkedIn', role: 'B2B Thought Leadership', logo: <LinkedInLogo className="w-5 h-5" /> },
       { name: 'Meta', role: 'Community & Distribution', logo: <MetaLogo className="w-5 h-5" /> },
+      { name: 'ChatGPT', role: 'Copywriting & Hooks', logo: <ChatGPTLogo className="w-5 h-5" /> },
     ],
   },
   {
@@ -173,6 +177,7 @@ const MODULES: CurriculumModule[] = [
       { name: 'WordPress', role: 'CMS & Page Engine', logo: <WordPressLogo className="w-5 h-5" /> },
       { name: 'Figma', role: 'UI/UX Mockups', logo: <FigmaLogo className="w-4 h-5" /> },
       { name: 'Google', role: 'PageSpeed & Testing', logo: <GoogleLogo className="w-5 h-5" /> },
+      { name: 'Canva', role: 'Landing Page Graphics', logo: <CanvaLogo className="w-6 h-auto" /> },
     ],
   },
   {
@@ -194,6 +199,7 @@ const MODULES: CurriculumModule[] = [
       { name: 'Semrush', role: 'Keyword & SERP Intel', logo: <SemrushLogo className="w-5 h-5" /> },
       { name: 'Search Console', role: 'Indexing & Queries', logo: <SearchConsoleLogo className="w-5 h-5" /> },
       { name: 'Google', role: 'AI Overviews & SERP', logo: <GoogleLogo className="w-5 h-5" /> },
+      { name: 'Claude', role: 'Search Intent Analysis', logo: <ClaudeLogo className="w-5 h-5" /> },
     ],
   },
   {
@@ -215,6 +221,7 @@ const MODULES: CurriculumModule[] = [
       { name: 'Google Ads', role: 'Search & PMax Campaigns', logo: <GoogleAdsLogo className="w-5 h-5" /> },
       { name: 'Meta', role: 'Ads Manager Engine', logo: <MetaLogo className="w-5 h-5" /> },
       { name: 'YouTube', role: 'Video Ad Action', logo: <YouTubeLogo className="w-5 h-5" /> },
+      { name: 'Canva', role: 'Ad Creative Variations', logo: <CanvaLogo className="w-6 h-auto" /> },
     ],
   },
   {
@@ -236,6 +243,7 @@ const MODULES: CurriculumModule[] = [
       { name: 'GA4', role: 'Custom Events & Funnels', logo: <GoogleAnalyticsLogo className="w-5 h-5" /> },
       { name: 'Looker Studio', role: 'BI Dashboards', logo: <LookerStudioLogo className="w-5 h-5" /> },
       { name: 'Google', role: 'Tag Manager & Cloud Sync', logo: <GoogleLogo className="w-5 h-5" /> },
+      { name: 'ChatGPT', role: 'Data Analysis & Insights', logo: <ChatGPTLogo className="w-5 h-5" /> },
     ],
   },
   {
@@ -257,6 +265,7 @@ const MODULES: CurriculumModule[] = [
       { name: 'Shopify', role: 'E-Commerce Platform', logo: <ShopifyLogo className="w-5 h-5" /> },
       { name: 'Meta', role: 'Catalog & Shopping Ads', logo: <MetaLogo className="w-5 h-5" /> },
       { name: 'Google', role: 'Merchant Center & Shopping', logo: <GoogleLogo className="w-5 h-5" /> },
+      { name: 'Canva', role: 'Product Catalog Creatives', logo: <CanvaLogo className="w-6 h-auto" /> },
     ],
   },
   {
@@ -278,6 +287,7 @@ const MODULES: CurriculumModule[] = [
       { name: 'HubSpot', role: 'Email Automation Flows', logo: <HubSpotLogo className="w-5 h-5" /> },
       { name: 'Zapier', role: 'Webhook Data Triggers', logo: <ZapierLogo className="w-5 h-5" /> },
       { name: 'ChatGPT', role: 'Subject Line & Copy AI', logo: <ChatGPTLogo className="w-5 h-5" /> },
+      { name: 'Notion', role: 'Drip Sequence Workspaces', logo: <NotionLogo className="w-5 h-5" /> },
     ],
   },
   {
@@ -299,6 +309,7 @@ const MODULES: CurriculumModule[] = [
       { name: 'WhatsApp', role: 'Business API Engine', logo: <WhatsAppLogo className="w-5 h-5" /> },
       { name: 'Meta', role: 'Click-to-WhatsApp Ads', logo: <MetaLogo className="w-5 h-5" /> },
       { name: 'Zapier', role: 'CRM Instant Notification', logo: <ZapierLogo className="w-5 h-5" /> },
+      { name: 'ChatGPT', role: 'Automated Chat Scripts', logo: <ChatGPTLogo className="w-5 h-5" /> },
     ],
   },
   {
@@ -320,6 +331,7 @@ const MODULES: CurriculumModule[] = [
       { name: 'Zapier', role: 'Workflow Automation', logo: <ZapierLogo className="w-5 h-5" /> },
       { name: 'ChatGPT', role: 'Custom GPTs & API', logo: <ChatGPTLogo className="w-5 h-5" /> },
       { name: 'Claude', role: 'Deep Analysis & Reasoning', logo: <ClaudeLogo className="w-5 h-5" /> },
+      { name: 'Notion', role: 'AI Knowledge Workflows', logo: <NotionLogo className="w-5 h-5" /> },
     ],
   },
   {
@@ -341,6 +353,7 @@ const MODULES: CurriculumModule[] = [
       { name: 'HubSpot', role: 'CRM & Pipeline Hub', logo: <HubSpotLogo className="w-5 h-5" /> },
       { name: 'WhatsApp', role: 'Lead Engagement Channel', logo: <WhatsAppLogo className="w-5 h-5" /> },
       { name: 'Google', role: 'Calendar & Workspace Sync', logo: <GoogleLogo className="w-5 h-5" /> },
+      { name: 'LinkedIn', role: 'B2B Sales Prospecting', logo: <LinkedInLogo className="w-5 h-5" /> },
     ],
   },
   {
@@ -362,6 +375,7 @@ const MODULES: CurriculumModule[] = [
       { name: 'Notion', role: 'Product Docs & Workspaces', logo: <NotionLogo className="w-5 h-5" /> },
       { name: 'Canva', role: 'Digital Asset Packaging', logo: <CanvaLogo className="w-6 h-auto" /> },
       { name: 'Meta', role: 'Targeted Traffic Generation', logo: <MetaLogo className="w-5 h-5" /> },
+      { name: 'Shopify', role: 'Digital Product Checkout', logo: <ShopifyLogo className="w-5 h-5" /> },
     ],
   },
   {
@@ -383,6 +397,7 @@ const MODULES: CurriculumModule[] = [
       { name: 'LinkedIn', role: 'Job Search & Outreach', logo: <LinkedInLogo className="w-5 h-5" /> },
       { name: 'Notion', role: 'Portfolio & Case Studies', logo: <NotionLogo className="w-5 h-5" /> },
       { name: 'Google', role: 'Executive Presentations', logo: <GoogleLogo className="w-5 h-5" /> },
+      { name: 'Canva', role: 'Client Pitch Decks', logo: <CanvaLogo className="w-6 h-auto" /> },
     ],
   },
 ];
@@ -833,30 +848,7 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
                           ))}
                         </div>
                       </div>
-
-                      {/* Action trigger for this module */}
-                      <div className="mt-6 pt-4 border-t border-slate-200/80 flex flex-col sm:flex-row items-center gap-2.5">
-                        <button
-                          type="button"
-                          onClick={() => onOpenApply?.(`${activeModule.title} (Module ${activeModule.number})`)}
-                          className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#FF6B00] hover:bg-[#e05f00] text-white text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer active:scale-98"
-                        >
-                          <span>Enroll in this Track</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => onOpenBrochure?.()}
-                          className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-[#072B57] text-xs font-bold transition-all cursor-pointer shrink-0"
-                        >
-                          <Download className="w-3.5 h-3.5 text-[#FF6B00]" />
-                          <span>Syllabus</span>
-                        </button>
-                      </div>
-
                     </div>
-
                   </div>
                 </motion.div>
               </AnimatePresence>
