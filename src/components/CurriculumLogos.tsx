@@ -258,3 +258,355 @@ export const ShopifyLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
   </svg>
 );
 
+// 23. HeyGen - Official AI Video Avatar Logo
+export const HeyGenLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="HeyGen">
+    <rect width="24" height="24" rx="6" fill="#7C3AED" />
+    <path d="M7 6v12M17 6v12M7 12h10" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" />
+    <circle cx="17" cy="7" r="1.5" fill="#FDE047" />
+  </svg>
+);
+
+// 24. Higgsfield - Official Generative Video AI Logo
+export const HiggsfieldLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Higgsfield">
+    <rect width="24" height="24" rx="6" fill="#0F172A" />
+    <circle cx="12" cy="12" r="5" stroke="#FF5500" strokeWidth="2.2" strokeDasharray="3 2" />
+    <circle cx="12" cy="12" r="2" fill="#FF5500" />
+    <path d="M12 3v3M12 18v3M3 12h3M18 12h3" stroke="#FF5500" strokeWidth="1.8" strokeLinecap="round" />
+  </svg>
+);
+
+// 25. Google AI Studio - Official Gemini AI Sparkle Box
+export const GoogleAIStudioLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Google AI Studio">
+    <rect width="24" height="24" rx="6" fill="#1E293B" />
+    <path
+      d="M12 4C12 8.4 8.4 12 4 12C8.4 12 12 15.6 12 20C12 15.6 15.6 12 20 12C15.6 12 12 8.4 12 4Z"
+      fill="url(#google-ai-grad)"
+    />
+    <defs>
+      <linearGradient id="google-ai-grad" x1="4" y1="4" x2="20" y2="20">
+        <stop offset="0%" stopColor="#4285F4" />
+        <stop offset="50%" stopColor="#9B72CB" />
+        <stop offset="100%" stopColor="#D96570" />
+      </linearGradient>
+    </defs>
+  </svg>
+);
+
+// 26. Lovable - Full-Stack Web AI Builder Logo
+export const LovableLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Lovable">
+    <rect width="24" height="24" rx="6" fill="#FF2E63" />
+    <path
+      d="M12 18.5l-1.3-.9C6.2 13.5 3.5 11 3.5 8a4.5 4.5 0 0 1 4.5-4.5c1.7 0 3.3.9 4 2.2.7-1.3 2.3-2.2 4-2.2a4.5 4.5 0 0 1 4.5 4.5c0 3-2.7 5.5-7.2 9.6l-1.3.9z"
+      fill="#FFFFFF"
+    />
+  </svg>
+);
+
+// 27. Replit - Official Red Code Loop Prompt Logo
+export const ReplitLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Replit">
+    <path d="M4 3h7v5H4V3zm7 6h7v5h-7V9zm-7 6h7v5H4v-5z" fill="#F26207" />
+  </svg>
+);
+
+// 28. Bolt - Full-Stack AI Web Builder Logo
+export const BoltLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Bolt">
+    <rect width="24" height="24" rx="6" fill="#18181B" />
+    <path d="M13 2.5L5.5 13.5H12L10.5 21.5L18.5 10.5H12L13 2.5Z" fill="#FACC15" />
+  </svg>
+);
+
+// 29. Google Tag Manager (GTM) Logo
+export const GoogleTagManagerLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Google Tag Manager">
+    <path d="M12 2L4 6.5v11L12 22l8-4.5v-11L12 2z" fill="#246FDB" opacity="0.2" />
+    <path d="M12 2L4 6.5l8 4.5 8-4.5L12 2z" fill="#246FDB" />
+    <path d="M4 6.5v11l8 4.5V11L4 6.5z" fill="#1A73E8" />
+    <circle cx="12" cy="11" r="3" fill="#FFFFFF" />
+    <circle cx="12" cy="11" r="1.5" fill="#246FDB" />
+  </svg>
+);
+
+// 30. UberSuggest - SEO Intelligence Logo
+export const UberSuggestLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="UberSuggest">
+    <rect width="24" height="24" rx="6" fill="#FA551E" />
+    <path
+      d="M7 6v6.5a5 5 0 0 0 10 0V6h-3v6.5a2 2 0 0 1-4 0V6H7z"
+      fill="#FFFFFF"
+    />
+  </svg>
+);
+
+// 31. Optmyzr - PPC Ads Optimization AI Logo
+export const OptmyzrLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Optmyzr">
+    <rect width="24" height="24" rx="6" fill="#00A389" />
+    <circle cx="12" cy="12" r="7" stroke="#FFFFFF" strokeWidth="2" />
+    <path d="M12 7v5l3 3" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" />
+    <circle cx="12" cy="12" r="1.8" fill="#FACC15" />
+  </svg>
+);
+
+// 32. Madgicx - Autonomous Ads Optimization Logo
+export const MadgicxLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Madgicx">
+    <rect width="24" height="24" rx="6" fill="#4E35FF" />
+    <path d="M6 18V6l6 7 6-7v12h-3v-6.5l-3 3.5-3-3.5V18H6z" fill="#FFFFFF" />
+  </svg>
+);
+
+// 33. Creatify - AI Short-Form Video Ads Logo
+export const CreatifyLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Creatify">
+    <rect width="24" height="24" rx="6" fill="#7A5AF8" />
+    <path d="M9 7l8 5-8 5V7z" fill="#FFFFFF" />
+    <circle cx="17" cy="7" r="2" fill="#F43F5E" />
+  </svg>
+);
+
+// 34. AdCreative.ai - AI High-Converting Ad Creative Logo
+export const AdCreativeAILogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="AdCreative.ai">
+    <rect width="24" height="24" rx="6" fill="#6C5CE7" />
+    <path d="M12 5l5 14h-3l-1.2-3.5H11.2L10 19H7l5-14zm0 4.2l-1.5 4.3h3L12 9.2z" fill="#FFFFFF" />
+    <circle cx="18" cy="7" r="2" fill="#F97316" />
+  </svg>
+);
+
+// 35. Mixpanel - User & Product Analytics Logo
+export const MixpanelLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Mixpanel">
+    <rect width="24" height="24" rx="6" fill="#7856FF" />
+    <circle cx="7" cy="14" r="2.5" fill="#FFFFFF" />
+    <circle cx="12" cy="10" r="2.5" fill="#FFFFFF" />
+    <circle cx="17" cy="7" r="2.5" fill="#FFFFFF" />
+  </svg>
+);
+
+// 36. Power BI - Microsoft Business Intelligence Logo
+export const PowerBILogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Power BI">
+    <rect x="3" y="12" width="4.5" height="9" rx="1.5" fill="#F2C811" />
+    <rect x="9.5" y="7" width="4.5" height="14" rx="1.5" fill="#E6AD10" />
+    <rect x="16" y="3" width="4.5" height="18" rx="1.5" fill="#C99208" />
+  </svg>
+);
+
+// 37. Julius AI - AI Data Analyst & Math Graphing Logo
+export const JuliusAILogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Julius AI">
+    <rect width="24" height="24" rx="6" fill="#059669" />
+    <path d="M6 16l4-5 4 3 4-6" stroke="#FFFFFF" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    <circle cx="18" cy="8" r="1.5" fill="#FBBF24" />
+  </svg>
+);
+
+// 38. Rows AI - AI Spreadsheet Calculations Logo
+export const RowsAILogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Rows AI">
+    <rect width="24" height="24" rx="6" fill="#00D084" />
+    <rect x="6" y="6" width="5" height="5" rx="1" fill="#FFFFFF" />
+    <rect x="13" y="6" width="5" height="5" rx="1" fill="#FFFFFF" />
+    <rect x="6" y="13" width="5" height="5" rx="1" fill="#FFFFFF" />
+    <rect x="13" y="13" width="5" height="5" rx="1" fill="#1E293B" />
+  </svg>
+);
+
+// 39. Razorpay - Payment Gateway & Checkout Logo
+export const RazorpayLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Razorpay">
+    <rect width="24" height="24" rx="6" fill="#0C2340" />
+    <path d="M6 18l5-12h7l-3.5 5H18l-6 7H6z" fill="#0284C7" />
+    <path d="M11 6l-5 12h3.5l3.5-7h3l-2.5-5H11z" fill="#38BDF8" />
+  </svg>
+);
+
+// 40. WooCommerce - WordPress E-Commerce Storefront Logo
+export const WooCommerceLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="WooCommerce">
+    <rect width="24" height="24" rx="6" fill="#96588A" />
+    <path
+      d="M5 8.5c0-.8.7-1.5 1.5-1.5h11c.8 0 1.5.7 1.5 1.5v6c0 .8-.7 1.5-1.5 1.5h-8L6 18.5V8.5z"
+      fill="#FFFFFF"
+      opacity="0.2"
+    />
+    <path
+      d="M8.5 11.5l1.5 3 1.5-3m2 0l1.5 3 1.5-3"
+      stroke="#FFFFFF"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// 41. Resend - Modern Email API & Delivery Logo
+export const ResendLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Resend">
+    <rect width="24" height="24" rx="6" fill="#000000" />
+    <path d="M6 7h12l-6 5.5L6 7zm0 2.2V17h12V9.2l-6 5.5-6-5.5z" fill="#FFFFFF" />
+  </svg>
+);
+
+// 42. AiSensy - WhatsApp Engagement & Marketing Logo
+export const AiSensyLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="AiSensy">
+    <rect width="24" height="24" rx="6" fill="#25D366" />
+    <path
+      d="M12 4a8 8 0 0 0-7 11.9L4 19l3.3-1A8 8 0 1 0 12 4zm0 2a6 6 0 1 1-4.8 9.6l-.3-.5-1.8.6.6-1.8-.4-.4A6 6 0 0 1 12 6z"
+      fill="#FFFFFF"
+    />
+    <circle cx="12" cy="12" r="2" fill="#FFFFFF" />
+  </svg>
+);
+
+// 43. Manychat - Chat & DM Automation Logo
+export const ManychatLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Manychat">
+    <rect width="24" height="24" rx="6" fill="#FF7A00" />
+    <circle cx="12" cy="12" r="6" fill="#FFFFFF" />
+    <circle cx="10" cy="11.5" r="1.2" fill="#FF7A00" />
+    <circle cx="14" cy="11.5" r="1.2" fill="#FF7A00" />
+    <path d="M10 14.5c.5.8 1.4 1 2 1s1.5-.2 2-1" stroke="#FF7A00" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+);
+
+// 44. Make - Visual Workflow Automation Logo
+export const MakeLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Make">
+    <rect width="24" height="24" rx="6" fill="#6F42C1" />
+    <path d="M6 7l5-3 5 3v6l-5 3-5-3V7z" stroke="#FFFFFF" strokeWidth="2" strokeLinejoin="round" />
+    <circle cx="11" cy="10" r="1.5" fill="#EC4899" />
+  </svg>
+);
+
+// 45. Botpress - Conversational AI Chatbot Logo
+export const BotpressLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Botpress">
+    <rect width="24" height="24" rx="6" fill="#4F46E5" />
+    <circle cx="8" cy="12" r="2.5" fill="#FFFFFF" />
+    <circle cx="16" cy="12" r="2.5" fill="#FFFFFF" />
+    <path d="M12 6v3M6 12H4M20 12h-2M9 16h6" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" />
+  </svg>
+);
+
+// 46. Duolingo - Gamified & Adaptive Learning Logo
+export const DuolingoLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Duolingo">
+    <rect width="24" height="24" rx="6" fill="#58CC02" />
+    <circle cx="9" cy="11" r="2.5" fill="#FFFFFF" />
+    <circle cx="15" cy="11" r="2.5" fill="#FFFFFF" />
+    <circle cx="9" cy="11" r="1.2" fill="#1E293B" />
+    <circle cx="15" cy="11" r="1.2" fill="#1E293B" />
+    <path d="M10.5 14.5c.5.8 1 1 1.5 1s1-.2 1.5-1l-1.5 1.5-1.5-1.5z" fill="#FF9600" />
+  </svg>
+);
+
+// 47. Zoho CRM - Sales Pipeline & Lead Management Logo
+export const ZohoCRMLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Zoho CRM">
+    <rect x="4" y="4" width="7" height="7" rx="1.5" fill="#C8232B" />
+    <rect x="13" y="4" width="7" height="7" rx="1.5" fill="#2A9D8F" />
+    <rect x="4" y="13" width="7" height="7" rx="1.5" fill="#264653" />
+    <rect x="13" y="13" width="7" height="7" rx="1.5" fill="#E76F51" />
+  </svg>
+);
+
+// 48. Interakt - WhatsApp CRM & Shared Inbox Logo
+export const InteraktLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Interakt">
+    <rect width="24" height="24" rx="6" fill="#008069" />
+    <path d="M7 8h10M7 12h7M7 16h4" stroke="#FFFFFF" strokeWidth="2.2" strokeLinecap="round" />
+    <circle cx="17" cy="15" r="2" fill="#FACC15" />
+  </svg>
+);
+
+// 49. Motion - AI Calendar & Task Schedule Automation Logo
+export const MotionLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Motion">
+    <rect width="24" height="24" rx="6" fill="#111827" />
+    <circle cx="12" cy="12" r="7" stroke="#6366F1" strokeWidth="2" strokeDasharray="5 3" />
+    <path d="M12 7.5v4.5l3.5 2" stroke="#38BDF8" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
+// 50. Apollo.io - B2B Lead Intelligence & Prospecting Logo
+export const ApolloLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Apollo.io">
+    <rect width="24" height="24" rx="6" fill="#F59E0B" />
+    <path d="M12 4l3 6h-6l3-6zm-4 8l-3 6h6l-3-6zm8 0l-3 6h6l-3-6z" fill="#FFFFFF" />
+  </svg>
+);
+
+// 51. Coda AI - Collaborative All-In-One Doc Logo
+export const CodaAILogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Coda AI">
+    <rect width="24" height="24" rx="6" fill="#F15A24" />
+    <circle cx="12" cy="12" r="5" fill="#FFFFFF" />
+    <circle cx="12" cy="12" r="2.5" fill="#F15A24" />
+  </svg>
+);
+
+// 52. Adobe Express - Quick Social Creatives Logo
+export const AdobeExpressLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Adobe Express">
+    <rect width="24" height="24" rx="6" fill="#EB1000" />
+    <path
+      d="M7 16l3-8h4l3 8h-3l-.7-2H10.7l-.7 2H7zm4.3-4h1.4l-.7-2.3-.7 2.3z"
+      fill="#FFFFFF"
+    />
+  </svg>
+);
+
+// 53. Gumroad - Digital Product Sales & Checkout Logo
+export const GumroadLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Gumroad">
+    <rect width="24" height="24" rx="6" fill="#FF90E8" />
+    <path
+      d="M16 11.5c-.5-2.2-2.3-3.5-4.5-3.5-2.8 0-4.8 2.1-4.8 5s2 5 4.8 5c2.4 0 4.2-1.5 4.6-3.8h-4.6v-2.7H16z"
+      fill="#000000"
+    />
+  </svg>
+);
+
+// 54. Teal - Career Growth & Resume AI Logo
+export const TealLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Teal">
+    <rect width="24" height="24" rx="6" fill="#0D9488" />
+    <path d="M7 7h10v3h-3.5v7h-3v-7H7V7z" fill="#FFFFFF" />
+  </svg>
+);
+
+// 55. Gamma - AI Presentations & Documents Logo
+export const GammaLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Gamma">
+    <rect width="24" height="24" rx="6" fill="#7C3AED" />
+    <path d="M7 6h10v3H10v3h6v3H7V6z" fill="#FFFFFF" />
+    <circle cx="17" cy="16" r="1.5" fill="#F43F5E" />
+  </svg>
+);
+
+// 56. Beautiful.ai - Smart Presentation Design Logo
+export const BeautifulAILogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Beautiful.ai">
+    <rect width="24" height="24" rx="6" fill="#0284C7" />
+    <path d="M6 6h6a3.5 3.5 0 0 1 0 7H6V6zm0 7h7a3.5 3.5 0 0 1 0 7H6v-7z" fill="#FFFFFF" opacity="0.3" />
+    <circle cx="14" cy="9.5" r="1.8" fill="#FFFFFF" />
+    <circle cx="15" cy="16.5" r="1.8" fill="#FFFFFF" />
+  </svg>
+);
+
+// 57. Pitch - Collaborative Pitch Decks Logo
+export const PitchLogo: React.FC<LogoProps> = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-label="Pitch">
+    <rect width="24" height="24" rx="6" fill="#18181B" />
+    <path d="M7 6h6a4 4 0 0 1 0 8H10v4H7V6zm3 3v2h3a1 1 0 0 0 0-2h-3z" fill="#FACC15" />
+  </svg>
+);
+
