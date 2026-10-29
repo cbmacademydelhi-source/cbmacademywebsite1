@@ -33,8 +33,10 @@ import {
   FileText,
   Folder,
   Users,
+  QrCode,
 } from 'lucide-react';
 import { AITools } from './AITools';
+import { CbmLogo } from './CbmLogo';
 import {
   ChatGPTLogo,
   ClaudeLogo,
@@ -1374,6 +1376,166 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
             <p className="text-[11px] text-slate-400 mt-5 pt-4 border-t border-slate-100 font-normal">
               * Placement support provides comprehensive career mentorship, resume optimization, interview grooming, and recruitment network assistance; it does not constitute a legal guarantee of employment.
             </p>
+          </div>
+
+          {/* =========================================================
+              COURSE COMPLETION CERTIFICATE PREVIEW SECTION
+              ========================================================= */}
+          <div className="mt-12 sm:mt-16 pt-10 sm:pt-14 border-t border-slate-200/80">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+              
+              {/* Left Column (6 cols): Certificate Preview */}
+              <div className="lg:col-span-6 flex justify-center w-full">
+                <div className="w-full max-w-lg bg-white rounded-2xl border-2 border-slate-200/90 shadow-xl overflow-hidden relative">
+                  
+                  {/* Decorative Certificate Inner Frame with Thin Gold Border */}
+                  <div className="m-3 sm:m-4 p-5 sm:p-6 rounded-xl border border-amber-300/80 bg-gradient-to-b from-white via-amber-50/15 to-white relative">
+                    
+                    {/* Corner Ornaments */}
+                    <div className="absolute top-1.5 left-1.5 w-3 h-3 border-t-2 border-l-2 border-amber-400" />
+                    <div className="absolute top-1.5 right-1.5 w-3 h-3 border-t-2 border-r-2 border-amber-400" />
+                    <div className="absolute bottom-1.5 left-1.5 w-3 h-3 border-b-2 border-l-2 border-amber-400" />
+                    <div className="absolute bottom-1.5 right-1.5 w-3 h-3 border-b-2 border-r-2 border-amber-400" />
+
+                    {/* Header: CBM Logo & Credentials */}
+                    <div className="flex items-center justify-between gap-3 pb-3 border-b border-slate-200">
+                      <CbmLogo height={34} className="shrink-0" />
+                      <div className="text-right">
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 block">
+                          CERTIFICATE ID
+                        </span>
+                        <span className="font-mono text-xs font-bold text-[#072B57] bg-slate-100 px-2 py-0.5 rounded border border-slate-200 inline-block mt-0.5">
+                          CBM-2025-8841
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Title & Conferment */}
+                    <div className="text-center pt-3 pb-2.5">
+                      <div className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-[#FF6B00] mb-1">
+                        <Sparkles className="w-3 h-3 text-[#FF6B00]" />
+                        <span>CERTIFICATE OF COMPLETION</span>
+                      </div>
+                      <p className="text-[11px] text-slate-500 font-medium">This is proudly presented to</p>
+                      <h4 className="text-lg sm:text-xl font-black text-[#072B57] tracking-tight mt-0.5 mb-1">
+                        RAHUL SHARMA
+                      </h4>
+                      <p className="text-[11px] text-slate-600 max-w-xs mx-auto leading-tight">
+                        for successfully fulfilling all curriculum requirements and live practical projects in
+                      </p>
+                      <div className="mt-2 py-1 px-3 rounded-lg bg-orange-50/70 border border-orange-200/80 inline-block">
+                        <span className="text-xs sm:text-[13px] font-extrabold text-[#072B57]">
+                          AI Pro Digital Marketing Course
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Skills Verified Tags */}
+                    <div className="py-2 flex flex-wrap justify-center gap-1.5 border-t border-slate-100 mt-1.5">
+                      {['SEO / GEO / AEO', 'Meta & Google Ads', 'AI Automation', 'GA4 Analytics'].map((sk) => (
+                        <span key={sk} className="text-[9.5px] font-semibold text-slate-700 bg-slate-50 px-2 py-0.5 rounded border border-slate-200/80">
+                          {sk}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Footer: QR Code, Authenticity Stamp & Signature */}
+                    <div className="pt-3 border-t border-slate-200 flex items-center justify-between gap-3 text-left">
+                      <div className="flex items-center gap-2">
+                        <div className="p-1 bg-white rounded border border-slate-200 shadow-2xs">
+                          <QrCode className="w-7 h-7 text-[#072B57]" />
+                        </div>
+                        <div className="leading-tight">
+                          <span className="text-[9px] font-bold text-slate-400 block uppercase tracking-wider">
+                            VERIFIED CREDENTIAL
+                          </span>
+                          <span className="text-[9.5px] font-medium text-slate-600">
+                            ISO 9001:2015 Registered
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="text-right">
+                        <div className="font-serif italic font-bold text-[#072B57] text-xs">
+                          Academic Director
+                        </div>
+                        <span className="text-[9px] text-slate-400 uppercase tracking-wider block">
+                          CBM Academy
+                        </span>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column (6 cols): Copy & 3 Compact Benefits */}
+              <div className="lg:col-span-6 flex flex-col items-start text-left">
+                {/* Small orange label */}
+                <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#FF6B00] mb-2 block">
+                  COURSE COMPLETION CERTIFICATE
+                </span>
+
+                {/* Heading */}
+                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#072B57] tracking-tight leading-tight mb-3">
+                  Get a Recognised Certificate <span className="text-[#FF6B00]">from CBM Academy</span>
+                </h3>
+
+                {/* Short description */}
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-lg mb-6 font-normal">
+                  Students receive a certificate after successfully completing all modules, assignments, and final assessments.
+                </p>
+
+                {/* 3 Compact Benefits with Simple Icons */}
+                <div className="space-y-3 sm:space-y-3.5 w-full max-w-lg">
+                  {/* Benefit 1 */}
+                  <div className="flex items-start gap-3 p-3 sm:p-3.5 rounded-xl bg-slate-50/80 border border-slate-200/80 hover:bg-white hover:shadow-xs transition-all">
+                    <div className="w-9 h-9 rounded-lg bg-orange-50 border border-orange-200/80 flex items-center justify-center text-[#FF6B00] shrink-0 mt-0.5">
+                      <Award className="w-4 h-4 text-[#FF6B00]" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs sm:text-sm font-bold text-[#072B57]">
+                        Industry-relevant certificate
+                      </h4>
+                      <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 font-normal">
+                        Endorsed by top digital agencies and hiring managers for practical competencies.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Benefit 2 */}
+                  <div className="flex items-start gap-3 p-3 sm:p-3.5 rounded-xl bg-slate-50/80 border border-slate-200/80 hover:bg-white hover:shadow-xs transition-all">
+                    <div className="w-9 h-9 rounded-lg bg-blue-50 border border-blue-200/80 flex items-center justify-center text-[#1E60F2] shrink-0 mt-0.5">
+                      <QrCode className="w-4 h-4 text-[#1E60F2]" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs sm:text-sm font-bold text-[#072B57]">
+                        Unique certificate ID with QR code
+                      </h4>
+                      <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 font-normal">
+                        Instantly verifiable online 24/7 by employers on the central CBM registry.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Benefit 3 */}
+                  <div className="flex items-start gap-3 p-3 sm:p-3.5 rounded-xl bg-slate-50/80 border border-slate-200/80 hover:bg-white hover:shadow-xs transition-all">
+                    <div className="w-9 h-9 rounded-lg bg-emerald-50 border border-emerald-200/80 flex items-center justify-center text-[#10B981] shrink-0 mt-0.5">
+                      <Share2 className="w-4 h-4 text-[#10B981]" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs sm:text-sm font-bold text-[#072B57]">
+                        Shareable on LinkedIn and resume
+                      </h4>
+                      <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 font-normal">
+                        Add directly to your LinkedIn credentials, online portfolio, and CV.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
           </div>
 
           {/* =========================================================
