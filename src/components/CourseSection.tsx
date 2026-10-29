@@ -474,7 +474,7 @@ const BUSINESS_OPPORTUNITIES: BusinessOpportunity[] = [
   {
     title: 'E-commerce Business',
     description: 'Launch and grow your online store.',
-    image: 'https://images.unsplash.com/photo-1556742049-0a67c5574f73?auto=format&fit=crop&w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1556742044-3c52d6e88c62?auto=format&fit=crop&w=600&q=80',
   },
   {
     title: 'Digital Products',
