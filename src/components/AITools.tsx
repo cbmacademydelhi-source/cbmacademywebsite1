@@ -421,8 +421,19 @@ export const AITools: React.FC<AIToolsProps> = ({ onOpenApply }) => {
             transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
             className="mt-3.5 sm:mt-4 text-3xl sm:text-4xl lg:text-[42px] font-black text-[#072B57] tracking-tight leading-[1.15]"
           >
-            AI <span className="text-[#FF6B00]">Tools</span>
+            AI Tools You'll Use in <span className="text-[#FF6B00]">This Course</span>
           </motion.h2>
+
+          {/* Subtitle */}
+          <motion.p
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT_ONCE}
+            transition={{ duration: 0.6, delay: 0.12, ease: SMOOTH_EASE_OUT }}
+            className="mt-2.5 sm:mt-3 text-xs sm:text-base font-normal text-slate-600 max-w-2xl mx-auto leading-relaxed"
+          >
+            Learn industry-leading AI tools for content, design, marketing, automation and growth
+          </motion.p>
 
         </div>
 

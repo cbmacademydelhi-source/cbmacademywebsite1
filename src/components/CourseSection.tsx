@@ -17,6 +17,19 @@ import {
   LayoutGrid,
   Route,
   Zap,
+  Building2,
+  Bot,
+  ShoppingBag,
+  Package,
+  Globe,
+  Briefcase,
+  Megaphone,
+  Search,
+  TrendingUp,
+  Share2,
+  Video,
+  Code2,
+  GraduationCap,
 } from 'lucide-react';
 import { AITools } from './AITools';
 import {
@@ -435,6 +448,84 @@ const MODULES: CurriculumModule[] = [
       { name: 'Beautiful.ai', role: 'Smart Presentation Design', logo: <BeautifulAILogo className="w-5 h-5" /> },
       { name: 'Pitch', role: 'Collaborative Pitch Decks', logo: <PitchLogo className="w-5 h-5" /> },
     ],
+  },
+];
+
+interface BusinessOpportunity {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+}
+
+const BUSINESS_OPPORTUNITIES: BusinessOpportunity[] = [
+  {
+    title: 'Digital Marketing Agency',
+    description: 'Provide full-funnel marketing services, client retainers, paid advertising, and brand growth.',
+    icon: <Building2 className="w-5 h-5 text-[#FF6B00]" />,
+  },
+  {
+    title: 'AI Automation Agency',
+    description: 'Build custom AI workflows, intelligent chatbots, and automated marketing ops for businesses.',
+    icon: <Bot className="w-5 h-5 text-[#1E60F2]" />,
+  },
+  {
+    title: 'E-commerce Business',
+    description: 'Launch and scale online stores with high-converting product pages and performance ads.',
+    icon: <ShoppingBag className="w-5 h-5 text-[#10B981]" />,
+  },
+  {
+    title: 'Digital Products',
+    description: 'Package guides, templates, frameworks, and micro-tools into recurring digital revenue streams.',
+    icon: <Package className="w-5 h-5 text-[#8B5CF6]" />,
+  },
+  {
+    title: 'Website Development',
+    description: 'Design and deploy conversion-focused, responsive landing pages and modern business websites.',
+    icon: <Globe className="w-5 h-5 text-[#0284C7]" />,
+  },
+  {
+    title: 'Freelancing & Consulting',
+    description: 'Secure global freelance clients, consultative audits, and high-hourly advisory retainers.',
+    icon: <Briefcase className="w-5 h-5 text-[#F59E0B]" />,
+  },
+];
+
+interface CareerRoleItem {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+}
+
+const CAREER_ROLES: CareerRoleItem[] = [
+  {
+    title: 'Digital Marketing Executive',
+    description: 'Lead multi-channel campaigns, brand positioning, audience acquisition, and marketing execution.',
+    icon: <Megaphone className="w-5 h-5 text-[#FF6B00]" />,
+  },
+  {
+    title: 'SEO / GEO / AEO Specialist',
+    description: 'Drive high-intent search visibility, technical SEO audits, and generative AI search citations.',
+    icon: <Search className="w-5 h-5 text-[#1E60F2]" />,
+  },
+  {
+    title: 'Performance Marketing Specialist',
+    description: 'Plan, run, and optimize paid acquisition campaigns across Google Ads, Meta Ads, and YouTube.',
+    icon: <TrendingUp className="w-5 h-5 text-[#10B981]" />,
+  },
+  {
+    title: 'Social Media Manager',
+    description: 'Curate content calendars, create viral short-form videos, and grow active brand communities.',
+    icon: <Share2 className="w-5 h-5 text-[#8B5CF6]" />,
+  },
+  {
+    title: 'AI Content Creator',
+    description: 'Produce high-converting visual creatives, synthetic avatars, and automated marketing copy with AI.',
+    icon: <Video className="w-5 h-5 text-[#EC4899]" />,
+  },
+  {
+    title: 'Website Developer',
+    description: 'Build fast, mobile-responsive landing pages with lead capture forms and conversion design principles.',
+    icon: <Code2 className="w-5 h-5 text-[#0284C7]" />,
   },
 ];
 
@@ -1121,6 +1212,130 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
               </div>
             </div>
           )}
+
+          {/* =========================================================
+              1. BUILD YOUR OWN BUSINESS
+              ========================================================= */}
+          <div className="mt-12 sm:mt-16 pt-10 sm:pt-14 border-t border-slate-200/80">
+            <div className="mx-auto max-w-3xl text-center mb-8 sm:mb-10">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 text-[#FF6B00] text-[11px] sm:text-xs font-bold uppercase tracking-wider border border-orange-200/80 mb-2.5">
+                <Building2 className="w-3.5 h-3.5 text-[#FF6B00]" />
+                <span>ENTREPRENEURSHIP &amp; INDEPENDENT PATHS</span>
+              </div>
+              <h3 className="text-xl sm:text-3xl font-black text-[#072B57] tracking-tight">
+                Build Your Own <span className="text-[#FF6B00]">Business</span>
+              </h3>
+              <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed font-normal max-w-2xl mx-auto">
+                Turn practical digital marketing and AI automation into scalable client services, profitable independent assets, or your own online ventures.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
+              {BUSINESS_OPPORTUNITIES.map((biz) => (
+                <div
+                  key={biz.title}
+                  className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-orange-200 transition-all p-4 sm:p-5 flex flex-col justify-between group"
+                >
+                  <div>
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center mb-3 group-hover:bg-orange-50 group-hover:border-orange-100 transition-colors">
+                      {biz.icon}
+                    </div>
+                    <h4 className="text-sm sm:text-base font-bold text-[#072B57] group-hover:text-[#FF6B00] transition-colors tracking-tight">
+                      {biz.title}
+                    </h4>
+                    <p className="mt-1 text-xs text-slate-500 leading-relaxed font-normal">
+                      {biz.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* =========================================================
+              2. CAREER OPPORTUNITIES & PLACEMENT SUPPORT
+              ========================================================= */}
+          <div className="mt-12 sm:mt-16 pt-10 sm:pt-14 border-t border-slate-200/80">
+            <div className="mx-auto max-w-3xl text-center mb-8 sm:mb-10">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-[#1E60F2] text-[11px] sm:text-xs font-bold uppercase tracking-wider border border-blue-200/80 mb-2.5">
+                <Briefcase className="w-3.5 h-3.5 text-[#1E60F2]" />
+                <span>ROLES &amp; CAREER READINESS</span>
+              </div>
+              <h3 className="text-xl sm:text-3xl font-black text-[#072B57] tracking-tight">
+                Career <span className="text-[#FF6B00]">Opportunities</span>
+              </h3>
+              <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed font-normal max-w-2xl mx-auto">
+                Qualify for high-demand agency, corporate, and startup marketing roles backed by verified campaign deliverables.
+              </p>
+            </div>
+
+            {/* Clear Placement Support Highlight */}
+            <div className="rounded-2xl bg-white border border-slate-200/90 shadow-2xs p-5 sm:p-6 mb-6">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+                <div className="flex items-start sm:items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center text-[#FF6B00] shrink-0">
+                    <GraduationCap className="w-6 h-6 text-[#FF6B00]" />
+                  </div>
+                  <div>
+                    <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#FF6B00] mb-0.5">
+                      <Sparkles className="w-3.5 h-3.5 text-[#FF6B00]" />
+                      <span>Career Guidance &amp; Assistance</span>
+                    </div>
+                    <h4 className="text-xl sm:text-2xl font-black text-[#072B57] tracking-tight">
+                      100% Placement Support
+                    </h4>
+                    <p className="text-xs sm:text-sm font-semibold text-[#FF6B00] mt-0.5">
+                      Resume Building · Portfolio Guidance · Interview Preparation · Job Assistance
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-3 lg:pt-0 border-t lg:border-t-0 border-slate-100">
+                  <div className="flex items-center gap-2 p-2 rounded-lg bg-slate-50 border border-slate-100">
+                    <CheckCircle2 className="w-4 h-4 text-[#10B981] shrink-0" />
+                    <span className="text-xs font-semibold text-slate-700">Resume Building</span>
+                  </div>
+                  <div className="flex items-center gap-2 p-2 rounded-lg bg-slate-50 border border-slate-100">
+                    <CheckCircle2 className="w-4 h-4 text-[#10B981] shrink-0" />
+                    <span className="text-xs font-semibold text-slate-700">Portfolio Guidance</span>
+                  </div>
+                  <div className="flex items-center gap-2 p-2 rounded-lg bg-slate-50 border border-slate-100">
+                    <CheckCircle2 className="w-4 h-4 text-[#10B981] shrink-0" />
+                    <span className="text-xs font-semibold text-slate-700">Interview Prep</span>
+                  </div>
+                  <div className="flex items-center gap-2 p-2 rounded-lg bg-slate-50 border border-slate-100">
+                    <CheckCircle2 className="w-4 h-4 text-[#10B981] shrink-0" />
+                    <span className="text-xs font-semibold text-slate-700">Job Assistance</span>
+                  </div>
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-3 pt-3 border-t border-slate-100 font-normal">
+                * Placement support provides career guidance, resume review, mock interviews, and application assistance; it does not constitute a legal guarantee of employment.
+              </p>
+            </div>
+
+            {/* 6 Compact Career Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
+              {CAREER_ROLES.map((role) => (
+                <div
+                  key={role.title}
+                  className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-orange-200 transition-all p-4 sm:p-5 flex flex-col justify-between group"
+                >
+                  <div>
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center mb-3 group-hover:bg-orange-50 group-hover:border-orange-100 transition-colors">
+                      {role.icon}
+                    </div>
+                    <h4 className="text-sm sm:text-base font-bold text-[#072B57] group-hover:text-[#FF6B00] transition-colors tracking-tight">
+                      {role.title}
+                    </h4>
+                    <p className="mt-1 text-xs text-slate-500 leading-relaxed font-normal">
+                      {role.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
           {/* =========================================================
               CLEAN REFINED CTA BANNER
