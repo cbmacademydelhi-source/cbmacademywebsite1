@@ -175,28 +175,16 @@ const SupabaseLogo: React.FC<{ className?: string }> = ({ className = 'w-6 h-6' 
   </svg>
 );
 
-// 15. Figma - Official 5-Shape Color Mark
-const FigmaLogo: React.FC<{ className?: string }> = ({ className = 'w-4 h-6' }) => (
-  <svg className={className} viewBox="0 0 38 57" fill="none">
+// 15. Adobe Firefly - Official Creative Generative AI Mark
+const AdobeFireflyLogo: React.FC<{ className?: string }> = ({ className = 'w-6 h-6' }) => (
+  <svg className={className} viewBox="0 0 600 600" fill="none" aria-label="Adobe Firefly">
     <path
-      d="M19 0H9.5C4.25329 0 0 4.25329 0 9.5C0 14.7467 4.25329 19 9.5 19H19V0Z"
-      fill="#F24E1E"
+      fill="#EB1000"
+      d="M492.4 0H107.6A107.6 107.6 0 0 0 0 107.6v384.8C0 551.8 48.2 600 107.6 600h384.8c59.4 0 107.6-48.2 107.6-107.6V107.6C600 48.2 551.8 0 492.4 0"
     />
     <path
-      d="M19 0H28.5C33.7467 0 38 4.25329 38 9.5C38 14.7467 33.7467 19 28.5 19H19V0Z"
-      fill="#FF7262"
-    />
-    <path
-      d="M0 28.5C0 23.2533 4.25329 19 9.5 19H19V38H9.5C4.25329 38 0 33.7467 0 28.5Z"
-      fill="#A259FF"
-    />
-    <path
-      d="M38 28.5C38 33.7467 33.7467 38 28.5 38C23.2533 38 19 33.7467 19 28.5C19 23.2533 23.2533 19 28.5 19C33.7467 19 38 23.2533 38 28.5Z"
-      fill="#1ABCFE"
-    />
-    <path
-      d="M0 47.5C0 42.2533 4.25329 38 9.5 38H19V47.5C19 52.7467 14.7467 57 9.5 57C4.25329 57 0 52.7467 0 47.5Z"
-      fill="#0ACF83"
+      fill="#fff"
+      d="M152 159.3h201.8v65.6h-125v47.5h110.6V338H228.8v97.8H152zm228.3 61.1h72.3v215.4h-72.3zm48.9-40.3 25.7 5.8c10.1 2.3 17.2-9.9 10.1-17.5l-17.9-19.3a11 11 0 0 1-2.5-9.5l5.8-25.7c2.3-10.1-9.9-17.1-17.5-10l-19.4 17.8a11 11 0 0 1-9.6 2.5l-25.7-5.8C368 116.1 361 128.3 368 136l17.9 19.3c2.3 2.6 3.3 6.1 2.5 9.5l-5.8 25.7c-2.3 10.1 9.9 17.1 17.5 10l19.4-17.8c2.6-2.3 6.1-3.3 9.6-2.5"
     />
   </svg>
 );
@@ -342,9 +330,9 @@ const categoryCards: CategoryCard[] = [
         logo: <MidjourneyLogo />,
       },
       {
-        name: 'Figma',
-        description: 'UI/UX Design',
-        logo: <FigmaLogo />,
+        name: 'Adobe Firefly',
+        description: 'Generative AI & Design',
+        logo: <AdobeFireflyLogo />,
       },
     ],
   },

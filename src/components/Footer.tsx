@@ -28,7 +28,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenApply, onOpenBrochure }) =
           {/* Col 1: Branding & Key Contact Details (5 Cols) */}
           <div className="md:col-span-5 space-y-3">
             <div className="flex items-center">
-              <CbmLogo variant="dark" height={40} />
+              <CbmLogo variant="dark" height={76} />
             </div>
 
             <p className="text-slate-300 text-xs leading-relaxed max-w-sm">

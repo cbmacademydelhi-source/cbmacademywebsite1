@@ -38,7 +38,7 @@ export const COURSE_MODULES: CourseModule[] = [
       'Canva Pro Automated Asset Workflows',
       'High-Converting Social & Ad Display Creatives',
     ],
-    tools: ['Midjourney', 'Canva Pro', 'Figma', 'DALL-E 3'],
+    tools: ['Midjourney', 'Canva Pro', 'Adobe Firefly', 'DALL-E 3'],
     duration: '1 Week (8 Hours)',
     level: 'Beginner to Intermediate',
     liveProjects: 'Generating complete multi-channel visual ad creatives and brand guidelines using AI',

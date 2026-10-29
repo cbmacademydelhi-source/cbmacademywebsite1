@@ -32,6 +32,7 @@ import {
   CanvaLogo,
   MidjourneyLogo,
   ElevenLabsLogo,
+  AdobeFireflyLogo,
   FigmaLogo,
   GoogleAnalyticsLogo,
   LookerStudioLogo,
@@ -110,7 +111,7 @@ const MODULES: CurriculumModule[] = [
     tools: [
       { name: 'Midjourney', role: 'Photorealistic Ad Art', logo: <MidjourneyLogo className="w-5 h-5" /> },
       { name: 'Canva', role: 'Creative Asset Production', logo: <CanvaLogo className="w-6 h-auto" /> },
-      { name: 'Figma', role: 'Visual Layouts & Frames', logo: <FigmaLogo className="w-4 h-5" /> },
+      { name: 'Adobe Firefly', role: 'Generative AI & Design', logo: <AdobeFireflyLogo className="w-5 h-5" /> },
       { name: 'ChatGPT', role: 'Generative AI Prompts', logo: <ChatGPTLogo className="w-5 h-5" /> },
     ],
   },
