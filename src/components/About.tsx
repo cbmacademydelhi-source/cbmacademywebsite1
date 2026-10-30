@@ -219,27 +219,39 @@ export const About: React.FC<AboutProps> = ({ isServicesPage = false }) => {
           {/* Introductory Content - Very top */}
           <div className="lg:col-span-6 space-y-4">
             <div className="about-section-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 text-[#FF6B00] text-xs font-extrabold uppercase tracking-wider border border-orange-200">
-              <Sparkles className="w-3.5 h-3.5 text-[#FF6B00]" />
-              <span>ABOUT CBM ACADEMY</span>
+              {isServicesPage ? (
+                <>
+                  <Building2 className="w-3.5 h-3.5 text-[#FF6B00]" />
+                  <span>DIGITAL MARKETING SERVICES</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-3.5 h-3.5 text-[#FF6B00]" />
+                  <span>ABOUT CBM ACADEMY</span>
+                </>
+              )}
             </div>
 
             {isServicesPage ? (
-              <h2 className="about-section-heading text-3xl sm:text-4xl lg:text-[42px] font-black text-[#072B57] tracking-tight leading-[1.15]">
-                About CBM <span className="text-[#FF6B00] about-accent">Academy</span>
-              </h2>
+              <h1 className="about-section-heading text-3xl sm:text-4xl lg:text-[42px] font-black text-[#072B57] tracking-tight leading-[1.15]">
+                Digital Marketing <span className="text-[#FF6B00] about-accent">Services in Delhi</span>
+              </h1>
             ) : (
               <h1 className="about-section-heading text-3xl sm:text-4xl lg:text-[42px] font-black text-[#072B57] tracking-tight leading-[1.15]">
                 About CBM <span className="text-[#FF6B00] about-accent">Academy</span>
               </h1>
             )}
 
-            <h2 className="about-section-subheading text-lg sm:text-xl font-bold text-[#FF6B00]">
-              A Practical Digital Marketing Academy in Okhla, New Delhi
-            </h2>
+            <p className="about-section-subheading text-lg sm:text-xl font-bold text-[#FF6B00]">
+              {isServicesPage
+                ? 'Results-Driven SEO, Performance Ads & AI Marketing Solutions'
+                : 'A Practical Digital Marketing Academy in Okhla, New Delhi'}
+            </p>
 
             <p className="about-section-paragraph text-slate-600 text-sm sm:text-base leading-relaxed">
-              Build practical digital marketing and AI skills through projects,
-              industry tools and real-world learning.
+              {isServicesPage
+                ? 'CBM Academy delivers practical digital marketing and agency solutions in Delhi, combining search engine optimization, paid ad campaigns, analytics tracking, and AI automation to help businesses grow online.'
+                : 'Build practical digital marketing and AI skills through projects, industry tools and real-world learning.'}
             </p>
 
             <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
@@ -517,22 +529,36 @@ export const About: React.FC<AboutProps> = ({ isServicesPage = false }) => {
                 <span>DIGITAL MARKETING SERVICES</span>
               </div>
 
-              {isServicesPage ? (
-                <h1 className="about-section-heading text-3xl sm:text-4xl lg:text-[42px] font-black text-[#072B57] tracking-tight leading-[1.15]">
-                  Digital Marketing <span className="text-[#FF6B00] about-accent">Services in Delhi</span>
-                </h1>
-              ) : (
-                <h2 className="about-section-heading text-3xl sm:text-4xl lg:text-[42px] font-black text-[#072B57] tracking-tight leading-[1.15]">
-                  Digital Marketing Agency in <span className="text-[#FF6B00] about-accent">Okhla, New Delhi</span>
-                </h2>
-              )}
+              <h2 className="about-section-heading text-3xl sm:text-4xl lg:text-[42px] font-black text-[#072B57] tracking-tight leading-[1.15]">
+                Digital Marketing Agency in <span className="text-[#FF6B00] about-accent">Okhla, New Delhi</span>
+              </h2>
 
               <p className="about-section-paragraph text-slate-600 text-sm sm:text-base leading-relaxed">
                 We also help businesses grow online through SEO, Google Ads,
                 Meta Ads, social media, analytics and AI-powered marketing.
               </p>
 
-              <div className="pt-1">
+              {/* 4 Core Agency Pillars */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+                  <h3 className="text-xs sm:text-sm font-bold text-[#072B57]">Search Engine Optimization</h3>
+                  <p className="text-xs text-slate-600 mt-1 leading-relaxed">Technical SEO, keyword research, local Google Maps optimization, and organic traffic growth.</p>
+                </div>
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+                  <h3 className="text-xs sm:text-sm font-bold text-[#072B57]">Performance Advertising</h3>
+                  <p className="text-xs text-slate-600 mt-1 leading-relaxed">Targeted Google Ads, Meta Ads (Facebook &amp; Instagram), conversion funnels, and ROI tracking.</p>
+                </div>
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+                  <h3 className="text-xs sm:text-sm font-bold text-[#072B57]">AI Marketing Automation</h3>
+                  <p className="text-xs text-slate-600 mt-1 leading-relaxed">Smart workflows, automated messaging, prompt frameworks, and content generation pipelines.</p>
+                </div>
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+                  <h3 className="text-xs sm:text-sm font-bold text-[#072B57]">Analytics &amp; Conversion Setup</h3>
+                  <p className="text-xs text-slate-600 mt-1 leading-relaxed">GA4 tracking, Google Tag Manager event architecture, Looker Studio reporting, and audit dashboards.</p>
+                </div>
+              </div>
+
+              <div className="pt-2">
                 <a
                   href="#contact"
                   className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#072B57] px-6 py-3 text-xs sm:text-sm font-bold text-white transition-all hover:bg-[#0c3c78] cursor-pointer shadow-md active:scale-98"

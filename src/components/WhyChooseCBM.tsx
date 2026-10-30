@@ -317,7 +317,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
           </motion.div>
 
           {/* Main Heading - In single line */}
-          <motion.h3
+          <motion.h2
             initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={VIEWPORT_ONCE}
@@ -326,7 +326,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
           >
             Learn Skills. Build Projects.{' '}
             <span className="text-[#FF6B00] whitespace-nowrap">Grow Your Career.</span>
-          </motion.h3>
+          </motion.h2>
 
           {/* Subtitle */}
           <motion.p
@@ -406,9 +406,9 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
                 <div className="w-14 h-14 rounded-2xl bg-white/15 border border-white/25 flex items-center justify-center text-white mb-3 shadow-md group-hover:scale-105 transition-transform">
                   <Upload className="w-7 h-7 text-[#FF6B00]" />
                 </div>
-                <h3 className="text-lg sm:text-2xl font-black tracking-tight text-white mb-1">
+                <p className="text-lg sm:text-2xl font-black tracking-tight text-white mb-1">
                   Upload Your Course Banner Here
-                </h3>
+                </p>
                 <p className="text-xs sm:text-sm text-slate-200 max-w-md mb-4 font-normal">
                   Click anywhere on this banner to upload your image (PNG, JPG, WebP)
                 </p>

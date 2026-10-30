@@ -86,12 +86,7 @@ export const Hero: React.FC<HeroProps> = ({
                 </div>
               </div>
 
-              {/* SEO H1 Tag (Strictly One H1 on Homepage) */}
-              <h1 className="sr-only">
-                Best Digital Marketing Academy &amp; Agency in Delhi | CBM Academy
-              </h1>
-
-              <motion.h2
+              <motion.h1
                 initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.18, ease: 'easeOut' }}
@@ -120,9 +115,9 @@ export const Hero: React.FC<HeroProps> = ({
                 </span>
                 {', '}
                 <span className="font-semibold text-[#072B57]/80">
-                  Real Projects & Industry Skills
+                  at CBM Academy
                 </span>
-              </motion.h2>
+              </motion.h1>
             </div>
 
             {/* Subheadline */}
