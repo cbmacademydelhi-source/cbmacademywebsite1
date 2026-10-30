@@ -391,7 +391,9 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
           <div className="relative w-full aspect-[16/7.5] sm:aspect-[16/6.5] lg:aspect-[21/8] min-h-[240px] sm:min-h-[340px] lg:min-h-[420px] overflow-hidden bg-slate-900">
             <img
               src={bannerUrl}
-              alt="Course Banner"
+              alt="CBM Academy AI Pro Digital Marketing Course Banner in Delhi"
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.01]"
             />
 
@@ -404,9 +406,9 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
                 <div className="w-14 h-14 rounded-2xl bg-white/15 border border-white/25 flex items-center justify-center text-white mb-3 shadow-md group-hover:scale-105 transition-transform">
                   <Upload className="w-7 h-7 text-[#FF6B00]" />
                 </div>
-                <h4 className="text-lg sm:text-2xl font-black tracking-tight text-white mb-1">
+                <h3 className="text-lg sm:text-2xl font-black tracking-tight text-white mb-1">
                   Upload Your Course Banner Here
-                </h4>
+                </h3>
                 <p className="text-xs sm:text-sm text-slate-200 max-w-md mb-4 font-normal">
                   Click anywhere on this banner to upload your image (PNG, JPG, WebP)
                 </p>

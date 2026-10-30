@@ -57,9 +57,9 @@ export const Footer: React.FC<FooterProps> = ({ onOpenApply, onOpenBrochure }) =
 
           {/* Col 2: Essential Navigation Links (4 Cols - 2 column subgrid) */}
           <div className="md:col-span-4 space-y-2.5">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider border-b border-white/10 pb-1.5 flex items-center min-h-[24px]">
+            <h3 className="text-xs font-bold text-white uppercase tracking-wider border-b border-white/10 pb-1.5 flex items-center min-h-[24px]">
               Quick Links
-            </h4>
+            </h3>
             <ul className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs text-slate-300">
               {navLinks.map((link) => (
                 <li key={link.name}>
@@ -76,9 +76,9 @@ export const Footer: React.FC<FooterProps> = ({ onOpenApply, onOpenBrochure }) =
 
           {/* Col 3: Important CTAs (3 Cols) */}
           <div className="md:col-span-3 space-y-2.5">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider border-b border-white/10 pb-1.5 flex items-center min-h-[24px]">
+            <h3 className="text-xs font-bold text-white uppercase tracking-wider border-b border-white/10 pb-1.5 flex items-center min-h-[24px]">
               Next Batch &amp; Syllabus
-            </h4>
+            </h3>
             <p className="text-xs text-slate-300 leading-relaxed">
               New weekend &amp; weekday batches starting soon. Reserve your seat or download the 2026 syllabus.
             </p>

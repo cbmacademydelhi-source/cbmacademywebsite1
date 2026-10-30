@@ -651,6 +651,8 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
               <img
                 src={posterUrl}
                 alt="AI Pro Digital Marketing Course Poster"
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover object-center"
               />
             </div>
@@ -1417,9 +1419,9 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
                         <span>CERTIFICATE OF COMPLETION</span>
                       </div>
                       <p className="text-[11px] text-slate-500 font-medium">This is proudly presented to</p>
-                      <h4 className="text-lg sm:text-xl font-black text-[#072B57] tracking-tight mt-0.5 mb-1">
+                      <p className="text-lg sm:text-xl font-black text-[#072B57] tracking-tight mt-0.5 mb-1">
                         RAHUL SHARMA
-                      </h4>
+                      </p>
                       <p className="text-[11px] text-slate-600 max-w-xs mx-auto leading-tight">
                         for successfully fulfilling all curriculum requirements and live practical projects in
                       </p>

@@ -32,9 +32,9 @@ interface PageSeoConfig {
 
 const PAGE_SEO_MAP: Record<string, PageSeoConfig> = {
   home: {
-    title: 'Best Digital Marketing Academy & Agency in Delhi | CBM Academy',
+    title: 'Best Digital Marketing Academy in Delhi | CBM Academy',
     description:
-      'CBM Academy is a digital marketing academy and agency in Delhi offering practical courses, SEO, Google Ads, Meta Ads, AI marketing and digital marketing services.',
+      'CBM Academy offers practical digital marketing courses, AI marketing, SEO, Google Ads and career-focused training in Delhi.',
     canonical: 'https://cbmacademy.in/',
   },
   course: {
