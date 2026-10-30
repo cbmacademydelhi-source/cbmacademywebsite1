@@ -160,7 +160,223 @@
     <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
   </head>
   <body class="bg-[#FAFAFA] text-[#072B57] antialiased selection:bg-[#FF6B00] selection:text-white font-['Plus_Jakarta_Sans',sans-serif]">
-    <div id="root"></div>
+    <div id="root">
+      <!-- Initial semantic markup for search crawlers & initial page load -->
+      <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+          <a href="/" class="flex items-center gap-3" aria-label="CBM Academy Home">
+            <img src="/assets/aistudio/CBM_Academy_Logo___Editable_z_e96afc7b.png" alt="CBM Academy Logo" class="h-10 sm:h-12 w-auto object-contain" width="160" height="48" />
+          </a>
+          <nav aria-label="Main Navigation" class="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-700">
+            <a href="#home" class="hover:text-[#FF6B00] transition-colors">Home</a>
+            <a href="#course" class="hover:text-[#FF6B00] transition-colors">Courses</a>
+            <a href="#webinars" class="hover:text-[#FF6B00] transition-colors">Webinars</a>
+            <a href="#jobs" class="hover:text-[#FF6B00] transition-colors">Jobs</a>
+            <a href="#certificate" class="hover:text-[#FF6B00] transition-colors">Certificate Verification</a>
+            <a href="#about" class="hover:text-[#FF6B00] transition-colors">About</a>
+            <a href="#blogs" class="hover:text-[#FF6B00] transition-colors">Blog</a>
+            <a href="#contact" class="hover:text-[#FF6B00] transition-colors">Contact</a>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <!-- Hero Section -->
+        <section id="home" class="relative overflow-hidden pt-6 pb-12 sm:pb-16 bg-white border-b border-slate-100">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+              <div class="lg:col-span-7 space-y-6">
+                <div class="inline-flex items-center gap-2 bg-orange-50 border border-orange-100 px-3.5 py-1.5 rounded-full text-xs font-semibold text-slate-700 shadow-sm">
+                  <span class="flex h-2 w-2 rounded-full bg-[#FF6B00]"></span>
+                  <span class="font-bold text-[#FF6B00]">AI-Powered Digital Marketing Academy</span>
+                  <span class="text-slate-300">|</span>
+                  <span>Okhla, New Delhi</span>
+                </div>
+
+                <div class="relative">
+                  <h1 class="font-['Plus_Jakarta_Sans',sans-serif] text-3xl sm:text-4xl lg:text-[44px] xl:text-[48px] tracking-tight leading-[1.2] sm:leading-[1.16]">
+                    <span class="text-[#072B57] font-extrabold sm:font-black">Master Digital Marketing in Delhi</span>
+                    <span class="relative inline-block text-[#FF6B00] font-extrabold sm:font-black">with AI</span>,
+                    <span class="font-semibold text-[#072B57]/80">at CBM Academy</span>
+                  </h1>
+                </div>
+
+                <p class="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl">
+                  Build job-ready digital marketing skills with practical training in SEO, Google Ads, Meta Ads, social media marketing, analytics, content marketing and AI-powered marketing workflows at CBM Academy in Okhla, New Delhi.
+                </p>
+
+                <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+                  <a href="#course" class="inline-flex items-center justify-center gap-2.5 bg-[#FF6B00] text-white font-bold text-base px-7 py-3.5 rounded-xl shadow-lg">
+                    Explore Courses
+                  </a>
+                  <a href="/Digital_Marketing_Course_Brochure.pdf" class="inline-flex items-center justify-center gap-2 bg-white text-[#072B57] font-bold text-base px-6 py-3.5 rounded-xl border border-slate-200 shadow-sm">
+                    Download Brochure
+                  </a>
+                </div>
+              </div>
+
+              <div class="lg:col-span-5 relative">
+                <div class="relative mx-auto max-w-md lg:max-w-none rounded-2xl overflow-hidden border border-slate-200/80 shadow-2xl bg-slate-100">
+                  <img
+                    src="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1200&auto=format&fit=crop"
+                    alt="Students and mentor in digital marketing practical training session at CBM Academy in Okhla, New Delhi"
+                    title="CBM Academy Digital Marketing Training & Live Session in Okhla, New Delhi"
+                    width="1200"
+                    height="800"
+                    class="w-full h-80 sm:h-96 lg:h-[420px] object-cover"
+                  />
+                  <div class="absolute bottom-4 left-4 right-4 text-white py-2.5 sm:py-3 px-4 rounded-xl bg-[#072B57]/85 backdrop-blur-md border border-white/10 shadow-lg text-center">
+                    <p class="text-xs sm:text-sm font-bold text-white tracking-wide">Watch This Video</p>
+                    <p class="text-[11px] sm:text-xs text-slate-200 font-medium mt-0.5">Your Journey Starts Here</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Why Choose CBM Academy -->
+        <section class="py-12 sm:py-16 bg-[#FAFAFA]">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-10">
+              <h2 class="text-2xl min-[400px]:text-[26px] sm:text-[30px] md:text-[34px] lg:text-[32px] xl:text-[38px] font-black text-[#072B57] tracking-tight leading-tight">
+                Why Choose CBM <span class="text-[#FF6B00]">Academy?</span>
+              </h2>
+              <p class="text-sm sm:text-base font-semibold text-[#072B57] leading-relaxed mt-3">
+                Industry-first digital marketing training bridging the gap between classroom theory and live agency execution.
+              </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <article class="p-6 rounded-2xl bg-white border border-slate-200/90 shadow-sm">
+                <h3 class="text-base sm:text-lg font-bold text-[#072B57] tracking-tight mb-2">Build & Automate Your Business</h3>
+                <p class="text-xs sm:text-[13.5px] text-slate-600 leading-relaxed">Learn to launch online businesses, build digital systems, and automate everyday marketing tasks.</p>
+              </article>
+              <article class="p-6 rounded-2xl bg-white border border-slate-200/90 shadow-sm">
+                <h3 class="text-base sm:text-lg font-bold text-[#072B57] tracking-tight mb-2">Master Digital Marketing</h3>
+                <p class="text-xs sm:text-[13.5px] text-slate-600 leading-relaxed">Develop practical skills in SEO, paid advertising, social media, WordPress, analytics, and lead generation.</p>
+              </article>
+              <article class="p-6 rounded-2xl bg-white border border-slate-200/90 shadow-sm">
+                <h3 class="text-base sm:text-lg font-bold text-[#072B57] tracking-tight mb-2">AI-Powered Marketing</h3>
+                <p class="text-xs sm:text-[13.5px] text-slate-600 leading-relaxed">Use AI tools to create content, optimise campaigns, analyse data, and work smarter.</p>
+              </article>
+              <article class="p-6 rounded-2xl bg-white border border-slate-200/90 shadow-sm">
+                <h3 class="text-base sm:text-lg font-bold text-[#072B57] tracking-tight mb-2">Career & Communication Skills</h3>
+                <p class="text-xs sm:text-[13.5px] text-slate-600 leading-relaxed">Build confidence in communication, client management, interviews, presentations, and workplace collaboration.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- How You'll Learn -->
+        <section class="py-12 sm:py-16 bg-white border-t border-slate-100">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-8">
+              <p class="text-xs sm:text-sm font-bold tracking-widest uppercase text-[#FF6B00]">HOW YOU’LL LEARN</p>
+              <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.12] mt-2">
+                <span class="block text-[#072B57]">Learn Skills. Build Projects.</span>
+                <span class="block text-[#FF6B00]">Grow Your Career.</span>
+              </h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                <span class="font-bold text-[#FF6B00] text-sm">01</span>
+                <h3 class="text-base font-bold text-[#072B57] mt-1 mb-2">Practical & Comprehensive Syllabus</h3>
+                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">Master digital marketing through structured modules, hands-on assignments, and practical projects.</p>
+              </div>
+              <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                <span class="font-bold text-[#FF6B00] text-sm">02</span>
+                <h3 class="text-base font-bold text-[#072B57] mt-1 mb-2">Alternate-Day Classes</h3>
+                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">Attend classes on alternate days to get enough time to practise, complete assignments, and apply what you learn.</p>
+              </div>
+              <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                <span class="font-bold text-[#FF6B00] text-sm">03</span>
+                <h3 class="text-base font-bold text-[#072B57] mt-1 mb-2">AI-Integrated Workflows</h3>
+                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">Learn to use AI tools to improve productivity, simplify tasks, and build smarter marketing workflows.</p>
+              </div>
+              <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                <span class="font-bold text-[#FF6B00] text-sm">04</span>
+                <h3 class="text-base font-bold text-[#072B57] mt-1 mb-2">Small, Focused Batches</h3>
+                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">Learn in small groups with more opportunities to interact, ask questions, and receive individual attention.</p>
+              </div>
+              <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                <span class="font-bold text-[#FF6B00] text-sm">05</span>
+                <h3 class="text-base font-bold text-[#072B57] mt-1 mb-2">Beyond Digital Marketing</h3>
+                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">Attend extra sessions on sales, communication, and planning to develop skills that matter in real workplaces and business.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section class="py-12 sm:py-16 bg-[#FAFAFA] border-t border-slate-100">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-2xl mx-auto mb-8">
+            <p class="text-xs font-bold tracking-wider uppercase text-[#FF6B00]">WHAT OUR STUDENTS SAY</p>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-[#072B57] tracking-tight mt-1.5">Real Learning. Real Growth.</h2>
+            <p class="text-xs sm:text-sm text-slate-600 mt-1.5 leading-relaxed">Hear from learners who are building practical digital marketing skills with CBM Academy.</p>
+          </div>
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs">
+              <p class="text-xs text-slate-700 leading-relaxed italic mb-3">“The hands-on learning approach and AI tools were really useful. I learned how to apply digital marketing concepts instead of only studying theory.”</p>
+              <h3 class="text-sm font-bold text-[#072B57]">Rahul Sharma</h3>
+              <p class="text-[11px] text-slate-500">Performance Marketing Student</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs">
+              <p class="text-xs text-slate-700 leading-relaxed italic mb-3">“I especially liked the practical assignments and guidance. The course gave me a much clearer direction for building my career in digital marketing.”</p>
+              <h3 class="text-sm font-bold text-[#072B57]">Simran Kapoor</h3>
+              <p class="text-[11px] text-slate-500">SEO & Content Marketing Student</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs">
+              <p class="text-xs text-slate-700 leading-relaxed italic mb-3">“Running live ad campaigns with dedicated mentorship helped me land an agency role right after finishing the course.”</p>
+              <h3 class="text-sm font-bold text-[#072B57]">Rohan Verma</h3>
+              <p class="text-[11px] text-slate-500">Social Media Marketing Student</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs">
+              <p class="text-xs text-slate-700 leading-relaxed italic mb-3">“Learning to integrate modern AI tools into daily marketing workflows made a huge difference in my campaign efficiency.”</p>
+              <h3 class="text-sm font-bold text-[#072B57]">Neha Gupta</h3>
+              <p class="text-[11px] text-slate-500">AI & Automation Marketer</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-12 sm:py-16 bg-white border-t border-slate-100">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-3xl mb-8">
+              <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#072B57] tracking-tight">
+                Get in Touch with CBM Academy
+              </h2>
+              <p class="text-slate-700 text-base leading-relaxed mt-2">
+                Have questions about digital marketing course admissions, batch schedules, fees, or practical training in Okhla? Reach out below.
+              </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="p-5 rounded-xl border border-slate-200 bg-white">
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Campus Office Address</h3>
+                <p class="text-sm font-bold text-[#072B57]">CBM Academy</p>
+                <p class="text-xs text-slate-600 leading-relaxed mt-1">E-111, Hari Kothi, Abul Fazal Enclave, Okhla, New Delhi, Delhi - 110025, India</p>
+              </div>
+              <div class="p-5 rounded-xl border border-slate-200 bg-white">
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Official Email</h3>
+                <a href="mailto:office@cbmacademy.in" class="text-sm font-bold text-[#072B57] hover:text-[#FF6B00]">office@cbmacademy.in</a>
+                <p class="text-xs text-slate-500 mt-1">Direct admissions & inquiries</p>
+              </div>
+              <div class="p-5 rounded-xl border border-slate-200 bg-white">
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Helpline & WhatsApp</h3>
+                <a href="tel:+919211583150" class="text-sm font-bold text-[#072B57] hover:text-[#FF6B00]">+91 92115 83150</a>
+                <p class="text-xs text-slate-500 mt-1">Monday - Saturday (11:00 AM - 6:00 PM)</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="bg-[#072B57] text-white border-t border-[#041a35] py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-300">
+          <p>© 2026 CBM Academy. Practical Digital Marketing Training & Agency in Delhi. All rights reserved.</p>
+        </div>
+      </footer>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
