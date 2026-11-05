@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import { ArrowRight, Download, X, Play } from 'lucide-react';
+import { ArrowRight, Download, Play, Volume2, VolumeX } from 'lucide-react';
 
 interface HeroProps {
   onOpenApply?: () => void;
@@ -14,22 +14,33 @@ export const Hero: React.FC<HeroProps> = ({
   onExploreCourses,
 }) => {
   const shouldReduceMotion = useReducedMotion();
-  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setIsVideoModalOpen(false);
+  const handlePlayVideo = () => {
+    setIsPlaying(true);
+    setTimeout(() => {
+      if (videoRef.current) {
+        videoRef.current.play().catch(() => {
+          if (videoRef.current) {
+            videoRef.current.muted = true;
+            setIsMuted(true);
+            videoRef.current.play().catch(() => {});
+          }
+        });
       }
-    };
-    if (isVideoModalOpen) {
-      window.addEventListener('keydown', handleKeyDown);
+    }, 50);
+  };
+
+  const handleToggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const nextMuted = !isMuted;
+    setIsMuted(nextMuted);
+    if (videoRef.current) {
+      videoRef.current.muted = nextMuted;
     }
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isVideoModalOpen]);
+  };
 
   const handleExploreCourses = () => {
     if (onExploreCourses) {
@@ -175,48 +186,128 @@ export const Hero: React.FC<HeroProps> = ({
             </motion.div>
           </div>
 
-          {/* Right Column: Realistic Classroom & Practical Training Visual - Catbox Video */}
-          <div className="lg:col-span-5 relative">
-            <div className="relative mx-auto max-w-md lg:max-w-none">
+          {/* Right Column: 1:1 Welcome Video Preview & Inline Player */}
+          <div className="lg:col-span-5 relative flex items-center justify-center">
+            <div className="relative w-full max-w-md lg:max-w-[440px]">
               
-              {/* Main Visual Frame */}
+              {/* 1:1 Video Container */}
               <motion.div
                 initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.22, ease: 'easeOut' }}
-                onClick={() => setIsVideoModalOpen(true)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    setIsVideoModalOpen(true);
-                  }
-                }}
-                className="relative rounded-2xl overflow-hidden border border-slate-200/80 shadow-2xl bg-slate-900 group cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:ring-offset-2"
-                aria-label="Watch Video: Your Journey Starts Here"
+                className="relative w-full aspect-square rounded-3xl overflow-hidden border border-slate-200/90 shadow-2xl bg-slate-950 group"
+                style={{ aspectRatio: '1 / 1' }}
               >
-                <video
-                  ref={videoRef}
-                  src="https://files.catbox.moe/p0qynd.mp4"
-                  poster="/assets/hero-video-poster.jpg"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  preload="metadata"
-                  className="w-full h-80 sm:h-96 lg:h-[420px] object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-                />
+                {!isPlaying ? (
+                  /* Thumbnail Preview State */
+                  <div
+                    onClick={handlePlayVideo}
+                    className="relative w-full h-full cursor-pointer select-none"
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Play CBM Academy Welcome Video"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handlePlayVideo();
+                      }
+                    }}
+                  >
+                    <img
+                      src="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1200&auto=format&fit=crop"
+                      alt="Students and mentor in digital marketing practical training session at CBM Academy in Okhla, New Delhi"
+                      title="CBM Academy Digital Marketing Training & Live Session in Okhla, New Delhi"
+                      width={1200}
+                      height={1200}
+                      decoding="async"
+                      fetchPriority="high"
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
 
-                {/* Text in bottom */}
-                <div className="absolute bottom-4 left-4 right-4 text-white py-2.5 sm:py-3 px-4 rounded-xl bg-[#072B57]/85 backdrop-blur-md border border-white/10 shadow-lg text-center transition-all duration-200 group-hover:bg-[#072B57]/95">
-                  <p className="text-xs sm:text-sm font-bold text-white tracking-wide">
-                    Watch This Video
-                  </p>
-                  <p className="text-[11px] sm:text-xs text-slate-200 font-medium mt-0.5">
-                    Your Journey Starts Here
-                  </p>
-                </div>
+                    {/* Subtle gradient overlay for depth */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-950/20 to-black/35 pointer-events-none" />
+
+                    {/* Voice enable / disable icon button */}
+                    <button
+                      type="button"
+                      onClick={handleToggleMute}
+                      aria-label={isMuted ? 'Enable sound' : 'Mute sound'}
+                      title={isMuted ? 'Sound Disabled (Click to Enable)' : 'Sound Enabled (Click to Mute)'}
+                      className="absolute top-3.5 right-3.5 z-20 p-2.5 rounded-full bg-slate-900/80 hover:bg-slate-900 text-white backdrop-blur-md border border-white/15 shadow-md transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
+                    >
+                      {isMuted ? (
+                        <VolumeX className="w-4 h-4 text-slate-300" />
+                      ) : (
+                        <Volume2 className="w-4 h-4 text-[#FF6B00]" />
+                      )}
+                    </button>
+
+                    {/* Liquid-Style Play Button (Fluid Glass Sphere + Ambient Ripples) */}
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="relative flex items-center justify-center">
+                        {/* Fluid ambient pulsing glow */}
+                        <span className="absolute w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-[#FF6B00]/40 to-amber-300/40 blur-md animate-pulse" />
+
+                        {/* Liquid fluid outer ring wave */}
+                        <span className="absolute w-18 h-18 sm:w-22 sm:h-22 rounded-full border border-orange-400/40 animate-ping opacity-60" style={{ animationDuration: '3s' }} />
+
+                        {/* Glossy liquid glass button */}
+                        <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-[#FFA04D] via-[#FF6B00] to-[#D95200] p-[2px] shadow-[0_12px_36px_rgba(255,107,0,0.45)] backdrop-blur-md transition-transform duration-300 group-hover:scale-110 active:scale-95 flex items-center justify-center">
+                          {/* Liquid specular highlight / reflection */}
+                          <div className="absolute top-1 left-2.5 right-2.5 h-[42%] rounded-t-full bg-gradient-to-b from-white/70 via-white/20 to-transparent pointer-events-none" />
+
+                          {/* Inner caustic glow & play icon */}
+                          <div className="w-full h-full rounded-full flex items-center justify-center bg-gradient-to-tr from-transparent via-[#FF7A1A]/30 to-white/20 shadow-[inset_0_2px_4px_rgba(255,255,255,0.6),inset_0_-2px_6px_rgba(0,0,0,0.3)]">
+                            <Play className="w-7 h-7 sm:w-8 sm:h-8 fill-white text-white translate-x-0.5 filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.35)]" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Clean, minimal bottom label */}
+                    <div className="absolute bottom-3.5 left-4 right-4 pointer-events-none flex items-center justify-between text-white text-xs">
+                      <span className="font-semibold tracking-wide bg-slate-900/75 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10">
+                        Welcome Video
+                      </span>
+                      <span className="text-[11px] text-slate-300 bg-slate-900/60 backdrop-blur-sm px-2.5 py-1 rounded-md">
+                        Click to play
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  /* Inline Video Playback State */
+                  <div className="relative w-full h-full bg-black">
+                    <video
+                      ref={videoRef}
+                      src="https://files.catbox.moe/p00v3z.mp4"
+                      autoPlay
+                      playsInline
+                      controls
+                      controlsList="nodownload noplaybackrate"
+                      disablePictureInPicture
+                      muted={isMuted}
+                      className="w-full h-full object-cover"
+                    >
+                      Your browser does not support the video tag.
+                    </video>
+
+                    {/* Voice enable / disable icon button during playback */}
+                    <button
+                      type="button"
+                      onClick={handleToggleMute}
+                      aria-label={isMuted ? 'Enable sound' : 'Mute sound'}
+                      title={isMuted ? 'Sound Disabled (Click to Enable)' : 'Sound Enabled (Click to Mute)'}
+                      className="absolute top-3.5 right-3.5 z-20 p-2 rounded-full bg-black/60 hover:bg-black/85 text-white backdrop-blur-md border border-white/20 shadow-md transition-all duration-150 hover:scale-105 active:scale-95 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
+                    >
+                      {isMuted ? (
+                        <VolumeX className="w-4 h-4 text-slate-300" />
+                      ) : (
+                        <Volume2 className="w-4 h-4 text-[#FF6B00]" />
+                      )}
+                    </button>
+                  </div>
+                )}
               </motion.div>
 
             </div>
@@ -225,38 +316,6 @@ export const Hero: React.FC<HeroProps> = ({
         </div>
 
       </div>
-
-      {/* Video Modal with Full Sound & Controls */}
-      {isVideoModalOpen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="CBM Academy Course Video"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
-          onClick={() => setIsVideoModalOpen(false)}
-        >
-          <div
-            className="relative w-full max-w-sm sm:max-w-md bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/15"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              onClick={() => setIsVideoModalOpen(false)}
-              aria-label="Close video player"
-              className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-black/70 hover:bg-black text-white flex items-center justify-center transition-colors cursor-pointer border border-white/20 focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
-            >
-              <X className="w-5 h-5" />
-            </button>
-            <video
-              src="https://files.catbox.moe/p0qynd.mp4"
-              controls
-              autoPlay
-              playsInline
-              className="w-full max-h-[82vh] object-contain rounded-2xl bg-black"
-            />
-          </div>
-        </div>
-      )}
     </section>
   );
 };
