@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import { ArrowRight, Download } from 'lucide-react';
+import { ArrowRight, Download, X, Play } from 'lucide-react';
 
 interface HeroProps {
   onOpenApply?: () => void;
@@ -14,6 +14,22 @@ export const Hero: React.FC<HeroProps> = ({
   onExploreCourses,
 }) => {
   const shouldReduceMotion = useReducedMotion();
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsVideoModalOpen(false);
+      }
+    };
+    if (isVideoModalOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isVideoModalOpen]);
 
   const handleExploreCourses = () => {
     if (onExploreCourses) {
@@ -159,7 +175,7 @@ export const Hero: React.FC<HeroProps> = ({
             </motion.div>
           </div>
 
-          {/* Right Column: Realistic Classroom & Practical Training Visual - Photo Only */}
+          {/* Right Column: Realistic Classroom & Practical Training Visual - Catbox Video */}
           <div className="lg:col-span-5 relative">
             <div className="relative mx-auto max-w-md lg:max-w-none">
               
@@ -168,22 +184,32 @@ export const Hero: React.FC<HeroProps> = ({
                 initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.22, ease: 'easeOut' }}
-                className="relative rounded-2xl overflow-hidden border border-slate-200/80 shadow-2xl bg-slate-100"
+                onClick={() => setIsVideoModalOpen(true)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setIsVideoModalOpen(true);
+                  }
+                }}
+                className="relative rounded-2xl overflow-hidden border border-slate-200/80 shadow-2xl bg-slate-900 group cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:ring-offset-2"
+                aria-label="Watch Video: Your Journey Starts Here"
               >
-                <img
-                  src="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1200&auto=format&fit=crop"
-                  alt="Students and mentor in digital marketing practical training session at CBM Academy in Okhla, New Delhi"
-                  title="CBM Academy Digital Marketing Training & Live Session in Okhla, New Delhi"
-                  width={1200}
-                  height={800}
-                  decoding="async"
-                  fetchPriority="high"
-                  referrerPolicy="no-referrer"
-                  className="w-full h-80 sm:h-96 lg:h-[420px] object-cover transition-transform duration-500 hover:scale-[1.02]"
+                <video
+                  ref={videoRef}
+                  src="https://files.catbox.moe/p0qynd.mp4"
+                  poster="/assets/hero-video-poster.jpg"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  preload="metadata"
+                  className="w-full h-80 sm:h-96 lg:h-[420px] object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                 />
 
                 {/* Text in bottom */}
-                <div className="absolute bottom-4 left-4 right-4 text-white py-2.5 sm:py-3 px-4 rounded-xl bg-[#072B57]/85 backdrop-blur-md border border-white/10 shadow-lg text-center">
+                <div className="absolute bottom-4 left-4 right-4 text-white py-2.5 sm:py-3 px-4 rounded-xl bg-[#072B57]/85 backdrop-blur-md border border-white/10 shadow-lg text-center transition-all duration-200 group-hover:bg-[#072B57]/95">
                   <p className="text-xs sm:text-sm font-bold text-white tracking-wide">
                     Watch This Video
                   </p>
@@ -199,6 +225,38 @@ export const Hero: React.FC<HeroProps> = ({
         </div>
 
       </div>
+
+      {/* Video Modal with Full Sound & Controls */}
+      {isVideoModalOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="CBM Academy Course Video"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+          onClick={() => setIsVideoModalOpen(false)}
+        >
+          <div
+            className="relative w-full max-w-sm sm:max-w-md bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/15"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setIsVideoModalOpen(false)}
+              aria-label="Close video player"
+              className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-black/70 hover:bg-black text-white flex items-center justify-center transition-colors cursor-pointer border border-white/20 focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <video
+              src="https://files.catbox.moe/p0qynd.mp4"
+              controls
+              autoPlay
+              playsInline
+              className="w-full max-h-[82vh] object-contain rounded-2xl bg-black"
+            />
+          </div>
+        </div>
+      )}
     </section>
   );
 };
