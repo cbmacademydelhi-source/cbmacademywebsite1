@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { JOB_OPPORTUNITIES } from '../data/cbmData';
 import {
   ArrowRight,
@@ -11,6 +11,7 @@ import {
   MapPin,
   PlusCircle,
 } from 'lucide-react';
+import { fetchPublicJobs } from '../services/adminService';
 
 interface JobBoardProps {
   onOpenApply: (jobRole?: string, hrEmail?: string) => void;
@@ -22,8 +23,35 @@ export const JobBoard: React.FC<JobBoardProps> = ({
   onPostJob,
 }) => {
   const [filter, setFilter] = useState<'ALL' | 'REMOTE' | 'DELHI'>('ALL');
+  const [jobsList, setJobsList] = useState(JOB_OPPORTUNITIES);
 
-  const filteredJobs = JOB_OPPORTUNITIES.filter((job) => {
+  useEffect(() => {
+    fetchPublicJobs().then((liveJobs) => {
+      if (liveJobs && liveJobs.length > 0) {
+        const mapped = liveJobs.map((j) => ({
+          id: j.id,
+          role: j.job_title || j.title || 'Digital Marketing Specialist',
+          companyCategory: j.company_name || j.company || 'Hiring Partner',
+          location: j.location,
+          isRemote: Boolean(j.is_remote || j.location.toLowerCase().includes('remote')),
+          type: j.work_type || j.type || 'Full-time',
+          salary: j.salary || 'Best in Industry',
+          experience: j.experience || '0-2 Years',
+          postedDaysAgo: Math.max(
+            1,
+            Math.floor((Date.now() - new Date(j.created_at || j.posted_date || Date.now()).getTime()) / (1000 * 60 * 60 * 24))
+          ),
+          skills: Array.isArray(j.skills) && j.skills.length > 0 ? j.skills : (Array.isArray(j.requirements) && j.requirements.length > 0 ? j.requirements : ['Digital Marketing', 'Growth']),
+          hrEmail: j.hr_email || 'careers@cbmacademy.in',
+        }));
+        setJobsList(mapped);
+      }
+    }).catch(() => {
+      // Gracefully maintain JOB_OPPORTUNITIES on network error
+    });
+  }, []);
+
+  const filteredJobs = jobsList.filter((job) => {
     if (filter === 'REMOTE') {
       return job.isRemote;
     }
@@ -91,7 +119,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({
                   : 'text-slate-600 hover:text-[#072B57]'
               }`}
             >
-              All Openings ({JOB_OPPORTUNITIES.length})
+              All Openings ({jobsList.length})
             </button>
 
             <button

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { BLOG_POSTS } from '../data/cbmData';
 import { BlogPost } from '../types';
 import { Calendar, Clock, ArrowRight, User, X } from 'lucide-react';
 import { SMOOTH_EASE_OUT, VIEWPORT_ONCE } from '../lib/animations';
+import { fetchPublicBlogs } from '../services/adminService';
 
 interface BlogSectionProps {
   isStandalonePage?: boolean;
@@ -12,8 +13,32 @@ interface BlogSectionProps {
 export const BlogSection: React.FC<BlogSectionProps> = ({
   isStandalonePage = false,
 }) => {
+  const [postsList, setPostsList] = useState<BlogPost[]>(BLOG_POSTS);
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const shouldReduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    fetchPublicBlogs().then((liveBlogs) => {
+      if (liveBlogs && liveBlogs.length > 0) {
+        const mapped: BlogPost[] = liveBlogs.map((b) => ({
+          id: b.id,
+          title: b.title,
+          excerpt: b.excerpt,
+          content: b.content,
+          author: {
+            name: b.author,
+            role: (b as any).author_role || 'Faculty & Practitioner',
+          },
+          date: b.published_at ? new Date(b.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recently Published',
+          readTime: b.read_time || '5 min read',
+          category: b.category,
+          imageUrl: b.image_url || 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800',
+          tags: ['Digital Marketing', b.category],
+        }));
+        setPostsList(mapped);
+      }
+    }).catch(() => {});
+  }, []);
 
   return (
     <section id="blogs" className="relative overflow-hidden pt-12 sm:pt-16 pb-12 sm:pb-16 bg-white border-b border-slate-100">
@@ -66,7 +91,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
 
         {/* Responsive 3-Column Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-          {BLOG_POSTS.map((post, index) => (
+          {postsList.map((post, index) => (
             <motion.article
               key={post.id}
               initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}

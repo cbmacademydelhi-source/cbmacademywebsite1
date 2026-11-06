@@ -141,6 +141,27 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
         );
       }
 
+      // Also register into Admin approval queue with status: 'pending'
+      try {
+        await fetch('/api/admin/jobs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: form.jobTitle,
+            company: form.companyName,
+            location: form.location,
+            type: form.workType,
+            salary: form.salary || 'Best in Industry',
+            experience: form.experience || 'Not specified',
+            description: form.jobDescription,
+            requirements: form.skills ? form.skills.split(',').map((s) => s.trim()).filter(Boolean) : ['Digital Marketing'],
+            status: 'pending',
+          }),
+        });
+      } catch (e) {
+        // Non-blocking for the employer
+      }
+
       setSuccess(true);
       setForm(initialForm);
     } catch (submitError) {

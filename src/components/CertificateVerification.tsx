@@ -22,6 +22,7 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { CbmLogo } from './CbmLogo';
+import { verifyCertificatePublic } from '../services/adminService';
 
 export const CertificateVerification: React.FC = () => {
   const [certId, setCertId] = useState('');
@@ -37,7 +38,7 @@ export const CertificateVerification: React.FC = () => {
     found: false,
   });
 
-  const performVerification = (rawId: string) => {
+  const performVerification = async (rawId: string) => {
     const cleanId = rawId.trim().toUpperCase();
 
     if (!cleanId) {
@@ -51,6 +52,48 @@ export const CertificateVerification: React.FC = () => {
 
     setLoading(true);
     setVerificationResult({ searched: false, found: false });
+
+    // 1. Try Live Supabase Certificate registry first
+    try {
+      const liveCert = await verifyCertificatePublic(cleanId);
+      if (liveCert) {
+        if (liveCert.status === 'revoked') {
+          setLoading(false);
+          setVerificationResult({
+            searched: true,
+            found: false,
+            errorMsg: `Certificate ID "${cleanId}" was revoked or is no longer valid. Contact office@cbmacademy.in for details.`,
+          });
+          return;
+        }
+
+        setLoading(false);
+        setVerificationResult({
+          searched: true,
+          found: true,
+          data: {
+            id: liveCert.id,
+            studentName: liveCert.student_name,
+            courseName: liveCert.course_name,
+            issueDate: liveCert.issue_date,
+            completionDate: liveCert.completion_date || liveCert.issue_date,
+            grade: liveCert.grade || 'Distinction (A+)',
+            credentialUrl: liveCert.credential_url || `https://cbmacademy.in/certificate#${liveCert.id}`,
+            status: 'VERIFIED',
+            skillsVerified: [
+              'AI-Powered SEO & GEO',
+              'Meta Ads & Google Ads PMax',
+              'GA4 Performance Tracking',
+              'Generative AI Creative Design',
+              'WhatsApp & Lead Automation',
+            ],
+            instructor: 'CBM Academic Board & Directorate',
+            qrCodeSeed: `CBM-SECURE-AUTH-${liveCert.id}`,
+          },
+        });
+        return;
+      }
+    } catch {}
 
     // Simulate real-time cryptographic registry lookup
     setTimeout(() => {

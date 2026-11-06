@@ -224,6 +224,9 @@ export default function App() {
       if (!candidate || candidate === 'home') {
         setCurrentPage('home');
         applyPageSeo('home');
+      } else if (candidate.startsWith('admin') || candidateRaw.startsWith('admin')) {
+        setCurrentPage('admin');
+        applyPageSeo('admin');
       } else if (validPages.includes(candidate)) {
         setCurrentPage(candidate);
         applyPageSeo(candidate);
