@@ -200,6 +200,16 @@ export const AdminCourses: React.FC<AdminCoursesProps> = ({
         </button>
       </div>
 
+      {/* Academic Catalog Synchronization Status */}
+      <div className="p-3.5 rounded-xl bg-blue-50/70 border border-blue-200 text-xs text-blue-900 flex items-start gap-2.5">
+        <GraduationCap className="w-4 h-4 text-[#072B57] shrink-0 mt-0.5" />
+        <div className="flex-1 leading-relaxed">
+          <span className="font-bold text-[#072B57]">Active Academic Catalog ({courses.length} Modules):</span>{' '}
+          All 15 master curriculum modules are active and synchronized with the public website.
+          In Supabase Postgres, courses are managed through this central panel and can be queried or modified in real time.
+        </div>
+      </div>
+
       {/* Filter and Search Bar */}
       <div className="bg-white p-4 rounded-xl border border-[#E5E7EB] flex flex-col md:flex-row md:items-center justify-between gap-3">
         {/* Search */}

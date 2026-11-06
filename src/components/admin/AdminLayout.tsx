@@ -19,6 +19,7 @@ import {
   Bell,
   Database,
   ChevronRight,
+  AlertCircle,
 } from 'lucide-react';
 import {
   AdminStats,
@@ -37,6 +38,7 @@ import {
   fetchAdminEnquiries,
   getAdminUser,
   logoutAdmin,
+  lastAdminApiError,
 } from '../../services/adminService';
 
 import { AdminDashboardOverview } from './AdminDashboardOverview';
@@ -76,27 +78,70 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<AdminTab>(initialTab);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [dbError, setDbError] = useState<string | null>(null);
 
-  // Loaded data
-  const [stats, setStats] = useState<AdminStats | null>(null);
-  const [courses, setCourses] = useState<AdminCourse[]>([]);
-  const [jobs, setJobs] = useState<AdminJob[]>([]);
-  const [blogs, setBlogs] = useState<AdminBlog[]>([]);
-  const [certificates, setCertificates] = useState<AdminCertificate[]>([]);
-  const [applications, setApplications] = useState<AdminApplication[]>([]);
+  // Loaded data with persistence cache
+  const [stats, setStats] = useState<AdminStats | null>(() => {
+    try {
+      const raw = localStorage.getItem('cbm_admin_cached_stats');
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [courses, setCourses] = useState<AdminCourse[]>(() => {
+    try {
+      const raw = localStorage.getItem('cbm_admin_cached_courses');
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [jobs, setJobs] = useState<AdminJob[]>(() => {
+    try {
+      const raw = localStorage.getItem('cbm_admin_cached_jobs');
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [blogs, setBlogs] = useState<AdminBlog[]>(() => {
+    try {
+      const raw = localStorage.getItem('cbm_admin_cached_blogs');
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [certificates, setCertificates] = useState<AdminCertificate[]>(() => {
+    try {
+      const raw = localStorage.getItem('cbm_admin_cached_certificates');
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [applications, setApplications] = useState<AdminApplication[]>(() => {
+    try {
+      const raw = localStorage.getItem('cbm_admin_cached_applications');
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
   const [enquiries, setEnquiries] = useState<AdminEnquiry[]>([]);
+
+  // Only show full loader if no initial data is present in memory or cache
+  const [loading, setLoading] = useState<boolean>(() => {
+    return courses.length === 0 && applications.length === 0 && jobs.length === 0;
+  });
 
   const user = getAdminUser();
 
   const loadAllData = useCallback(async () => {
     setRefreshing(true);
-
-    // Guaranteed safety timeout: Never block the UI for more than 1.5 seconds
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1500);
+    setDbError(null);
 
     try {
       const [sRes, cRes, jRes, bRes, certsRes, appsRes, enqsRes] = await Promise.allSettled([
@@ -109,17 +154,56 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
         fetchAdminEnquiries(),
       ]);
 
-      if (sRes.status === 'fulfilled' && sRes.value) setStats(sRes.value);
-      if (cRes.status === 'fulfilled' && Array.isArray(cRes.value)) setCourses(cRes.value);
-      if (jRes.status === 'fulfilled' && Array.isArray(jRes.value)) setJobs(jRes.value);
-      if (bRes.status === 'fulfilled' && Array.isArray(bRes.value)) setBlogs(bRes.value);
-      if (certsRes.status === 'fulfilled' && Array.isArray(certsRes.value)) setCertificates(certsRes.value);
-      if (appsRes.status === 'fulfilled' && Array.isArray(appsRes.value)) setApplications(appsRes.value);
-      if (enqsRes.status === 'fulfilled' && Array.isArray(enqsRes.value)) setEnquiries(enqsRes.value);
-    } catch (err) {
+      if (sRes.status === 'fulfilled' && sRes.value) {
+        setStats(sRes.value);
+        try {
+          localStorage.setItem('cbm_admin_cached_stats', JSON.stringify(sRes.value));
+        } catch {}
+        if (sRes.value.dbNotice?.message) {
+          setDbError(`Supabase Schema Notice [${sRes.value.dbNotice.table}]: ${sRes.value.dbNotice.message}`);
+        }
+      }
+      if (cRes.status === 'fulfilled' && Array.isArray(cRes.value) && cRes.value.length > 0) {
+        setCourses(cRes.value);
+        try {
+          localStorage.setItem('cbm_admin_cached_courses', JSON.stringify(cRes.value));
+        } catch {}
+      }
+      if (jRes.status === 'fulfilled' && Array.isArray(jRes.value) && jRes.value.length > 0) {
+        setJobs(jRes.value);
+        try {
+          localStorage.setItem('cbm_admin_cached_jobs', JSON.stringify(jRes.value));
+        } catch {}
+      }
+      if (bRes.status === 'fulfilled' && Array.isArray(bRes.value) && bRes.value.length > 0) {
+        setBlogs(bRes.value);
+        try {
+          localStorage.setItem('cbm_admin_cached_blogs', JSON.stringify(bRes.value));
+        } catch {}
+      }
+      if (certsRes.status === 'fulfilled' && Array.isArray(certsRes.value) && certsRes.value.length > 0) {
+        setCertificates(certsRes.value);
+        try {
+          localStorage.setItem('cbm_admin_cached_certificates', JSON.stringify(certsRes.value));
+        } catch {}
+      }
+      if (appsRes.status === 'fulfilled' && Array.isArray(appsRes.value) && appsRes.value.length > 0) {
+        setApplications(appsRes.value);
+        try {
+          localStorage.setItem('cbm_admin_cached_applications', JSON.stringify(appsRes.value));
+        } catch {}
+      }
+      if (enqsRes.status === 'fulfilled' && Array.isArray(enqsRes.value)) {
+        setEnquiries(enqsRes.value);
+      }
+
+      if (lastAdminApiError) {
+        setDbError(lastAdminApiError);
+      }
+    } catch (err: any) {
+      setDbError(err?.message || 'Error communicating with database');
       console.warn('[Admin] Data loading notice:', err);
     } finally {
-      clearTimeout(timer);
       setLoading(false);
       setRefreshing(false);
     }
@@ -422,6 +506,25 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
 
           {/* View Container */}
           <div className="p-6 max-w-7xl w-full mx-auto">
+            {dbError && (
+              <div className="mb-5 p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start justify-between gap-3 shadow-xs">
+                <div className="flex items-start gap-2.5">
+                  <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                  <div>
+                    <div className="font-bold text-slate-900">Database Schema & Query Status</div>
+                    <div className="text-slate-600 mt-0.5">{dbError}</div>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setDbError(null)}
+                  className="text-slate-400 hover:text-slate-700 text-xs font-bold px-1 cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
             {loading ? (
               <div className="py-20 flex flex-col items-center justify-center">
                 <RefreshCw className="w-8 h-8 text-[#FF6B00] animate-spin mb-3" />

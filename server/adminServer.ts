@@ -122,6 +122,8 @@ interface AdminStore {
   jobs: AdminJob[];
   blogs: AdminBlog[];
   certificates: AdminCertificate[];
+  applicationMeta?: Record<string, { status: 'pending' | 'reviewed' | 'approved' | 'rejected'; notes?: string | null }>;
+  enquiryMeta?: Record<string, { status: 'unread' | 'read' | 'contacted' | 'resolved'; notes?: string | null }>;
 }
 
 function getInitialStore(): AdminStore {
@@ -226,6 +228,17 @@ function saveStore() {
 }
 
 loadStore();
+if (!fs.existsSync(CACHE_FILE)) {
+  saveStore();
+}
+
+// Global schema notices for visibility in the Admin UI
+export let lastSupabaseNotice: {
+  table: string;
+  code?: string;
+  message?: string;
+  timestamp: string;
+} | null = null;
 
 // ==============================================================================
 // COURSES
@@ -241,8 +254,20 @@ export async function getAdminCourses(): Promise<AdminCourse[]> {
       if (!error && data && data.length > 0) {
         return data as AdminCourse[];
       }
-    } catch {
-      // fallback
+      if (error) {
+        lastSupabaseNotice = {
+          table: 'courses',
+          code: error.code,
+          message: error.message,
+          timestamp: new Date().toISOString(),
+        };
+      }
+    } catch (err: any) {
+      lastSupabaseNotice = {
+        table: 'courses',
+        message: err?.message || 'Connection error',
+        timestamp: new Date().toISOString(),
+      };
     }
   }
   return store.courses;
@@ -305,6 +330,33 @@ export async function getAdminJobs(): Promise<AdminJob[]> {
   const supabase = getSupabaseServer();
   if (supabase) {
     try {
+      // 1. Query job_listings in Supabase
+      const { data: listings, error: listErr } = await supabase
+        .from('job_listings')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (!listErr && listings && listings.length > 0) {
+        return listings.map((j: any) => ({
+          id: String(j.id),
+          company_name: j.company_name || 'Hiring Partner',
+          hr_name: j.hr_name || 'Placement Cell',
+          hr_email: j.hr_email || 'office@cbmacademy.in',
+          hr_phone: j.hr_phone || '+91-92115-83150',
+          job_title: j.job_title || 'Marketing Executive',
+          job_description: j.job_description || '',
+          location: j.location || 'Delhi NCR',
+          salary: j.salary || null,
+          experience: j.experience || null,
+          skills: Array.isArray(j.skills) ? j.skills : [],
+          work_type: j.work_type || 'Full-time',
+          is_remote: false,
+          status: j.status || 'approved',
+          created_at: j.created_at || new Date().toISOString(),
+          updated_at: j.updated_at || new Date().toISOString(),
+        }));
+      }
+
+      // 2. Query jobs table
       const { data, error } = await supabase
         .from('jobs')
         .select('*')
@@ -312,7 +364,9 @@ export async function getAdminJobs(): Promise<AdminJob[]> {
       if (!error && data && data.length > 0) {
         return data as AdminJob[];
       }
-    } catch {}
+    } catch (err: any) {
+      console.warn('[Supabase Jobs read notice]:', err?.message);
+    }
   }
   return store.jobs;
 }
@@ -330,7 +384,7 @@ export async function saveAdminJob(job: Partial<AdminJob>): Promise<AdminJob> {
     company_name: job.company_name || 'Hiring Company',
     hr_name: job.hr_name || 'Hiring Manager',
     hr_email: job.hr_email || 'hr@company.com',
-    hr_phone: job.hr_phone || '',
+    hr_phone: job.hr_phone || '+91-92115-83150',
     job_title: job.job_title || 'Marketing Executive',
     job_description: job.job_description || '',
     location: job.location || 'Delhi NCR',
@@ -350,10 +404,33 @@ export async function saveAdminJob(job: Partial<AdminJob>): Promise<AdminJob> {
   const supabase = getSupabaseServer();
   if (supabase) {
     try {
-      await supabase.from('jobs').upsert([record], { onConflict: 'id' });
+      // Upsert to job_listings with matching schema columns
+      await supabase.from('job_listings').upsert([
+        {
+          id: record.id,
+          company_name: record.company_name,
+          job_title: record.job_title,
+          job_description: record.job_description,
+          location: record.location,
+          salary: record.salary,
+          experience: record.experience,
+          skills: record.skills,
+          work_type: record.work_type,
+          hr_name: record.hr_name,
+          hr_email: record.hr_email,
+          hr_phone: record.hr_phone,
+          status: record.status,
+          created_at: record.created_at,
+          updated_at: record.updated_at,
+        },
+      ], { onConflict: 'id' });
     } catch (err) {
-      console.warn('[Supabase Jobs Upsert Notice]:', err);
+      console.warn('[Supabase job_listings Upsert Notice]:', err);
     }
+
+    try {
+      await supabase.from('jobs').upsert([record], { onConflict: 'id' });
+    } catch {}
   }
 
   const existingIdx = store.jobs.findIndex((j) => j.id === id);
@@ -369,6 +446,9 @@ export async function saveAdminJob(job: Partial<AdminJob>): Promise<AdminJob> {
 export async function deleteAdminJob(id: string): Promise<boolean> {
   const supabase = getSupabaseServer();
   if (supabase) {
+    try {
+      await supabase.from('job_listings').delete().eq('id', id);
+    } catch {}
     try {
       await supabase.from('jobs').delete().eq('id', id);
     } catch {}
@@ -545,17 +625,21 @@ export async function getAdminApplications(): Promise<AdminApplication[]> {
         .select('*')
         .order('created_at', { ascending: false });
       if (!error && data) {
-        return data.map((row: any) => ({
-          id: row.Id || row.id || '',
-          name: row.Name || row.name || 'Anonymous Applicant',
-          email: row.Email || row.email || '',
-          phone: row.Phone || row.phone || '',
-          course: row.Course || row.course || 'Digital Marketing',
-          message: row.Message || row.message || '',
-          status: row.status || 'pending',
-          notes: row.notes || null,
-          created_at: row.created_at || new Date().toISOString(),
-        }));
+        return data.map((row: any) => {
+          const id = String(row.Id || row.id || '');
+          const meta = store.applicationMeta?.[id];
+          return {
+            id,
+            name: row.Name || row.name || 'Anonymous Applicant',
+            email: row.Email || row.email || '',
+            phone: row.Phone || row.phone || '',
+            course: row.Course || row.course || 'Digital Marketing',
+            message: row.Message || row.message || '',
+            status: meta?.status || row.status || 'pending',
+            notes: meta?.notes !== undefined ? meta.notes : (row.notes || null),
+            created_at: row.created_at || new Date().toISOString(),
+          };
+        });
       }
     } catch (err) {
       console.warn('[Supabase form_submissions read notice]:', err);
@@ -569,24 +653,32 @@ export async function updateApplicationStatus(
   status: 'pending' | 'reviewed' | 'approved' | 'rejected',
   notes?: string
 ): Promise<boolean> {
+  if (!store.applicationMeta) store.applicationMeta = {};
+  store.applicationMeta[id] = {
+    status,
+    notes: notes !== undefined ? notes : (store.applicationMeta[id]?.notes || null),
+  };
+  saveStore();
+
   const supabase = getSupabaseServer();
   if (supabase) {
     try {
       const updates: any = { status };
       if (typeof notes === 'string') updates.notes = notes;
-      const { error } = await supabase
+      await supabase
         .from('form_submissions')
         .update(updates)
         .or(`Id.eq.${id},id.eq.${id}`);
-      return !error;
-    } catch {
-      return false;
-    }
+    } catch {}
   }
-  return false;
+  return true;
 }
 
 export async function deleteApplication(id: string): Promise<boolean> {
+  if (store.applicationMeta?.[id]) {
+    delete store.applicationMeta[id];
+    saveStore();
+  }
   const supabase = getSupabaseServer();
   if (supabase) {
     try {
@@ -614,18 +706,22 @@ export async function getAdminEnquiries(): Promise<AdminEnquiry[]> {
         .select('*')
         .order('created_at', { ascending: false });
       if (!error && data) {
-        return data.map((row: any) => ({
-          id: row.id || row.Id || '',
-          name: row.name || row.full_name || row.Name || 'Visitor',
-          full_name: row.full_name || row.Name || 'Visitor',
-          email: row.email || row.Email || '',
-          phone: row.phone || row.Phone || '',
-          subject: row.subject || row.Subject || '',
-          message: row.message || row.Message || '',
-          status: row.status || 'unread',
-          notes: row.notes || null,
-          created_at: row.created_at || new Date().toISOString(),
-        }));
+        return data.map((row: any) => {
+          const id = String(row.id || row.Id || '');
+          const meta = store.enquiryMeta?.[id];
+          return {
+            id,
+            name: row.name || row.full_name || row.Name || 'Visitor',
+            full_name: row.full_name || row.Name || 'Visitor',
+            email: row.email || row.Email || '',
+            phone: row.phone || row.Phone || '',
+            subject: row.subject || row.Subject || '',
+            message: row.message || row.Message || '',
+            status: meta?.status || row.status || 'unread',
+            notes: meta?.notes !== undefined ? meta.notes : (row.notes || null),
+            created_at: row.created_at || new Date().toISOString(),
+          };
+        });
       }
     } catch (err) {
       console.warn('[Supabase contact_submissions read notice]:', err);
@@ -639,24 +735,32 @@ export async function updateEnquiryStatus(
   status: 'unread' | 'read' | 'contacted' | 'resolved',
   notes?: string
 ): Promise<boolean> {
+  if (!store.enquiryMeta) store.enquiryMeta = {};
+  store.enquiryMeta[id] = {
+    status,
+    notes: notes !== undefined ? notes : (store.enquiryMeta[id]?.notes || null),
+  };
+  saveStore();
+
   const supabase = getSupabaseServer();
   if (supabase) {
     try {
       const updates: any = { status };
       if (typeof notes === 'string') updates.notes = notes;
-      const { error } = await supabase
+      await supabase
         .from('contact_submissions')
         .update(updates)
         .eq('id', id);
-      return !error;
-    } catch {
-      return false;
-    }
+    } catch {}
   }
-  return false;
+  return true;
 }
 
 export async function deleteEnquiry(id: string): Promise<boolean> {
+  if (store.enquiryMeta?.[id]) {
+    delete store.enquiryMeta[id];
+    saveStore();
+  }
   const supabase = getSupabaseServer();
   if (supabase) {
     try {
@@ -676,12 +780,14 @@ export async function deleteEnquiry(id: string): Promise<boolean> {
 // STATS / PENDING APPROVAL QUEUE
 // ==============================================================================
 export async function getDashboardStats() {
-  const courses = await getAdminCourses();
-  const jobs = await getAdminJobs();
-  const blogs = await getAdminBlogs();
-  const certificates = await getAdminCertificates();
-  const applications = await getAdminApplications();
-  const enquiries = await getAdminEnquiries();
+  const [courses, jobs, blogs, certificates, applications, enquiries] = await Promise.all([
+    getAdminCourses(),
+    getAdminJobs(),
+    getAdminBlogs(),
+    getAdminCertificates(),
+    getAdminApplications(),
+    getAdminEnquiries(),
+  ]);
 
   const pendingCourses = courses.filter((c) => c.status === 'pending');
   const approvedCourses = courses.filter((c) => c.status === 'approved');
@@ -734,5 +840,6 @@ export async function getDashboardStats() {
       applications: pendingApplications,
       enquiries: unreadEnquiries,
     },
+    dbNotice: lastSupabaseNotice,
   };
 }

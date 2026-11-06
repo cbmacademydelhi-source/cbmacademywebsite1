@@ -1,0 +1,584 @@
+{
+  "courses": [
+    {
+      "id": "course-1",
+      "title": "Digital Marketing Foundations",
+      "slug": "digital-marketing-foundations",
+      "category": "Foundational",
+      "duration": "1 Week (8 Hours)",
+      "description": "Marketing fundamentals, customer psychology, branding, buyer journeys, and digital marketing strategy.",
+      "topics": [
+        "Core Marketing Fundamentals & Market Dynamics",
+        "Customer Psychology & Buyer Persona Mapping",
+        "Brand Identity, Positioning & Value Propositions",
+        "Full-Funnel Digital Marketing Architecture"
+      ],
+      "status": "approved",
+      "approved_at": "2026-11-06T12:27:48.849Z",
+      "approved_by": "CBM Academic Board",
+      "created_at": "2026-11-06T12:27:48.849Z",
+      "updated_at": "2026-11-06T12:27:48.849Z"
+    },
+    {
+      "id": "course-2",
+      "title": "AI-Powered Graphic Design & Generative AI",
+      "slug": "ai-powered-graphic-design-generative-ai",
+      "category": "Beginner to Intermediate",
+      "duration": "1 Week (8 Hours)",
+      "description": "AI image generation, Canva, creative design, brand assets, and advertising creatives.",
+      "topics": [
+        "Generative AI Prompt Engineering for Visuals",
+        "Midjourney Commercial Product Art & Concepts",
+        "Canva Pro Automated Asset Workflows",
+        "High-Converting Social & Ad Display Creatives"
+      ],
+      "status": "approved",
+      "approved_at": "2026-11-06T12:27:48.849Z",
+      "approved_by": "CBM Academic Board",
+      "created_at": "2026-11-06T12:27:48.849Z",
+      "updated_at": "2026-11-06T12:27:48.849Z"
+    },
+    {
+      "id": "course-3",
+      "title": "AI Video Production & Content Creation",
+      "slug": "ai-video-production-content-creation",
+      "category": "Intermediate",
+      "duration": "1 Week (8 Hours)",
+      "description": "AI video generation, scripting, Reels, voiceovers, video editing, and short-form content.",
+      "topics": [
+        "AI Video Generation & Prompt Scripting",
+        "Viral Short-Form Reels & TikTok Formats",
+        "ElevenLabs Synthetic Voiceover Pipelines",
+        "Dynamic Subtitles, B-Roll & Fast Video Editing"
+      ],
+      "status": "approved",
+      "approved_at": "2026-11-06T12:27:48.849Z",
+      "approved_by": "CBM Academic Board",
+      "created_at": "2026-11-06T12:27:48.849Z",
+      "updated_at": "2026-11-06T12:27:48.849Z"
+    },
+    {
+      "id": "course-4",
+      "title": "Social Media Strategy & Copywriting",
+      "slug": "social-media-strategy-copywriting",
+      "category": "All Levels",
+      "duration": "1 Week (8 Hours)",
+      "description": "Content calendars, social media growth, engaging captions, hooks, and persuasive marketing copy.",
+      "topics": [
+        "Strategic 30-Day Content Planning & Theming",
+        "Organic Growth on Instagram, LinkedIn & X",
+        "Direct-Response Copywriting Frameworks (AIDA/PAS)",
+        "High-CTR Hooks, Captions & Call-to-Actions"
+      ],
+      "status": "approved",
+      "approved_at": "2026-11-06T12:27:48.849Z",
+      "approved_by": "CBM Academic Board",
+      "created_at": "2026-11-06T12:27:48.849Z",
+      "updated_at": "2026-11-06T12:27:48.849Z"
+    },
+    {
+      "id": "course-5",
+      "title": "Website Development & Conversion Design",
+      "slug": "website-development-conversion-design",
+      "category": "Beginner to Intermediate",
+      "duration": "1 Week (8 Hours)",
+      "description": "WordPress, Elementor, landing pages, responsive design, website forms, and conversion optimisation.",
+      "topics": [
+        "WordPress Installation & Domain/Hosting Setup",
+        "Elementor Pro Drag-and-Drop Page Architecture",
+        "High-Converting Landing Page Layouts & CTAs",
+        "Lead Capture Form Integration & CRO Optimization"
+      ],
+      "status": "approved",
+      "approved_at": "2026-11-06T12:27:48.849Z",
+      "approved_by": "CBM Academic Board",
+      "created_at": "2026-11-06T12:27:48.849Z",
+      "updated_at": "2026-11-06T12:27:48.849Z"
+    },
+    {
+      "id": "course-6",
+      "title": "SEO, GEO & Answer Engine Optimization (AEO)",
+      "slug": "seo-geo-answer-engine-optimization-aeo-",
+      "category": "Intermediate to Advanced",
+      "duration": "1 Week (8 Hours)",
+      "description": "Technical SEO, keyword research, on-page SEO, local SEO, structured data, and AI search visibility.",
+      "topics": [
+        "Technical SEO Audits, Core Web Vitals & Schema",
+        "Semantic Keyword Research & Intent Clustering",
+        "Generative Engine Optimization (GEO) for AI Overviews",
+        "Local SEO & Google Business Profile Domination"
+      ],
+      "status": "approved",
+      "approved_at": "2026-11-06T12:27:48.849Z",
+      "approved_by": "CBM Academic Board",
+      "created_at": "2026-11-06T12:27:48.849Z",
+      "updated_at": "2026-11-06T12:27:48.849Z"
+    },
+    {
+      "id": "course-7",
+      "title": "Performance Marketing & Paid Ads",
+      "slug": "performance-marketing-paid-ads",
+      "category": "Intermediate to Advanced",
+      "duration": "1 Week (10 Hours)",
+      "description": "Meta Ads, Google Ads, audience targeting, retargeting, A/B testing, and campaign optimisation.",
+      "topics": [
+        "Meta Advantage+ Shopping & Custom Audiences",
+        "Google Search Network & Performance Max (PMax)",
+        "Creative Testing Matrices & Iterative Hook Testing",
+        "Budget Pacing, Bid Strategies & ROAS Scaling"
+      ],
+      "status": "approved",
+      "approved_at": "2026-11-06T12:27:48.850Z",
+      "approved_by": "CBM Academic Board",
+      "created_at": "2026-11-06T12:27:48.850Z",
+      "updated_at": "2026-11-06T12:27:48.850Z"
+    },
+    {
+      "id": "course-8",
+      "title": "Marketing Analytics & Performance Tracking",
+      "slug": "marketing-analytics-performance-tracking",
+      "category": "Intermediate",
+      "duration": "1 Week (8 Hours)",
+      "description": "Google Analytics 4, Google Tag Manager, conversion tracking, campaign reporting, and ROI measurement.",
+      "topics": [
+        "GA4 Event-Based Data Models & Custom Events",
+        "Google Tag Manager (GTM) Conversion Triggers",
+        "Meta Conversions API (CAPI) & Pixel Integration",
+        "Automated Executive KPI Dashboards in Looker Studio"
+      ],
+      "status": "approved",
+      "approved_at": "2026-11-06T12:27:48.850Z",
+      "approved_by": "CBM Academic Board",
+      "created_at": "2026-11-06T12:27:48.850Z",
+      "updated_at": "2026-11-06T12:27:48.850Z"
+    },
+    {
+      "id": "course-9",
+      "title": "E-commerce & Online Business Growth",
+      "slug": "e-commerce-online-business-growth",
+      "category": "Intermediate",
+      "duration": "1 Week (8 Hours)",
+      "description": "Online store setup, product listings, e-commerce marketing, shopping campaigns, and customer retention.",
+      "topics": [
+        "Shopify Store Architecture & High-Converting Themes",
+        "Product Page CRO & Catalog Optimization",
+        "Dynamic Product Ads (DPA) & Google Merchant Center",
+        "Customer Retention & Abandoned Checkout Recoveries"
+      ],
+      "status": "approved",
+      "approved_at": "2026-11-06T12:27:48.850Z",
+      "approved_by": "CBM Academic Board",
+      "created_at": "2026-11-06T12:27:48.850Z",
+      "updated_at": "2026-11-06T12:27:48.850Z"
+    },
+    {
+      "id": "course-10",
+      "title": "Email Marketing & Customer Automation",
+      "slug": "email-marketing-customer-automation",
+      "category": "Beginner to Intermediate",
+      "duration": "1 Week (8 Hours)",
+      "description": "Email campaigns, newsletters, automated follow-ups, audience segmentation, and lead nurturing.",
+      "topics": [
+        "High-Converting Lead Magnet Funnel Architecture",
+        "Automated Welcome, Nurture & Promotional Sequences",
+        "Audience RFM Segmentation & Lifecycle Triggers",
+        "Email Deliverability Best Practices (SPF, DKIM, DMARC)"
+      ],
+      "status": "approved",
+      "approved_at": "2026-11-06T12:27:48.850Z",
+      "approved_by": "CBM Academic Board",
+      "created_at": "2026-11-06T12:27:48.850Z",
+      "updated_at": "2026-11-06T12:27:48.850Z"
+    },
+    {
+      "id": "course-11",
+      "title": "WhatsApp Marketing & Lead Generation",
+      "slug": "whatsapp-marketing-lead-generation",
+      "category": "Beginner to Intermediate",
+      "duration": "1 Week (8 Hours)",
+      "description": "WhatsApp Business, customer enquiries, lead follow-ups, broadcast campaigns, and messaging automation.",
+      "topics": [
+        "WhatsApp Business API & Cloud API Setup",
+        "Automated Welcome, FAQ & Conversational Funnels",
+        "Click-to-WhatsApp Paid Ad Campaigns",
+        "Broadcast Messaging & Lead Conversion Sequences"
+      ],
+      "status": "approved",
+      "approved_at": "2026-11-06T12:27:48.850Z",
+      "approved_by": "CBM Academic Board",
+      "created_at": "2026-11-06T12:27:48.850Z",
+      "updated_at": "2026-11-06T12:27:48.850Z"
+    },
+    {
+      "id": "course-12",
+      "title": "AI Automation, Agents & Workflow Design",
+      "slug": "ai-automation-agents-workflow-design",
+      "category": "Intermediate to Advanced",
+      "duration": "1 Week (8 Hours)",
+      "description": "AI tools, chatbots, no-code automation, AI-assisted workflows, and business process automation.",
+      "topics": [
+        "Multi-Step Automated Workflows with Zapier & Webhooks",
+        "Custom GPT & System Prompt Design for Marketing Ops",
+        "Autonomous Lead Research & Data Enrichment Agents",
+        "High-Velocity AI Content & Reporting Workflows"
+      ],
+      "status": "approved",
+      "approved_at": "2026-11-06T12:27:48.850Z",
+      "approved_by": "CBM Academic Board",
+      "created_at": "2026-11-06T12:27:48.850Z",
+      "updated_at": "2026-11-06T12:27:48.850Z"
+    },
+    {
+      "id": "course-13",
+      "title": "CRM, Lead Management & Sales",
+      "slug": "crm-lead-management-sales",
+      "category": "Intermediate",
+      "duration": "1 Week (8 Hours)",
+      "description": "Customer relationship management, lead qualification, sales pipelines, objection handling, and closing techniques.",
+      "topics": [
+        "HubSpot CRM Deal Stages & Pipeline Structuring",
+        "Lead Scoring, Routing & MQL/SQL Qualification",
+        "Automated Follow-Up Tasks & Reminder Sequences",
+        "Sales Closing Strategies & Consultative Pitch Calls"
+      ],
+      "status": "approved",
+      "approved_at": "2026-11-06T12:27:48.850Z",
+      "approved_by": "CBM Academic Board",
+      "created_at": "2026-11-06T12:27:48.850Z",
+      "updated_at": "2026-11-06T12:27:48.850Z"
+    },
+    {
+      "id": "course-14",
+      "title": "Digital Products, Funnels & Online Sales",
+      "slug": "digital-products-funnels-online-sales",
+      "category": "Intermediate",
+      "duration": "1 Week (8 Hours)",
+      "description": "E-books, templates, online courses, digital product marketing, sales funnels, pricing, and upselling.",
+      "topics": [
+        "Digital Product Packaging & Pricing Strategy",
+        "High-Converting Funnel Architecture & Sales Copy",
+        "Checkout Optimization, Order Bumps & Upsell Chains",
+        "Automated Product Delivery & Onboarding Loops"
+      ],
+      "status": "approved",
+      "approved_at": "2026-11-06T12:27:48.850Z",
+      "approved_by": "CBM Academic Board",
+      "created_at": "2026-11-06T12:27:48.850Z",
+      "updated_at": "2026-11-06T12:27:48.850Z"
+    },
+    {
+      "id": "course-15",
+      "title": "Communication, Client Management & Career Readiness",
+      "slug": "communication-client-management-career-readiness",
+      "category": "Career Acceleration",
+      "duration": "2 Weeks (12 Hours)",
+      "description": "Professional communication, client presentations, proposal writing, interview preparation, portfolio building, and workplace readiness.",
+      "topics": [
+        "High-Ticket Freelance Client Acquisition on Upwork & LinkedIn",
+        "Agency Retainer Proposals, Scope Decks & Pricing Models",
+        "Verified Client Case Studies & Portfolio Packaging",
+        "1-on-1 Mock Interviews with Agency Hiring Leads"
+      ],
+      "status": "approved",
+      "approved_at": "2026-11-06T12:27:48.850Z",
+      "approved_by": "CBM Academic Board",
+      "created_at": "2026-11-06T12:27:48.850Z",
+      "updated_at": "2026-11-06T12:27:48.850Z"
+    }
+  ],
+  "jobs": [
+    {
+      "id": "JOB-101",
+      "company_name": "Leading D2C E-Commerce Brand",
+      "hr_name": "Placement Office",
+      "hr_email": "demo.hr.performance@cbmacademy.in",
+      "hr_phone": "+91-92115-83150",
+      "job_title": "Performance Marketing Specialist",
+      "job_description": "Performance Marketing Specialist opportunity in New Delhi (Hybrid). Full practical exposure to performance marketing and brand campaigns.",
+      "location": "New Delhi (Hybrid)",
+      "salary": "₹6.5 - ₹9.5 LPA",
+      "experience": "0-2 Years",
+      "skills": [
+        "Meta Ads Manager",
+        "Google Ads",
+        "CAPI",
+        "ROAS Scaling",
+        "GA4"
+      ],
+      "work_type": "Full-Time",
+      "is_remote": false,
+      "status": "approved",
+      "approved_at": "2026-11-06T12:27:48.850Z",
+      "approved_by": "CBM Placement Directorate",
+      "created_at": "2026-11-06T12:27:48.850Z",
+      "updated_at": "2026-11-06T12:27:48.850Z"
+    },
+    {
+      "id": "JOB-102",
+      "company_name": "Global Digital Agency Partner",
+      "hr_name": "Placement Office",
+      "hr_email": "demo.hr.seo@cbmacademy.in",
+      "hr_phone": "+91-92115-83150",
+      "job_title": "Senior SEO Strategist & Content Lead",
+      "job_description": "Senior SEO Strategist & Content Lead opportunity in Remote (Pan India). Full practical exposure to performance marketing and brand campaigns.",
+      "location": "Remote (Pan India)",
+      "salary": "₹7.0 - ₹11.0 LPA",
+      "experience": "1-3 Years",
+      "skills": [
+        "Semrush",
+        "Technical SEO",
+        "ChatGPT GEO",
+        "GSC",
+        "Looker Studio"
+      ],
+      "work_type": "Full-Time",
+      "is_remote": true,
+      "status": "approved",
+      "approved_at": "2026-11-06T12:27:48.850Z",
+      "approved_by": "CBM Placement Directorate",
+      "created_at": "2026-11-06T12:27:48.850Z",
+      "updated_at": "2026-11-06T12:27:48.850Z"
+    },
+    {
+      "id": "JOB-103",
+      "company_name": "Fast-Growing B2B SaaS Startup",
+      "hr_name": "Placement Office",
+      "hr_email": "demo.hr.growth@cbmacademy.in",
+      "hr_phone": "+91-92115-83150",
+      "job_title": "AI Marketing & Growth Executive",
+      "job_description": "AI Marketing & Growth Executive opportunity in Gurugram / Hybrid. Full practical exposure to performance marketing and brand campaigns.",
+      "location": "Gurugram / Hybrid",
+      "salary": "₹5.5 - ₹8.0 LPA",
+      "experience": "0-1 Year",
+      "skills": [
+        "HubSpot",
+        "Email Flows",
+        "Claude AI",
+        "LinkedIn Inbound",
+        "Funnel Optimization"
+      ],
+      "work_type": "Full-Time",
+      "is_remote": false,
+      "status": "approved",
+      "approved_at": "2026-11-06T12:27:48.850Z",
+      "approved_by": "CBM Placement Directorate",
+      "created_at": "2026-11-06T12:27:48.850Z",
+      "updated_at": "2026-11-06T12:27:48.850Z"
+    },
+    {
+      "id": "JOB-104",
+      "company_name": "Premium Lifestyle Brand",
+      "hr_name": "Placement Office",
+      "hr_email": "demo.hr.social@cbmacademy.in",
+      "hr_phone": "+91-92115-83150",
+      "job_title": "Digital Marketing & Social Media Manager",
+      "job_description": "Digital Marketing & Social Media Manager opportunity in South Delhi / Noida. Full practical exposure to performance marketing and brand campaigns.",
+      "location": "South Delhi / Noida",
+      "salary": "₹5.0 - ₹7.5 LPA",
+      "experience": "0-2 Years",
+      "skills": [
+        "Instagram Reels",
+        "Canva Pro",
+        "Meta Pixel",
+        "Influencer Outreach",
+        "Community Growth"
+      ],
+      "work_type": "Full-Time",
+      "is_remote": false,
+      "status": "approved",
+      "approved_at": "2026-11-06T12:27:48.850Z",
+      "approved_by": "CBM Placement Directorate",
+      "created_at": "2026-11-06T12:27:48.850Z",
+      "updated_at": "2026-11-06T12:27:48.850Z"
+    },
+    {
+      "id": "JOB-105",
+      "company_name": "International Export & FinTech Firm",
+      "hr_name": "Placement Office",
+      "hr_email": "demo.hr.ppc@cbmacademy.in",
+      "hr_phone": "+91-92115-83150",
+      "job_title": "Google Ads & PPC Campaign Analyst",
+      "job_description": "Google Ads & PPC Campaign Analyst opportunity in Remote. Full practical exposure to performance marketing and brand campaigns.",
+      "location": "Remote",
+      "salary": "₹8.0 - ₹13.0 LPA",
+      "experience": "1-3 Years",
+      "skills": [
+        "PMax Campaigns",
+        "Merchant Center",
+        "Smart Bidding",
+        "CRO"
+      ],
+      "work_type": "Full-Time",
+      "is_remote": true,
+      "status": "approved",
+      "approved_at": "2026-11-06T12:27:48.850Z",
+      "approved_by": "CBM Placement Directorate",
+      "created_at": "2026-11-06T12:27:48.850Z",
+      "updated_at": "2026-11-06T12:27:48.850Z"
+    },
+    {
+      "id": "JOB-106",
+      "company_name": "Top Tier Advertising Network",
+      "hr_name": "Placement Office",
+      "hr_email": "demo.hr.junior@cbmacademy.in",
+      "hr_phone": "+91-92115-83150",
+      "job_title": "Junior Growth Associate",
+      "job_description": "Junior Growth Associate opportunity in New Delhi / Connaught Place. Full practical exposure to performance marketing and brand campaigns.",
+      "location": "New Delhi / Connaught Place",
+      "salary": "₹3.6 - ₹5.0 LPA",
+      "experience": "Fresher / Entry Level",
+      "skills": [
+        "Digital Marketing",
+        "Keyword Research",
+        "Ad Copywriting",
+        "Analytics"
+      ],
+      "work_type": "Full-Time / PPO",
+      "is_remote": false,
+      "status": "approved",
+      "approved_at": "2026-11-06T12:27:48.850Z",
+      "approved_by": "CBM Placement Directorate",
+      "created_at": "2026-11-06T12:27:48.850Z",
+      "updated_at": "2026-11-06T12:27:48.850Z"
+    }
+  ],
+  "blogs": [
+    {
+      "id": "blog-1",
+      "title": "How Generative Engine Optimization (GEO) is Replacing Traditional SEO in 2026",
+      "slug": "blog-1",
+      "excerpt": "Why Google SGE and AI chat engines prioritize structured brand authority over keyword density in 2026.",
+      "content": "As AI search engines like Gemini, ChatGPT Search, and Perplexity ingest the web, rankings shift from keyword repetition to Generative Engine Optimization (GEO). Brands providing structured schemas, direct data points, and expert citations win AI search citations.",
+      "category": "SEO & AI Search",
+      "author": "Er. Rajesh Varma",
+      "author_role": "Director of Academics",
+      "read_time": "4 min read",
+      "image_url": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop",
+      "status": "approved",
+      "published_at": "Feb 15, 2026",
+      "created_at": "2026-11-06T12:27:48.850Z",
+      "updated_at": "2026-11-06T12:27:48.850Z"
+    },
+    {
+      "id": "blog-2",
+      "title": "Scaling Meta Ads to 4.8x ROAS Using Server-Side CAPI & Advantage+ AI",
+      "slug": "blog-2",
+      "excerpt": "How D2C brands navigate tracking changes and scale ad spend with server-side CAPI and Advantage+ campaigns.",
+      "content": "Client-side pixels can lose up to 35% of purchase events. Implementing Meta Conversions API (CAPI) through server-side tracking restores signal fidelity and allows Advantage+ algorithms to locate high-intent buyers with precision.",
+      "category": "Performance Marketing",
+      "author": "Pooja Kapoor",
+      "author_role": "Performance Lead",
+      "read_time": "5 min read",
+      "image_url": "https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=800&auto=format&fit=crop",
+      "status": "approved",
+      "published_at": "Feb 02, 2026",
+      "created_at": "2026-11-06T12:27:48.850Z",
+      "updated_at": "2026-11-06T12:27:48.850Z"
+    },
+    {
+      "id": "blog-3",
+      "title": "The Modern Digital Marketer’s AI Stack: From ChatGPT to Midjourney & GA4",
+      "slug": "blog-3",
+      "excerpt": "How top growth marketers save 20+ hours weekly with AI copy generation, visual design, and GA4 automation.",
+      "content": "Marketers leveraging AI tools produce higher output with faster iteration. Combining prompt engineering for copywriting, Midjourney for creative prototyping, and Looker Studio for analytics supercharges campaign delivery.",
+      "category": "AI Tools & Productivity",
+      "author": "Vikram Singh",
+      "author_role": "Head of AI Innovation",
+      "read_time": "4 min read",
+      "image_url": "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=800&auto=format&fit=crop",
+      "status": "approved",
+      "published_at": "Jan 24, 2026",
+      "created_at": "2026-11-06T12:27:48.850Z",
+      "updated_at": "2026-11-06T12:27:48.850Z"
+    }
+  ],
+  "certificates": [
+    {
+      "id": "CBM-2025-8841",
+      "student_name": "Aarav Sharma",
+      "course_name": "Master in AI-Powered Digital Marketing & Performance Growth",
+      "issue_date": "January 18, 2025",
+      "completion_date": "January 15, 2025",
+      "grade": "Grade A+ (Distinction - 94%)",
+      "status": "active",
+      "skills_verified": [
+        "AI SEO Strategy",
+        "Meta Ads CAPI",
+        "Google Ads PMax",
+        "GA4 Analytics",
+        "HubSpot CRM"
+      ],
+      "instructor": "Er. Rajesh Varma (Lead Faculty)",
+      "qr_code_seed": "CBM-SECURE-AUTH-8841",
+      "credential_url": "https://cbmacademy.in/verify/CBM-2025-8841",
+      "created_at": "2026-11-06T12:27:48.850Z",
+      "updated_at": "2026-11-06T12:27:48.850Z"
+    },
+    {
+      "id": "CBM-2024-9102",
+      "student_name": "Priya Mehra",
+      "course_name": "Executive Certification in Performance Marketing & ROI Analytics",
+      "issue_date": "November 28, 2024",
+      "completion_date": "November 25, 2024",
+      "grade": "Grade A+ (Distinction - 96%)",
+      "status": "active",
+      "skills_verified": [
+        "Meta Ads Manager",
+        "Budget Scaling",
+        "Creative Testing",
+        "Looker Studio"
+      ],
+      "instructor": "Pooja Kapoor (Performance Lead)",
+      "qr_code_seed": "CBM-SECURE-AUTH-9102",
+      "credential_url": "https://cbmacademy.in/verify/CBM-2024-9102",
+      "created_at": "2026-11-06T12:27:48.850Z",
+      "updated_at": "2026-11-06T12:27:48.850Z"
+    },
+    {
+      "id": "CBM-2025-1034",
+      "student_name": "Rohan Verma",
+      "course_name": "Advanced Search Engine Optimization & AI Content Systems",
+      "issue_date": "February 10, 2025",
+      "completion_date": "February 05, 2025",
+      "grade": "Grade A (91%)",
+      "status": "active",
+      "skills_verified": [
+        "Technical SEO",
+        "GEO (Generative Engine Optimization)",
+        "Semrush",
+        "ChatGPT Workflows"
+      ],
+      "instructor": "Vikram Singh (Head of SEO)",
+      "qr_code_seed": "CBM-SECURE-AUTH-1034",
+      "credential_url": "https://cbmacademy.in/verify/CBM-2025-1034",
+      "created_at": "2026-11-06T12:27:48.850Z",
+      "updated_at": "2026-11-06T12:27:48.850Z"
+    },
+    {
+      "id": "CBM-2025-5520",
+      "student_name": "Ananya Deshmukh",
+      "course_name": "Master in AI-Powered Digital Marketing & Performance Growth",
+      "issue_date": "March 02, 2025",
+      "completion_date": "February 28, 2025",
+      "grade": "Grade A+ (Distinction - 98%)",
+      "status": "active",
+      "skills_verified": [
+        "Full-Stack Digital Marketing",
+        "Midjourney Creatives",
+        "E-Commerce Growth",
+        "Email CRM"
+      ],
+      "instructor": "Er. Rajesh Varma (Lead Faculty)",
+      "qr_code_seed": "CBM-SECURE-AUTH-5520",
+      "credential_url": "https://cbmacademy.in/verify/CBM-2025-5520",
+      "created_at": "2026-11-06T12:27:48.850Z",
+      "updated_at": "2026-11-06T12:27:48.850Z"
+    }
+  ],
+  "applicationMeta": {
+    "2882f19b-b188-4d50-8223-d155d0a8ea82": {
+      "status": "reviewed",
+      "notes": "Verified applicant details"
+    }
+  }
+}

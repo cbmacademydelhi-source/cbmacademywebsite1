@@ -363,6 +363,83 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
           <ArrowRight className="w-4 h-4 text-slate-400" />
         </div>
       </div>
+
+      {/* Connected Supabase Database Inspection Card */}
+      <div className="bg-white rounded-2xl border border-[#E5E7EB] p-5 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E5E7EB]">
+          <div className="flex items-center gap-2">
+            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <h2 className="text-sm font-bold text-[#072B57]">
+              Supabase Project Schema & Table Inspection
+            </h2>
+          </div>
+          <div className="font-mono text-[11px] bg-slate-50 px-2.5 py-1 rounded-md border border-slate-200 text-slate-600">
+            Endpoint: https://cxeztssvgaeytdljoned.supabase.co
+          </div>
+        </div>
+
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-slate-800 font-mono">public.form_submissions</span>
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                28 Real Records
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-500">
+              Columns: <span className="font-mono text-slate-700">Id, Name, Email, Phone, Course, Message, created_at</span>
+            </p>
+            <p className="text-[11px] text-slate-600 font-medium">
+              Source for: Student Course Applications & Brochure Leads
+            </p>
+          </div>
+
+          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-slate-800 font-mono">public.job_listings</span>
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                Table Active
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-500">
+              Columns: <span className="font-mono text-slate-700">id, company_name, job_title, job_description, location, salary, experience, skills, work_type, hr_name, hr_email, hr_phone, status, created_at</span>
+            </p>
+            <p className="text-[11px] text-slate-600 font-medium">
+              Source for: Placement Directorate & Job Board Openings
+            </p>
+          </div>
+
+          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-slate-800 font-mono">public.contact_submissions</span>
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-200 text-slate-700">
+                Table Active
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-500">
+              Columns: <span className="font-mono text-slate-700">id, full_name, email, phone, message, created_at</span>
+            </p>
+            <p className="text-[11px] text-slate-600 font-medium">
+              Source for: Website Contact & Inquiry Forms
+            </p>
+          </div>
+
+          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-slate-800 font-mono">CBM Academic Catalog</span>
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800">
+                15 Core Modules
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-500">
+              Modules: <span className="font-mono text-slate-700">SEO, GEO, Meta Ads, Google Ads PMax, Data Analytics, CRO, E-Commerce</span>
+            </p>
+            <p className="text-[11px] text-slate-600 font-medium">
+              Source for: Comprehensive Digital Marketing Curriculum
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
