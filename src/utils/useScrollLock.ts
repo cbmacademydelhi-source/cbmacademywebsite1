@@ -2,12 +2,14 @@ import { useEffect } from 'react';
 
 /**
  * Global reference count for active scroll locks.
- * Ensures that if multiple popups, modals, or banners are open simultaneously,
- * the background page scroll remains locked until the last popup closes.
+ * Completely disables scrolling on the background webpage when any popup/modal/banner is open.
+ * Restores normal page scrolling when the popup closes.
  */
 let scrollLockCount = 0;
 let previousBodyOverflow = '';
 let previousHtmlOverflow = '';
+let previousBodyOverscroll = '';
+let previousHtmlOverscroll = '';
 
 export function lockScroll() {
   if (typeof document === 'undefined') return;
@@ -15,10 +17,14 @@ export function lockScroll() {
   if (scrollLockCount === 0) {
     previousBodyOverflow = document.body.style.overflow;
     previousHtmlOverflow = document.documentElement.style.overflow;
+    previousBodyOverscroll = document.body.style.overscrollBehavior;
+    previousHtmlOverscroll = document.documentElement.style.overscrollBehavior;
 
-    // Prevent background page from scrolling
+    // Completely disable scrolling on background page
     document.body.style.overflow = 'hidden';
     document.documentElement.style.overflow = 'hidden';
+    document.body.style.overscrollBehavior = 'contain';
+    document.documentElement.style.overscrollBehavior = 'contain';
   }
   scrollLockCount++;
 }
@@ -28,14 +34,16 @@ export function unlockScroll() {
 
   scrollLockCount = Math.max(0, scrollLockCount - 1);
   if (scrollLockCount === 0) {
-    // Restore page scrolling when the popup closes
+    // Restore normal page scrolling
     document.body.style.overflow = previousBodyOverflow || '';
     document.documentElement.style.overflow = previousHtmlOverflow || '';
+    document.body.style.overscrollBehavior = previousBodyOverscroll || '';
+    document.documentElement.style.overscrollBehavior = previousHtmlOverscroll || '';
   }
 }
 
 /**
- * React hook to lock background page scrolling when a popup, modal, or banner is open.
+ * React hook to completely lock background page scrolling when a popup or banner is open.
  * Only the popup itself can scroll if its content requires scrolling.
  * Page scrolling is restored automatically when the popup closes or unmounts.
  */

@@ -4,11 +4,33 @@ import { Webinar } from '../../types';
 import { useScrollLock } from '../../utils/useScrollLock';
 
 interface WebinarPromoPopupProps {
-  upcomingWebinar: Webinar | null;
+  upcomingWebinar?: Webinar | null;
   onRegister: (webinar: Webinar) => void;
 }
 
-const POPUP_SESSION_KEY = 'cbm_webinar_popup_shown_v1';
+// The original featured webinar content exactly as it was
+export const ORIGINAL_POPUP_WEBINAR: Webinar = {
+  id: 'webinar-ai-tools-2026',
+  title: 'AI Tools Every Digital Marketer Should Know in 2026',
+  description:
+    'Learn how modern AI tools like ChatGPT, Claude, and Midjourney can automate marketing workflows and boost campaign ROI.',
+  posterUrl:
+    'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80',
+  type: 'free',
+  price: 'FREE',
+  date: 'Sat, Oct 24, 2026',
+  time: '6:00 PM IST',
+  duration: '60 mins',
+  host: 'CBM Academy Faculty',
+  whatYouWillLearn: [
+    'Prompt engineering frameworks tailored for performance marketing',
+    'Using ChatGPT & Claude for high-converting marketing copywriting',
+    'AI image and creative asset workflows using Midjourney & Ideogram',
+    'Automating audience segmentation and competitive research with AI',
+  ],
+  status: 'published',
+  createdAt: '2026-10-01T10:00:00.000Z',
+};
 
 function parseDateBadge(dateStr: string) {
   const parts = dateStr.trim().split(' ');
@@ -18,7 +40,7 @@ function parseDateBadge(dateStr: string) {
       month: parts[1].slice(0, 3).toUpperCase(),
     };
   }
-  return { day: 'LIVE', month: 'SESSION' };
+  return { day: '24', month: 'OCT' };
 }
 
 export const WebinarPromoPopup: React.FC<WebinarPromoPopupProps> = ({
@@ -26,50 +48,40 @@ export const WebinarPromoPopup: React.FC<WebinarPromoPopupProps> = ({
   onRegister,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+
+  // Completely disable scrolling on background page while popup is open
   useScrollLock(isOpen);
 
+  // The active webinar: use passed webinar or restore original popup webinar
+  const activeWebinar = upcomingWebinar || ORIGINAL_POPUP_WEBINAR;
+
+  // Show the popup automatically when the website opens
   useEffect(() => {
-    if (!upcomingWebinar) return;
+    const timer = setTimeout(() => {
+      setIsOpen(true);
+    }, 800);
 
-    try {
-      const alreadyShown = sessionStorage.getItem(POPUP_SESSION_KEY);
-      if (alreadyShown) return;
-
-      const timer = setTimeout(() => {
-        setIsOpen(true);
-      }, 1500);
-
-      return () => clearTimeout(timer);
-    } catch {
-      // ignore
-    }
-  }, [upcomingWebinar]);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleClose = () => {
     setIsOpen(false);
-    try {
-      sessionStorage.setItem(POPUP_SESSION_KEY, 'true');
-    } catch {
-      // ignore
-    }
   };
 
   const handleRegisterClick = () => {
-    if (upcomingWebinar) {
-      handleClose();
-      onRegister(upcomingWebinar);
-    }
+    handleClose();
+    onRegister(activeWebinar);
   };
 
-  if (!isOpen || !upcomingWebinar) return null;
+  if (!isOpen) return null;
 
-  const rawPrice = upcomingWebinar.price;
+  const rawPrice = activeWebinar.price;
   const numPrice = typeof rawPrice === 'number'
     ? rawPrice
     : Number(String(rawPrice || '').replace(/[^0-9.]/g, ''));
   const isPaid = (typeof rawPrice === 'number' && rawPrice > 0) ||
     (!isNaN(numPrice) && numPrice > 0) ||
-    upcomingWebinar.type === 'paid';
+    activeWebinar.type === 'paid';
   const priceValue = typeof rawPrice === 'number' && rawPrice > 0
     ? rawPrice
     : !isNaN(numPrice) && numPrice > 0
@@ -78,7 +90,7 @@ export const WebinarPromoPopup: React.FC<WebinarPromoPopupProps> = ({
   const isFree = !isPaid;
   const priceDisplay = isFree ? 'FREE' : `PAID • ₹${priceValue}`;
 
-  const dateParts = parseDateBadge(upcomingWebinar.date);
+  const dateParts = parseDateBadge(activeWebinar.date);
 
   return (
     <div
@@ -91,7 +103,7 @@ export const WebinarPromoPopup: React.FC<WebinarPromoPopupProps> = ({
     >
       <div
         id="webinar-promo-popup-card"
-        className="relative w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl border border-slate-200"
+        className="relative w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -109,14 +121,14 @@ export const WebinarPromoPopup: React.FC<WebinarPromoPopupProps> = ({
           <div className="relative w-full sm:w-[190px] shrink-0 bg-slate-900 min-h-[160px] sm:min-h-full overflow-hidden">
             <img
               src={
-                upcomingWebinar.posterUrl ||
+                activeWebinar.posterUrl ||
                 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80'
               }
-              alt={upcomingWebinar.title ? `${upcomingWebinar.title} - CBM Academy Featured Live Webinar` : 'CBM Academy Featured Live Webinar'}
-              title={upcomingWebinar.title || 'CBM Academy Featured Live Webinar'}
+              alt={activeWebinar.title ? `${activeWebinar.title} - CBM Academy Featured Live Webinar` : 'CBM Academy Featured Live Webinar'}
+              title={activeWebinar.title || 'CBM Academy Featured Live Webinar'}
               width={800}
               height={450}
-              loading="lazy"
+              loading="eager"
               decoding="async"
               className="h-full w-full object-cover"
               referrerPolicy="no-referrer"
@@ -148,17 +160,17 @@ export const WebinarPromoPopup: React.FC<WebinarPromoPopupProps> = ({
               </div>
 
               <h4 className="text-base font-bold text-[#072B57] leading-snug line-clamp-2">
-                {upcomingWebinar.title}
+                {activeWebinar.title}
               </h4>
 
               <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600">
                 <span className="inline-flex items-center gap-1 font-medium text-slate-700">
                   <Calendar className="h-3.5 w-3.5 text-[#FF6B00]" />
-                  {upcomingWebinar.date}
+                  {activeWebinar.date}
                 </span>
                 <span className="inline-flex items-center gap-1 text-slate-500">
                   <Clock className="h-3.5 w-3.5 text-[#FF6B00]" />
-                  {upcomingWebinar.time} IST
+                  {activeWebinar.time}
                 </span>
               </div>
             </div>

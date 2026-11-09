@@ -6,3 +6,7 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Large video files (excluded from GitHub commit/push to prevent exceeding GitHub's 100MB limit)
+public/assets/aistudio/Academy_Digital_b9140150.mp4
+public/assets/aistudio/Academy_Digital_h264.mp4

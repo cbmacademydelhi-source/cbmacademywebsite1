@@ -205,7 +205,7 @@ export const Hero: React.FC<HeroProps> = ({
                     className="relative w-full h-full cursor-pointer select-none"
                     role="button"
                     tabIndex={0}
-                    aria-label="Play CBM Academy Welcome Video"
+                    aria-label="Watch CBM Academy Video"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
@@ -215,13 +215,12 @@ export const Hero: React.FC<HeroProps> = ({
                   >
                     <img
                       src="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1200&auto=format&fit=crop"
-                      alt="Students and mentor in digital marketing practical training session at CBM Academy in Okhla, New Delhi"
+                      alt="CBM Academy Digital Marketing Training & Live Session in Okhla, New Delhi"
                       title="CBM Academy Digital Marketing Training & Live Session in Okhla, New Delhi"
                       width={1200}
                       height={1200}
                       decoding="async"
                       fetchPriority="high"
-                      referrerPolicy="no-referrer"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
 
@@ -268,7 +267,7 @@ export const Hero: React.FC<HeroProps> = ({
                     {/* Clean, minimal bottom label */}
                     <div className="absolute bottom-3.5 left-4 right-4 pointer-events-none flex items-center justify-between text-white text-xs">
                       <span className="font-semibold tracking-wide bg-slate-900/75 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10">
-                        Welcome Video
+                        Watch Video
                       </span>
                       <span className="text-[11px] text-slate-300 bg-slate-900/60 backdrop-blur-sm px-2.5 py-1 rounded-md">
                         Click to play
@@ -280,7 +279,6 @@ export const Hero: React.FC<HeroProps> = ({
                   <div className="relative w-full h-full bg-black">
                     <video
                       ref={videoRef}
-                      src="https://files.catbox.moe/p00v3z.mp4"
                       autoPlay
                       playsInline
                       controls
@@ -289,6 +287,8 @@ export const Hero: React.FC<HeroProps> = ({
                       muted={isMuted}
                       className="w-full h-full object-cover"
                     >
+                      <source src="/assets/aistudio/Academy_Digital_h264.mp4" type="video/mp4" />
+                      <source src="/assets/aistudio/Academy_Digital_b9140150.mp4" type="video/mp4" />
                       Your browser does not support the video tag.
                     </video>
 

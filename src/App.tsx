@@ -468,7 +468,13 @@ export default function App() {
         isOpen={promoRegisterModalOpen}
         onClose={() => setPromoRegisterModalOpen(false)}
         selectedWebinar={promoRegisterWebinar}
-        availableWebinars={webinars.filter((w) => w.status === 'published' || w.status === 'upcoming')}
+        availableWebinars={
+          webinars.filter((w) => w.status === 'published' || w.status === 'upcoming').length > 0
+            ? webinars.filter((w) => w.status === 'published' || w.status === 'upcoming')
+            : promoRegisterWebinar
+            ? [promoRegisterWebinar]
+            : []
+        }
       />
 
       {/* Promotional Session-based Upcoming Webinar Popup */}
