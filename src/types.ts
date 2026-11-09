@@ -56,6 +56,19 @@ export interface JobOpportunity {
   hrEmail: string;
 }
 
+export interface AdminImage {
+  id: string;
+  title: string;
+  url: string;
+  category: 'banner' | 'webinar' | 'course' | 'campus' | 'logo' | 'other';
+  alt?: string;
+  description?: string;
+  dimensions?: string;
+  status: 'active' | 'archived';
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface VerifiedCertificate {
   id: string;
   studentName: string;

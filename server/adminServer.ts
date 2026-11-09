@@ -114,6 +114,19 @@ export interface AdminEnquiry {
   created_at: string;
 }
 
+export interface AdminImage {
+  id: string;
+  title: string;
+  url: string;
+  category: 'banner' | 'webinar' | 'course' | 'campus' | 'logo' | 'other';
+  alt?: string;
+  description?: string;
+  dimensions?: string;
+  status: 'active' | 'archived';
+  created_at?: string;
+  updated_at?: string;
+}
+
 // In-memory + persistent disk fallback store to guarantee zero downtime even before DDL is executed
 const CACHE_FILE = path.join(process.cwd(), 'server', '.admin_store_cache.json');
 
@@ -122,6 +135,7 @@ interface AdminStore {
   jobs: AdminJob[];
   blogs: AdminBlog[];
   certificates: AdminCertificate[];
+  images?: AdminImage[];
   applicationMeta?: Record<string, { status: 'pending' | 'reviewed' | 'approved' | 'rejected'; notes?: string | null }>;
   enquiryMeta?: Record<string, { status: 'unread' | 'read' | 'contacted' | 'resolved'; notes?: string | null }>;
 }
@@ -200,7 +214,71 @@ function getInitialStore(): AdminStore {
     updated_at: new Date().toISOString(),
   }));
 
-  return { courses, jobs, blogs, certificates };
+  // Initial Website Images / Banners
+  const images: AdminImage[] = [
+    {
+      id: 'img-cbm-logo',
+      title: 'CBM Academy Official Logo',
+      url: 'https://cbmacademy.in/logo.png',
+      category: 'logo',
+      alt: 'CBM Academy Official Logo',
+      dimensions: '512x512',
+      status: 'active',
+      created_at: new Date().toISOString(),
+    },
+    {
+      id: 'img-hero-preview',
+      title: 'Hero Welcome Video Preview',
+      url: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80',
+      category: 'banner',
+      alt: 'CBM Academy Practical Classroom Experience',
+      dimensions: '1:1 Square Preview',
+      status: 'active',
+      created_at: new Date().toISOString(),
+    },
+    {
+      id: 'img-marketing-banner',
+      title: 'Digital Marketing & AI Banner',
+      url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80',
+      category: 'banner',
+      alt: 'Digital Marketing Strategy and Growth',
+      dimensions: '16:9 Banner',
+      status: 'active',
+      created_at: new Date().toISOString(),
+    },
+    {
+      id: 'img-webinar-banner',
+      title: 'Live Masterclass Promo Poster',
+      url: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1200&q=80',
+      category: 'webinar',
+      alt: 'CBM Academy Live Masterclass Session',
+      dimensions: '16:9 Landscape',
+      status: 'active',
+      created_at: new Date().toISOString(),
+    },
+    {
+      id: 'img-campus-lab',
+      title: 'Practical Workstation Lab & Classroom',
+      url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80',
+      category: 'campus',
+      alt: 'CBM Academy Okhla Lab',
+      dimensions: '16:10',
+      status: 'active',
+      created_at: new Date().toISOString(),
+    },
+    {
+      id: 'img-cert-badge',
+      title: 'Official CBM Verified Credential Seal',
+      url: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1200&q=80',
+      category: 'course',
+      alt: 'CBM Academy Verified Certificate Badge',
+      dimensions: 'Square Emblem',
+      status: 'active',
+      created_at: new Date().toISOString(),
+    },
+  ];
+
+  return { courses, jobs, blogs, certificates, images };
 }
 
 let store: AdminStore = getInitialStore();
@@ -843,3 +921,53 @@ export async function getDashboardStats() {
     dbNotice: lastSupabaseNotice,
   };
 }
+
+// -----------------------------------------------------------------------------
+// IMAGES & BANNERS ADMIN
+// -----------------------------------------------------------------------------
+export async function getAdminImages(): Promise<AdminImage[]> {
+  loadStore();
+  if (!store.images || store.images.length === 0) {
+    store.images = getInitialStore().images || [];
+    saveStore();
+  }
+  return store.images;
+}
+
+export async function saveAdminImage(data: Partial<AdminImage>): Promise<AdminImage> {
+  loadStore();
+  if (!store.images) store.images = [];
+  const id = data.id || `img-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+  const existingIdx = store.images.findIndex((i) => i.id === id);
+
+  const record: AdminImage = {
+    id,
+    title: data.title || 'Untitled Image',
+    url: data.url || '',
+    category: data.category || 'banner',
+    alt: data.alt || data.title || '',
+    description: data.description || '',
+    dimensions: data.dimensions || '',
+    status: data.status || 'active',
+    created_at: existingIdx >= 0 ? store.images[existingIdx].created_at : new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
+
+  if (existingIdx >= 0) {
+    store.images[existingIdx] = record;
+  } else {
+    store.images.unshift(record);
+  }
+
+  saveStore();
+  return record;
+}
+
+export async function deleteAdminImage(id: string): Promise<boolean> {
+  loadStore();
+  if (!store.images) return true;
+  store.images = store.images.filter((i) => i.id !== id);
+  saveStore();
+  return true;
+}
+

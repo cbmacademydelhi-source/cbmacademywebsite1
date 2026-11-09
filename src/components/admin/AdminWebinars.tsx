@@ -24,12 +24,14 @@ import {
 } from '../../services/webinarStorage';
 import { AdminWebinarRegistrations } from './AdminWebinarRegistrations';
 import { getAdminToken } from '../../services/adminService';
+import { useScrollLock } from '../../utils/useScrollLock';
 
 export const AdminWebinars: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'sessions' | 'registrations'>('sessions');
   const [webinars, setWebinars] = useState<Webinar[]>([]);
   const [selectedWebinar, setSelectedWebinar] = useState<Webinar | null>(null);
   const [editWebinar, setEditWebinar] = useState<Partial<Webinar> | null>(null);
+  useScrollLock(Boolean(selectedWebinar || editWebinar));
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const showToast = (type: 'success' | 'error', message: string) => {

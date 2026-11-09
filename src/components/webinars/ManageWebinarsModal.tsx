@@ -19,6 +19,7 @@ import {
   toggleWebinarStatus,
   resetWebinarsToDefault,
 } from '../../services/webinarStorage';
+import { useScrollLock } from '../../utils/useScrollLock';
 
 interface ManageWebinarsModalProps {
   isOpen: boolean;
@@ -31,6 +32,7 @@ export const ManageWebinarsModal: React.FC<ManageWebinarsModalProps> = ({
   onClose,
   onWebinarsUpdated,
 }) => {
+  useScrollLock(isOpen);
   const [webinars, setWebinars] = useState<Webinar[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);

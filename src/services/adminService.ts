@@ -6,6 +6,7 @@ import type {
   AdminCertificate,
   AdminApplication,
   AdminEnquiry,
+  AdminImage,
 } from '../../server/adminServer';
 
 export type {
@@ -15,6 +16,7 @@ export type {
   AdminCertificate,
   AdminApplication,
   AdminEnquiry,
+  AdminImage,
 };
 
 export interface AdminStats {
@@ -503,3 +505,55 @@ export async function deleteEnq(id: string): Promise<boolean> {
     return false;
   }
 }
+
+// -----------------------------------------------------------------------------
+// IMAGES (Website banners, thumbnails, badges, campus photos)
+// -----------------------------------------------------------------------------
+export async function fetchAdminImages(): Promise<AdminImage[]> {
+  try {
+    const res = await fetchWithTimeout('/api/admin/images', {
+      headers: await authHeaders(),
+    }, 8000);
+    const data = await res.json();
+    if (res.ok && data.success && Array.isArray(data.images)) {
+      return data.images;
+    }
+    if (data?.message) {
+      lastAdminApiError = data.message;
+    }
+    return [];
+  } catch (err: any) {
+    lastAdminApiError = err?.message || 'Error loading images';
+    return [];
+  }
+}
+
+export async function saveAdminImage(image: Partial<AdminImage>): Promise<AdminImage | null> {
+  try {
+    const res = await fetch('/api/admin/images', {
+      method: 'POST',
+      headers: await authHeaders(),
+      body: JSON.stringify(image),
+    });
+    const data = await res.json();
+    if (res.ok && data.success && data.image) {
+      return data.image;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+export async function deleteAdminImage(id: string): Promise<boolean> {
+  try {
+    const res = await fetch(`/api/admin/images/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: await authHeaders(),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+

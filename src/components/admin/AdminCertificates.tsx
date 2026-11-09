@@ -23,6 +23,7 @@ import {
   FileSpreadsheet,
   ExternalLink,
 } from 'lucide-react';
+import { useScrollLock } from '../../utils/useScrollLock';
 
 interface AdminCertificatesProps {
   certificates: AdminCertificate[];
@@ -37,6 +38,7 @@ export const AdminCertificates: React.FC<AdminCertificatesProps> = ({
   const [filter, setFilter] = useState<'all' | 'active' | 'revoked'>('all');
   const [selectedCert, setSelectedCert] = useState<AdminCertificate | null>(null);
   const [editCert, setEditCert] = useState<Partial<AdminCertificate> | null>(null);
+  useScrollLock(Boolean(selectedCert || editCert));
   const [actionLoading, setActionLoading] = useState(false);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 

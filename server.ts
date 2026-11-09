@@ -64,6 +64,9 @@ import {
   updateEnquiryStatus,
   deleteEnquiry,
   getDashboardStats,
+  getAdminImages,
+  saveAdminImage,
+  deleteAdminImage,
 } from './server/adminServer.ts';
 
 dotenv.config();
@@ -1181,6 +1184,34 @@ app.delete('/api/admin/certificates/:id', requireAdminAuth, async (req, res) => 
   try {
     await deleteAdminCertificate(req.params.id);
     return res.status(200).json({ success: true, message: 'Certificate deleted successfully' });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// IMAGES & BANNERS ADMIN
+app.get('/api/admin/images', requireAdminAuth, async (_req, res) => {
+  try {
+    const images = await getAdminImages();
+    return res.status(200).json({ success: true, images });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+app.post('/api/admin/images', requireAdminAuth, async (req, res) => {
+  try {
+    const saved = await saveAdminImage(req.body);
+    return res.status(200).json({ success: true, image: saved });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+app.delete('/api/admin/images/:id', requireAdminAuth, async (req, res) => {
+  try {
+    await deleteAdminImage(req.params.id);
+    return res.status(200).json({ success: true, message: 'Image deleted successfully' });
   } catch (err: any) {
     return res.status(500).json({ success: false, message: err.message });
   }

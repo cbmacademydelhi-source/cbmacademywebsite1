@@ -196,11 +196,13 @@ export const WebinarsPage: React.FC<WebinarsPageProps> = ({
                   const targetWebinar = latestWebinar || publicWebinars[0] || webinars[0];
                   if (targetWebinar) {
                     handleOpenRegister(targetWebinar);
+                  } else if (onOpenApply) {
+                    onOpenApply('Webinar Inquiries & Alerts');
                   }
                 }}
                 className="inline-flex items-center justify-center gap-1.5 px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold text-white bg-[#FF6B00] hover:bg-[#e05f00] shadow-xs hover:shadow-md transition-all cursor-pointer active:scale-98"
               >
-                <span>Register Now</span>
+                <span>{latestWebinar ? 'Register Now' : 'Get Masterclass Alerts'}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -208,7 +210,7 @@ export const WebinarsPage: React.FC<WebinarsPageProps> = ({
 
           {/* Right Side: Upcoming or Latest Webinar Card */}
           <div className="lg:col-span-6">
-            {latestWebinar && (
+            {latestWebinar ? (
               <div className="relative rounded-xl border border-gray-200/90 bg-white shadow-xs hover:border-[#FED7AA] hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col sm:flex-row group">
                 {/* Thumbnail */}
                 <div
@@ -297,6 +299,30 @@ export const WebinarsPage: React.FC<WebinarsPageProps> = ({
                     </div>
                   </div>
                 </div>
+              </div>
+            ) : (
+              <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-6 sm:p-8 text-center flex flex-col items-center justify-center shadow-xs">
+                <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-[#FF6B00] mb-3">
+                  <Calendar className="w-6 h-6" />
+                </div>
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#FF6B00] mb-1">
+                  Masterclass Schedule
+                </span>
+                <h3 className="text-base font-bold text-[#072B57] max-w-sm">
+                  New Live Sessions Being Scheduled
+                </h3>
+                <p className="text-xs text-slate-500 mt-1.5 max-w-xs leading-relaxed">
+                  Interactive sessions with industry mentors will be published here. Check back soon or request topic updates!
+                </p>
+                {onOpenApply && (
+                  <button
+                    type="button"
+                    onClick={() => onOpenApply('Webinar Alerts & Admissions')}
+                    className="mt-4 px-4 py-2 rounded-lg bg-[#072B57] hover:bg-[#FF6B00] text-white text-xs font-bold transition-colors cursor-pointer"
+                  >
+                    Get Notified For Next Session
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -407,27 +433,42 @@ export const WebinarsPage: React.FC<WebinarsPageProps> = ({
             </button>
           </div>
 
-          {/* Empty search state */}
+          {/* Empty state */}
           {displayedWebinars.length === 0 ? (
-            <div className="my-12 rounded-[10px] border border-gray-200 bg-white p-10 text-center max-w-md mx-auto shadow-xs">
-              <Search className="h-8 w-8 text-gray-400 mx-auto mb-3" />
-              <p className="text-sm font-bold text-[#072B57]">
-                No webinars found
+            <div className="my-12 rounded-xl border border-gray-200 bg-white p-8 sm:p-10 text-center max-w-lg mx-auto shadow-xs">
+              <div className="w-12 h-12 rounded-full bg-orange-50 border border-orange-200 flex items-center justify-center text-[#FF6B00] mx-auto mb-3">
+                <Calendar className="h-6 w-6" />
+              </div>
+              <p className="text-base font-bold text-[#072B57]">
+                {publicWebinars.length === 0
+                  ? 'Upcoming Live Masterclasses Will Be Announced Soon'
+                  : 'No webinars found matching your search'}
               </p>
-              <p className="text-xs text-gray-500 mt-1">
-                Try searching for a different keyword or resetting your filter.
+              <p className="text-xs text-gray-500 mt-1.5 leading-relaxed">
+                {publicWebinars.length === 0
+                  ? 'We are scheduling new interactive sessions covering digital marketing, AI workflows, and performance growth. All real webinars created in the Admin Panel will appear here immediately.'
+                  : 'Try searching for a different keyword or resetting your filter.'}
               </p>
-              <button
-                type="button"
-                onClick={() => {
-                  setFilter('all');
-                  setSearchQuery('');
-                  setShowAllWebinars(false);
-                }}
-                className="mt-4 inline-flex items-center justify-center px-4 py-2 rounded-md bg-[#072B57] hover:bg-[#FF6B00] text-white text-xs font-bold transition-colors cursor-pointer"
-              >
-                Reset Filters
-              </button>
+              {publicWebinars.length > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFilter('all');
+                    setSearchQuery('');
+                    setShowAllWebinars(false);
+                  }}
+                  className="mt-4 inline-flex items-center justify-center px-4 py-2 rounded-md bg-[#072B57] hover:bg-[#FF6B00] text-white text-xs font-bold transition-colors cursor-pointer"
+                >
+                  Reset Filters
+                </button>
+              ) : (
+                <a
+                  href="#course"
+                  className="mt-4 inline-flex items-center justify-center px-4 py-2 rounded-md bg-[#FF6B00] hover:bg-[#e05f00] text-white text-xs font-bold transition-colors cursor-pointer shadow-xs"
+                >
+                  Explore Certified Courses
+                </a>
+              )}
             </div>
           ) : (
             /* Three-column desktop grid (6 cards) */

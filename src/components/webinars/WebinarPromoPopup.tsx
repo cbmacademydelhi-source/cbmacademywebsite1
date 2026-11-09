@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Webinar } from '../../types';
+import { useScrollLock } from '../../utils/useScrollLock';
 
 interface WebinarPromoPopupProps {
   upcomingWebinar: Webinar | null;
@@ -25,6 +26,7 @@ export const WebinarPromoPopup: React.FC<WebinarPromoPopupProps> = ({
   onRegister,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  useScrollLock(isOpen);
 
   useEffect(() => {
     if (!upcomingWebinar) return;

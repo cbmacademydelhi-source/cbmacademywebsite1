@@ -1,69 +1,31 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  LayoutDashboard,
-  Clock,
-  GraduationCap,
-  Briefcase,
-  FileText,
   Video,
+  Image as ImageIcon,
   Award,
-  Users,
-  MessageSquare,
-  ShieldCheck,
-  Settings,
   LogOut,
   ExternalLink,
   Menu,
   X,
   RefreshCw,
-  Bell,
   Database,
   ChevronRight,
   AlertCircle,
 } from 'lucide-react';
 import {
-  AdminStats,
-  AdminCourse,
-  AdminJob,
-  AdminBlog,
   AdminCertificate,
-  AdminApplication,
-  AdminEnquiry,
-  fetchAdminStats,
-  fetchAdminCourses,
-  fetchAdminJobs,
-  fetchAdminBlogs,
   fetchAdminCertificates,
-  fetchAdminApplications,
-  fetchAdminEnquiries,
   getAdminUser,
   logoutAdmin,
   lastAdminApiError,
 } from '../../services/adminService';
+import { useScrollLock } from '../../utils/useScrollLock';
 
-import { AdminDashboardOverview } from './AdminDashboardOverview';
-import { AdminCourses } from './AdminCourses';
-import { AdminJobs } from './AdminJobs';
-import { AdminBlogs } from './AdminBlogs';
 import { AdminWebinars } from './AdminWebinars';
+import { AdminImages } from './AdminImages';
 import { AdminCertificates } from './AdminCertificates';
-import { AdminApplications } from './AdminApplications';
-import { AdminEnquiries } from './AdminEnquiries';
-import { AdminUsers } from './AdminUsers';
-import { AdminSettings } from './AdminSettings';
 
-export type AdminTab =
-  | 'overview'
-  | 'pending'
-  | 'courses'
-  | 'jobs'
-  | 'blogs'
-  | 'webinars'
-  | 'applications'
-  | 'certificates'
-  | 'enquiries'
-  | 'users'
-  | 'settings';
+export type AdminTab = 'webinars' | 'images' | 'certificates';
 
 interface AdminLayoutProps {
   onLogout: () => void;
@@ -74,46 +36,16 @@ interface AdminLayoutProps {
 export const AdminLayout: React.FC<AdminLayoutProps> = ({
   onLogout,
   onNavigateHome,
-  initialTab = 'overview',
+  initialTab = 'webinars',
 }) => {
   const [activeTab, setActiveTab] = useState<AdminTab>(initialTab);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [dbError, setDbError] = useState<string | null>(null);
 
-  // Loaded data with persistence cache
-  const [stats, setStats] = useState<AdminStats | null>(() => {
-    try {
-      const raw = localStorage.getItem('cbm_admin_cached_stats');
-      return raw ? JSON.parse(raw) : null;
-    } catch {
-      return null;
-    }
-  });
-  const [courses, setCourses] = useState<AdminCourse[]>(() => {
-    try {
-      const raw = localStorage.getItem('cbm_admin_cached_courses');
-      return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
-  });
-  const [jobs, setJobs] = useState<AdminJob[]>(() => {
-    try {
-      const raw = localStorage.getItem('cbm_admin_cached_jobs');
-      return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
-  });
-  const [blogs, setBlogs] = useState<AdminBlog[]>(() => {
-    try {
-      const raw = localStorage.getItem('cbm_admin_cached_blogs');
-      return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
-  });
+  // Prevent background page from scrolling when mobile sidebar drawer is open
+  useScrollLock(mobileMenuOpen);
+
   const [certificates, setCertificates] = useState<AdminCertificate[]>(() => {
     try {
       const raw = localStorage.getItem('cbm_admin_cached_certificates');
@@ -122,20 +54,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
       return [];
     }
   });
-  const [applications, setApplications] = useState<AdminApplication[]>(() => {
-    try {
-      const raw = localStorage.getItem('cbm_admin_cached_applications');
-      return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
-  });
-  const [enquiries, setEnquiries] = useState<AdminEnquiry[]>([]);
 
-  // Only show full loader if no initial data is present in memory or cache
-  const [loading, setLoading] = useState<boolean>(() => {
-    return courses.length === 0 && applications.length === 0 && jobs.length === 0;
-  });
+  const [loading, setLoading] = useState<boolean>(false);
 
   const user = getAdminUser();
 
@@ -144,57 +64,12 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     setDbError(null);
 
     try {
-      const [sRes, cRes, jRes, bRes, certsRes, appsRes, enqsRes] = await Promise.allSettled([
-        fetchAdminStats(),
-        fetchAdminCourses(),
-        fetchAdminJobs(),
-        fetchAdminBlogs(),
-        fetchAdminCertificates(),
-        fetchAdminApplications(),
-        fetchAdminEnquiries(),
-      ]);
-
-      if (sRes.status === 'fulfilled' && sRes.value) {
-        setStats(sRes.value);
+      const certsRes = await fetchAdminCertificates();
+      if (Array.isArray(certsRes)) {
+        setCertificates(certsRes);
         try {
-          localStorage.setItem('cbm_admin_cached_stats', JSON.stringify(sRes.value));
+          localStorage.setItem('cbm_admin_cached_certificates', JSON.stringify(certsRes));
         } catch {}
-        if (sRes.value.dbNotice?.message) {
-          setDbError(`Supabase Schema Notice [${sRes.value.dbNotice.table}]: ${sRes.value.dbNotice.message}`);
-        }
-      }
-      if (cRes.status === 'fulfilled' && Array.isArray(cRes.value) && cRes.value.length > 0) {
-        setCourses(cRes.value);
-        try {
-          localStorage.setItem('cbm_admin_cached_courses', JSON.stringify(cRes.value));
-        } catch {}
-      }
-      if (jRes.status === 'fulfilled' && Array.isArray(jRes.value) && jRes.value.length > 0) {
-        setJobs(jRes.value);
-        try {
-          localStorage.setItem('cbm_admin_cached_jobs', JSON.stringify(jRes.value));
-        } catch {}
-      }
-      if (bRes.status === 'fulfilled' && Array.isArray(bRes.value) && bRes.value.length > 0) {
-        setBlogs(bRes.value);
-        try {
-          localStorage.setItem('cbm_admin_cached_blogs', JSON.stringify(bRes.value));
-        } catch {}
-      }
-      if (certsRes.status === 'fulfilled' && Array.isArray(certsRes.value) && certsRes.value.length > 0) {
-        setCertificates(certsRes.value);
-        try {
-          localStorage.setItem('cbm_admin_cached_certificates', JSON.stringify(certsRes.value));
-        } catch {}
-      }
-      if (appsRes.status === 'fulfilled' && Array.isArray(appsRes.value) && appsRes.value.length > 0) {
-        setApplications(appsRes.value);
-        try {
-          localStorage.setItem('cbm_admin_cached_applications', JSON.stringify(appsRes.value));
-        } catch {}
-      }
-      if (enqsRes.status === 'fulfilled' && Array.isArray(enqsRes.value)) {
-        setEnquiries(enqsRes.value);
       }
 
       if (lastAdminApiError) {
@@ -223,51 +98,6 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     onLogout();
   };
 
-  const effectiveStats: AdminStats = stats || {
-    courses: {
-      total: courses.length,
-      pending: courses.filter((c) => c.status === 'pending').length,
-      approved: courses.filter((c) => c.status === 'approved').length,
-      rejected: courses.filter((c) => c.status === 'rejected').length,
-    },
-    jobs: {
-      total: jobs.length,
-      pending: jobs.filter((j) => j.status === 'pending').length,
-      approved: jobs.filter((j) => j.status === 'approved').length,
-      rejected: jobs.filter((j) => j.status === 'rejected').length,
-    },
-    blogs: {
-      total: blogs.length,
-      pending: blogs.filter((b) => b.status === 'pending').length,
-      approved: blogs.filter((b) => b.status === 'approved').length,
-    },
-    certificates: {
-      total: certificates.length,
-      active: certificates.filter((c) => c.status === 'active' || c.status === 'approved').length,
-    },
-    applications: {
-      total: applications.length,
-      pending: applications.filter((a) => a.status === 'pending').length,
-    },
-    enquiries: {
-      total: enquiries.length,
-      unread: enquiries.filter((e) => e.status === 'unread').length,
-    },
-    pendingQueue: {
-      courses: courses.filter((c) => c.status === 'pending'),
-      jobs: jobs.filter((j) => j.status === 'pending'),
-      blogs: blogs.filter((b) => b.status === 'pending'),
-      applications: applications.filter((a) => a.status === 'pending'),
-      enquiries: enquiries.filter((e) => e.status === 'unread'),
-    },
-  };
-
-  const pendingTotal =
-    (effectiveStats.courses.pending || 0) +
-    (effectiveStats.jobs.pending || 0) +
-    (effectiveStats.blogs.pending || 0) +
-    (effectiveStats.applications.pending || 0);
-
   const navItems: {
     id: AdminTab;
     label: string;
@@ -276,49 +106,14 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     badgeColor?: string;
   }[] = [
     {
-      id: 'overview',
-      label: 'Dashboard Overview',
-      icon: LayoutDashboard,
-    },
-    {
-      id: 'pending',
-      label: 'Pending Approvals',
-      icon: Clock,
-      badge: pendingTotal > 0 ? pendingTotal : undefined,
-      badgeColor: 'bg-[#FF6B00] text-white',
-    },
-    {
-      id: 'courses',
-      label: 'Courses',
-      icon: GraduationCap,
-      badge: stats?.courses.pending ? `${stats.courses.pending} pending` : undefined,
-      badgeColor: 'bg-amber-500 text-white',
-    },
-    {
-      id: 'jobs',
-      label: 'Jobs & Openings',
-      icon: Briefcase,
-      badge: stats?.jobs.pending ? `${stats.jobs.pending} pending` : undefined,
-      badgeColor: 'bg-amber-500 text-white',
-    },
-    {
-      id: 'blogs',
-      label: 'Blogs & Articles',
-      icon: FileText,
-      badge: stats?.blogs.pending ? `${stats.blogs.pending} pending` : undefined,
-      badgeColor: 'bg-amber-500 text-white',
-    },
-    {
       id: 'webinars',
       label: 'Webinars & Sessions',
       icon: Video,
     },
     {
-      id: 'applications',
-      label: 'Student Applications',
-      icon: Users,
-      badge: applications.length > 0 ? applications.length : undefined,
-      badgeColor: 'bg-blue-600 text-white',
+      id: 'images',
+      label: 'Website & Banner Images',
+      icon: ImageIcon,
     },
     {
       id: 'certificates',
@@ -326,27 +121,10 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
       icon: Award,
       badge: certificates.length > 0 ? certificates.length : undefined,
     },
-    {
-      id: 'enquiries',
-      label: 'Contact Enquiries',
-      icon: MessageSquare,
-      badge: stats?.enquiries.unread ? `${stats.enquiries.unread} new` : undefined,
-      badgeColor: 'bg-rose-500 text-white',
-    },
-    {
-      id: 'users',
-      label: 'Admin Team & Roles',
-      icon: ShieldCheck,
-    },
-    {
-      id: 'settings',
-      label: 'Database & Settings',
-      icon: Settings,
-    },
   ];
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col antialiased text-[#1E293B]">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col antialiased text-[#1E293B] font-['Plus_Jakarta_Sans',sans-serif]">
       {/* Top Mobile Bar */}
       <div className="lg:hidden bg-[#072B57] text-white px-4 py-3 flex items-center justify-between border-b border-[#0A3D78] sticky top-0 z-40">
         <div className="flex items-center gap-2.5">
@@ -362,7 +140,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
         </div>
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="p-2 text-white hover:bg-white/10 rounded-lg transition"
+          className="p-2 text-white hover:bg-white/10 rounded-lg transition cursor-pointer"
+          aria-label="Toggle Navigation Menu"
         >
           {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
@@ -405,7 +184,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                     setActiveTab(item.id);
                     setMobileMenuOpen(false);
                   }}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition ${
+                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
                     isActive
                       ? 'bg-[#FF6B00] text-white shadow-sm'
                       : 'text-slate-300 hover:bg-[#0D386E] hover:text-white'
@@ -433,7 +212,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
           <div className="p-3 border-t border-[#0D386E] space-y-1">
             <button
               onClick={onNavigateHome}
-              className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs text-slate-300 hover:bg-[#0D386E] hover:text-white transition"
+              className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs text-slate-300 hover:bg-[#0D386E] hover:text-white transition cursor-pointer"
             >
               <div className="flex items-center gap-2">
                 <ExternalLink className="w-4 h-4 text-slate-400" />
@@ -443,7 +222,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
             </button>
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-rose-300 hover:bg-rose-950/40 hover:text-rose-200 transition"
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-rose-300 hover:bg-rose-950/40 hover:text-rose-200 transition cursor-pointer"
             >
               <LogOut className="w-4 h-4 text-rose-400" />
               <span>Sign Out</span>
@@ -468,7 +247,9 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                 Admin Panel /
               </span>
               <h2 className="text-base font-bold text-slate-900 capitalize">
-                {activeTab.replace('-', ' ')}
+                {activeTab === 'webinars' && 'Webinars & Masterclasses'}
+                {activeTab === 'images' && 'Website & Banner Images'}
+                {activeTab === 'certificates' && 'Certificates Registry'}
               </h2>
             </div>
 
@@ -483,8 +264,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
               <button
                 onClick={loadAllData}
                 disabled={refreshing}
-                title="Refresh All Database Data"
-                className="p-2 text-slate-500 hover:text-[#072B57] hover:bg-slate-100 rounded-lg transition"
+                title="Refresh Database Data"
+                className="p-2 text-slate-500 hover:text-[#072B57] hover:bg-slate-100 rounded-lg transition cursor-pointer"
               >
                 <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin text-[#FF6B00]' : ''}`} />
               </button>
@@ -498,7 +279,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                   <div className="font-semibold text-slate-900 leading-tight">
                     {user?.email || 'office@cbmacademy.in'}
                   </div>
-                  <div className="text-[10px] text-slate-400 font-medium">Super Administrator</div>
+                  <div className="text-[10px] text-slate-400 font-medium">Administrator</div>
                 </div>
               </div>
             </div>
@@ -511,7 +292,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                 <div className="flex items-start gap-2.5">
                   <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                   <div>
-                    <div className="font-bold text-slate-900">Database Schema & Query Status</div>
+                    <div className="font-bold text-slate-900">Database Status</div>
                     <div className="text-slate-600 mt-0.5">{dbError}</div>
                   </div>
                 </div>
@@ -528,48 +309,17 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
             {loading ? (
               <div className="py-20 flex flex-col items-center justify-center">
                 <RefreshCw className="w-8 h-8 text-[#FF6B00] animate-spin mb-3" />
-                <p className="text-sm font-semibold text-slate-600">Connecting to Supabase Database...</p>
-                <p className="text-xs text-slate-400 mt-1">Loading courses, jobs, blogs & student submissions</p>
+                <p className="text-sm font-semibold text-slate-600">Connecting to Database...</p>
               </div>
             ) : (
               <>
-                {(activeTab === 'overview' || activeTab === 'pending') && (
-                  <AdminDashboardOverview
-                    stats={effectiveStats}
-                    onRefresh={loadAllData}
-                    onNavigateTab={(tab) => setActiveTab(tab as AdminTab)}
-                  />
-                )}
-
-                {activeTab === 'courses' && (
-                  <AdminCourses courses={courses} onRefresh={loadAllData} />
-                )}
-
-                {activeTab === 'jobs' && (
-                  <AdminJobs jobs={jobs} onRefresh={loadAllData} />
-                )}
-
-                {activeTab === 'blogs' && (
-                  <AdminBlogs blogs={blogs} onRefresh={loadAllData} />
-                )}
-
                 {activeTab === 'webinars' && <AdminWebinars />}
 
-                {activeTab === 'applications' && (
-                  <AdminApplications applications={applications} onRefresh={loadAllData} />
-                )}
+                {activeTab === 'images' && <AdminImages onRefresh={loadAllData} />}
 
                 {activeTab === 'certificates' && (
                   <AdminCertificates certificates={certificates} onRefresh={loadAllData} />
                 )}
-
-                {activeTab === 'enquiries' && (
-                  <AdminEnquiries enquiries={enquiries} onRefresh={loadAllData} />
-                )}
-
-                {activeTab === 'users' && <AdminUsers />}
-
-                {activeTab === 'settings' && <AdminSettings />}
               </>
             )}
           </div>

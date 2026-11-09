@@ -12,6 +12,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { submitBrochureRequest } from '../services/formService';
+import { useScrollLock } from '../utils/useScrollLock';
 
 interface BrochureModalProps {
   isOpen: boolean;
@@ -22,6 +23,7 @@ export const BrochureModal: React.FC<BrochureModalProps> = ({
   isOpen,
   onClose,
 }) => {
+  useScrollLock(isOpen);
   const [studentName, setStudentName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');

@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, Calendar, Clock, Timer, UserCheck, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Webinar } from '../../types';
+import { useScrollLock } from '../../utils/useScrollLock';
 
 interface WebinarDetailsModalProps {
   webinar: Webinar | null;
@@ -27,6 +28,7 @@ export const WebinarDetailsModal: React.FC<WebinarDetailsModalProps> = ({
   onClose,
   onRegister,
 }) => {
+  useScrollLock(isOpen);
   if (!isOpen || !webinar) return null;
 
   const rawPrice = webinar.price;

@@ -173,93 +173,8 @@ export interface ServerReminderLog {
   created_at?: string;
 }
 
-// In-memory repositories for 100% resilient operation & local dev
-const memoryWebinars: ServerWebinarRecord[] = [
-  {
-    id: 'webinar-ai-tools-2026',
-    title: 'AI Tools Every Digital Marketer Should Know in 2026',
-    description: 'Learn how modern AI tools like ChatGPT, Claude, and Midjourney can automate marketing workflows and boost campaign ROI.',
-    start_datetime: '2026-10-24T12:30:00.000Z',
-    timezone: 'Asia/Kolkata',
-    duration_minutes: 60,
-    price: 0,
-    capacity: 150,
-    status: 'published',
-    meeting_url: 'https://meet.google.com/cbm-live-ai',
-    whatsapp_group_url: 'https://chat.whatsapp.com/CBMWebinarAITools',
-    thumbnail_url: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    id: 'webinar-meta-ads-masterclass',
-    title: 'Meta Ads Masterclass (Facebook & Instagram Ads)',
-    description: 'Deep dive into Meta Advantage+ campaigns, custom audience scaling, ROAS optimization, and high-converting ad creative frameworks.',
-    start_datetime: '2026-10-25T13:30:00.000Z',
-    timezone: 'Asia/Kolkata',
-    duration_minutes: 90,
-    price: 499,
-    capacity: 100,
-    status: 'published',
-    meeting_url: 'https://meet.google.com/cbm-live-meta',
-    whatsapp_group_url: 'https://chat.whatsapp.com/CBMMetaAdsVIP',
-    thumbnail_url: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    id: 'webinar-seo-basics',
-    title: 'SEO Basics for Beginners',
-    description: 'Master the foundations of organic search: keyword research, on-page optimization, site architecture, and ranking in modern AI search results.',
-    start_datetime: '2026-10-28T13:00:00.000Z',
-    timezone: 'Asia/Kolkata',
-    duration_minutes: 60,
-    price: 0,
-    capacity: 150,
-    status: 'published',
-    meeting_url: 'https://meet.google.com/cbm-live-seo',
-    whatsapp_group_url: 'https://chat.whatsapp.com/CBMSEOBeginners',
-    thumbnail_url: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    id: 'webinar-wordpress-elementor',
-    title: 'WordPress Website Development with Elementor',
-    description: 'Build responsive, lightning-fast business websites and landing pages without code using WordPress, Elementor Pro, and domain hosting.',
-    start_datetime: '2026-10-31T11:30:00.000Z',
-    timezone: 'Asia/Kolkata',
-    duration_minutes: 120,
-    price: 499,
-    capacity: 100,
-    status: 'published',
-    meeting_url: 'https://meet.google.com/cbm-live-wp',
-    whatsapp_group_url: 'https://chat.whatsapp.com/CBMWordPressPro',
-    thumbnail_url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    id: 'webinar-canva-graphic-design',
-    title: 'Graphic Design with Canva for Social Media',
-    description: 'Create eye-catching social media posts, carousel decks, YouTube thumbnails, and professional brand assets using Canva.',
-    start_datetime: '2026-11-01T12:30:00.000Z',
-    timezone: 'Asia/Kolkata',
-    duration_minutes: 60,
-    price: 0,
-    capacity: 200,
-    status: 'published',
-    meeting_url: 'https://meet.google.com/cbm-live-canva',
-    whatsapp_group_url: 'https://chat.whatsapp.com/CBMCanvaDesign',
-    thumbnail_url: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    id: 'webinar-google-ads-growth',
-    title: 'Google Ads for Business Growth',
-    description: 'Practical campaign architecture, search keyword match types, negative keywords, Quality Score optimization, and high-ROI bidding.',
-    start_datetime: '2026-11-07T13:30:00.000Z',
-    timezone: 'Asia/Kolkata',
-    duration_minutes: 90,
-    price: 499,
-    capacity: 100,
-    status: 'published',
-    meeting_url: 'https://meet.google.com/cbm-live-gads',
-    whatsapp_group_url: 'https://chat.whatsapp.com/CBMGoogleAdsVIP',
-    thumbnail_url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
-  },
-];
+// In-memory repositories for resilient operation & local dev (empty, ready for real webinars)
+const memoryWebinars: ServerWebinarRecord[] = [];
 
 const memoryRegistrations: NewRegistrationRecord[] = [];
 const memoryReminderLogs: ServerReminderLog[] = [];
@@ -640,8 +555,23 @@ export async function toggleRegistrationAttendance(
   return { success: true, status: newStatus };
 }
 
+const DEMO_WEBINAR_IDS = new Set([
+  'webinar-ai-tools-2026',
+  'webinar-meta-ads-masterclass',
+  'webinar-seo-basics',
+  'webinar-wordpress-elementor',
+  'webinar-canva-graphic-design',
+  'webinar-google-ads-growth',
+  'webinar-content-copywriting-ai',
+  'webinar-linkedin-branding',
+  'webinar-email-automation',
+  'webinar-youtube-growth',
+  'webinar-ecommerce-scaling',
+  'webinar-ga4-analytics',
+]);
+
 /**
- * Fetch all webinars from database / memory
+ * Fetch all webinars from database / memory (excluding legacy demo entries)
  */
 export async function getAllWebinars(): Promise<ServerWebinarRecord[]> {
   const supabase = getSupabaseServer();
@@ -650,13 +580,13 @@ export async function getAllWebinars(): Promise<ServerWebinarRecord[]> {
       const query = supabase.from('webinars').select('*').order('start_datetime', { ascending: true });
       const { data, error } = await withTimeout(query, 1500);
       if (!error && Array.isArray(data) && data.length > 0) {
-        return data as ServerWebinarRecord[];
+        return (data as ServerWebinarRecord[]).filter((w) => !DEMO_WEBINAR_IDS.has(w.id));
       }
     } catch (err) {
       console.warn('[Supabase] Error fetching webinars, falling back to memory:', err);
     }
   }
-  return memoryWebinars;
+  return memoryWebinars.filter((w) => !DEMO_WEBINAR_IDS.has(w.id));
 }
 
 /**

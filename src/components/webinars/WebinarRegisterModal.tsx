@@ -3,6 +3,7 @@ import { X, CheckCircle2, AlertCircle, Calendar, Clock, Loader2, Sparkles } from
 import { Webinar } from '../../types';
 import { supabase } from '../../lib/supabase';
 import { apiFetch } from '../../utils/apiConfig';
+import { useScrollLock } from '../../utils/useScrollLock';
 
 export interface WebinarRegisterModalProps {
   isOpen: boolean;
@@ -19,6 +20,7 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
   selectedWebinar,
   availableWebinars,
 }) => {
+  useScrollLock(isOpen);
   // Resolve the active webinar from either prop or fallback to first available
   const activeWebinar: Webinar | null =
     webinar ||

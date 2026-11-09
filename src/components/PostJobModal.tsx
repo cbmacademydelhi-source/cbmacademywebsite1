@@ -19,6 +19,7 @@ import {
   submitJobPosting,
   JobPostingFormData,
 } from '../services/formService';
+import { useScrollLock } from '../utils/useScrollLock';
 
 interface PostJobModalProps {
   isOpen: boolean;
@@ -44,6 +45,7 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
   isOpen,
   onClose,
 }) => {
+  useScrollLock(isOpen);
   const [form, setForm] =
     useState<JobPostingFormData>(initialForm);
 

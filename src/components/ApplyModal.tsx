@@ -4,6 +4,8 @@ import { submitApplicationForm, TARGET_NOTIFICATION_EMAIL } from '../services/fo
 import { X, CheckCircle2, AlertCircle, Sparkles, Send, ShieldCheck, GraduationCap } from 'lucide-react';
 import { CbmLogo } from './CbmLogo';
 
+import { useScrollLock } from '../utils/useScrollLock';
+
 interface ApplyModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -15,6 +17,7 @@ export const ApplyModal: React.FC<ApplyModalProps> = ({
   onClose,
   initialCourse = 'Master in AI-Powered Digital Marketing & Performance Growth',
 }) => {
+  useScrollLock(isOpen);
   const [formData, setFormData] = useState<ApplicationFormData>({
     fullName: '',
     email: '',

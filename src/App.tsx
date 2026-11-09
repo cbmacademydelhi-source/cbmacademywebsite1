@@ -186,7 +186,31 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    let hasHandledInitialReload = false;
+
     const updatePage = () => {
+      // Whenever the website is reloaded/refreshed, always redirect to Home ('/')
+      if (!hasHandledInitialReload) {
+        hasHandledInitialReload = true;
+        try {
+          const navEntries = performance.getEntriesByType('navigation');
+          const isReload = navEntries.length > 0
+            ? (navEntries[0] as PerformanceNavigationTiming).type === 'reload'
+            : (performance as any)?.navigation?.type === 1;
+
+          if (isReload) {
+            window.history.replaceState(null, '', '/');
+            window.location.hash = '';
+            setCurrentPage('home');
+            applyPageSeo('home');
+            window.scrollTo({ top: 0, behavior: 'instant' });
+            return;
+          }
+        } catch {
+          // Ignore
+        }
+      }
+
       const rawHash = window.location.hash.replace('#', '').trim();
       const rawPath = window.location.pathname.replace(/^\/|\/$/g, '').trim();
 

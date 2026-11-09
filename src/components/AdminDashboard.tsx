@@ -9,7 +9,7 @@ export default function AdminDashboard() {
     const token = getAdminToken();
     return token ? true : false;
   });
-  const [activeTab, setActiveTab] = useState<AdminTab>('overview');
+  const [activeTab, setActiveTab] = useState<AdminTab>('webinars');
 
   const determineTabFromHash = (): AdminTab => {
     const rawHash = window.location.hash.toLowerCase().replace('#', '').trim();
@@ -18,23 +18,11 @@ export default function AdminDashboard() {
 
     if (candidate.startsWith('admin/')) {
       const sub = candidate.replace('admin/', '') as any;
-      if (sub === 'dashboard' || sub === 'login') return 'overview';
-      const validTabs: AdminTab[] = [
-        'overview',
-        'pending',
-        'courses',
-        'jobs',
-        'blogs',
-        'webinars',
-        'applications',
-        'certificates',
-        'enquiries',
-        'users',
-        'settings',
-      ];
-      if (validTabs.includes(sub)) return sub;
+      if (sub === 'images') return 'images';
+      if (sub === 'certificates') return 'certificates';
+      return 'webinars';
     }
-    return 'overview';
+    return 'webinars';
   };
 
   useEffect(() => {
