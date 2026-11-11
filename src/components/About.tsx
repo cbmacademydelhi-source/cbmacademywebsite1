@@ -276,7 +276,7 @@ export const About: React.FC<AboutProps> = ({ isServicesPage = false }) => {
           <div className="lg:col-span-6 space-y-4">
             <div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-xl bg-white group">
               <img
-                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1000&auto=format&fit=crop"
+                src="/assets/cbm_photos/about_cbm_students_together.jpg"
                 alt="Students collaborating on digital marketing projects and laptops at CBM Academy in Okhla, New Delhi"
                 title="CBM Academy Digital Marketing Training in Okhla, New Delhi"
                 width={1000}
@@ -344,7 +344,7 @@ export const About: React.FC<AboutProps> = ({ isServicesPage = false }) => {
           <div className="lg:col-span-6 order-2 lg:order-1 h-full">
             <div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-md group h-full min-h-[300px] sm:min-h-[340px]">
               <img
-                src="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1000&auto=format&fit=crop"
+                src="/assets/cbm_photos/who_we_are_empty_classroom.jpg"
                 alt="Digital marketing classroom training session with mentor and learners at CBM Academy in New Delhi"
                 title="CBM Academy Classroom Training & Mentorship"
                 width={1000}

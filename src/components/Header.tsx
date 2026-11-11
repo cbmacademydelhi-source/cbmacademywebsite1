@@ -90,6 +90,29 @@ export const Header: React.FC<HeaderProps> = ({
     });
   };
 
+  const logoClicksRef = React.useRef(0);
+  const logoTimerRef = React.useRef<any>(null);
+
+  const handleHeaderLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    logoClicksRef.current += 1;
+    if (logoTimerRef.current) clearTimeout(logoTimerRef.current);
+
+    if (logoClicksRef.current >= 5) {
+      e.preventDefault();
+      e.stopPropagation();
+      logoClicksRef.current = 0;
+      setMobileMenuOpen(false);
+      window.location.hash = 'admin/login';
+      return;
+    }
+
+    logoTimerRef.current = setTimeout(() => {
+      logoClicksRef.current = 0;
+    }, 2500);
+
+    handleNavigation(e, '#home');
+  };
+
   return (
     <>
       {/* Top Notification Bar */}
@@ -148,7 +171,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Official CBM Academy Logo */}
           <a
             href="#home"
-            onClick={(e) => handleNavigation(e, '#home')}
+            onClick={handleHeaderLogoClick}
             className="flex-shrink-0 flex items-center group focus:outline-none"
             id="header-logo-link"
             aria-label="CBM Academy Home"
@@ -246,7 +269,24 @@ export const Header: React.FC<HeaderProps> = ({
             id="mobile-menu-drawer"
             className="lg:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-6 space-y-2 shadow-xl"
           >
-            <div className="py-2 border-b border-slate-100">
+            <div
+              className="py-2 border-b border-slate-100 cursor-pointer"
+              onClick={(e) => {
+                logoClicksRef.current += 1;
+                if (logoTimerRef.current) clearTimeout(logoTimerRef.current);
+                if (logoClicksRef.current >= 5) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  logoClicksRef.current = 0;
+                  setMobileMenuOpen(false);
+                  window.location.hash = 'admin/login';
+                  return;
+                }
+                logoTimerRef.current = setTimeout(() => {
+                  logoClicksRef.current = 0;
+                }, 2500);
+              }}
+            >
               <CbmLogo variant="light" height={110} className="my-[-26px] ml-[-8px]" />
             </div>
 

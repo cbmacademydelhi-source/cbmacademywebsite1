@@ -542,7 +542,7 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
   const shouldReduceMotion = useReducedMotion();
 
   const DEFAULT_POSTER =
-    'https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1600&auto=format&fit=crop';
+    '/assets/cbm_photos/courses_group_table.jpg';
 
   const [posterUrl, setPosterUrl] = useState<string>(DEFAULT_POSTER);
   const [activeModuleIndex, setActiveModuleIndex] = useState<number>(0);
@@ -653,7 +653,8 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
                 alt="AI Pro Digital Marketing Course Poster"
                 loading="lazy"
                 decoding="async"
-                className="w-full h-full object-cover object-center"
+                style={{ objectPosition: 'center 68%' }}
+                className="w-full h-full object-cover object-[center_68%]"
               />
             </div>
           </div>

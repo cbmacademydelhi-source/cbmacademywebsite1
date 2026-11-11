@@ -20,6 +20,7 @@ import {
   resetWebinarsToDefault,
 } from '../../services/webinarStorage';
 import { useScrollLock } from '../../utils/useScrollLock';
+import { getAdminToken } from '../../services/adminService';
 
 interface ManageWebinarsModalProps {
   isOpen: boolean;
@@ -32,10 +33,16 @@ export const ManageWebinarsModal: React.FC<ManageWebinarsModalProps> = ({
   onClose,
   onWebinarsUpdated,
 }) => {
-  useScrollLock(isOpen);
+  const token = getAdminToken();
+  useScrollLock(isOpen && !!token);
   const [webinars, setWebinars] = useState<Webinar[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+
+  // Guard against unauthenticated public access
+  if (!isOpen || !token) {
+    return null;
+  }
 
   // Form states
   const [title, setTitle] = useState('');

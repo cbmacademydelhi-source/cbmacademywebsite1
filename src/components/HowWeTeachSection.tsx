@@ -116,7 +116,7 @@ export const HowWeTeachSection: React.FC<HowWeTeachSectionProps> = () => {
             {/* 4. Large, authentic classroom photograph with asymmetrical frame */}
             <div className="relative rounded-3xl rounded-tl-xl overflow-hidden shadow-xl border border-slate-100 bg-slate-900 aspect-[4/3] sm:aspect-[16/11]">
               <img
-                src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1200&q=80"
+                src="/assets/cbm_photos/grow_your_career_man.jpg"
                 alt="CBM Academy trainer mentoring students in a hands-on digital marketing and AI session"
                 className="w-full h-full object-cover object-center filter saturate-[1.05] contrast-[1.02]"
                 loading="lazy"

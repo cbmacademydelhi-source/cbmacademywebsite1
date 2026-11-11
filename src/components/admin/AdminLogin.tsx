@@ -8,6 +8,9 @@ interface AdminLoginProps {
   onSuccess?: () => void;
   onNavigateHome?: () => void;
   onBackToHome?: () => void;
+  onClose?: () => void;
+  redirectOnSuccess?: boolean;
+  isModal?: boolean;
 }
 
 export const AdminLogin: React.FC<AdminLoginProps> = ({
@@ -15,6 +18,9 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
   onSuccess,
   onNavigateHome,
   onBackToHome,
+  onClose,
+  redirectOnSuccess = true,
+  isModal = false,
 }) => {
   const [email, setEmail] = useState('office@cbmacademy.in');
   const [password, setPassword] = useState('');
@@ -23,7 +29,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
   const [success, setSuccess] = useState('');
 
   const triggerSuccess = onLoginSuccess || onSuccess;
-  const triggerHome = onNavigateHome || onBackToHome || (() => {
+  const triggerHome = onClose || onNavigateHome || onBackToHome || (() => {
     window.location.hash = '';
     window.location.pathname = '/';
   });
@@ -43,7 +49,9 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
       const result = await loginAdmin(email, password);
       if (result.success) {
         setSuccess('Authentication verified. Loading dashboard...');
-        window.location.hash = 'admin/dashboard';
+        if (redirectOnSuccess) {
+          window.location.hash = 'admin/dashboard';
+        }
         if (typeof triggerSuccess === 'function') {
           triggerSuccess();
         }
@@ -58,7 +66,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-['Plus_Jakarta_Sans',sans-serif]">
+    <div className={`${isModal ? 'bg-[#F8FAFC] py-6 sm:py-8 px-4 sm:px-6' : 'min-h-screen bg-[#F8FAFC] py-12 sm:px-6 lg:px-8'} flex flex-col justify-center font-['Plus_Jakarta_Sans',sans-serif]`}>
       {/* Top Brand Bar */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         <div className="flex justify-center mb-4">
@@ -161,7 +169,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
               className="text-[#072B57] hover:text-[#FF6B00] font-semibold flex items-center gap-1 transition-colors cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Return to Website</span>
+              <span>{isModal ? 'Close' : 'Return to Website'}</span>
             </button>
           </div>
         </div>

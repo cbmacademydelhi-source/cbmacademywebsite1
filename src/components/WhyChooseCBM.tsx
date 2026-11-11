@@ -168,7 +168,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
             >
               <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/90 shadow-xl bg-white group">
                 <img
-                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop"
+                  src="/assets/cbm_photos/why_choose_cbm_students.jpg"
                   alt="Students working on laptops in a modern digital marketing classroom at CBM Academy"
                   title="CBM Academy Digital Marketing Classroom Training"
                   width={1200}
@@ -176,7 +176,8 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
                   loading="lazy"
                   decoding="async"
                   referrerPolicy="no-referrer"
-                  className="w-full h-72 sm:h-84 lg:h-96 object-cover transition-transform duration-500 group-hover:scale-105"
+                  style={{ objectPosition: 'center 65%' }}
+                  className="w-full h-72 sm:h-84 lg:h-96 object-cover object-[center_65%] transition-transform duration-500 group-hover:scale-105"
                 />
 
                 {/* Single text in bottom */}
