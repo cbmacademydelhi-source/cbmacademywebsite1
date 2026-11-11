@@ -6,15 +6,11 @@ import {
   X,
   ArrowRight,
   ChevronRight,
-  SlidersHorizontal,
 } from 'lucide-react';
 import { Webinar } from '../types';
 import { getWebinars, fetchWebinarsFromDb, WEBINAR_UPDATE_EVENT } from '../services/webinarStorage';
-import { getAdminToken } from '../services/adminService';
 import { WebinarDetailsModal } from './webinars/WebinarDetailsModal';
 import { WebinarRegisterModal } from './webinars/WebinarRegisterModal';
-import { ManageWebinarsModal } from './webinars/ManageWebinarsModal';
-import { AdminLogin } from './admin/AdminLogin';
 
 interface WebinarsPageProps {
   onOpenApply?: (courseOrNote?: string) => void;
@@ -37,18 +33,6 @@ export const WebinarsPage: React.FC<WebinarsPageProps> = ({
 
   const [selectedWebinarForRegister, setSelectedWebinarForRegister] = useState<Webinar | null>(null);
   const [registerModalOpen, setRegisterModalOpen] = useState(false);
-
-  const [manageModalOpen, setManageModalOpen] = useState(false);
-  const [showAdminAuthModal, setShowAdminAuthModal] = useState(false);
-
-  const handleManageWebinarsClick = () => {
-    const token = getAdminToken();
-    if (token) {
-      setManageModalOpen(true);
-    } else {
-      setShowAdminAuthModal(true);
-    }
-  };
 
   // Dynamic SEO metadata
   useEffect(() => {
@@ -582,17 +566,9 @@ export const WebinarsPage: React.FC<WebinarsPageProps> = ({
           )}
         </section>
 
-        {/* Discrete Admin Switcher at Bottom for Admin Faculty */}
-        <div className="pt-6 pb-2 border-t border-gray-100 flex items-center justify-between text-xs text-gray-400">
+        {/* Bottom Note */}
+        <div className="pt-6 pb-2 border-t border-gray-100 flex items-center justify-center text-xs text-gray-400 text-center">
           <span>&copy; {new Date().getFullYear()} CBM Academy &bull; All masterclasses are conducted live</span>
-          <button
-            type="button"
-            onClick={handleManageWebinarsClick}
-            className="hover:text-gray-600 transition-colors cursor-pointer inline-flex items-center gap-1"
-          >
-            <SlidersHorizontal className="w-3 h-3" />
-            <span>Manage Webinars</span>
-          </button>
         </div>
       </div>
 
@@ -623,46 +599,6 @@ export const WebinarsPage: React.FC<WebinarsPageProps> = ({
             setRegisterModalOpen(false);
             setSelectedWebinarForRegister(null);
           }}
-        />
-      )}
-
-      {/* Admin Authentication Required Modal */}
-      {showAdminAuthModal && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="relative w-full max-w-md">
-            <button
-              type="button"
-              onClick={() => setShowAdminAuthModal(false)}
-              className="absolute top-4 right-4 z-20 p-2 text-slate-400 hover:text-slate-700 bg-white/80 hover:bg-white rounded-full shadow-xs transition-colors cursor-pointer"
-              aria-label="Close Authentication"
-            >
-              <X className="w-5 h-5" />
-            </button>
-            <div className="overflow-hidden rounded-2xl shadow-2xl">
-              <AdminLogin
-                isModal={true}
-                redirectOnSuccess={false}
-                onSuccess={() => {
-                  setShowAdminAuthModal(false);
-                  setManageModalOpen(true);
-                }}
-                onLoginSuccess={() => {
-                  setShowAdminAuthModal(false);
-                  setManageModalOpen(true);
-                }}
-                onNavigateHome={() => setShowAdminAuthModal(false)}
-                onBackToHome={() => setShowAdminAuthModal(false)}
-                onClose={() => setShowAdminAuthModal(false)}
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {manageModalOpen && (
-        <ManageWebinarsModal
-          isOpen={manageModalOpen}
-          onClose={() => setManageModalOpen(false)}
         />
       )}
     </div>
