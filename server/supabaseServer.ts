@@ -347,8 +347,6 @@ export async function saveWebinarRegistration(
   memoryRegistrations.unshift(finalRecord);
 
   return { success: true, id: finalRecord.id!, reference: refCode };
-
-  return { success: true, id: finalRecord.id!, reference: refCode };
 }
 
 /**
@@ -361,7 +359,7 @@ export async function getRegistrationByIdOrRef(
   const cleanId = identifier.trim();
 
   const supabase = getSupabaseServer();
-  if (supabase) {
+  if (supabase && /^[a-zA-Z0-9_-]{1,128}$/.test(cleanId)) {
     try {
       const query = supabase
         .from('webinar_registrations')
@@ -455,16 +453,18 @@ export async function approveRegistrationPayment(params: {
 
   try {
     const supabase = getSupabaseServer();
-    await supabase
-      .from('webinar_registrations')
-      .update({
-        payment_status: 'paid',
-        registration_status: 'approved',
-        razorpay_payment_id: params.paymentId,
-        razorpay_signature: params.signature || null,
-        paid_at: paidAt,
-      })
-      .eq('id', reg.id);
+    if (supabase) {
+      await supabase
+        .from('webinar_registrations')
+        .update({
+          payment_status: 'paid',
+          registration_status: 'approved',
+          razorpay_payment_id: params.paymentId,
+          razorpay_signature: params.signature || null,
+          paid_at: paidAt,
+        })
+        .eq('id', reg.id);
+    }
   } catch (err) {
     console.warn('[Supabase] approveRegistrationPayment DB update warning:', err);
   }
@@ -498,7 +498,9 @@ export async function updateRegistrationPaymentStatus(
 
   try {
     const supabase = getSupabaseServer();
-    await supabase.from('webinar_registrations').update(updates).eq('id', reg.id);
+    if (supabase) {
+      await supabase.from('webinar_registrations').update(updates).eq('id', reg.id);
+    }
   } catch (err) {
     console.warn('[Supabase] updateRegistrationPaymentStatus notice:', err);
   }

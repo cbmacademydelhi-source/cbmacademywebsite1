@@ -1,16 +1,13 @@
 import crypto from 'crypto';
 import Razorpay from 'razorpay';
 
-const DEFAULT_KEY_ID = 'rzp_live_TqufyQXW4P2Don';
-const DEFAULT_KEY_SECRET = 'FAPE53ROFpLpdhRcJ1LPu1VT';
-
 export function getRazorpayKeyId(): string {
-  const keyId = (process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || DEFAULT_KEY_ID).trim();
+  const keyId = (process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || '').trim();
   return keyId;
 }
 
 export function getRazorpayKeySecret(): string {
-  const keySecret = (process.env.RAZORPAY_KEY_SECRET || DEFAULT_KEY_SECRET).trim();
+  const keySecret = (process.env.RAZORPAY_KEY_SECRET || '').trim();
   return keySecret;
 }
 
@@ -26,18 +23,23 @@ export function isWebhookConfigured(): boolean {
 }
 
 let razorpayInstance: Razorpay | null = null;
-let currentKeyId = '';
+let currentClientKey = '';
 
 export function getRazorpayClient(): Razorpay {
   const keyId = getRazorpayKeyId();
   const keySecret = getRazorpayKeySecret();
 
-  if (!razorpayInstance || currentKeyId !== keyId) {
+  if (!keyId || !keySecret) {
+    throw new Error('RAZORPAY_CONFIG_REQUIRED: RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET must be set in server environment variables.');
+  }
+
+  const cacheKey = `${keyId}:${crypto.createHash('sha256').update(keySecret).digest('hex')}`;
+  if (!razorpayInstance || currentClientKey !== cacheKey) {
     razorpayInstance = new Razorpay({
       key_id: keyId,
       key_secret: keySecret,
     });
-    currentKeyId = keyId;
+    currentClientKey = cacheKey;
   }
 
   return razorpayInstance;

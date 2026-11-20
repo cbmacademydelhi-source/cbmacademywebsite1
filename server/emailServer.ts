@@ -29,6 +29,28 @@ const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'CBM Academy <onboard
 const WEB3FORMS_KEY =
   process.env.VITE_WEB3FORMS_ACCESS_KEY || '4a2c0a81-481c-4274-a599-cc3f97947c19';
 
+function escapeHtml(value: unknown): string {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function safeHttpUrl(url?: string | null): string | null {
+  if (!url || typeof url !== 'string') return null;
+  const trimmed = url.trim();
+  if (!/^https?:\/\//i.test(trimmed)) return null;
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return null;
+    return parsed.toString();
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Generate Google Calendar Web URL for one-click add
  */
@@ -88,13 +110,25 @@ export async function sendWebinarConfirmationEmail(
   );
 
   const subject = `Registration Confirmed: ${details.webinarTitle} | CBM Academy`;
+  const safeSubject = escapeHtml(subject);
+  const safeName = escapeHtml(details.recipientName);
+  const safeTitle = escapeHtml(details.webinarTitle);
+  const safeDescription = details.webinarDescription ? escapeHtml(details.webinarDescription) : '';
+  const safeRefCode = escapeHtml(refCode);
+  const safeSessionDate = escapeHtml(sessionDate);
+  const safeSessionTime = escapeHtml(sessionTime);
+  const safeSessionDuration = escapeHtml(sessionDuration);
+  const safeAmountFormatted = escapeHtml(amountFormatted);
+  const safeMeetingUrl = safeHttpUrl(details.meetingUrl);
+  const safeWhatsappGroupUrl = safeHttpUrl(details.whatsappGroupUrl);
+  const safeGCalUrl = safeHttpUrl(gCalUrl) || 'https://calendar.google.com';
 
   const htmlBody = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>${subject}</title>
+  <title>${safeSubject}</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #F8FAFC; color: #072B57; margin: 0; padding: 24px 12px; }
     .card { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 14px; border: 1px solid #E2E8F0; overflow: hidden; box-shadow: 0 4px 12px rgba(7, 43, 87, 0.05); }
@@ -126,42 +160,42 @@ export async function sendWebinarConfirmationEmail(
     </div>
     
     <div class="content">
-      <p style="font-size: 15px; margin-top: 0;">Hi <strong>${details.recipientName}</strong>,</p>
+      <p style="font-size: 15px; margin-top: 0;">Hi <strong>${safeName}</strong>,</p>
       <p style="font-size: 14px; color: #475569; line-height: 1.5;">
         Your seat has been successfully reserved for our live masterclass. We’re excited to have you join us for an intensive, practical learning session!
       </p>
 
       <div style="margin: 16px 0;">
         <span class="badge ${isPaid ? 'badge-paid' : 'badge-free'}">${isPaid ? 'PAID WEBINAR' : 'FREE MASTERCLASS'}</span>
-        <h2 style="font-size: 18px; color: #072B57; margin: 10px 0 6px;">${details.webinarTitle}</h2>
-        ${details.webinarDescription ? `<p style="font-size: 13px; color: #64748B; margin: 0 0 12px;">${details.webinarDescription}</p>` : ''}
+        <h2 style="font-size: 18px; color: #072B57; margin: 10px 0 6px;">${safeTitle}</h2>
+        ${safeDescription ? `<p style="font-size: 13px; color: #64748B; margin: 0 0 12px;">${safeDescription}</p>` : ''}
       </div>
 
       <div class="details-box">
         <div class="detail-row">
           <span class="detail-label">Reference ID:</span>
-          <span class="detail-value" style="font-family: monospace; color: #FF6B00;">${refCode}</span>
+          <span class="detail-value" style="font-family: monospace; color: #FF6B00;">${safeRefCode}</span>
         </div>
         <div class="detail-row">
           <span class="detail-label">Date:</span>
-          <span class="detail-value">${sessionDate}</span>
+          <span class="detail-value">${safeSessionDate}</span>
         </div>
         <div class="detail-row">
           <span class="detail-label">Time:</span>
-          <span class="detail-value">${sessionTime} (IST)</span>
+          <span class="detail-value">${safeSessionTime} (IST)</span>
         </div>
         <div class="detail-row">
           <span class="detail-label">Duration:</span>
-          <span class="detail-value">${sessionDuration}</span>
+          <span class="detail-value">${safeSessionDuration}</span>
         </div>
         <div class="detail-row">
           <span class="detail-label">Registration Type:</span>
-          <span class="detail-value">${isPaid ? `Paid (${amountFormatted})` : 'Free Masterclass'}</span>
+          <span class="detail-value">${isPaid ? `Paid (${safeAmountFormatted})` : 'Free Masterclass'}</span>
         </div>
-        ${details.meetingUrl ? `
+        ${safeMeetingUrl ? `
         <div class="detail-row">
           <span class="detail-label">Meeting Link:</span>
-          <span class="detail-value"><a href="${details.meetingUrl}" style="color: #2563EB;">Join Live Room</a></span>
+          <span class="detail-value"><a href="${escapeHtml(safeMeetingUrl)}" style="color: #2563EB;">Join Live Room</a></span>
         </div>
         ` : `
         <div class="detail-row">
@@ -172,18 +206,18 @@ export async function sendWebinarConfirmationEmail(
       </div>
 
       <div style="margin: 24px 0 16px; text-align: center;">
-        ${details.whatsappGroupUrl ? `
-          <a href="${details.whatsappGroupUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-wa">
+        ${safeWhatsappGroupUrl ? `
+          <a href="${escapeHtml(safeWhatsappGroupUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-wa">
             💬 Join WhatsApp Group
           </a>
         ` : ''}
 
-        <a href="${gCalUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+        <a href="${escapeHtml(safeGCalUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
           📅 Add to Google Calendar
         </a>
 
-        ${details.meetingUrl ? `
-          <a href="${details.meetingUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+        ${safeMeetingUrl ? `
+          <a href="${escapeHtml(safeMeetingUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
             🚀 Join Meeting
           </a>
         ` : ''}
@@ -198,7 +232,7 @@ export async function sendWebinarConfirmationEmail(
 
     <div class="footer">
       <p style="margin: 0 0 6px;"><strong>CBM Academy Digital Marketing Institute</strong></p>
-      <p style="margin: 0 0 8px;">Okhla Phase 2, New Delhi 110020 • Support: support@cbmacademy.in</p>
+      <p style="margin: 0 0 8px;">E-111, Hari Kothi, Abul Fazal Enclave, Okhla, New Delhi 110025 • office@cbmacademy.in • +91 92115 83150</p>
       <p style="margin: 0; font-size: 11px; color: #94A3B8;">
         You received this because you registered for a masterclass on cbmacademy.in.
       </p>
@@ -305,6 +339,13 @@ export async function sendWebinarReminderEmail(
   }
 
   const subject = `${subjectPrefix}: ${details.webinarTitle} | CBM Academy`;
+  const safeReminderTitle = escapeHtml(details.webinarTitle);
+  const safeReminderName = escapeHtml(details.recipientName);
+  const safeReminderDate = escapeHtml(details.date || 'Today');
+  const safeReminderTime = escapeHtml(details.time || 'Upcoming');
+  const safeReminderDuration = escapeHtml(details.duration || '60 mins');
+  const safeReminderMeetingUrl = safeHttpUrl(details.meetingUrl);
+  const safeReminderWhatsappUrl = safeHttpUrl(details.whatsappGroupUrl);
   console.log(`[Reminder Email] Sending ${reminderType} to ${details.recipientEmail} for "${details.webinarTitle}"`);
 
   // Try Resend if configured
@@ -322,18 +363,18 @@ export async function sendWebinarReminderEmail(
           subject,
           html: `
             <div style="font-family: sans-serif; max-width: 580px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px;">
-              <h2 style="color: #072B57;">${subjectPrefix}: ${details.webinarTitle}</h2>
-              <p>Hi ${details.recipientName},</p>
-              <p style="color: #334155;">${urgencyText}</p>
+              <h2 style="color: #072B57;">${escapeHtml(subjectPrefix)}: ${safeReminderTitle}</h2>
+              <p>Hi ${safeReminderName},</p>
+              <p style="color: #334155;">${escapeHtml(urgencyText)}</p>
               <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                <p style="margin: 4px 0;"><strong>Date:</strong> ${details.date || 'Today'}</p>
-                <p style="margin: 4px 0;"><strong>Time:</strong> ${details.time || 'Upcoming'} (IST)</p>
-                <p style="margin: 4px 0;"><strong>Duration:</strong> ${details.duration || '60 mins'}</p>
-                ${details.meetingUrl ? `<p style="margin: 4px 0;"><strong>Meeting Link:</strong> <a href="${details.meetingUrl}">${details.meetingUrl}</a></p>` : ''}
+                <p style="margin: 4px 0;"><strong>Date:</strong> ${safeReminderDate}</p>
+                <p style="margin: 4px 0;"><strong>Time:</strong> ${safeReminderTime} (IST)</p>
+                <p style="margin: 4px 0;"><strong>Duration:</strong> ${safeReminderDuration}</p>
+                ${safeReminderMeetingUrl ? `<p style="margin: 4px 0;"><strong>Meeting Link:</strong> <a href="${escapeHtml(safeReminderMeetingUrl)}">${escapeHtml(safeReminderMeetingUrl)}</a></p>` : ''}
               </div>
-              ${details.meetingUrl ? `<a href="${details.meetingUrl}" style="display: inline-block; padding: 10px 20px; background: #FF6B00; color: #fff; text-decoration: none; border-radius: 6px; font-weight: bold;">Join Live Session</a>` : ''}
-              ${details.whatsappGroupUrl ? `<a href="${details.whatsappGroupUrl}" style="display: inline-block; margin-left: 10px; padding: 10px 20px; background: #25D366; color: #fff; text-decoration: none; border-radius: 6px; font-weight: bold;">Join WhatsApp Group</a>` : ''}
-              <p style="font-size: 12px; color: #94a3b8; margin-top: 20px;">CBM Academy • Delhi Campus • support@cbmacademy.in</p>
+              ${safeReminderMeetingUrl ? `<a href="${escapeHtml(safeReminderMeetingUrl)}" style="display: inline-block; padding: 10px 20px; background: #FF6B00; color: #fff; text-decoration: none; border-radius: 6px; font-weight: bold;">Join Live Session</a>` : ''}
+              ${safeReminderWhatsappUrl ? `<a href="${escapeHtml(safeReminderWhatsappUrl)}" style="display: inline-block; margin-left: 10px; padding: 10px 20px; background: #25D366; color: #fff; text-decoration: none; border-radius: 6px; font-weight: bold;">Join WhatsApp Group</a>` : ''}
+              <p style="font-size: 12px; color: #94a3b8; margin-top: 20px;">CBM Academy • E-111, Hari Kothi, Abul Fazal Enclave, Okhla, New Delhi 110025 • office@cbmacademy.in • +91 92115 83150</p>
             </div>
           `,
         }),

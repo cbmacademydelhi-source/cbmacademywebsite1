@@ -8,14 +8,16 @@ interface WebinarPromoPopupProps {
   onRegister: (webinar: Webinar) => void;
 }
 
+export const ORIGINAL_AI_ROBOT_IMAGE =
+  'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80';
+
 // The original featured webinar content exactly as it was
 export const ORIGINAL_POPUP_WEBINAR: Webinar = {
   id: 'webinar-ai-tools-2026',
   title: 'AI Tools Every Digital Marketer Should Know in 2026',
   description:
     'Learn how modern AI tools like ChatGPT, Claude, and Midjourney can automate marketing workflows and boost campaign ROI.',
-  posterUrl:
-    'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80',
+  posterUrl: ORIGINAL_AI_ROBOT_IMAGE,
   type: 'free',
   price: 'FREE',
   date: 'Sat, Oct 24, 2026',
@@ -120,10 +122,7 @@ export const WebinarPromoPopup: React.FC<WebinarPromoPopupProps> = ({
         <div className="flex flex-col sm:flex-row items-stretch">
           <div className="relative w-full sm:w-[190px] shrink-0 bg-slate-900 min-h-[160px] sm:min-h-full overflow-hidden">
             <img
-              src={
-                activeWebinar.posterUrl ||
-                'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80'
-              }
+              src={ORIGINAL_AI_ROBOT_IMAGE}
               alt={activeWebinar.title ? `${activeWebinar.title} - CBM Academy Featured Live Webinar` : 'CBM Academy Featured Live Webinar'}
               title={activeWebinar.title || 'CBM Academy Featured Live Webinar'}
               width={800}

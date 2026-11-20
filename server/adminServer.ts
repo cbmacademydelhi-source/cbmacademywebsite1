@@ -739,14 +739,15 @@ export async function updateApplicationStatus(
   saveStore();
 
   const supabase = getSupabaseServer();
-  if (supabase) {
+  const safeId = String(id || '').trim();
+  if (supabase && /^[a-zA-Z0-9_-]{1,128}$/.test(safeId)) {
     try {
       const updates: any = { status };
       if (typeof notes === 'string') updates.notes = notes;
       await supabase
         .from('form_submissions')
         .update(updates)
-        .or(`Id.eq.${id},id.eq.${id}`);
+        .or(`Id.eq.${safeId},id.eq.${safeId}`);
     } catch {}
   }
   return true;
@@ -758,12 +759,13 @@ export async function deleteApplication(id: string): Promise<boolean> {
     saveStore();
   }
   const supabase = getSupabaseServer();
-  if (supabase) {
+  const safeId = String(id || '').trim();
+  if (supabase && /^[a-zA-Z0-9_-]{1,128}$/.test(safeId)) {
     try {
       const { error } = await supabase
         .from('form_submissions')
         .delete()
-        .or(`Id.eq.${id},id.eq.${id}`);
+        .or(`Id.eq.${safeId},id.eq.${safeId}`);
       return !error;
     } catch {
       return false;

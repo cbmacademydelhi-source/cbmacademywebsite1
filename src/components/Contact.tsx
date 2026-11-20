@@ -82,7 +82,7 @@ export const Contact: React.FC<ContactProps> = ({
                         CBM Academy
                       </p>
                       <p className="text-xs text-slate-600 leading-relaxed mt-0.5">
-                        E-111, Hari Kothi, Abul Fazal Enclave, Okhla, New Delhi, Delhi - 110025, India
+                        E-111, Hari Kothi, Abul Fazal Enclave, Okhla, New Delhi 110025
                       </p>
                     </div>
                   </div>
@@ -177,7 +177,7 @@ export const Contact: React.FC<ContactProps> = ({
                 referrerPolicy="no-referrer-when-downgrade"
               />
               <div className="absolute bottom-3 left-3 bg-[#072B57]/90 backdrop-blur-xs px-3.5 py-1.5 rounded-lg text-xs font-bold text-white shadow-md">
-               📍 Upper Ground Floor, Abul Fazal, E-111, Hari Kothi Rd, Abul Fazal Enclave, Jamia Nagar, Okhla, New Delhi
+               📍 E-111, Hari Kothi, Abul Fazal Enclave, Okhla, New Delhi 110025
               </div>
             </div>
           </motion.div>

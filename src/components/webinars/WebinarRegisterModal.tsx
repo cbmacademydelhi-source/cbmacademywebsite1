@@ -222,8 +222,12 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
         const razorpayKey = (
           orderData.keyId ||
           (import.meta as any).env?.VITE_RAZORPAY_KEY_ID ||
-          'rzp_live_TqufyQXW4P2Don'
+          ''
         ).trim();
+
+        if (!razorpayKey) {
+          throw new Error('Online payment gateway key is not configured. Please contact admissions.');
+        }
 
         // Step C: Open Razorpay Checkout Modal
         const options = {
@@ -278,33 +282,6 @@ export const WebinarRegisterModal: React.FC<WebinarRegisterModalProps> = ({
               const verifyData = await verifyRes.json().catch(() => null);
 
               if (verifyRes.ok && verifyData?.success) {
-                // Step E: Save registration in Supabase (client-side backup)
-                try {
-                  await supabase.from('webinar_registrations').insert([
-                    {
-                      id: orderData.registrationId,
-                      webinar_id: webinarId,
-                      webinar_title: webinarTitle,
-                      full_name: cleanFullName,
-                      email: cleanEmail,
-                      whatsapp_number: cleanPhone,
-                      phone: cleanPhone,
-                      registration_type: 'paid',
-                      amount: priceValue,
-                      currency: 'INR',
-                      payment_status: 'paid',
-                      registration_status: 'approved',
-                      razorpay_order_id: paymentResponse.razorpay_order_id,
-                      razorpay_payment_id: paymentResponse.razorpay_payment_id,
-                      razorpay_signature: paymentResponse.razorpay_signature,
-                      payment_reference: orderData.reference,
-                      paid_at: new Date().toISOString(),
-                    },
-                  ]);
-                } catch (dbErr) {
-                  console.warn('Supabase client insert backup notice:', dbErr);
-                }
-
                 setSubmittedData({
                   name: cleanFullName,
                   email: cleanEmail,

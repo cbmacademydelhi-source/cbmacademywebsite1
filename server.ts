@@ -1,8 +1,10 @@
 import express from 'express';
+import crypto from 'crypto';
 import path from 'path';
 import dotenv from 'dotenv';
 import { createServer as createViteServer } from 'vite';
 import {
+  getSupabaseServer,
   saveWebinarRegistration,
   updateRegistrationPaymentStatus,
   getAllRegistrations,
@@ -75,6 +77,135 @@ const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
 app.disable('x-powered-by');
+
+// ==============================================================================
+// ADMIN SESSION TOKEN & AUTHORIZATION HELPERS (Server-side secrets only)
+// ==============================================================================
+const EPHEMERAL_SESSION_SECRET = crypto.randomBytes(32).toString('hex');
+const ADMIN_SESSION_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+function getExpectedAdminEmail(): string {
+  return (process.env.ADMIN_EMAIL || 'office@cbmacademy.in').trim().toLowerCase();
+}
+
+function getAdminSessionSecret(): string {
+  const configured = (process.env.ADMIN_SESSION_SECRET || process.env.ADMIN_PASSWORD || '').trim();
+  return configured || EPHEMERAL_SESSION_SECRET;
+}
+
+function timingSafeEqualStr(a: string, b: string): boolean {
+  const hashA = crypto.createHash('sha256').update(a, 'utf8').digest();
+  const hashB = crypto.createHash('sha256').update(b, 'utf8').digest();
+  return crypto.timingSafeEqual(hashA, hashB);
+}
+
+function createAdminSessionToken(email: string): string {
+  const payload = Buffer.from(
+    JSON.stringify({
+      email,
+      role: 'admin',
+      iat: Date.now(),
+      exp: Date.now() + ADMIN_SESSION_TTL_MS,
+    }),
+    'utf8'
+  ).toString('base64url');
+
+  const signature = crypto
+    .createHmac('sha256', getAdminSessionSecret())
+    .update(payload)
+    .digest('base64url');
+
+  return `${payload}.${signature}`;
+}
+
+function verifyAdminSessionToken(token: string): { email: string; role: string } | null {
+  if (!token || !token.includes('.')) return null;
+  const parts = token.split('.');
+  if (parts.length !== 2) return null;
+
+  const [payloadB64, providedSig] = parts;
+  if (!payloadB64 || !providedSig) return null;
+
+  const expectedSig = crypto
+    .createHmac('sha256', getAdminSessionSecret())
+    .update(payloadB64)
+    .digest('base64url');
+
+  if (!timingSafeEqualStr(providedSig, expectedSig)) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(Buffer.from(payloadB64, 'base64url').toString('utf8'));
+    if (
+      parsed &&
+      parsed.role === 'admin' &&
+      typeof parsed.email === 'string' &&
+      typeof parsed.exp === 'number' &&
+      parsed.exp > Date.now()
+    ) {
+      return { email: parsed.email, role: 'admin' };
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function extractBearerToken(req: express.Request): string {
+  const authHeader = req.headers.authorization;
+  if (typeof authHeader === 'string') {
+    const match = authHeader.match(/^Bearer\s+(.+)$/i);
+    if (match?.[1]) return match[1].trim();
+  }
+  return '';
+}
+
+function isAuthorizedSupabaseAdminUser(user: any): boolean {
+  if (!user) return false;
+  const expectedEmail = getExpectedAdminEmail();
+  const userEmail = String(user.email || '').trim().toLowerCase();
+  const metaRole = String(user.user_metadata?.role || user.app_metadata?.role || '').toLowerCase();
+  return userEmail === expectedEmail || metaRole === 'admin';
+}
+
+const requireAdminAuth = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => {
+  const token = extractBearerToken(req);
+  if (!token) {
+    return res.status(401).json({ success: false, message: 'Unauthorized: Admin authentication required' });
+  }
+
+  // 1. Verify server-issued HMAC-signed admin session token
+  const sessionUser = verifyAdminSessionToken(token);
+  if (sessionUser) {
+    (req as any).adminUser = sessionUser;
+    return next();
+  }
+
+  // 2. Verify real Supabase Auth JWT with Supabase Auth server
+  const supabase = getSupabaseServer();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase.auth.getUser(token);
+      if (!error && data?.user && isAuthorizedSupabaseAdminUser(data.user)) {
+        (req as any).adminUser = {
+          email: data.user.email || getExpectedAdminEmail(),
+          role: 'admin',
+          id: data.user.id,
+        };
+        return next();
+      }
+    } catch (err) {
+      console.warn('[Admin Auth] Supabase token verification error:', err);
+    }
+  }
+
+  return res.status(401).json({ success: false, message: 'Unauthorized: Invalid or expired admin token' });
+};
 
 // Global CORS & security headers for all requests (allows live custom domains, web apps & preview environments)
 app.use((req, res, next) => {
@@ -158,7 +289,7 @@ app.get('/api/webinars/config-status', async (_req, res) => {
     fallbackModeActive: !supabaseHealth.connected,
     razorpayConfigured: isRazorpayConfigured(),
     webhookConfigured: isWebhookConfigured(),
-    razorpayKeyId: getRazorpayKeyId(),
+    razorpayKeyId: isRazorpayConfigured() ? getRazorpayKeyId() : null,
   });
 });
 
@@ -539,11 +670,24 @@ app.post('/api/webinars/create-order', async (req, res) => {
       });
     }
 
-    const webinar: ServerWebinarRecord = (await getWebinarById(webinarId)) || {
+    if (!isRazorpayConfigured()) {
+      return res.status(503).json({
+        success: false,
+        code: 'RAZORPAY_NOT_CONFIGURED',
+        message: 'Online payment gateway is not configured on the server. Please contact admissions.',
+      });
+    }
+
+    const dbWebinar = await getWebinarById(webinarId);
+    const requestedPrice = typeof req.body.price === 'number' && req.body.price > 0
+      ? req.body.price
+      : Number(String(req.body.price || '').replace(/[^0-9.]/g, ''));
+
+    const webinar: ServerWebinarRecord = dbWebinar || {
       id: webinarId,
       title: req.body.webinarTitle || 'Paid Masterclass',
       description: '',
-      price: typeof req.body.price === 'number' ? req.body.price : 499,
+      price: !isNaN(requestedPrice) && requestedPrice > 0 ? requestedPrice : 499,
       capacity: 100,
       duration_minutes: 90,
       status: 'published',
@@ -583,15 +727,13 @@ app.post('/api/webinars/create-order', async (req, res) => {
       console.warn('[Server] Existing check notice:', existErr);
     }
 
-    const requestedPrice = typeof req.body.price === 'number' && req.body.price > 0
-      ? req.body.price
-      : Number(String(req.body.price || '').replace(/[^0-9.]/g, ''));
-    const webinarDbPrice = typeof webinar.price === 'number' && webinar.price > 0
-      ? webinar.price
-      : Number(String(webinar.price || '').replace(/[^0-9.]/g, ''));
-    const amountInINR = !isNaN(requestedPrice) && requestedPrice > 0
-      ? requestedPrice
-      : (!isNaN(webinarDbPrice) && webinarDbPrice > 0 ? webinarDbPrice : 499);
+    // Prefer authoritative DB webinar price over client-supplied price
+    const dbPrice = dbWebinar
+      ? Number(String(dbWebinar.price || '').replace(/[^0-9.]/g, ''))
+      : NaN;
+    const amountInINR = !isNaN(dbPrice) && dbPrice > 0
+      ? dbPrice
+      : (!isNaN(requestedPrice) && requestedPrice > 0 ? requestedPrice : 499);
 
     const registrationId = `reg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
     const receiptId = `rcpt_${Date.now().toString().slice(-8)}_${Math.random().toString(36).substring(2, 6)}`;
@@ -701,6 +843,12 @@ app.post('/api/webinars/create-order', async (req, res) => {
  * 3. SIMULATE PAYMENT (For Prototyping / Test Mode without live keys)
  */
 app.post('/api/webinars/simulate-payment', async (req, res) => {
+  if (process.env.NODE_ENV === 'production' || process.env.ALLOW_PAYMENT_SIMULATION !== 'true') {
+    return res.status(403).json({
+      success: false,
+      message: 'Payment simulation is disabled.',
+    });
+  }
   try {
     const { registrationId } = req.body;
     if (!registrationId) {
@@ -781,6 +929,13 @@ app.post('/api/webinars/verify-payment', async (req, res) => {
       });
     }
 
+    if (!isRazorpayConfigured()) {
+      return res.status(503).json({
+        success: false,
+        message: 'Payment verification is unavailable: Razorpay credentials are not configured on the server.',
+      });
+    }
+
     const isValid = verifyPaymentSignature({
       orderId: razorpay_order_id,
       paymentId: razorpay_payment_id,
@@ -796,7 +951,16 @@ app.post('/api/webinars/verify-payment', async (req, res) => {
       });
     }
 
-    const webinarPrice = typeof amount === 'number' ? amount : 499;
+    const existingReg = await getRegistrationByIdOrRef(registrationId || razorpay_order_id);
+    const dbWebinarForVerify = req.body.webinarId ? await getWebinarById(req.body.webinarId) : null;
+    const webinarPrice =
+      (existingReg && typeof existingReg.amount === 'number' && existingReg.amount > 0
+        ? existingReg.amount
+        : null) ||
+      (dbWebinarForVerify && typeof dbWebinarForVerify.price === 'number' && dbWebinarForVerify.price > 0
+        ? dbWebinarForVerify.price
+        : null) ||
+      (typeof amount === 'number' && amount > 0 ? amount : 499);
 
     const approval = await approveRegistrationPayment({
       registrationId,
@@ -916,18 +1080,8 @@ app.post('/api/webinars/webhook', async (req, res) => {
 /**
  * 6. ADMIN: GET ALL REGISTRATIONS (Protected)
  */
-app.get('/api/webinars/registrations', async (req, res) => {
+app.get('/api/webinars/registrations', requireAdminAuth, async (req, res) => {
   try {
-    const authHeader = req.headers.authorization;
-    const token = authHeader?.replace('Bearer ', '') || (req.query.token as string);
-
-    if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: 'Unauthorized: Admin authentication token required.',
-      });
-    }
-
     const webinarId = req.query.webinarId as string | undefined;
     const type = req.query.type as 'free' | 'paid' | undefined;
     const status = req.query.status as string | undefined;
@@ -950,13 +1104,8 @@ app.get('/api/webinars/registrations', async (req, res) => {
 /**
  * 7. ADMIN: UPDATE WEBINAR SETTINGS (Dates, Capacity, Meeting Link, WhatsApp Link)
  */
-app.post('/api/webinars/update', async (req, res) => {
+app.post('/api/webinars/update', requireAdminAuth, async (req, res) => {
   try {
-    const token = req.headers.authorization?.replace('Bearer ', '') || req.body.token;
-    if (!token) {
-      return res.status(401).json({ success: false, message: 'Unauthorized' });
-    }
-
     const { id, title, description, start_datetime, duration_minutes, price, capacity, status, meeting_url, whatsapp_group_url, thumbnail_url } = req.body;
     if (!id) {
       return res.status(400).json({ success: false, message: 'Webinar ID required' });
@@ -998,52 +1147,74 @@ app.post('/api/admin/login', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Email and password are required.' });
     }
 
-    const expectedAdminEmail = (process.env.ADMIN_EMAIL || 'office@cbmacademy.in').toLowerCase();
-    const expectedAdminPass = process.env.ADMIN_PASSWORD || 'cbmacademy2026';
+    const expectedAdminEmail = getExpectedAdminEmail();
+    const expectedAdminPass = (process.env.ADMIN_PASSWORD || '').trim();
 
-    const isMatch =
-      (cleanEmail === expectedAdminEmail && cleanPass === expectedAdminPass) ||
-      cleanPass === 'cbmacademy2026';
-
-    if (!isMatch) {
-      return res.status(401).json({ success: false, message: 'Invalid admin credentials.' });
+    // 1. Validate against server-side ADMIN_EMAIL + ADMIN_PASSWORD environment variables
+    if (expectedAdminPass) {
+      if (cleanEmail === expectedAdminEmail && timingSafeEqualStr(cleanPass, expectedAdminPass)) {
+        const sessionToken = createAdminSessionToken(cleanEmail);
+        return res.status(200).json({
+          success: true,
+          access_token: sessionToken,
+          user: {
+            email: cleanEmail,
+            role: 'admin',
+          },
+          message: 'Admin login successful',
+        });
+      }
+    } else {
+      console.warn('[Admin Auth] ADMIN_PASSWORD is not configured on the server; checking Supabase Auth.');
     }
 
-    return res.status(200).json({
-      success: true,
-      access_token: 'cbm_admin_master_secret_2026',
-      user: {
-        email: cleanEmail,
-        role: 'admin',
-      },
-      message: 'Admin login successful',
-    });
+    // 2. Validate against Supabase Auth if configured
+    const supabase = getSupabaseServer();
+    if (supabase) {
+      try {
+        const { data: supaData, error: supaErr } = await supabase.auth.signInWithPassword({
+          email: cleanEmail,
+          password: cleanPass,
+        });
+        if (!supaErr && supaData?.session?.access_token && isAuthorizedSupabaseAdminUser(supaData.user)) {
+          return res.status(200).json({
+            success: true,
+            access_token: supaData.session.access_token,
+            user: {
+              email: supaData.user?.email || cleanEmail,
+              role: 'admin',
+              id: supaData.user?.id,
+            },
+            message: 'Admin login successful',
+          });
+        }
+      } catch (supaAuthErr) {
+        console.warn('[Admin Auth] Supabase sign-in notice:', supaAuthErr);
+      }
+    }
+
+    if (!expectedAdminPass && !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Admin authentication is not configured on the server. Please set ADMIN_PASSWORD.',
+      });
+    }
+
+    return res.status(401).json({ success: false, message: 'Invalid admin credentials.' });
   } catch (err: any) {
     return res.status(500).json({ success: false, message: 'Login processing error' });
   }
 });
 
-// Admin verification helper
-const requireAdminAuth = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  const token = req.headers.authorization?.replace('Bearer ', '') || (req.query.token as string);
-  if (!token) {
-    return res.status(401).json({ success: false, message: 'Unauthorized: Admin authentication required' });
-  }
-  // Accepts master token or any valid Supabase session JWT
-  if (token === 'cbm_admin_master_secret_2026' || token.length > 20) {
-    return next();
-  }
-  return res.status(401).json({ success: false, message: 'Invalid admin token' });
-};
-
 // Admin Session Check
-app.get('/api/admin/session', requireAdminAuth, (_req, res) => {
+app.get('/api/admin/session', requireAdminAuth, (req, res) => {
+  const adminUser = (req as any).adminUser || {
+    email: getExpectedAdminEmail(),
+    role: 'admin',
+  };
   return res.status(200).json({
     success: true,
-    user: {
-      email: 'office@cbmacademy.in',
-      role: 'admin',
-    },
+    user: adminUser,
   });
 });
 
@@ -1291,13 +1462,8 @@ app.delete('/api/admin/enquiries/:id', requireAdminAuth, async (req, res) => {
 /**
  * ADMIN: CREATE NEW WEBINAR
  */
-app.post('/api/webinars/create', async (req, res) => {
+app.post('/api/webinars/create', requireAdminAuth, async (req, res) => {
   try {
-    const token = req.headers.authorization?.replace('Bearer ', '') || req.body.token;
-    if (!token) {
-      return res.status(401).json({ success: false, message: 'Unauthorized: Admin token required' });
-    }
-
     const {
       title,
       description,
@@ -1341,13 +1507,8 @@ app.post('/api/webinars/create', async (req, res) => {
 /**
  * ADMIN: DELETE WEBINAR
  */
-app.post('/api/webinars/delete', async (req, res) => {
+app.post('/api/webinars/delete', requireAdminAuth, async (req, res) => {
   try {
-    const token = req.headers.authorization?.replace('Bearer ', '') || req.body.token;
-    if (!token) {
-      return res.status(401).json({ success: false, message: 'Unauthorized: Admin token required' });
-    }
-
     const { id } = req.body;
     if (!id) {
       return res.status(400).json({ success: false, message: 'Webinar ID is required' });
@@ -1363,13 +1524,8 @@ app.post('/api/webinars/delete', async (req, res) => {
 /**
  * 8. ADMIN: TOGGLE ATTENDANCE
  */
-app.post('/api/webinars/toggle-attendance', async (req, res) => {
+app.post('/api/webinars/toggle-attendance', requireAdminAuth, async (req, res) => {
   try {
-    const token = req.headers.authorization?.replace('Bearer ', '') || req.body.token;
-    if (!token) {
-      return res.status(401).json({ success: false, message: 'Unauthorized' });
-    }
-
     const { registrationId, attended } = req.body;
     if (!registrationId) {
       return res.status(400).json({ success: false, message: 'Registration ID required' });
@@ -1385,13 +1541,8 @@ app.post('/api/webinars/toggle-attendance', async (req, res) => {
 /**
  * 9. ADMIN: RESEND CONFIRMATION EMAIL
  */
-app.post('/api/webinars/resend-email', async (req, res) => {
+app.post('/api/webinars/resend-email', requireAdminAuth, async (req, res) => {
   try {
-    const token = req.headers.authorization?.replace('Bearer ', '') || req.body.token;
-    if (!token) {
-      return res.status(401).json({ success: false, message: 'Unauthorized' });
-    }
-
     const { registrationId } = req.body;
     const reg = await getRegistrationByIdOrRef(registrationId);
     if (!reg) {
@@ -1426,13 +1577,8 @@ app.post('/api/webinars/resend-email', async (req, res) => {
 /**
  * 10. ADMIN: GET REMINDER LOGS
  */
-app.get('/api/webinars/reminder-logs', async (req, res) => {
+app.get('/api/webinars/reminder-logs', requireAdminAuth, async (_req, res) => {
   try {
-    const token = req.headers.authorization?.replace('Bearer ', '') || (req.query.token as string);
-    if (!token) {
-      return res.status(401).json({ success: false, message: 'Unauthorized' });
-    }
-
     const logs = await getAllReminderLogs();
     return res.status(200).json({ success: true, logs });
   } catch (err: any) {
@@ -1537,10 +1683,25 @@ async function processScheduledReminders() {
   }
 }
 
-// CRON HTTP trigger
-app.post('/api/cron/reminders', async (_req, res) => {
+// CRON HTTP trigger (protected by CRON_SECRET or valid admin session)
+app.post('/api/cron/reminders', async (req, res) => {
+  const cronSecret = (process.env.CRON_SECRET || '').trim();
+  const headerSecret = String(req.headers['x-cron-secret'] || '').trim();
+  const bearerToken = extractBearerToken(req);
+
+  const authorizedByCronSecret =
+    Boolean(cronSecret) &&
+    ((headerSecret && timingSafeEqualStr(headerSecret, cronSecret)) ||
+      (bearerToken && timingSafeEqualStr(bearerToken, cronSecret)));
+
+  const authorizedByAdmin = Boolean(bearerToken && verifyAdminSessionToken(bearerToken));
+
+  if (!authorizedByCronSecret && !authorizedByAdmin) {
+    return res.status(401).json({ success: false, message: 'Unauthorized: Valid CRON_SECRET or admin token required.' });
+  }
+
   await processScheduledReminders();
-  res.status(200).json({ success: true, message: 'Reminders evaluation cycle executed.' });
+  return res.status(200).json({ success: true, message: 'Reminders evaluation cycle executed.' });
 });
 
 // Run automated reminder check every 60 seconds

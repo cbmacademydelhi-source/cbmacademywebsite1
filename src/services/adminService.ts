@@ -47,15 +47,7 @@ const USER_KEY = 'cbm_admin_user_data';
 export let lastAdminApiError: string | null = null;
 
 export function getAdminToken(): string | null {
-  const token = localStorage.getItem(TOKEN_KEY);
-  if (token) return token;
-  const user = getAdminUser();
-  if (user && (user.role === 'admin' || user.email === 'office@cbmacademy.in')) {
-    const fallbackToken = 'cbm_admin_master_secret_2026';
-    localStorage.setItem(TOKEN_KEY, fallbackToken);
-    return fallbackToken;
-  }
-  return null;
+  return localStorage.getItem(TOKEN_KEY);
 }
 
 export function setAdminSession(token: string, user: any) {
@@ -88,17 +80,13 @@ async function authHeaders(): Promise<HeadersInit> {
       }
     } catch {}
   }
-  if (!token) {
-    const user = getAdminUser();
-    if (user || window.location.hash.includes('admin') || window.location.pathname.includes('admin')) {
-      token = 'cbm_admin_master_secret_2026';
-      localStorage.setItem(TOKEN_KEY, token);
-    }
-  }
-  return {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    Authorization: token ? `Bearer ${token}` : 'Bearer cbm_admin_master_secret_2026',
   };
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  return headers;
 }
 
 async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutMs = 8000): Promise<Response> {

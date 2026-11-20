@@ -39,7 +39,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenApply, onOpenBrochure }) =
             <div className="space-y-1.5 text-xs text-slate-300 pt-0.5">
               <div className="flex items-start gap-2">
                 <MapPin className="w-3.5 h-3.5 text-[#FF6B00] mt-0.5 shrink-0" />
-                <span className="leading-snug">E-111, Hari Kothi, Abul Fazal Enclave, Okhla, New Delhi - 110025</span>
+                <span className="leading-snug">E-111, Hari Kothi, Abul Fazal Enclave, Okhla, New Delhi 110025</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-3.5 h-3.5 text-[#FF6B00] shrink-0" />

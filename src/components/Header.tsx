@@ -137,11 +137,11 @@ export const Header: React.FC<HeaderProps> = ({
 
           <div className="flex items-center gap-4 text-blue-200">
             <a
-              href="tel:+911145678900"
+              href="tel:+919211583150"
               className="inline-flex items-center gap-1.5 hover:text-white transition-colors"
             >
               <PhoneCall className="w-3.5 h-3.5 text-[#FF6B00]" />
-              <span>Admissions: +91 11 4567 8900</span>
+              <span>Admissions: +91 92115 83150</span>
             </a>
 
             <span className="hidden md:inline text-blue-300/40">

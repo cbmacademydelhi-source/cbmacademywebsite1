@@ -499,10 +499,10 @@ export const CertificateVerification: React.FC = () => {
                       </a>
                       <span className="text-rose-300">•</span>
                       <a
-                        href="tel:+919811443048"
+                        href="tel:+919211583150"
                         className="font-bold underline text-rose-900 hover:text-rose-700"
                       >
-                        Call Admissions (+91 98114 43048)
+                        Call Admissions (+91 92115 83150)
                       </a>
                     </div>
                   </div>

@@ -98,7 +98,7 @@ export const AdminWebinars: React.FC = () => {
     loadWebinars();
   };
 
-  const adminToken = getAdminToken() || 'admin-local-token';
+  const adminToken = getAdminToken() || '';
 
   return (
     <div className="space-y-6">

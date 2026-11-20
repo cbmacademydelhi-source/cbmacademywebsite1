@@ -39,9 +39,9 @@ export const DEFAULT_WEBINARS: Webinar[] = [];
  */
 function getAdminToken(): string {
   try {
-    return localStorage.getItem('cbm_admin_access_token') || 'cbm_admin_master_secret_2026';
+    return localStorage.getItem('cbm_admin_access_token') || '';
   } catch {
-    return 'cbm_admin_master_secret_2026';
+    return '';
   }
 }
 
@@ -228,12 +228,16 @@ export function saveWebinar(webinar: Omit<Webinar, 'id' | 'createdAt'> & { id?: 
 
   const durationMins = Number(String(savedWebinar.duration || '').replace(/[^0-9]/g, '')) || 60;
 
-  fetch(endpoint, {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  apiFetch(endpoint, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
+    headers,
     body: JSON.stringify({
       id: savedWebinar.id,
       title: savedWebinar.title,
@@ -290,12 +294,15 @@ export function deleteWebinar(id: string): boolean {
   }
 
   const token = getAdminToken();
+  const deleteHeaders: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (token) {
+    deleteHeaders.Authorization = `Bearer ${token}`;
+  }
   apiFetch('/api/webinars/delete', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
+    headers: deleteHeaders,
     body: JSON.stringify({ id }),
   }).catch((err) => console.warn('Database deleteWebinar notice:', err));
 
@@ -333,12 +340,15 @@ export function toggleWebinarStatus(id: string): Webinar | null {
   }
 
   const token = getAdminToken();
+  const toggleHeaders: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (token) {
+    toggleHeaders.Authorization = `Bearer ${token}`;
+  }
   apiFetch('/api/webinars/update', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
+    headers: toggleHeaders,
     body: JSON.stringify({ id, status: newStatus }),
   }).catch((err) => console.warn('Database toggleWebinarStatus notice:', err));
 
