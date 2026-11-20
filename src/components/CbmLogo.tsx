@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { getAdminToken } from '../services/adminService';
 
-export const CBM_LOGO_URL = '/assets/aistudio/CBM_Academy_Logo___Editable_z_e96afc7b.png';
+export const CBM_LOGO_URL = '/assets/aistudio/CBM_Agency_Logo.png_ae66f4fb.png';
 
 interface CbmLogoProps {
   className?: string;

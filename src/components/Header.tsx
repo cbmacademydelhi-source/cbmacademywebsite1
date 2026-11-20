@@ -176,7 +176,7 @@ export const Header: React.FC<HeaderProps> = ({
             id="header-logo-link"
             aria-label="CBM Academy Home"
           >
-            <CbmLogo height={160} className="my-[-46px] ml-[-12px] hover:opacity-95 transition-opacity" />
+            <CbmLogo height={64} className="hover:opacity-95 transition-opacity" />
           </a>
 
           {/* Desktop Navigation */}
@@ -287,7 +287,7 @@ export const Header: React.FC<HeaderProps> = ({
                 }, 2500);
               }}
             >
-              <CbmLogo variant="light" height={110} className="my-[-26px] ml-[-8px]" />
+              <CbmLogo variant="light" height={44} />
             </div>
 
             <div className="flex flex-col space-y-1 pt-2">

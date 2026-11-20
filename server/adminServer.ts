@@ -219,7 +219,7 @@ function getInitialStore(): AdminStore {
     {
       id: 'img-cbm-logo',
       title: 'CBM Academy Official Logo',
-      url: 'https://cbmacademy.in/logo.png',
+      url: '/assets/aistudio/CBM_Agency_Logo.png_ae66f4fb.png',
       category: 'logo',
       alt: 'CBM Academy Official Logo',
       dimensions: '512x512',
