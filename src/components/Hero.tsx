@@ -287,8 +287,7 @@ export const Hero: React.FC<HeroProps> = ({
                       muted={isMuted}
                       className="w-full h-full object-cover"
                     >
-                      <source src="/assets/aistudio/Academy Digital (1).mp4" type="video/mp4" />
-                      <source src="/assets/aistudio/Academy%20Digital%20(1).mp4" type="video/mp4" />
+                      <source src="/Academy%20LOW%20BIT%20(1).mp4" type="video/mp4" />
                       Your browser does not support the video tag.
                     </video>
 
