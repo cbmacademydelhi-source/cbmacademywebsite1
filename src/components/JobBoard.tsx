@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { JOB_OPPORTUNITIES } from '../data/cbmData';
+
 import {
   ArrowRight,
   Briefcase,
@@ -23,7 +23,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({
   onPostJob,
 }) => {
   const [filter, setFilter] = useState<'ALL' | 'REMOTE' | 'DELHI'>('ALL');
-  const [jobsList, setJobsList] = useState(JOB_OPPORTUNITIES);
+ const [jobsList, setJobsList] = useState([]);
 
   useEffect(() => {
     fetchPublicJobs().then((liveJobs) => {
