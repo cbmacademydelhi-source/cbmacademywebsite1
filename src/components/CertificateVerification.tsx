@@ -416,7 +416,7 @@ export const CertificateVerification: React.FC = () => {
                           Cryptographic Seed: {verificationResult.data.qrCodeSeed}
                         </span>
                         <span className="text-slate-600 font-semibold text-[11px]">
-                          ISO 9001:2015 Quality Verified • Permanent Digital Registry
+                          Udyam Registered • MSME Registration
                         </span>
                       </div>
                     </div>
