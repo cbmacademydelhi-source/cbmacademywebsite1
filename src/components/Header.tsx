@@ -34,7 +34,7 @@ export const Header: React.FC<HeaderProps> = ({
     { name: 'Webinars', href: '#webinars', id: 'webinars' },
     { name: 'Jobs', href: '#jobs', id: 'jobs' },
     { name: 'Certificate Verification', href: '#certificate', id: 'certificate' },
-    { name: 'About', href: '#about', id: 'about' },
+  
     { name: 'Blog', href: '#blogs', id: 'blogs' },
     { name: 'Contact', href: '#contact', id: 'contact' },
   ];
