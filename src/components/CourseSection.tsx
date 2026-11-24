@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import {
   Clock,
@@ -566,15 +566,7 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
     }
   };
 
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem('cbm_course_landscape_poster');
-      if (saved) {
-        setPosterUrl(saved);
-      }
-    } catch {
-      // ignore
-    }
+ 
  
   const handleNext = () => {
     setActiveModuleIndex((prev) => (prev < MODULES.length - 1 ? prev + 1 : 0));
