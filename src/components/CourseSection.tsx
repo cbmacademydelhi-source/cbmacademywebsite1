@@ -541,10 +541,7 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
 }) => {
   const shouldReduceMotion = useReducedMotion();
 
-  const DEFAULT_POSTER =
-    '/assets/cbm_photos/courses_group_table.jpg';
-
-  const [posterUrl, setPosterUrl] = useState<string>(DEFAULT_POSTER);
+ 
   const [activeModuleIndex, setActiveModuleIndex] = useState<number>(0);
   const [viewMode, setViewMode] = useState<'roadmap' | 'grid'>('roadmap');
   const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>({});
@@ -578,10 +575,7 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
     } catch {
       // ignore
     }
-  }, []);
-
-  const activeModule = MODULES[activeModuleIndex];
-
+ 
   const handleNext = () => {
     setActiveModuleIndex((prev) => (prev < MODULES.length - 1 ? prev + 1 : 0));
   };
@@ -643,21 +637,7 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
             </div>
           </div>
 
-          {/* =========================================================
-              COURSE POSTER (LANDSCAPE) - PHOTO ONLY
-              ========================================================= */}
-          <div className="mb-8 sm:mb-10 relative rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/90 bg-white shadow-md">
-            <div className="relative w-full aspect-[16/7.5] sm:aspect-[16/6.5] lg:aspect-[21/8] min-h-[200px] sm:min-h-[300px] lg:min-h-[380px] overflow-hidden">
-              <img
-                src={posterUrl}
-                alt="AI Pro Digital Marketing Course Poster"
-                loading="lazy"
-                decoding="async"
-                style={{ objectPosition: 'center 68%' }}
-                className="w-full h-full object-cover object-[center_68%]"
-              />
-            </div>
-          </div>
+        
 
           {/* =========================================================
               CLEAN SPEC METRICS STRIP
