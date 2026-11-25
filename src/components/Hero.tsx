@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { ArrowRight, Download, Play, Volume2, VolumeX } from 'lucide-react';
 
@@ -8,29 +8,145 @@ interface HeroProps {
   onExploreCourses?: () => void;
 }
 
+const HERO_VIDEO_URL =
+  'https://ik.imagekit.io/jhnyo0yy5/Academy%20LOW%20BIT.mp4';
+const HERO_POSTER_URL =
+  'https://ik.imagekit.io/jhnyo0yy5/Academy%20LOW%20BIT.mp4/ik-thumbnail.jpg?tr=so-1,w-1200,q-80';
+const HERO_FALLBACK_POSTER_URL =
+  'https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1200&auto=format&fit=crop';
+
 export const Hero: React.FC<HeroProps> = ({
   onOpenApply,
   onOpenBrochure,
   onExploreCourses,
 }) => {
   const shouldReduceMotion = useReducedMotion();
+  const [isMuted, setIsMuted] = useState<boolean>(true);
+  const [posterSrc, setPosterSrc] = useState<string>(HERO_POSTER_URL);
+  const [hasStarted, setHasStarted] = useState<boolean>(false);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [isMuted, setIsMuted] = useState<boolean>(false);
+  const [showFallbackPlay, setShowFallbackPlay] = useState<boolean>(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const userInitiatedPlayRef = useRef<boolean>(false);
 
-  const handlePlayVideo = () => {
-    setIsPlaying(true);
-    setTimeout(() => {
-      if (videoRef.current) {
-        videoRef.current.play().catch(() => {
-          if (videoRef.current) {
-            videoRef.current.muted = true;
-            setIsMuted(true);
-            videoRef.current.play().catch(() => {});
-          }
+  const attemptAutoplay = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Ensure muted & inline properties are set directly on the DOM node for iOS/Safari compatibility
+    video.defaultMuted = true;
+    video.muted = true;
+    video.playsInline = true;
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', 'true');
+
+    const playPromise = video.play();
+    if (playPromise && typeof playPromise.then === 'function') {
+      playPromise
+        .then(() => {
+          setIsPlaying(true);
+          setShowFallbackPlay(false);
+        })
+        .catch(() => {
+          // Browser blocked autoplay (e.g. Low Power Mode or strict policy): show graceful tap-to-play overlay
+          setIsPlaying(false);
+          setShowFallbackPlay(true);
         });
+    }
+  }, []);
+
+  // Respect prefers-reduced-motion & start muted autoplay immediately on mount
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.defaultMuted = true;
+    video.muted = isMuted;
+    video.playsInline = true;
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', 'true');
+
+    if (shouldReduceMotion) {
+      video.pause();
+      setIsPlaying(false);
+      setShowFallbackPlay(true);
+      return;
+    }
+
+    attemptAutoplay();
+  }, [shouldReduceMotion, attemptAutoplay]);
+
+  // Pause when off-screen or tab hidden to prevent unnecessary buffering/CPU usage on mobile
+  useEffect(() => {
+    const video = videoRef.current;
+    const container = containerRef.current;
+    if (!video || !container) return;
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (!video.paused) video.pause();
+      } else if (!shouldReduceMotion || userInitiatedPlayRef.current) {
+        if (video.paused && !showFallbackPlay) {
+          video.play().catch(() => {});
+        }
       }
-    }, 50);
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    let observer: IntersectionObserver | null = null;
+    if (typeof IntersectionObserver !== 'undefined') {
+      observer = new IntersectionObserver(
+        (entries) => {
+          const entry = entries[0];
+          if (!entry) return;
+          if (!entry.isIntersecting) {
+            if (!video.paused) video.pause();
+          } else if (!shouldReduceMotion || userInitiatedPlayRef.current) {
+            if (video.paused && !showFallbackPlay) {
+              video.play().catch(() => {});
+            }
+          }
+        },
+        { threshold: 0.1 }
+      );
+      observer.observe(container);
+    }
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      observer?.disconnect();
+    };
+  }, [shouldReduceMotion, showFallbackPlay]);
+
+  const handleManualPlay = () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    userInitiatedPlayRef.current = true;
+    video.muted = isMuted;
+    video.playsInline = true;
+
+    const playPromise = video.play();
+    if (playPromise && typeof playPromise.then === 'function') {
+      playPromise
+        .then(() => {
+          setIsPlaying(true);
+          setShowFallbackPlay(false);
+        })
+        .catch(() => {
+          video.muted = true;
+          setIsMuted(true);
+          video
+            .play()
+            .then(() => {
+              setIsPlaying(true);
+              setShowFallbackPlay(false);
+            })
+            .catch(() => {});
+        });
+    }
   };
 
   const handleToggleMute = (e: React.MouseEvent) => {
@@ -192,121 +308,96 @@ export const Hero: React.FC<HeroProps> = ({
               
               {/* 1:1 Video Container */}
               <motion.div
+                ref={containerRef}
                 initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.22, ease: 'easeOut' }}
                 className="relative w-full aspect-square rounded-3xl overflow-hidden border border-slate-200/90 shadow-2xl bg-slate-950 group"
                 style={{ aspectRatio: '1 / 1' }}
               >
-                {!isPlaying ? (
-                  /* Thumbnail Preview State */
+                {/* Immediate Poster Image (visible while video loads or under prefers-reduced-motion) */}
+                <img
+                  src={posterSrc}
+                  onError={() => {
+                    if (posterSrc !== HERO_FALLBACK_POSTER_URL) {
+                      setPosterSrc(HERO_FALLBACK_POSTER_URL);
+                    }
+                  }}
+                  alt="CBM Academy Digital Marketing Training & Live Session in Okhla, New Delhi"
+                  title="CBM Academy Digital Marketing Training & Live Session in Okhla, New Delhi"
+                  width={1200}
+                  height={1200}
+                  decoding="async"
+                  fetchPriority="high"
+                  aria-hidden={hasStarted}
+                  className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-500 ${
+                    hasStarted ? 'opacity-0 pointer-events-none' : 'opacity-100'
+                  }`}
+                />
+
+                {/* Promotional Hero Video */}
+                <video
+                  ref={videoRef}
+                  src={HERO_VIDEO_URL}
+                  poster={posterSrc}
+                  autoPlay={!shouldReduceMotion}
+                  muted={isMuted}
+                  loop
+                  playsInline
+                  controls={false}
+                  preload={shouldReduceMotion ? 'none' : 'metadata'}
+                  disablePictureInPicture
+                  disableRemotePlayback
+                  onPlaying={() => {
+                    setHasStarted(true);
+                    setIsPlaying(true);
+                    setShowFallbackPlay(false);
+                  }}
+                  onPause={() => setIsPlaying(false)}
+                  className={`relative z-10 block w-full h-full object-cover object-center transition-opacity duration-500 ${
+                    hasStarted ? 'opacity-100' : 'opacity-0'
+                  }`}
+                />
+
+                {/* Graceful fallback overlay when autoplay is restricted or reduced motion is enabled */}
+                {showFallbackPlay && !isPlaying && (
                   <div
-                    onClick={handlePlayVideo}
-                    className="relative w-full h-full cursor-pointer select-none"
+                    onClick={handleManualPlay}
+                    className="absolute inset-0 z-20 cursor-pointer select-none flex items-center justify-center bg-gradient-to-t from-slate-950/60 via-slate-950/15 to-black/25"
                     role="button"
                     tabIndex={0}
-                    aria-label="Watch CBM Academy Video"
+                    aria-label="Play CBM Academy Promotional Video"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
-                        handlePlayVideo();
+                        handleManualPlay();
                       }
                     }}
                   >
-                    <img
-                      src="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1200&auto=format&fit=crop"
-                      alt="CBM Academy Digital Marketing Training & Live Session in Okhla, New Delhi"
-                      title="CBM Academy Digital Marketing Training & Live Session in Okhla, New Delhi"
-                      width={1200}
-                      height={1200}
-                      decoding="async"
-                      fetchPriority="high"
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-
-                    {/* Subtle gradient overlay for depth */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-950/20 to-black/35 pointer-events-none" />
-
-                    {/* Voice enable / disable icon button */}
-                    <button
-                      type="button"
-                      onClick={handleToggleMute}
-                      aria-label={isMuted ? 'Enable sound' : 'Mute sound'}
-                      title={isMuted ? 'Sound Disabled (Click to Enable)' : 'Sound Enabled (Click to Mute)'}
-                      className="absolute top-3.5 right-3.5 z-20 p-2.5 rounded-full bg-slate-900/80 hover:bg-slate-900 text-white backdrop-blur-md border border-white/15 shadow-md transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
-                    >
-                      {isMuted ? (
-                        <VolumeX className="w-4 h-4 text-slate-300" />
-                      ) : (
-                        <Volume2 className="w-4 h-4 text-[#FF6B00]" />
-                      )}
-                    </button>
-
-                    {/* Liquid-Style Play Button (Fluid Glass Sphere + Ambient Ripples) */}
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      <div className="relative flex items-center justify-center">
-                        {/* Fluid ambient pulsing glow */}
-                        <span className="absolute w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-[#FF6B00]/40 to-amber-300/40 blur-md animate-pulse" />
-
-                        {/* Liquid fluid outer ring wave */}
-                        <span className="absolute w-18 h-18 sm:w-22 sm:h-22 rounded-full border border-orange-400/40 animate-ping opacity-60" style={{ animationDuration: '3s' }} />
-
-                        {/* Glossy liquid glass button */}
-                        <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-[#FFA04D] via-[#FF6B00] to-[#D95200] p-[2px] shadow-[0_12px_36px_rgba(255,107,0,0.45)] backdrop-blur-md transition-transform duration-300 group-hover:scale-110 active:scale-95 flex items-center justify-center">
-                          {/* Liquid specular highlight / reflection */}
-                          <div className="absolute top-1 left-2.5 right-2.5 h-[42%] rounded-t-full bg-gradient-to-b from-white/70 via-white/20 to-transparent pointer-events-none" />
-
-                          {/* Inner caustic glow & play icon */}
-                          <div className="w-full h-full rounded-full flex items-center justify-center bg-gradient-to-tr from-transparent via-[#FF7A1A]/30 to-white/20 shadow-[inset_0_2px_4px_rgba(255,255,255,0.6),inset_0_-2px_6px_rgba(0,0,0,0.3)]">
-                            <Play className="w-7 h-7 sm:w-8 sm:h-8 fill-white text-white translate-x-0.5 filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.35)]" />
-                          </div>
+                    <div className="relative flex items-center justify-center">
+                      <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-[#FFA04D] via-[#FF6B00] to-[#D95200] p-[2px] shadow-[0_12px_36px_rgba(255,107,0,0.45)] backdrop-blur-md transition-transform duration-300 group-hover:scale-110 active:scale-95 flex items-center justify-center">
+                        <div className="w-full h-full rounded-full flex items-center justify-center bg-gradient-to-tr from-transparent via-[#FF7A1A]/30 to-white/20">
+                          <Play className="w-7 h-7 sm:w-8 sm:h-8 fill-white text-white translate-x-0.5" />
                         </div>
                       </div>
                     </div>
-
-                    {/* Clean, minimal bottom label */}
-                    <div className="absolute bottom-3.5 left-4 right-4 pointer-events-none flex items-center justify-between text-white text-xs">
-                      <span className="font-semibold tracking-wide bg-slate-900/75 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10">
-                        Watch Video
-                      </span>
-                      <span className="text-[11px] text-slate-300 bg-slate-900/60 backdrop-blur-sm px-2.5 py-1 rounded-md">
-                        Click to play
-                      </span>
-                    </div>
-                  </div>
-                ) : (
-                  /* Inline Video Playback State */
-                  <div className="relative w-full h-full bg-black">
-                    <video
-                      ref={videoRef}
-                      autoPlay
-                      playsInline
-                      controls
-                      controlsList="nodownload noplaybackrate"
-                      disablePictureInPicture
-                      muted={isMuted}
-                      className="w-full h-full object-cover"
-                    >
-                      <source src="/Academy%20LOW%20BIT%20(1).mp4" type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
-
-                    {/* Voice enable / disable icon button during playback */}
-                    <button
-                      type="button"
-                      onClick={handleToggleMute}
-                      aria-label={isMuted ? 'Enable sound' : 'Mute sound'}
-                      title={isMuted ? 'Sound Disabled (Click to Enable)' : 'Sound Enabled (Click to Mute)'}
-                      className="absolute top-3.5 right-3.5 z-20 p-2 rounded-full bg-black/60 hover:bg-black/85 text-white backdrop-blur-md border border-white/20 shadow-md transition-all duration-150 hover:scale-105 active:scale-95 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
-                    >
-                      {isMuted ? (
-                        <VolumeX className="w-4 h-4 text-slate-300" />
-                      ) : (
-                        <Volume2 className="w-4 h-4 text-[#FF6B00]" />
-                      )}
-                    </button>
                   </div>
                 )}
+
+                {/* Sound Mute / Unmute Toggle (muted by default) */}
+                <button
+                  type="button"
+                  onClick={handleToggleMute}
+                  aria-label={isMuted ? 'Enable sound' : 'Mute sound'}
+                  title={isMuted ? 'Sound Muted (Click to Unmute)' : 'Sound On (Click to Mute)'}
+                  className="absolute top-3.5 right-3.5 z-30 p-2 rounded-full bg-black/55 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 shadow-md transition-all duration-150 hover:scale-105 active:scale-95 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
+                >
+                  {isMuted ? (
+                    <VolumeX className="w-4 h-4 text-slate-200" />
+                  ) : (
+                    <Volume2 className="w-4 h-4 text-[#FF6B00]" />
+                  )}
+                </button>
               </motion.div>
 
             </div>
