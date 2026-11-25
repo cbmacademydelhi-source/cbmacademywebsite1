@@ -199,20 +199,125 @@ function safeDeleteOldUpload(oldUrl?: string) {
   }
 }
 
-async function fetchSupabaseSiteMediaEntries(): Promise<Record<string, StoredMediaEntry>> {
+const SLOT_FILENAME_REGEX = /^([a-z0-9-]+)_(\d+)_[a-f0-9]+\.(png|jpg|jpeg|webp|gif)$/i;
+
+async function fetchSupabaseStorageSlotEntries(
+  client: SupabaseClient
+): Promise<Record<string, StoredMediaEntry>> {
+  const entries: Record<string, StoredMediaEntry & { _tsMs: number }> = {};
+
+  try {
+    const { data: files, error } = await withTimeout(
+      client.storage.from(SITE_MEDIA_BUCKET).list('slots', {
+        limit: 500,
+        sortBy: { column: 'updated_at', order: 'desc' },
+      }),
+      4000
+    );
+
+    if (error || !Array.isArray(files)) {
+      return {};
+    }
+
+    for (const file of files) {
+      const name = typeof file?.name === 'string' ? file.name : '';
+      const match = SLOT_FILENAME_REGEX.exec(name);
+      if (!match) continue;
+
+      const slotId = match[1];
+      if (!ALLOWED_SITE_MEDIA_SLOT_IDS.has(slotId)) continue;
+
+      const tsFromName = Number(match[2]) || 0;
+      const tsFromMeta = Date.parse(file.updated_at || file.created_at || '') || 0;
+      const tsMs = Math.max(tsFromName, tsFromMeta);
+      const storagePath = `slots/${name}`;
+
+      const existing = entries[slotId];
+      if (existing && existing._tsMs >= tsMs) {
+        continue;
+      }
+
+      const { data: pubData } = client.storage
+        .from(SITE_MEDIA_BUCKET)
+        .getPublicUrl(storagePath);
+      const publicUrl = pubData?.publicUrl;
+      if (!publicUrl || !isSafeMediaUrl(publicUrl)) continue;
+
+      entries[slotId] = {
+        url: publicUrl,
+        updatedAt:
+          file.updated_at ||
+          file.created_at ||
+          (tsMs > 0 ? new Date(tsMs).toISOString() : new Date().toISOString()),
+        storagePath,
+        _tsMs: tsMs,
+      };
+    }
+  } catch (err: any) {
+    console.warn('[SiteMedia] Storage slots listing notice:', err?.message || err);
+  }
+
+  const cleaned: Record<string, StoredMediaEntry> = {};
+  for (const [slotId, entry] of Object.entries(entries)) {
+    cleaned[slotId] = {
+      url: entry.url,
+      updatedAt: entry.updatedAt,
+      storagePath: entry.storagePath,
+    };
+  }
+  return cleaned;
+}
+
+async function cleanupOldSlotFilesInSupabase(
+  client: SupabaseClient,
+  slotId: string,
+  keepStoragePath?: string
+): Promise<void> {
+  try {
+    const { data: files, error } = await withTimeout(
+      client.storage.from(SITE_MEDIA_BUCKET).list('slots', { limit: 500 }),
+      4000
+    );
+    if (error || !Array.isArray(files)) return;
+
+    const prefix = `${slotId}_`;
+    const toRemove = files
+      .map((f) => (typeof f?.name === 'string' ? `slots/${f.name}` : ''))
+      .filter((p) => {
+        if (!p) return false;
+        const base = p.slice('slots/'.length);
+        if (!base.startsWith(prefix)) return false;
+        if (keepStoragePath && p === keepStoragePath) return false;
+        return true;
+      });
+
+    if (toRemove.length > 0) {
+      await withTimeout(client.storage.from(SITE_MEDIA_BUCKET).remove(toRemove), 4000);
+    }
+  } catch {
+    // Non-critical cleanup
+  }
+}
+
+async function fetchSupabaseSiteMediaEntries(): Promise<{
+  entries: Record<string, StoredMediaEntry>;
+  sourceReached: boolean;
+}> {
   const entries: Record<string, StoredMediaEntry> = {};
   const supabase = getSupabaseServer();
-  if (!supabase) return entries;
+  if (!supabase) return { entries, sourceReached: false };
 
+  let tableSucceeded = false;
   try {
     const { data, error } = await withTimeout(
       supabase
         .from(SITE_MEDIA_TABLE)
         .select('slot_id, url, storage_path, updated_at'),
-      3000
+      3500
     );
 
     if (!error && Array.isArray(data)) {
+      tableSucceeded = true;
       for (const row of data) {
         const slotId = typeof row?.slot_id === 'string' ? row.slot_id.trim() : '';
         const url = typeof row?.url === 'string' ? row.url.trim() : '';
@@ -228,10 +333,33 @@ async function fetchSupabaseSiteMediaEntries(): Promise<Record<string, StoredMed
       }
     }
   } catch {
-    // Table may not exist yet; gracefully rely on local store
+    // Table may not exist yet
   }
 
-  return entries;
+  // Always check Storage slots as global cross-device source (works even before site_media table is created)
+  const storageEntries = await fetchSupabaseStorageSlotEntries(supabase);
+  for (const [slotId, storageEntry] of Object.entries(storageEntries)) {
+    const tableEntry = entries[slotId];
+    if (!tableEntry) {
+      if (!tableSucceeded) {
+        entries[slotId] = storageEntry;
+      } else {
+        // If table exists and has no row for this slot, keep table authoritative unless storage is fresher
+        entries[slotId] = storageEntry;
+      }
+    } else {
+      const tableTs = Date.parse(tableEntry.updatedAt || '') || 0;
+      const storageTs = Date.parse(storageEntry.updatedAt || '') || 0;
+      if (storageTs > tableTs) {
+        entries[slotId] = storageEntry;
+      }
+    }
+  }
+
+  return {
+    entries,
+    sourceReached: tableSucceeded || Object.keys(storageEntries).length > 0,
+  };
 }
 
 async function tryUploadToSupabaseStorage(
@@ -241,7 +369,7 @@ async function tryUploadToSupabaseStorage(
   mime: string,
   updatedAt: string,
   authToken?: string
-): Promise<{ url: string; storagePath: string } | null> {
+): Promise<{ url: string; storagePath: string; errorMessage?: string } | null> {
   const { client, hasServiceRole } = getSupabaseClientForMedia(authToken);
   if (!client) return null;
 
@@ -277,15 +405,18 @@ async function tryUploadToSupabaseStorage(
     }
 
     if (error) {
-      console.warn('[SiteMedia] Supabase Storage upload skipped, falling back to local storage:', error.message);
-      return null;
+      console.warn('[SiteMedia] Supabase Storage upload error:', error.message);
+      return { url: '', storagePath: '', errorMessage: error.message };
     }
 
     const { data: pubData } = client.storage.from(SITE_MEDIA_BUCKET).getPublicUrl(storagePath);
     const publicUrl = pubData?.publicUrl;
     if (!publicUrl || !isSafeMediaUrl(publicUrl)) {
-      return null;
+      return { url: '', storagePath: '', errorMessage: 'Failed to generate public Supabase image URL.' };
     }
+
+    // Clean up older files for this same slot so Storage always reflects the single active image
+    await cleanupOldSlotFilesInSupabase(client, slotId, storagePath);
 
     // Best-effort persist mapping to Supabase site_media table if it exists
     try {
@@ -302,13 +433,13 @@ async function tryUploadToSupabaseStorage(
         4000
       );
     } catch {
-      // Non-fatal if site_media table has not been created yet
+      // Non-fatal if site_media table has not been created yet (Storage slots remain globally synced)
     }
 
     return { url: publicUrl, storagePath };
   } catch (err: any) {
-    console.warn('[SiteMedia] Supabase Storage unavailable, falling back to local storage:', err?.message || err);
-    return null;
+    console.warn('[SiteMedia] Supabase Storage upload exception:', err?.message || err);
+    return { url: '', storagePath: '', errorMessage: err?.message || 'Supabase Storage upload failed.' };
   }
 }
 
@@ -317,39 +448,7 @@ export async function getPublicSiteMedia(): Promise<{
   slots: Record<string, string>;
   updatedAtMap: Record<string, string>;
 }> {
-  const localStore = readStoreFile();
-  const remoteEntries = await fetchSupabaseSiteMediaEntries();
-
-  const mergedEntries: Record<string, StoredMediaEntry> = {};
-
-  // Start with verified local store entries
-  for (const [slotId, entry] of Object.entries(localStore.entries)) {
-    if (!ALLOWED_SITE_MEDIA_SLOT_IDS.has(slotId)) continue;
-    if (!entry || typeof entry.url !== 'string' || !isSafeMediaUrl(entry.url)) continue;
-
-    if (entry.url.startsWith('/uploads/site-media/')) {
-      const diskPath = resolveSafeUploadedFilePath(entry.url);
-      if (!diskPath || !fs.existsSync(diskPath)) {
-        continue;
-      }
-    }
-
-    mergedEntries[slotId] = entry;
-  }
-
-  // Merge Supabase site_media rows (prefer newer updatedAt when both exist)
-  for (const [slotId, remoteEntry] of Object.entries(remoteEntries)) {
-    const existing = mergedEntries[slotId];
-    if (!existing) {
-      mergedEntries[slotId] = remoteEntry;
-    } else {
-      const existingTs = Date.parse(existing.updatedAt || '') || 0;
-      const remoteTs = Date.parse(remoteEntry.updatedAt || '') || 0;
-      if (remoteTs >= existingTs) {
-        mergedEntries[slotId] = remoteEntry;
-      }
-    }
-  }
+  const { entries: mergedEntries } = await fetchSupabaseSiteMediaEntries();
 
   let logoUrl = DEFAULT_SITE_LOGO_URL;
   const slots: Record<string, string> = {};
@@ -377,7 +476,7 @@ export async function saveUploadedSiteMedia(
   updatedAt: string;
   mime: string;
   sizeBytes: number;
-  storage: 'supabase' | 'local';
+  storage: 'supabase';
 }> {
   const cleanSlotId = String(slotId || '').trim();
   if (!ALLOWED_SITE_MEDIA_SLOT_IDS.has(cleanSlotId)) {
@@ -429,10 +528,7 @@ export async function saveUploadedSiteMedia(
   const safeFilename = `${cleanSlotId}_${Date.now()}_${safeToken}.${detected.ext}`;
   const updatedAt = new Date().toISOString();
 
-  const store = readStoreFile();
-  const previousEntry = store.entries[cleanSlotId];
-
-  // 1. Prefer Supabase Storage when configured and accessible
+  // Always persist globally to Supabase Storage so all devices see the exact same asset
   const supaUploaded = await tryUploadToSupabaseStorage(
     cleanSlotId,
     safeFilename,
@@ -442,60 +538,25 @@ export async function saveUploadedSiteMedia(
     authToken
   );
 
-  let publicUrl: string;
-  let storagePath: string | undefined;
-  let storage: 'supabase' | 'local';
-
-  if (supaUploaded) {
-    publicUrl = supaUploaded.url;
-    storagePath = supaUploaded.storagePath;
-    storage = 'supabase';
-  } else {
-    // 2. Fallback to local disk storage so preview/self-hosted deployments always work
-    ensureStorageDirs();
-    const targetPath = path.resolve(SITE_MEDIA_UPLOAD_DIR, safeFilename);
-    if (!targetPath.startsWith(SITE_MEDIA_UPLOAD_DIR + path.sep)) {
-      const err = new Error('Invalid target upload path.');
-      (err as any).status = 400;
-      throw err;
-    }
-
-    fs.writeFileSync(targetPath, buffer);
-    publicUrl = `/uploads/site-media/${safeFilename}`;
-    storage = 'local';
-  }
-
-  store.entries[cleanSlotId] = {
-    url: publicUrl,
-    updatedAt,
-    ...(storagePath ? { storagePath } : {}),
-  };
-  writeStoreFile(store);
-
-  // Clean up previous uploaded image file for this slot if any
-  if (previousEntry?.url && previousEntry.url !== publicUrl) {
-    safeDeleteOldUpload(previousEntry.url);
-  }
-  if (previousEntry?.storagePath && previousEntry.storagePath !== storagePath) {
-    try {
-      const { client } = getSupabaseClientForMedia(authToken);
-      if (client) {
-        await withTimeout(
-          client.storage.from(SITE_MEDIA_BUCKET).remove([previousEntry.storagePath]),
-          3000
-        );
-      }
-    } catch {
-      // Non-critical cleanup
-    }
+  if (!supaUploaded || !supaUploaded.url) {
+    const rawMsg = supaUploaded?.errorMessage || 'Could not upload image to Supabase Storage.';
+    const err = new Error(
+      /row-level security|unauthorized|permission|not allowed/i.test(rawMsg)
+        ? 'Supabase Storage denied upload permission. Please sign in with your Supabase Admin account and ensure storage policies from supabase_global_sync_schema.sql are applied.'
+        : /bucket not found/i.test(rawMsg)
+        ? "Supabase Storage bucket 'site-media' was not found. Please run supabase_global_sync_schema.sql in Supabase SQL Editor."
+        : `Supabase upload failed: ${rawMsg}`
+    );
+    (err as any).status = /row-level security|unauthorized|permission/i.test(rawMsg) ? 403 : 502;
+    throw err;
   }
 
   return {
-    url: publicUrl,
+    url: supaUploaded.url,
     updatedAt,
     mime: detected.mime,
     sizeBytes: buffer.length,
-    storage,
+    storage: 'supabase',
   };
 }
 
@@ -510,51 +571,52 @@ export async function resetSiteMediaSlot(
     throw err;
   }
 
-  const store = readStoreFile();
-  const previousEntry = store.entries[cleanSlotId];
-
-  if (store.entries[cleanSlotId]) {
-    delete store.entries[cleanSlotId];
-    writeStoreFile(store);
-  }
-
-  safeDeleteOldUpload(previousEntry?.url);
-
-  // Best-effort cleanup in Supabase Storage & site_media table
-  try {
-    const { client } = getSupabaseClientForMedia(authToken);
-    if (client) {
-      let remoteStoragePath = previousEntry?.storagePath;
-      try {
-        const { data: existingRow } = await withTimeout(
-          client
-            .from(SITE_MEDIA_TABLE)
-            .select('storage_path')
-            .eq('slot_id', cleanSlotId)
-            .maybeSingle(),
-          3000
-        );
-        if (existingRow?.storage_path) {
-          remoteStoragePath = existingRow.storage_path;
-        }
-        await withTimeout(
-          client.from(SITE_MEDIA_TABLE).delete().eq('slot_id', cleanSlotId),
-          3000
-        );
-      } catch {
-        // Table may not exist yet
+  // Clean up both Supabase Storage slot files and public.site_media table row
+  const { client } = getSupabaseClientForMedia(authToken);
+  if (client) {
+    let remoteStoragePath: string | undefined;
+    try {
+      const { data: existingRow } = await withTimeout(
+        client
+          .from(SITE_MEDIA_TABLE)
+          .select('storage_path')
+          .eq('slot_id', cleanSlotId)
+          .maybeSingle(),
+        3000
+      );
+      if (existingRow?.storage_path) {
+        remoteStoragePath = existingRow.storage_path;
       }
+      await withTimeout(
+        client.from(SITE_MEDIA_TABLE).delete().eq('slot_id', cleanSlotId),
+        3000
+      );
+    } catch {
+      // Table may not exist yet
+    }
 
-      if (remoteStoragePath) {
+    if (remoteStoragePath) {
+      try {
         await withTimeout(
           client.storage.from(SITE_MEDIA_BUCKET).remove([remoteStoragePath]),
           3000
         );
-      }
+      } catch {}
     }
-  } catch {
-    // Non-critical cleanup
+
+    await cleanupOldSlotFilesInSupabase(client, cleanSlotId);
   }
+
+  // Clean up any legacy local disk entry if present
+  try {
+    const store = readStoreFile();
+    const previousEntry = store.entries[cleanSlotId];
+    if (previousEntry) {
+      delete store.entries[cleanSlotId];
+      writeStoreFile(store);
+      safeDeleteOldUpload(previousEntry.url);
+    }
+  } catch {}
 
   const defaultUrl =
     cleanSlotId === SITE_LOGO_SLOT_ID
@@ -562,4 +624,119 @@ export async function resetSiteMediaSlot(
       : SITE_MEDIA_SLOT_MAP[cleanSlotId]?.defaultUrl || '';
 
   return { defaultUrl };
+}
+
+export async function saveUploadedWebinarImage(
+  base64Payload: string,
+  authToken?: string
+): Promise<{
+  url: string;
+  updatedAt: string;
+  mime: string;
+  sizeBytes: number;
+  storage: 'supabase';
+}> {
+  if (typeof base64Payload !== 'string' || !base64Payload.trim()) {
+    const err = new Error('Image data is required.');
+    (err as any).status = 400;
+    throw err;
+  }
+
+  const cleanedBase64 = base64Payload.replace(/^data:[^;]+;base64,/i, '').trim();
+
+  if (cleanedBase64.length > Math.ceil(MAX_IMAGE_BYTES * 1.4)) {
+    const err = new Error('Image exceeds the 10 MB maximum file size.');
+    (err as any).status = 400;
+    throw err;
+  }
+
+  const buffer = Buffer.from(cleanedBase64, 'base64');
+  if (!buffer || buffer.length === 0) {
+    const err = new Error('Uploaded file could not be decoded.');
+    (err as any).status = 400;
+    throw err;
+  }
+
+  if (buffer.length > MAX_IMAGE_BYTES) {
+    const err = new Error('Image exceeds the 10 MB maximum file size.');
+    (err as any).status = 400;
+    throw err;
+  }
+
+  const detected = detectImageFormatFromMagicBytes(buffer);
+  if (!detected) {
+    const err = new Error(
+      'Unsupported file format. Only valid PNG, JPG, WebP, or GIF images are allowed.'
+    );
+    (err as any).status = 400;
+    throw err;
+  }
+
+  const safeToken = crypto.randomBytes(6).toString('hex');
+  const safeFilename = `webinar_${Date.now()}_${safeToken}.${detected.ext}`;
+  const updatedAt = new Date().toISOString();
+
+  const { client, hasServiceRole } = getSupabaseClientForMedia(authToken);
+  if (!client) {
+    const err = new Error('Supabase Storage is not configured.');
+    (err as any).status = 502;
+    throw err;
+  }
+
+  const storagePath = `webinars/${safeFilename}`;
+  const attemptUpload = async () =>
+    withTimeout(
+      client.storage.from(SITE_MEDIA_BUCKET).upload(storagePath, buffer, {
+        contentType: detected.mime,
+        cacheControl: '31536000',
+        upsert: true,
+      }),
+      15000
+    );
+
+  let { error } = await attemptUpload();
+
+  if (error && hasServiceRole && /bucket not found/i.test(error.message || '')) {
+    const { error: createErr } = await withTimeout(
+      client.storage.createBucket(SITE_MEDIA_BUCKET, {
+        public: true,
+        fileSizeLimit: MAX_IMAGE_BYTES,
+        allowedMimeTypes: ['image/png', 'image/jpeg', 'image/webp', 'image/gif'],
+      }),
+      5000
+    );
+    if (!createErr || /already exists/i.test(createErr.message || '')) {
+      const retry = await attemptUpload();
+      error = retry.error;
+    }
+  }
+
+  if (error) {
+    const rawMsg = error.message || 'Supabase Storage upload failed.';
+    const err = new Error(
+      /row-level security|unauthorized|permission|not allowed/i.test(rawMsg)
+        ? 'Supabase Storage denied upload permission. Sign in with your Supabase Admin account and ensure storage policies are configured.'
+        : `Supabase webinar image upload failed: ${rawMsg}`
+    );
+    (err as any).status = /row-level security|unauthorized|permission/i.test(rawMsg) ? 403 : 502;
+    throw err;
+  }
+
+  const { data: pubData } = client.storage
+    .from(SITE_MEDIA_BUCKET)
+    .getPublicUrl(storagePath);
+
+  if (!pubData?.publicUrl || !isSafeMediaUrl(pubData.publicUrl)) {
+    const err = new Error('Webinar image uploaded but public URL could not be generated.');
+    (err as any).status = 502;
+    throw err;
+  }
+
+  return {
+    url: pubData.publicUrl,
+    updatedAt,
+    mime: detected.mime,
+    sizeBytes: buffer.length,
+    storage: 'supabase',
+  };
 }

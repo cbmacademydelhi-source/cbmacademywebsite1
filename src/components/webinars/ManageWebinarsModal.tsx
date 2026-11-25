@@ -14,6 +14,7 @@ import {
 import { Webinar, WebinarStatus, WebinarType } from '../../types';
 import {
   getWebinars,
+  fetchWebinarsFromDb,
   saveWebinar,
   deleteWebinar,
   toggleWebinarStatus,
@@ -72,6 +73,7 @@ export const ManageWebinarsModal: React.FC<ManageWebinarsModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       loadData();
+      fetchWebinarsFromDb().then((fresh) => setWebinars(fresh));
       setNotification(null);
     }
   }, [isOpen]);
@@ -122,7 +124,7 @@ export const ManageWebinarsModal: React.FC<ManageWebinarsModalProps> = ({
     }
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!title.trim() || !description.trim() || !date.trim() || !time.trim()) {
@@ -138,7 +140,7 @@ export const ManageWebinarsModal: React.FC<ManageWebinarsModalProps> = ({
       .map((s) => s.trim())
       .filter(Boolean);
 
-    const saved = saveWebinar({
+    const result = await saveWebinar({
       id: editingId || undefined,
       title: title.trim(),
       description: description.trim(),
@@ -163,22 +165,37 @@ export const ManageWebinarsModal: React.FC<ManageWebinarsModalProps> = ({
       status,
     });
 
+    if (!result.success || !result.webinar) {
+      setNotification({
+        type: 'error',
+        message: result.message || 'Failed to save webinar to Supabase.',
+      });
+      return;
+    }
+
     loadData();
     onWebinarsUpdated?.();
 
     setNotification({
       type: 'success',
       message: editingId
-        ? `Webinar "${saved.title}" updated successfully.`
-        : `New webinar "${saved.title}" created successfully.`,
+        ? `Webinar "${result.webinar.title}" updated successfully.`
+        : `New webinar "${result.webinar.title}" created successfully.`,
     });
 
     resetForm();
   };
 
-  const handleDelete = (id: string, webinarTitle: string) => {
+  const handleDelete = async (id: string, webinarTitle: string) => {
     if (window.confirm(`Are you sure you want to delete "${webinarTitle}"?`)) {
-      deleteWebinar(id);
+      const result = await deleteWebinar(id);
+      if (!result.success) {
+        setNotification({
+          type: 'error',
+          message: result.message || 'Failed to delete webinar.',
+        });
+        return;
+      }
       loadData();
       onWebinarsUpdated?.();
       setNotification({
@@ -191,33 +208,32 @@ export const ManageWebinarsModal: React.FC<ManageWebinarsModalProps> = ({
     }
   };
 
-  const handleToggleStatus = (id: string) => {
-    const updated = toggleWebinarStatus(id);
-    if (updated) {
+  const handleToggleStatus = async (id: string) => {
+    const result = await toggleWebinarStatus(id);
+    if (result.success && result.webinar) {
       loadData();
       onWebinarsUpdated?.();
       setNotification({
         type: 'success',
-        message: `Status updated to "${updated.status.toUpperCase()}".`,
+        message: `Status updated to "${result.webinar.status.toUpperCase()}".`,
+      });
+    } else {
+      setNotification({
+        type: 'error',
+        message: result.message || 'Failed to update status.',
       });
     }
   };
 
-  const handleResetDefaults = () => {
-    if (
-      window.confirm(
-        'Reset all webinars back to the 4 default CBM Academy demo webinars?'
-      )
-    ) {
-      resetWebinarsToDefault();
-      loadData();
-      onWebinarsUpdated?.();
-      resetForm();
-      setNotification({
-        type: 'success',
-        message: 'Reset back to 4 demo webinars successfully.',
-      });
-    }
+  const handleResetDefaults = async () => {
+    await resetWebinarsToDefault();
+    loadData();
+    onWebinarsUpdated?.();
+    resetForm();
+    setNotification({
+      type: 'success',
+      message: 'Synced webinars with Supabase.',
+    });
   };
 
   return (

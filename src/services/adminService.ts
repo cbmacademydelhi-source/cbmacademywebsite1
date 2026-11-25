@@ -328,7 +328,35 @@ export async function fetchAdminJobs(): Promise<AdminJob[]> {
 
 export async function fetchPublicJobs(): Promise<AdminJob[]> {
   try {
-    const res = await fetchWithTimeout('/api/public/jobs', {}, 3000);
+    const { data, error } = await supabase
+      .from('job_listings')
+      .select('*')
+      .eq('status', 'approved')
+      .order('created_at', { ascending: false });
+
+    if (!error && Array.isArray(data)) {
+      return data as AdminJob[];
+    }
+  } catch {
+    // Fall back to backend API
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('jobs')
+      .select('*')
+      .eq('status', 'approved')
+      .order('created_at', { ascending: false });
+
+    if (!error && Array.isArray(data)) {
+      return data as AdminJob[];
+    }
+  } catch {
+    // Fall back to backend API
+  }
+
+  try {
+    const res = await fetchWithTimeout('/api/public/jobs', { cache: 'no-store' }, 3000);
     const data = await res.json();
     return data.jobs || [];
   } catch {
@@ -379,7 +407,21 @@ export async function fetchAdminBlogs(): Promise<AdminBlog[]> {
 
 export async function fetchPublicBlogs(): Promise<AdminBlog[]> {
   try {
-    const res = await fetchWithTimeout('/api/public/blogs', {}, 3000);
+    const { data, error } = await supabase
+      .from('blogs')
+      .select('*')
+      .eq('status', 'approved')
+      .order('created_at', { ascending: false });
+
+    if (!error && Array.isArray(data)) {
+      return data as AdminBlog[];
+    }
+  } catch {
+    // Fall back to backend API
+  }
+
+  try {
+    const res = await fetchWithTimeout('/api/public/blogs', { cache: 'no-store' }, 3000);
     const data = await res.json();
     return data.blogs || [];
   } catch {
@@ -416,51 +458,184 @@ export async function deleteBlog(id: string): Promise<boolean> {
 // -----------------------------------------------------------------------------
 // CERTIFICATES
 // -----------------------------------------------------------------------------
+function isSupabaseMissingTableError(error: any): boolean {
+  const code = String(error?.code || '');
+  const msg = String(error?.message || '');
+  return (
+    code === '42P01' ||
+    code === 'PGRST205' ||
+    /could not find the table|relation .* does not exist/i.test(msg)
+  );
+}
+
 export async function fetchAdminCertificates(): Promise<AdminCertificate[]> {
+  lastAdminApiError = null;
   try {
-    const res = await fetchWithTimeout('/api/admin/certificates', {
-      headers: await authHeaders(),
-    }, 3000);
-    const data = await res.json();
-    return data.certificates || [];
+    const { data, error } = await supabase
+      .from('certificates')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (!error && Array.isArray(data)) {
+      return data as AdminCertificate[];
+    }
+
+    if (error && isSupabaseMissingTableError(error)) {
+      lastAdminApiError =
+        "Supabase 'certificates' table is not created yet. Run supabase_global_sync_schema.sql in Supabase SQL Editor.";
+      return [];
+    }
   } catch {
+    // Fall back to backend API
+  }
+
+  try {
+    const res = await fetchWithTimeout(
+      '/api/admin/certificates',
+      {
+        headers: await authHeaders(),
+        cache: 'no-store',
+      },
+      5000
+    );
+    const { isJson, data } = await safeParseJsonResponse(res);
+    if (isJson && res.ok && Array.isArray(data?.certificates)) {
+      return data.certificates;
+    }
+    if (isJson && data?.message) {
+      lastAdminApiError = data.message;
+    }
+    return [];
+  } catch (err: any) {
+    lastAdminApiError = err?.message || 'Error loading certificates from Supabase.';
     return [];
   }
 }
 
 export async function verifyCertificatePublic(id: string): Promise<AdminCertificate | null> {
+  const cleanId = String(id || '').trim().toUpperCase();
+  if (!cleanId) return null;
+
   try {
-    const res = await fetchWithTimeout(`/api/public/certificates/${encodeURIComponent(id)}`, {}, 3000);
+    const { data, error } = await supabase
+      .from('certificates')
+      .select('*')
+      .eq('id', cleanId)
+      .maybeSingle();
+
+    if (!error) {
+      return (data as AdminCertificate) || null;
+    }
+  } catch {
+    // Fall back to backend API
+  }
+
+  try {
+    const res = await fetchWithTimeout(
+      `/api/public/certificates/${encodeURIComponent(cleanId)}`,
+      { cache: 'no-store' },
+      3000
+    );
     if (!res.ok) return null;
-    const data = await res.json();
-    return data.certificate || null;
+    const { isJson, data } = await safeParseJsonResponse(res);
+    return isJson ? data?.certificate || null : null;
   } catch {
     return null;
   }
 }
 
 export async function saveCertificate(cert: Partial<AdminCertificate>): Promise<AdminCertificate | null> {
+  lastAdminApiError = null;
+  const record: Partial<AdminCertificate> = {
+    id: String(cert.id || '').trim().toUpperCase(),
+    student_name: String(cert.student_name || '').trim(),
+    course_name: String(cert.course_name || '').trim(),
+    issue_date: cert.issue_date || new Date().toISOString().slice(0, 10),
+    completion_date: cert.completion_date || cert.issue_date || new Date().toISOString().slice(0, 10),
+    grade: cert.grade || undefined,
+    status: cert.status || 'active',
+  };
+
+  let supaError: any = null;
+  try {
+    const { data, error } = await supabase
+      .from('certificates')
+      .upsert([record], { onConflict: 'id' })
+      .select()
+      .maybeSingle();
+
+    if (!error) {
+      return (data || record) as AdminCertificate;
+    }
+
+    supaError = error;
+    if (isSupabaseMissingTableError(error)) {
+      lastAdminApiError =
+        "Supabase 'certificates' table is not created yet. Run supabase_global_sync_schema.sql in Supabase SQL Editor.";
+      return null;
+    }
+  } catch (err) {
+    supaError = err;
+  }
+
   try {
     const res = await fetch('/api/admin/certificates', {
       method: 'POST',
       headers: await authHeaders(),
-      body: JSON.stringify(cert),
+      body: JSON.stringify(record),
     });
-    const data = await res.json();
-    return data.certificate || null;
-  } catch {
+    const { isJson, data } = await safeParseJsonResponse(res);
+    if (isJson && res.ok && data?.certificate) {
+      return data.certificate;
+    }
+    lastAdminApiError =
+      (isJson && data?.message) ||
+      supaError?.message ||
+      'Failed to save certificate to Supabase.';
+    return null;
+  } catch (err: any) {
+    lastAdminApiError =
+      supaError?.message || err?.message || 'Failed to save certificate to Supabase.';
     return null;
   }
 }
 
 export async function deleteCertificate(id: string): Promise<boolean> {
+  lastAdminApiError = null;
+  const cleanId = String(id || '').trim().toUpperCase();
+  if (!cleanId) return false;
+
+  let supaError: any = null;
   try {
-    const res = await fetch(`/api/admin/certificates/${encodeURIComponent(id)}`, {
+    const { error } = await supabase.from('certificates').delete().eq('id', cleanId);
+    if (!error) {
+      return true;
+    }
+    supaError = error;
+    if (isSupabaseMissingTableError(error)) {
+      lastAdminApiError =
+        "Supabase 'certificates' table is not created yet. Run supabase_global_sync_schema.sql in Supabase SQL Editor.";
+      return false;
+    }
+  } catch (err) {
+    supaError = err;
+  }
+
+  try {
+    const res = await fetch(`/api/admin/certificates/${encodeURIComponent(cleanId)}`, {
       method: 'DELETE',
       headers: await authHeaders(),
     });
-    return res.ok;
-  } catch {
+    if (res.ok) return true;
+    const { isJson, data } = await safeParseJsonResponse(res);
+    lastAdminApiError =
+      (isJson && data?.message) ||
+      supaError?.message ||
+      'Failed to delete certificate from Supabase.';
+    return false;
+  } catch (err: any) {
+    lastAdminApiError =
+      supaError?.message || err?.message || 'Failed to delete certificate from Supabase.';
     return false;
   }
 }
@@ -711,6 +886,42 @@ async function detectClientImageFormat(
   }
 }
 
+async function cleanupOldSupabaseSlotFiles(
+  slotId: string,
+  keepStoragePath?: string
+): Promise<{ removedCount: number; error?: string }> {
+  try {
+    const { data: files, error } = await supabase.storage
+      .from(SITE_MEDIA_BUCKET)
+      .list('slots', { limit: 500 });
+
+    if (error || !Array.isArray(files)) {
+      return { removedCount: 0, error: error?.message };
+    }
+
+    const prefix = `${slotId}_`;
+    const pathsToRemove = files
+      .map((f) => (typeof f?.name === 'string' ? `slots/${f.name}` : ''))
+      .filter((p) => p && p.startsWith(`slots/${prefix}`) && p !== keepStoragePath);
+
+    if (pathsToRemove.length === 0) {
+      return { removedCount: 0 };
+    }
+
+    const { error: removeErr } = await supabase.storage
+      .from(SITE_MEDIA_BUCKET)
+      .remove(pathsToRemove);
+
+    if (removeErr) {
+      return { removedCount: 0, error: removeErr.message };
+    }
+
+    return { removedCount: pathsToRemove.length };
+  } catch (err: any) {
+    return { removedCount: 0, error: err?.message };
+  }
+}
+
 async function uploadSiteMediaViaSupabase(
   cleanSlotId: string,
   file: File,
@@ -721,21 +932,6 @@ async function uploadSiteMediaViaSupabase(
     crypto.getRandomValues(randomBytes);
     const token = Array.from(randomBytes, (b) => b.toString(16).padStart(2, '0')).join('');
     const storagePath = `slots/${cleanSlotId}_${Date.now()}_${token}.${detected.ext}`;
-
-    // Lookup previous storage path so we can clean up after replacement
-    let previousStoragePath: string | null = null;
-    try {
-      const { data: prevRow } = await supabase
-        .from(SITE_MEDIA_TABLE)
-        .select('storage_path')
-        .eq('slot_id', cleanSlotId)
-        .maybeSingle();
-      if (prevRow?.storage_path) {
-        previousStoragePath = prevRow.storage_path;
-      }
-    } catch {
-      // Table may not exist yet
-    }
 
     const { error: uploadError } = await supabase.storage
       .from(SITE_MEDIA_BUCKET)
@@ -751,14 +947,14 @@ async function uploadSiteMediaViaSupabase(
         return {
           success: false,
           message:
-            "Supabase Storage bucket 'site-media' is not created yet. Run supabase_site_media_schema.sql in your Supabase SQL Editor to enable cloud image uploads.",
+            "Supabase Storage bucket 'site-media' is not created yet. Run supabase_global_sync_schema.sql in your Supabase SQL Editor to enable cloud image uploads.",
         };
       }
       if (/row-level security|unauthorized|permission|not allowed/i.test(msg)) {
         return {
           success: false,
           message:
-            'Supabase Storage blocked the upload due to permissions. Sign in with your Supabase Admin account and ensure storage policies from supabase_site_media_schema.sql are applied.',
+            'Supabase Storage blocked the upload due to permissions. Sign in with your Supabase Admin account and ensure storage policies from supabase_global_sync_schema.sql are applied.',
         };
       }
       return {
@@ -781,7 +977,7 @@ async function uploadSiteMediaViaSupabase(
 
     const updatedAt = new Date().toISOString();
 
-    // Persist slot mapping in Supabase site_media table so all visitors load the new image
+    // Persist slot mapping in Supabase site_media table when provisioned (triggers Realtime push across devices)
     const { error: upsertError } = await supabase.from(SITE_MEDIA_TABLE).upsert(
       {
         slot_id: cleanSlotId,
@@ -793,16 +989,14 @@ async function uploadSiteMediaViaSupabase(
     );
 
     if (upsertError) {
-      console.warn('[SiteMedia] Uploaded to Storage, but site_media table upsert failed:', upsertError.message);
+      console.warn(
+        '[SiteMedia] Uploaded to Supabase Storage; site_media table upsert notice:',
+        upsertError.message
+      );
     }
 
-    if (previousStoragePath && previousStoragePath !== storagePath) {
-      try {
-        await supabase.storage.from(SITE_MEDIA_BUCKET).remove([previousStoragePath]);
-      } catch {
-        // Non-critical cleanup
-      }
-    }
+    // Remove older files for this slot so Storage listing always resolves to the latest image across all devices
+    await cleanupOldSupabaseSlotFiles(cleanSlotId, storagePath);
 
     return {
       success: true,
@@ -855,69 +1049,74 @@ export async function uploadSiteMediaFile(
       };
     }
 
-    const imageData = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === 'string') {
-          resolve(reader.result);
-        } else {
-          reject(new Error('Failed to read image file.'));
-        }
-      };
-      reader.onerror = () => reject(new Error('Failed to read image file.'));
-      reader.readAsDataURL(file);
-    });
-
-    // 1. Try backend Express API endpoint first
-    let shouldFallbackToSupabase = false;
-    try {
-      const res = await fetchWithTimeout(
-        '/api/admin/site-media/upload',
-        {
-          method: 'POST',
-          headers: await authHeaders(),
-          body: JSON.stringify({ slotId: cleanSlotId, imageData }),
-        },
-        30000
-      );
-
-      const { isJson, data } = await safeParseJsonResponse(res);
-
-      if (isJson) {
-        if (res.ok && data?.success && data?.url) {
-          return {
-            success: true,
-            slotId: data.slotId || cleanSlotId,
-            url: data.url,
-            updatedAt: data.updatedAt,
-          };
-        }
-
-        // Return explicit validation / auth errors directly from the JSON API
-        if (res.status === 400 || res.status === 401 || res.status === 403) {
-          return {
-            success: false,
-            message: data?.message || 'Image upload failed.',
-          };
-        }
-
-        shouldFallbackToSupabase = true;
-      } else {
-        // Non-JSON response (e.g., HTML 404/405/413/502 on static hosting or proxy)
-        shouldFallbackToSupabase = true;
-      }
-    } catch {
-      shouldFallbackToSupabase = true;
+    // 1. Primary: Direct cloud upload to Supabase Storage + DB (works identically on Desktop, Mobile, Preview, and GitHub Pages)
+    const directResult = await uploadSiteMediaViaSupabase(cleanSlotId, file, detected);
+    if (directResult.success && directResult.url) {
+      return directResult;
     }
 
-    // 2. Fallback to direct Supabase Storage upload when /api backend is unavailable or returns HTML
-    if (shouldFallbackToSupabase) {
-      return await uploadSiteMediaViaSupabase(cleanSlotId, file, detected);
+    // 2. Fallback: Backend Express API (which itself uploads to Supabase Storage using admin/service credentials)
+    try {
+      const imageData = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (typeof reader.result === 'string') {
+            resolve(reader.result);
+          } else {
+            reject(new Error('Failed to read image file.'));
+          }
+        };
+        reader.onerror = () => reject(new Error('Failed to read image file.'));
+        reader.readAsDataURL(file);
+      });
+
+      const postToApi = async (forceRefresh: boolean) =>
+        fetchWithTimeout(
+          '/api/admin/site-media/upload',
+          {
+            method: 'POST',
+            headers: await authHeaders(forceRefresh),
+            body: JSON.stringify({ slotId: cleanSlotId, imageData }),
+          },
+          30000
+        );
+
+      let res = await postToApi(false);
+      if (res.status === 401) {
+        res = await postToApi(true);
+      }
+
+      const { isJson, data } = await safeParseJsonResponse(res);
+      if (isJson && res.ok && data?.success && data?.url) {
+        return {
+          success: true,
+          slotId: data.slotId || cleanSlotId,
+          url: data.url,
+          updatedAt: data.updatedAt,
+        };
+      }
+
+      if (isJson && res.status === 401) {
+        notifyAdminSessionExpired();
+        return {
+          success: false,
+          message: data?.message || 'Admin session expired. Please sign in again.',
+        };
+      }
+
+      if (isJson && data?.message) {
+        return {
+          success: false,
+          message: data.message,
+        };
+      }
+    } catch {
+      // Return direct Supabase error below
     }
 
     return {
       success: false,
-      message: 'Image upload failed.',
+      message: directResult.message || 'Image upload failed.',
     };
   } catch (err: any) {
     return {
@@ -939,61 +1138,43 @@ export async function resetSiteMediaFile(
       };
     }
 
-    let shouldFallbackToSupabase = false;
+    const defaultUrl =
+      cleanSlotId === SITE_LOGO_SLOT_ID
+        ? DEFAULT_SITE_LOGO_URL
+        : SITE_MEDIA_SLOT_MAP[cleanSlotId]?.defaultUrl || '';
+
+    // 1. Primary: Direct Supabase reset (delete site_media row + remove all slot files from Storage)
+    let directStorageErr: string | undefined;
     try {
-      const res = await fetchWithTimeout(
+      const { data: existingRow } = await supabase
+        .from(SITE_MEDIA_TABLE)
+        .select('storage_path')
+        .eq('slot_id', cleanSlotId)
+        .maybeSingle();
+
+      await supabase.from(SITE_MEDIA_TABLE).delete().eq('slot_id', cleanSlotId);
+
+      if (existingRow?.storage_path) {
+        await supabase.storage.from(SITE_MEDIA_BUCKET).remove([existingRow.storage_path]);
+      }
+    } catch {
+      // Table may not exist yet; still clean Storage files below
+    }
+
+    const cleanup = await cleanupOldSupabaseSlotFiles(cleanSlotId);
+    directStorageErr = cleanup.error;
+
+    if (!directStorageErr) {
+      // Best-effort notify backend if present
+      fetchWithTimeout(
         '/api/admin/site-media/reset',
         {
           method: 'POST',
           headers: await authHeaders(),
           body: JSON.stringify({ slotId: cleanSlotId }),
         },
-        10000
-      );
-
-      const { isJson, data } = await safeParseJsonResponse(res);
-      if (isJson) {
-        if (res.ok && data?.success) {
-          return {
-            success: true,
-            defaultUrl: data.defaultUrl,
-          };
-        }
-        if (res.status === 400 || res.status === 401 || res.status === 403) {
-          return {
-            success: false,
-            message: data?.message || 'Failed to reset image.',
-          };
-        }
-        shouldFallbackToSupabase = true;
-      } else {
-        shouldFallbackToSupabase = true;
-      }
-    } catch {
-      shouldFallbackToSupabase = true;
-    }
-
-    if (shouldFallbackToSupabase) {
-      try {
-        const { data: existingRow } = await supabase
-          .from(SITE_MEDIA_TABLE)
-          .select('storage_path')
-          .eq('slot_id', cleanSlotId)
-          .maybeSingle();
-
-        await supabase.from(SITE_MEDIA_TABLE).delete().eq('slot_id', cleanSlotId);
-
-        if (existingRow?.storage_path) {
-          await supabase.storage.from(SITE_MEDIA_BUCKET).remove([existingRow.storage_path]);
-        }
-      } catch {
-        // Non-fatal if table/bucket not provisioned yet
-      }
-
-      const defaultUrl =
-        cleanSlotId === SITE_LOGO_SLOT_ID
-          ? DEFAULT_SITE_LOGO_URL
-          : SITE_MEDIA_SLOT_MAP[cleanSlotId]?.defaultUrl || '';
+        5000
+      ).catch(() => {});
 
       return {
         success: true,
@@ -1001,14 +1182,225 @@ export async function resetSiteMediaFile(
       };
     }
 
+    // 2. Fallback: Backend Express API reset
+    try {
+      const postReset = async (forceRefresh: boolean) =>
+        fetchWithTimeout(
+          '/api/admin/site-media/reset',
+          {
+            method: 'POST',
+            headers: await authHeaders(forceRefresh),
+            body: JSON.stringify({ slotId: cleanSlotId }),
+          },
+          10000
+        );
+
+      let res = await postReset(false);
+      if (res.status === 401) {
+        res = await postReset(true);
+      }
+
+      const { isJson, data } = await safeParseJsonResponse(res);
+      if (isJson && res.ok && data?.success) {
+        return {
+          success: true,
+          defaultUrl: data.defaultUrl || defaultUrl,
+        };
+      }
+      if (isJson && data?.message) {
+        return {
+          success: false,
+          message: data.message,
+        };
+      }
+    } catch {
+      // Fall through to error message
+    }
+
     return {
       success: false,
-      message: 'Failed to reset image.',
+      message: directStorageErr || 'Failed to reset image in Supabase Storage.',
     };
   } catch (err: any) {
     return {
       success: false,
       message: err?.message || 'Network error while resetting image.',
+    };
+  }
+}
+
+export interface WebinarImageUploadResult {
+  success: boolean;
+  url?: string;
+  updatedAt?: string;
+  message?: string;
+}
+
+async function uploadWebinarImageViaSupabase(
+  file: File,
+  detected: { ext: string; mime: string }
+): Promise<WebinarImageUploadResult> {
+  try {
+    const randomBytes = new Uint8Array(6);
+    crypto.getRandomValues(randomBytes);
+    const token = Array.from(randomBytes, (b) => b.toString(16).padStart(2, '0')).join('');
+    const storagePath = `webinars/webinar_${Date.now()}_${token}.${detected.ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from(SITE_MEDIA_BUCKET)
+      .upload(storagePath, file, {
+        contentType: detected.mime,
+        cacheControl: '31536000',
+        upsert: true,
+      });
+
+    if (uploadError) {
+      const msg = uploadError.message || 'Supabase Storage upload failed.';
+      if (/bucket not found/i.test(msg)) {
+        return {
+          success: false,
+          message:
+            "Supabase Storage bucket 'site-media' is not created yet. Run supabase_global_sync_schema.sql in your Supabase SQL Editor to enable cloud image uploads.",
+        };
+      }
+      if (/row-level security|unauthorized|permission|not allowed/i.test(msg)) {
+        return {
+          success: false,
+          message:
+            'Supabase Storage blocked the upload due to permissions. Sign in with your Supabase Admin account and ensure storage policies are applied.',
+        };
+      }
+      return {
+        success: false,
+        message: `Storage upload failed: ${msg}`,
+      };
+    }
+
+    const { data: pubData } = supabase.storage
+      .from(SITE_MEDIA_BUCKET)
+      .getPublicUrl(storagePath);
+
+    const publicUrl = pubData?.publicUrl;
+    if (!publicUrl) {
+      return {
+        success: false,
+        message: 'Image uploaded but public URL could not be generated.',
+      };
+    }
+
+    return {
+      success: true,
+      url: publicUrl,
+      updatedAt: new Date().toISOString(),
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err?.message || 'Image upload failed while connecting to Supabase Storage.',
+    };
+  }
+}
+
+export async function uploadWebinarImageFile(
+  file: File
+): Promise<WebinarImageUploadResult> {
+  try {
+    const allowedMimes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif'];
+    if (file.type && !allowedMimes.includes(file.type.toLowerCase())) {
+      return {
+        success: false,
+        message: 'Only PNG, JPG, WebP, or GIF images are allowed.',
+      };
+    }
+
+    const MAX_BYTES = 10 * 1024 * 1024;
+    if (file.size > MAX_BYTES) {
+      return {
+        success: false,
+        message: 'Image size must be 10 MB or smaller.',
+      };
+    }
+
+    const detected = await detectClientImageFormat(file);
+    if (!detected) {
+      return {
+        success: false,
+        message: 'Unsupported file format. Only valid PNG, JPG, WebP, or GIF images are allowed.',
+      };
+    }
+
+    // 1. Primary: Direct cloud upload to Supabase Storage
+    const directResult = await uploadWebinarImageViaSupabase(file, detected);
+    if (directResult.success && directResult.url) {
+      return directResult;
+    }
+
+    // 2. Fallback: Backend Express API
+    try {
+      const imageData = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (typeof reader.result === 'string') {
+            resolve(reader.result);
+          } else {
+            reject(new Error('Failed to read image file.'));
+          }
+        };
+        reader.onerror = () => reject(new Error('Failed to read image file.'));
+        reader.readAsDataURL(file);
+      });
+
+      const postToApi = async (forceRefresh: boolean) =>
+        fetchWithTimeout(
+          '/api/admin/webinars/upload-image',
+          {
+            method: 'POST',
+            headers: await authHeaders(forceRefresh),
+            body: JSON.stringify({ imageData }),
+          },
+          30000
+        );
+
+      let res = await postToApi(false);
+      if (res.status === 401) {
+        res = await postToApi(true);
+      }
+
+      const { isJson, data } = await safeParseJsonResponse(res);
+      if (isJson && res.ok && data?.success && data?.url) {
+        return {
+          success: true,
+          url: data.url,
+          updatedAt: data.updatedAt,
+        };
+      }
+
+      if (isJson && res.status === 401) {
+        notifyAdminSessionExpired();
+        return {
+          success: false,
+          message: data?.message || 'Admin session expired. Please sign in again.',
+        };
+      }
+
+      if (isJson && data?.message) {
+        return {
+          success: false,
+          message: data.message,
+        };
+      }
+    } catch {
+      // Return direct Supabase error below
+    }
+
+    return {
+      success: false,
+      message: directResult.message || 'Webinar image upload failed.',
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err?.message || 'Network error while uploading webinar image.',
     };
   }
 }

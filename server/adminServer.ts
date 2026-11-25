@@ -1,5 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js';
-import { getSupabaseServer } from './supabaseServer.ts';
+import { getSupabaseServer, getSupabaseForRequest } from './supabaseServer.ts';
 import fs from 'fs';
 import path from 'path';
 
@@ -601,15 +601,15 @@ export async function deleteAdminBlog(id: string): Promise<boolean> {
 // ==============================================================================
 // CERTIFICATES
 // ==============================================================================
-export async function getAdminCertificates(): Promise<AdminCertificate[]> {
-  const supabase = getSupabaseServer();
+export async function getAdminCertificates(authToken?: string): Promise<AdminCertificate[]> {
+  const supabase = getSupabaseForRequest(authToken);
   if (supabase) {
     try {
       const { data, error } = await supabase
         .from('certificates')
         .select('*')
         .order('created_at', { ascending: false });
-      if (!error && data && data.length > 0) {
+      if (!error && Array.isArray(data)) {
         return data as AdminCertificate[];
       }
     } catch {}
@@ -619,15 +619,31 @@ export async function getAdminCertificates(): Promise<AdminCertificate[]> {
 
 export async function verifyCertificateById(certId: string): Promise<AdminCertificate | null> {
   const cleanId = certId.trim().toUpperCase();
+  const supabase = getSupabaseServer();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('certificates')
+        .select('*')
+        .eq('id', cleanId)
+        .maybeSingle();
+      if (!error && data) {
+        return data as AdminCertificate;
+      }
+    } catch {}
+  }
   const all = await getAdminCertificates();
   const match = all.find((c) => c.id.toUpperCase() === cleanId);
-  if (match && (match.status === 'approved' || match.status === 'active')) {
+  if (match) {
     return match;
   }
   return null;
 }
 
-export async function saveAdminCertificate(cert: Partial<AdminCertificate>): Promise<AdminCertificate> {
+export async function saveAdminCertificate(
+  cert: Partial<AdminCertificate>,
+  authToken?: string
+): Promise<AdminCertificate> {
   const now = new Date().toISOString();
   const id = (cert.id || `CBM-2026-${Math.floor(1000 + Math.random() * 9000)}`).trim().toUpperCase();
   const record: AdminCertificate = {
@@ -635,46 +651,47 @@ export async function saveAdminCertificate(cert: Partial<AdminCertificate>): Pro
     student_name: cert.student_name || 'Graduate Student',
     course_name: cert.course_name || 'Master in AI-Powered Digital Marketing & Growth Specialization',
     issue_date: cert.issue_date || new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-    completion_date: cert.completion_date || new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+    completion_date: cert.completion_date || cert.issue_date || new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
     grade: cert.grade || 'Grade A+ (Distinction)',
-    status: cert.status || 'approved',
+    status: cert.status || 'active',
     rejection_reason: cert.rejection_reason || null,
     skills_verified: cert.skills_verified || ['AI SEO', 'Meta Ads', 'Google Ads PMax', 'GA4 Analytics'],
     instructor: cert.instructor || 'CBM Academic Board & Directorate',
     qr_code_seed: cert.qr_code_seed || `CBM-SECURE-AUTH-${id}`,
+    credential_url: cert.credential_url || `https://cbmacademy.in/#certificate?id=${id}`,
     created_at: cert.created_at || now,
     updated_at: now,
   };
 
-  const supabase = getSupabaseServer();
-  if (supabase) {
-    try {
-      await supabase.from('certificates').upsert([record], { onConflict: 'id' });
-    } catch (err) {
-      console.warn('[Supabase Certificates Upsert Notice]:', err);
-    }
+  const supabase = getSupabaseForRequest(authToken);
+  if (!supabase) {
+    throw new Error('Supabase is not configured on the server.');
   }
 
-  const existingIdx = store.certificates.findIndex((c) => c.id.toUpperCase() === id);
-  if (existingIdx >= 0) {
-    store.certificates[existingIdx] = record;
-  } else {
-    store.certificates.unshift(record);
+  const { data, error } = await supabase
+    .from('certificates')
+    .upsert([record], { onConflict: 'id' })
+    .select()
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(error.message || 'Failed to save certificate to Supabase.');
   }
-  saveStore();
-  return record;
+
+  return (data as AdminCertificate) || record;
 }
 
-export async function deleteAdminCertificate(id: string): Promise<boolean> {
+export async function deleteAdminCertificate(id: string, authToken?: string): Promise<boolean> {
   const cleanId = id.trim().toUpperCase();
-  const supabase = getSupabaseServer();
-  if (supabase) {
-    try {
-      await supabase.from('certificates').delete().eq('id', cleanId);
-    } catch {}
+  const supabase = getSupabaseForRequest(authToken);
+  if (!supabase) {
+    throw new Error('Supabase is not configured on the server.');
   }
-  store.certificates = store.certificates.filter((c) => c.id.toUpperCase() !== cleanId);
-  saveStore();
+
+  const { error } = await supabase.from('certificates').delete().eq('id', cleanId);
+  if (error) {
+    throw new Error(error.message || 'Failed to delete certificate from Supabase.');
+  }
   return true;
 }
 

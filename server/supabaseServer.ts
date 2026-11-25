@@ -60,6 +60,40 @@ export function getSupabaseServer(): SupabaseClient | null {
   return supabaseClient;
 }
 
+/**
+ * Returns a Supabase client authenticated as the service role (if configured)
+ * or scoped to the caller's verified Supabase Auth JWT so RLS authorizes admin writes.
+ */
+export function getSupabaseForRequest(authToken?: string): SupabaseClient | null {
+  if (!isSupabaseConfiguredOnServer()) {
+    return null;
+  }
+  const hasServiceRole = Boolean((process.env.SUPABASE_SERVICE_ROLE_KEY || '').trim());
+  if (hasServiceRole) {
+    return getSupabaseServer();
+  }
+  if (authToken && authToken.split('.').length === 3) {
+    const { url } = getSupabaseEnv();
+    const anonKey = (
+      process.env.SUPABASE_ANON_KEY ||
+      process.env.VITE_SUPABASE_ANON_KEY ||
+      'sb_publishable_sO0rnN9MJzQmBiq-Lm6p3w_EAYKjVOb'
+    ).trim();
+    if (url && anonKey) {
+      return createClient(url, anonKey, {
+        global: {
+          headers: { Authorization: `Bearer ${authToken}` },
+        },
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+        },
+      });
+    }
+  }
+  return getSupabaseServer();
+}
+
 export async function checkSupabaseHealth(): Promise<{
   connected: boolean;
   configured: boolean;
@@ -579,13 +613,13 @@ export async function getAllWebinars(): Promise<ServerWebinarRecord[]> {
   const supabase = getSupabaseServer();
   if (supabase) {
     try {
-      const query = supabase.from('webinars').select('*').order('start_datetime', { ascending: true });
-      const { data, error } = await withTimeout(query, 1500);
-      if (!error && Array.isArray(data) && data.length > 0) {
+      const query = supabase.from('webinars').select('*').order('created_at', { ascending: false });
+      const { data, error } = await withTimeout(query, 3000);
+      if (!error && Array.isArray(data)) {
         return (data as ServerWebinarRecord[]).filter((w) => !DEMO_WEBINAR_IDS.has(w.id));
       }
     } catch (err) {
-      console.warn('[Supabase] Error fetching webinars, falling back to memory:', err);
+      console.warn('[Supabase] Error fetching webinars:', err);
     }
   }
   return memoryWebinars.filter((w) => !DEMO_WEBINAR_IDS.has(w.id));
@@ -604,41 +638,59 @@ export async function getWebinarById(id: string): Promise<ServerWebinarRecord | 
  */
 export async function updateWebinarDetails(
   id: string,
-  updates: Partial<ServerWebinarRecord>
-): Promise<{ success: boolean; webinar?: ServerWebinarRecord }> {
-  const supabase = getSupabaseServer();
+  updates: Partial<ServerWebinarRecord>,
+  authToken?: string
+): Promise<{ success: boolean; webinar?: ServerWebinarRecord; error?: string }> {
+  const cleanUpdates: Partial<ServerWebinarRecord> = {};
+  for (const [k, v] of Object.entries(updates)) {
+    if (v !== undefined) {
+      (cleanUpdates as any)[k] = v;
+    }
+  }
+
+  const supabase = getSupabaseForRequest(authToken);
   if (supabase) {
     try {
       const { data, error } = await supabase
         .from('webinars')
-        .update(updates)
+        .update(cleanUpdates)
         .eq('id', id)
         .select()
         .maybeSingle();
 
       if (!error && data) {
+        const inMem = memoryWebinars.find((w) => w.id === id);
+        if (inMem) {
+          Object.assign(inMem, data);
+        }
         return { success: true, webinar: data as ServerWebinarRecord };
       }
-    } catch (err) {
-      console.warn('[Supabase] updateWebinarDetails notice:', err);
+      if (error) {
+        console.warn('[Supabase] updateWebinarDetails error:', error.message);
+        return { success: false, error: error.message };
+      }
+    } catch (err: any) {
+      console.warn('[Supabase] updateWebinarDetails exception:', err);
+      return { success: false, error: err?.message || 'Database update failed' };
     }
   }
 
   const inMem = memoryWebinars.find((w) => w.id === id);
   if (inMem) {
-    Object.assign(inMem, updates);
+    Object.assign(inMem, cleanUpdates);
     return { success: true, webinar: inMem };
   }
 
-  return { success: false };
+  return { success: false, error: 'Webinar not found in database.' };
 }
 
 /**
- * Create a new webinar in Supabase and memory
+ * Create a new webinar in Supabase
  */
 export async function createWebinar(
-  data: Partial<ServerWebinarRecord>
-): Promise<{ success: boolean; webinar: ServerWebinarRecord; error?: string }> {
+  data: Partial<ServerWebinarRecord>,
+  authToken?: string
+): Promise<{ success: boolean; webinar?: ServerWebinarRecord; error?: string }> {
   const newId = data.id || `webinar-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
   const nowIso = new Date().toISOString();
 
@@ -658,40 +710,55 @@ export async function createWebinar(
     created_at: nowIso,
   };
 
-  const supabase = getSupabaseServer();
+  const supabase = getSupabaseForRequest(authToken);
   if (supabase) {
     try {
       const { data: dbData, error } = await supabase
         .from('webinars')
-        .insert([newWebinar])
+        .upsert([newWebinar], { onConflict: 'id' })
         .select()
         .single();
 
       if (!error && dbData) {
-        memoryWebinars.unshift(dbData as ServerWebinarRecord);
+        const idx = memoryWebinars.findIndex((w) => w.id === dbData.id);
+        if (idx >= 0) {
+          memoryWebinars[idx] = dbData as ServerWebinarRecord;
+        } else {
+          memoryWebinars.unshift(dbData as ServerWebinarRecord);
+        }
         return { success: true, webinar: dbData as ServerWebinarRecord };
       }
+      if (error) {
+        console.warn('[Supabase] createWebinar error:', error.message);
+        return { success: false, error: error.message };
+      }
     } catch (err: any) {
-      console.warn('[Supabase] createWebinar notice:', err?.message);
+      console.warn('[Supabase] createWebinar exception:', err?.message);
+      return { success: false, error: err?.message || 'Failed to save webinar to Supabase.' };
     }
   }
 
-  memoryWebinars.unshift(newWebinar);
-  return { success: true, webinar: newWebinar };
+  return { success: false, error: 'Supabase is not configured on the server.' };
 }
 
 /**
- * Delete or deactivate webinar by ID
+ * Delete webinar by ID in Supabase
  */
 export async function deleteWebinarServer(
-  id: string
+  id: string,
+  authToken?: string
 ): Promise<{ success: boolean; error?: string }> {
-  const supabase = getSupabaseServer();
+  const supabase = getSupabaseForRequest(authToken);
   if (supabase) {
     try {
-      await supabase.from('webinars').delete().eq('id', id);
+      const { error } = await supabase.from('webinars').delete().eq('id', id);
+      if (error) {
+        console.warn('[Supabase] deleteWebinar error:', error.message);
+        return { success: false, error: error.message };
+      }
     } catch (err: any) {
-      console.warn('[Supabase] deleteWebinar notice:', err?.message);
+      console.warn('[Supabase] deleteWebinar exception:', err?.message);
+      return { success: false, error: err?.message || 'Failed to delete webinar from Supabase.' };
     }
   }
 

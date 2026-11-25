@@ -3,6 +3,7 @@ import {
   AdminCertificate,
   saveCertificate,
   deleteCertificate,
+  lastAdminApiError,
 } from '../../services/adminService';
 import {
   Award,
@@ -75,7 +76,7 @@ export const AdminCertificates: React.FC<AdminCertificatesProps> = ({
         );
         onRefresh();
       } else {
-        showToast('error', 'Failed to update certificate status.');
+        showToast('error', lastAdminApiError || 'Failed to update certificate status.');
       }
     } finally {
       setActionLoading(false);
@@ -86,7 +87,7 @@ export const AdminCertificates: React.FC<AdminCertificatesProps> = ({
     e.preventDefault();
     if (!editCert) return;
     if (!editCert.id || !editCert.student_name || !editCert.course_name) {
-      alert('Certificate ID, Student Name, and Course Name are required.');
+      showToast('error', 'Certificate ID, Student Name, and Course Name are required.');
       return;
     }
     setActionLoading(true);
@@ -103,7 +104,7 @@ export const AdminCertificates: React.FC<AdminCertificatesProps> = ({
         setEditCert(null);
         onRefresh();
       } else {
-        showToast('error', 'Failed to save certificate.');
+        showToast('error', lastAdminApiError || 'Failed to save certificate.');
       }
     } finally {
       setActionLoading(false);
@@ -120,7 +121,7 @@ export const AdminCertificates: React.FC<AdminCertificatesProps> = ({
         if (selectedCert?.id === cert.id) setSelectedCert(null);
         onRefresh();
       } else {
-        showToast('error', 'Failed to delete certificate.');
+        showToast('error', lastAdminApiError || 'Failed to delete certificate.');
       }
     } finally {
       setActionLoading(false);

@@ -46,14 +46,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   // Prevent background page from scrolling when mobile sidebar drawer is open
   useScrollLock(mobileMenuOpen);
 
-  const [certificates, setCertificates] = useState<AdminCertificate[]>(() => {
-    try {
-      const raw = localStorage.getItem('cbm_admin_cached_certificates');
-      return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [certificates, setCertificates] = useState<AdminCertificate[]>([]);
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -67,9 +60,6 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
       const certsRes = await fetchAdminCertificates();
       if (Array.isArray(certsRes)) {
         setCertificates(certsRes);
-        try {
-          localStorage.setItem('cbm_admin_cached_certificates', JSON.stringify(certsRes));
-        } catch {}
       }
 
       if (lastAdminApiError) {

@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Video,
   Plus,
-  Users,
   Calendar,
   Clock,
   Eye,
@@ -11,32 +10,45 @@ import {
   CheckCircle2,
   XCircle,
   X,
-  ExternalLink,
   ShieldCheck,
-  Tag,
+  Upload,
+  Image as ImageIcon,
+  RefreshCw,
 } from 'lucide-react';
-import { Webinar, WebinarStatus, WebinarType } from '../../types';
+import { Webinar } from '../../types';
 import {
   getWebinars,
+  fetchWebinarsFromDb,
   saveWebinar,
   deleteWebinar,
   toggleWebinarStatus,
+  subscribeToWebinarChanges,
+  WEBINAR_UPDATE_EVENT,
 } from '../../services/webinarStorage';
 import { AdminWebinarRegistrations } from './AdminWebinarRegistrations';
-import { getAdminToken } from '../../services/adminService';
+import { getAdminToken, uploadWebinarImageFile } from '../../services/adminService';
 import { useScrollLock } from '../../utils/useScrollLock';
+
+const DEFAULT_WEBINAR_POSTER =
+  'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&q=80&w=1200';
+const ACCEPTED_IMAGE_TYPES = 'image/png,image/jpeg,image/webp,image/gif';
 
 export const AdminWebinars: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'sessions' | 'registrations'>('sessions');
   const [webinars, setWebinars] = useState<Webinar[]>([]);
   const [selectedWebinar, setSelectedWebinar] = useState<Webinar | null>(null);
   const [editWebinar, setEditWebinar] = useState<Partial<Webinar> | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [imageUploadError, setImageUploadError] = useState<string | null>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+
   useScrollLock(Boolean(selectedWebinar || editWebinar));
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const showToast = (type: 'success' | 'error', message: string) => {
     setToast({ type, message });
-    setTimeout(() => setToast(null), 3500);
+    setTimeout(() => setToast(null), 4500);
   };
 
   const loadWebinars = () => {
@@ -45,35 +57,96 @@ export const AdminWebinars: React.FC = () => {
 
   useEffect(() => {
     loadWebinars();
+    fetchWebinarsFromDb().then((fresh) => {
+      setWebinars(fresh);
+    });
+
+    const unsubscribeRealtime = subscribeToWebinarChanges(() => {
+      fetchWebinarsFromDb().then((fresh) => setWebinars(fresh));
+    });
+
+    window.addEventListener(WEBINAR_UPDATE_EVENT, loadWebinars);
+    return () => {
+      window.removeEventListener(WEBINAR_UPDATE_EVENT, loadWebinars);
+      unsubscribeRealtime();
+    };
   }, []);
 
-  const handleToggle = (id: string) => {
-    const res = toggleWebinarStatus(id);
-    if (res) {
-      showToast('success', `Status updated to ${res.status}.`);
-      loadWebinars();
+  const openEditModal = (webinarDraft: Partial<Webinar>) => {
+    setImageUploadError(null);
+    setUploadingImage(false);
+    setEditWebinar(webinarDraft);
+  };
+
+  const closeEditModal = () => {
+    setEditWebinar(null);
+    setImageUploadError(null);
+    setUploadingImage(false);
+  };
+
+  const handleTriggerImagePicker = () => {
+    if (uploadingImage) return;
+    if (imageInputRef.current) {
+      imageInputRef.current.value = '';
+      imageInputRef.current.click();
     }
   };
 
-  const handleDelete = (id: string, title: string) => {
-    if (!confirm(`Are you sure you want to delete webinar "${title}"?`)) return;
-    deleteWebinar(id);
-    showToast('success', 'Webinar deleted.');
-    loadWebinars();
+  const handleImageFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    setImageUploadError(null);
+
+    try {
+      const result = await uploadWebinarImageFile(file);
+      if (result.success && result.url) {
+        setEditWebinar((curr) => (curr ? { ...curr, posterUrl: result.url } : curr));
+        showToast('success', 'Webinar image uploaded successfully.');
+      } else {
+        setImageUploadError(result.message || 'Failed to upload webinar image.');
+      }
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
-  const handleSaveModal = (e: React.FormEvent) => {
+  const handleToggle = async (id: string) => {
+    const res = await toggleWebinarStatus(id);
+    if (res.success && res.webinar) {
+      showToast('success', `Status updated to ${res.webinar.status}.`);
+      loadWebinars();
+    } else {
+      showToast('error', res.message || 'Failed to update webinar status in Supabase.');
+    }
+  };
+
+  const handleDelete = async (id: string, title: string) => {
+    if (!confirm(`Are you sure you want to delete webinar "${title}"?`)) return;
+    const res = await deleteWebinar(id);
+    if (res.success) {
+      showToast('success', 'Webinar deleted.');
+      loadWebinars();
+    } else {
+      showToast('error', res.message || 'Failed to delete webinar from Supabase.');
+    }
+  };
+
+  const handleSaveModal = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (uploadingImage || saving) return;
+
     if (!editWebinar || !editWebinar.title || !editWebinar.date || !editWebinar.time) {
-      alert('Title, date, and time are required.');
+      showToast('error', 'Title, date, and time are required.');
       return;
     }
 
-    const payload: Webinar = {
-      id: editWebinar.id || `webinar-${Date.now()}`,
-      title: editWebinar.title,
+    const payload: Omit<Webinar, 'id' | 'createdAt'> & { id?: string } = {
+      ...(editWebinar.id ? { id: editWebinar.id } : {}),
+      title: editWebinar.title.trim(),
       description: editWebinar.description || '',
-      posterUrl: editWebinar.posterUrl || 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&q=80&w=1200',
+      posterUrl: editWebinar.posterUrl?.trim() || DEFAULT_WEBINAR_POSTER,
       type: editWebinar.type || 'free',
       price: editWebinar.price || undefined,
       date: editWebinar.date,
@@ -89,19 +162,38 @@ export const AdminWebinars: React.FC = () => {
       capacity: editWebinar.capacity || 100,
       current_registrations: editWebinar.current_registrations || 0,
       status: editWebinar.status || 'published',
-      createdAt: editWebinar.createdAt || new Date().toISOString(),
+      publishedAt: editWebinar.publishedAt,
     };
 
-    saveWebinar(payload);
-    showToast('success', 'Webinar saved successfully.');
-    setEditWebinar(null);
-    loadWebinars();
+    setSaving(true);
+    try {
+      const result = await saveWebinar(payload);
+      if (result.success) {
+        showToast('success', 'Webinar saved and synced across all devices.');
+        closeEditModal();
+        loadWebinars();
+      } else {
+        showToast('error', result.message || 'Failed to save webinar to Supabase.');
+      }
+    } finally {
+      setSaving(false);
+    }
   };
 
   const adminToken = getAdminToken() || '';
 
   return (
     <div className="space-y-6">
+      {/* Hidden File Input for Webinar Poster Image */}
+      <input
+        ref={imageInputRef}
+        type="file"
+        accept={ACCEPTED_IMAGE_TYPES}
+        onChange={handleImageFileSelected}
+        className="hidden"
+        aria-label="Upload webinar image"
+      />
+
       {/* Toast Notification */}
       {toast && (
         <div
@@ -157,9 +249,10 @@ export const AdminWebinars: React.FC = () => {
           {activeTab === 'sessions' && (
             <button
               onClick={() =>
-                setEditWebinar({
+                openEditModal({
                   title: '',
                   description: '',
+                  posterUrl: '',
                   type: 'free',
                   date: new Date().toISOString().slice(0, 10),
                   time: '11:00 AM IST',
@@ -174,7 +267,7 @@ export const AdminWebinars: React.FC = () => {
                   ],
                 })
               }
-              className="inline-flex items-center gap-2 px-3.5 py-2 bg-[#FF6B00] hover:bg-[#E05E00] text-white text-sm font-semibold rounded-lg shadow-sm transition"
+              className="inline-flex items-center gap-2 px-3.5 py-2 bg-[#FF6B00] hover:bg-[#E05E00] text-white text-sm font-semibold rounded-lg shadow-sm transition cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               Schedule Masterclass
@@ -211,9 +304,24 @@ export const AdminWebinars: React.FC = () => {
                   webinars.map((w) => (
                     <tr key={w.id} className="hover:bg-slate-50/80 transition">
                       <td className="px-6 py-4">
-                        <div className="font-semibold text-slate-900 line-clamp-1">{w.title}</div>
-                        <div className="text-xs text-slate-400 line-clamp-1 mt-0.5">
-                          {w.description || 'Interactive live masterclass'}
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-9 rounded-md overflow-hidden bg-slate-100 border border-slate-200 shrink-0 flex items-center justify-center">
+                            {w.posterUrl ? (
+                              <img
+                                src={w.posterUrl}
+                                alt={w.title}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <ImageIcon className="w-4 h-4 text-slate-400" />
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <div className="font-semibold text-slate-900 line-clamp-1">{w.title}</div>
+                            <div className="text-xs text-slate-400 line-clamp-1 mt-0.5">
+                              {w.description || 'Interactive live masterclass'}
+                            </div>
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 text-xs whitespace-nowrap">
@@ -243,7 +351,7 @@ export const AdminWebinars: React.FC = () => {
                       <td className="px-6 py-4">
                         <span
                           className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${
-                            w.status === 'published'
+                            w.status === 'published' || w.status === 'upcoming'
                               ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                               : 'bg-amber-50 text-amber-700 border border-amber-200'
                           }`}
@@ -255,28 +363,28 @@ export const AdminWebinars: React.FC = () => {
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => setSelectedWebinar(w)}
-                            className="p-1.5 text-slate-500 hover:text-[#072B57] hover:bg-slate-100 rounded-lg transition"
+                            className="p-1.5 text-slate-500 hover:text-[#072B57] hover:bg-slate-100 rounded-lg transition cursor-pointer"
                             title="Preview Details"
                           >
                             <Eye className="w-4 h-4" />
                           </button>
                           <button
-                            onClick={() => setEditWebinar(w)}
-                            className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                            onClick={() => openEditModal(w)}
+                            className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition cursor-pointer"
                             title="Edit Webinar"
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleToggle(w.id)}
-                            className="p-1.5 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition"
+                            className="p-1.5 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition cursor-pointer"
                             title="Toggle Published / Draft"
                           >
                             <ShieldCheck className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDelete(w.id, w.title)}
-                            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer"
                             title="Delete Webinar"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -295,19 +403,28 @@ export const AdminWebinars: React.FC = () => {
       {/* Preview Modal */}
       {selectedWebinar && (
         <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200">
+          <div className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl border border-slate-200">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <span className="text-xs font-bold px-2 py-0.5 rounded bg-[#072B57] text-white">
                 {selectedWebinar.type.toUpperCase()} MASTERCLASS
               </span>
               <button
                 onClick={() => setSelectedWebinar(null)}
-                className="p-1 text-slate-400 hover:text-slate-600 rounded-lg"
+                className="p-1 text-slate-400 hover:text-slate-600 rounded-lg cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="py-4 space-y-3 text-xs text-slate-600">
+              {selectedWebinar.posterUrl && (
+                <div className="rounded-xl overflow-hidden border border-slate-200 aspect-[16/9] bg-slate-100">
+                  <img
+                    src={selectedWebinar.posterUrl}
+                    alt={selectedWebinar.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
               <h3 className="text-base font-bold text-slate-900">{selectedWebinar.title}</h3>
               <p className="text-slate-600 leading-relaxed">{selectedWebinar.description}</p>
               <div className="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
@@ -356,8 +473,8 @@ export const AdminWebinars: React.FC = () => {
               </h3>
               <button
                 type="button"
-                onClick={() => setEditWebinar(null)}
-                className="p-1 text-slate-400 hover:text-slate-600 rounded-lg"
+                onClick={closeEditModal}
+                className="p-1 text-slate-400 hover:text-slate-600 rounded-lg cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -385,6 +502,92 @@ export const AdminWebinars: React.FC = () => {
                   placeholder="Brief synopsis of what will be covered..."
                   className="w-full p-2.5 border border-slate-200 rounded-lg"
                 />
+              </div>
+
+              {/* Webinar Cover / Poster Image Upload */}
+              <div>
+                <label className="font-semibold text-slate-700 block mb-1">
+                  Webinar Image / Poster
+                </label>
+                {editWebinar.posterUrl ? (
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-2.5 space-y-2.5">
+                    <div className="relative aspect-[16/9] w-full rounded-lg overflow-hidden bg-slate-200 border border-slate-200">
+                      <img
+                        src={editWebinar.posterUrl}
+                        alt="Webinar cover preview"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[11px] text-slate-500">
+                        Displayed on webinar cards, details view, and the homepage popup.
+                      </span>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <button
+                          type="button"
+                          disabled={uploadingImage}
+                          onClick={handleTriggerImagePicker}
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#072B57] hover:bg-[#0A3D78] text-white text-[11px] font-semibold transition cursor-pointer disabled:opacity-60"
+                        >
+                          {uploadingImage ? (
+                            <>
+                              <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                              <span>Uploading...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="w-3.5 h-3.5" />
+                              <span>Replace Image</span>
+                            </>
+                          )}
+                        </button>
+                        <button
+                          type="button"
+                          disabled={uploadingImage}
+                          onClick={() => {
+                            setImageUploadError(null);
+                            setEditWebinar({ ...editWebinar, posterUrl: '' });
+                          }}
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-rose-300 text-slate-600 hover:text-rose-700 text-[11px] font-semibold transition cursor-pointer disabled:opacity-60"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>Remove</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    disabled={uploadingImage}
+                    onClick={handleTriggerImagePicker}
+                    className="w-full rounded-xl border-2 border-dashed border-slate-200 hover:border-[#FF6B00] bg-slate-50/70 hover:bg-orange-50/30 p-4 flex flex-col items-center justify-center gap-1.5 text-center transition cursor-pointer disabled:opacity-60"
+                  >
+                    {uploadingImage ? (
+                      <>
+                        <RefreshCw className="w-5 h-5 text-[#FF6B00] animate-spin" />
+                        <span className="font-semibold text-slate-700">Uploading webinar image...</span>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-9 h-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-[#072B57]">
+                          <Upload className="w-4 h-4 text-[#FF6B00]" />
+                        </div>
+                        <span className="font-semibold text-slate-700">
+                          Click to upload webinar image
+                        </span>
+                        <span className="text-[11px] text-slate-400">
+                          PNG, JPG, WebP, or GIF • Max 10 MB (16:9 recommended)
+                        </span>
+                      </>
+                    )}
+                  </button>
+                )}
+                {imageUploadError && (
+                  <p className="mt-1.5 text-[11px] font-medium text-rose-600">
+                    {imageUploadError}
+                  </p>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -473,16 +676,21 @@ export const AdminWebinars: React.FC = () => {
             <div className="pt-3 border-t border-slate-200 flex items-center justify-end gap-2">
               <button
                 type="button"
-                onClick={() => setEditWebinar(null)}
-                className="px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-lg"
+                onClick={closeEditModal}
+                className="px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-lg cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-1.5 text-xs font-semibold bg-[#072B57] text-white rounded-lg hover:bg-[#0A3D78] transition"
+                disabled={uploadingImage || saving}
+                className="px-4 py-1.5 text-xs font-semibold bg-[#072B57] text-white rounded-lg hover:bg-[#0A3D78] transition cursor-pointer disabled:opacity-60"
               >
-                Save Masterclass
+                {uploadingImage
+                  ? 'Uploading Image...'
+                  : saving
+                  ? 'Saving...'
+                  : 'Save Masterclass'}
               </button>
             </div>
           </form>
@@ -491,3 +699,4 @@ export const AdminWebinars: React.FC = () => {
     </div>
   );
 };
+

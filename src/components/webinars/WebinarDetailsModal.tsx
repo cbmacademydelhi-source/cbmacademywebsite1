@@ -10,8 +10,33 @@ interface WebinarDetailsModalProps {
   onRegister: (webinar: Webinar) => void;
 }
 
+const MONTH_ABBR = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
 function parseDateBadge(dateStr: string) {
-  const parts = dateStr.trim().split(' ');
+  const trimmed = (dateStr || '').trim();
+  const isoMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(trimmed);
+  if (isoMatch) {
+    const monthIdx = parseInt(isoMatch[2], 10) - 1;
+    const dayNum = parseInt(isoMatch[3], 10);
+    if (monthIdx >= 0 && monthIdx < 12 && dayNum >= 1 && dayNum <= 31) {
+      return {
+        day: String(dayNum),
+        month: MONTH_ABBR[monthIdx],
+        year: isoMatch[1],
+      };
+    }
+  }
+
+  const parsedDate = new Date(trimmed);
+  if (!Number.isNaN(parsedDate.getTime())) {
+    return {
+      day: String(parsedDate.getDate()),
+      month: MONTH_ABBR[parsedDate.getMonth()],
+      year: String(parsedDate.getFullYear()),
+    };
+  }
+
+  const parts = trimmed.split(/\s+/);
   if (parts.length >= 3) {
     return {
       day: parts[0],

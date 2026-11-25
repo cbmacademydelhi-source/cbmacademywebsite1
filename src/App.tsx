@@ -21,7 +21,13 @@ import { WebinarsPage } from './components/WebinarsPage';
 import { WebinarPromoPopup } from './components/webinars/WebinarPromoPopup';
 import { WebinarRegisterModal } from './components/webinars/WebinarRegisterModal';
 import { Webinar } from './types';
-import { getWebinars, WEBINAR_UPDATE_EVENT } from './services/webinarStorage';
+import {
+  getWebinars,
+  fetchWebinarsFromDb,
+  getMostRecentlyPublishedWebinar,
+  subscribeToWebinarChanges,
+  WEBINAR_UPDATE_EVENT,
+} from './services/webinarStorage';
 
 interface PageSeoConfig {
   title: string;
@@ -178,10 +184,35 @@ export default function App() {
       setWebinars(getWebinars());
     };
 
+    const syncLiveWebinars = () => {
+      fetchWebinarsFromDb().then((fresh) => {
+        setWebinars(fresh);
+      });
+    };
+
     loadWebinarData();
+    syncLiveWebinars();
+
+    const unsubscribeRealtime = subscribeToWebinarChanges(syncLiveWebinars);
+
+    const handleFocus = () => {
+      syncLiveWebinars();
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        syncLiveWebinars();
+      }
+    };
+
     window.addEventListener(WEBINAR_UPDATE_EVENT, loadWebinarData);
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => {
       window.removeEventListener(WEBINAR_UPDATE_EVENT, loadWebinarData);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      unsubscribeRealtime();
     };
   }, []);
 
@@ -416,9 +447,8 @@ export default function App() {
 
   const isAdminPage = currentPage === 'admin';
 
-  // Find next upcoming active webinar for promo popup
-  const upcomingWebinarForPromo =
-    webinars.find((w) => w.status === 'published' || w.status === 'upcoming') || null;
+  // Automatically pick the most recently published webinar for the promo popup
+  const upcomingWebinarForPromo = getMostRecentlyPublishedWebinar(webinars);
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] text-[#072B57] font-['Plus_Jakarta_Sans',sans-serif] flex flex-col selection:bg-[#FF6B00] selection:text-white overflow-x-clip">

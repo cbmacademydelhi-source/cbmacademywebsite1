@@ -61,7 +61,7 @@ export const SITE_MEDIA_PAGES: SiteMediaPageMeta[] = [
 
 export const SITE_MEDIA_SLOTS: SiteMediaSlot[] = [
   // =========================================================================
-  // HOME PAGE (Exact Top-to-Bottom Sequence: Image 1 to Image 16)
+  // HOME PAGE (Exact Top-to-Bottom Sequence: Image 1 to Image 11)
   // =========================================================================
   {
     id: 'home-2-why-choose-cbm',
@@ -95,65 +95,10 @@ export const SITE_MEDIA_SLOTS: SiteMediaSlot[] = [
     aspectHint: '16:11 Landscape',
   },
   {
-    id: 'home-5-learn-step-1',
-    page: 'home',
-    pageLabel: 'Home',
-    imageNumber: 4,
-    sectionLabel: 'How You’ll Learn — Step 01 Thumbnail',
-    description: 'Small thumbnail for Step 01: Four-Month Enhanced Course.',
-    defaultUrl:
-      'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=320&q=80',
-    aspectHint: '4:3 Thumbnail',
-  },
-  {
-    id: 'home-6-learn-step-2',
-    page: 'home',
-    pageLabel: 'Home',
-    imageNumber: 5,
-    sectionLabel: 'How You’ll Learn — Step 02 Thumbnail',
-    description: 'Small thumbnail for Step 02: Alternate-Day Classes.',
-    defaultUrl:
-      'https://images.unsplash.com/photo-1506784365847-bbad939e9335?auto=format&fit=crop&w=320&q=80',
-    aspectHint: '4:3 Thumbnail',
-  },
-  {
-    id: 'home-7-learn-step-3',
-    page: 'home',
-    pageLabel: 'Home',
-    imageNumber: 6,
-    sectionLabel: 'How You’ll Learn — Step 03 Thumbnail',
-    description: 'Small thumbnail for Step 03: AI-Integrated Workflows.',
-    defaultUrl:
-      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=320&q=80',
-    aspectHint: '4:3 Thumbnail',
-  },
-  {
-    id: 'home-8-learn-step-4',
-    page: 'home',
-    pageLabel: 'Home',
-    imageNumber: 7,
-    sectionLabel: 'How You’ll Learn — Step 04 Thumbnail',
-    description: 'Small thumbnail for Step 04: Small, Focused Batches.',
-    defaultUrl:
-      'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=320&q=80',
-    aspectHint: '4:3 Thumbnail',
-  },
-  {
-    id: 'home-9-learn-step-5',
-    page: 'home',
-    pageLabel: 'Home',
-    imageNumber: 8,
-    sectionLabel: 'How You’ll Learn — Step 05 Thumbnail',
-    description: 'Small thumbnail for Step 05: Beyond Digital Marketing.',
-    defaultUrl:
-      'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=320&q=80',
-    aspectHint: '4:3 Thumbnail',
-  },
-  {
     id: 'home-10-testimonial-1',
     page: 'home',
     pageLabel: 'Home',
-    imageNumber: 9,
+    imageNumber: 4,
     sectionLabel: 'Testimonials — Ayesha Khan',
     description: 'Student avatar for Ayesha Khan in the Testimonials carousel.',
     defaultUrl:
@@ -164,7 +109,7 @@ export const SITE_MEDIA_SLOTS: SiteMediaSlot[] = [
     id: 'home-11-testimonial-2',
     page: 'home',
     pageLabel: 'Home',
-    imageNumber: 10,
+    imageNumber: 5,
     sectionLabel: 'Testimonials — Rahul Sharma',
     description: 'Student avatar for Rahul Sharma in the Testimonials carousel.',
     defaultUrl:
@@ -175,7 +120,7 @@ export const SITE_MEDIA_SLOTS: SiteMediaSlot[] = [
     id: 'home-12-testimonial-3',
     page: 'home',
     pageLabel: 'Home',
-    imageNumber: 11,
+    imageNumber: 6,
     sectionLabel: 'Testimonials — Simran Kapoor',
     description: 'Student avatar for Simran Kapoor in the Testimonials carousel.',
     defaultUrl:
@@ -186,7 +131,7 @@ export const SITE_MEDIA_SLOTS: SiteMediaSlot[] = [
     id: 'home-13-testimonial-4',
     page: 'home',
     pageLabel: 'Home',
-    imageNumber: 12,
+    imageNumber: 7,
     sectionLabel: 'Testimonials — Rohan Verma',
     description: 'Student avatar for Rohan Verma in the Testimonials carousel.',
     defaultUrl:
@@ -197,7 +142,7 @@ export const SITE_MEDIA_SLOTS: SiteMediaSlot[] = [
     id: 'home-14-testimonial-5',
     page: 'home',
     pageLabel: 'Home',
-    imageNumber: 13,
+    imageNumber: 8,
     sectionLabel: 'Testimonials — Amit Joshi',
     description: 'Student avatar for Amit Joshi in the Testimonials carousel.',
     defaultUrl:
@@ -208,7 +153,7 @@ export const SITE_MEDIA_SLOTS: SiteMediaSlot[] = [
     id: 'home-15-testimonial-6',
     page: 'home',
     pageLabel: 'Home',
-    imageNumber: 14,
+    imageNumber: 9,
     sectionLabel: 'Testimonials — Priya Patel',
     description: 'Student avatar for Priya Patel in the Testimonials carousel.',
     defaultUrl:
@@ -219,7 +164,7 @@ export const SITE_MEDIA_SLOTS: SiteMediaSlot[] = [
     id: 'home-16-testimonial-7',
     page: 'home',
     pageLabel: 'Home',
-    imageNumber: 15,
+    imageNumber: 10,
     sectionLabel: 'Testimonials — Vikram Malhotra',
     description: 'Student avatar for Vikram Malhotra in the Testimonials carousel.',
     defaultUrl:
@@ -230,7 +175,7 @@ export const SITE_MEDIA_SLOTS: SiteMediaSlot[] = [
     id: 'home-17-testimonial-8',
     page: 'home',
     pageLabel: 'Home',
-    imageNumber: 16,
+    imageNumber: 11,
     sectionLabel: 'Testimonials — Neha Gupta',
     description: 'Student avatar for Neha Gupta in the Testimonials carousel.',
     defaultUrl:

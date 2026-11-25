@@ -19,8 +19,6 @@ interface TimelineItem {
   description: string;
   icon: React.ElementType;
   iconBg: 'orange' | 'blue';
-  thumbnailUrl: string;
-  thumbnailAlt: string;
 }
 
 const TIMELINE_STEPS: TimelineItem[] = [
@@ -32,9 +30,6 @@ const TIMELINE_STEPS: TimelineItem[] = [
       'Master digital marketing through structured modules, hands-on assignments, and practical projects.',
     icon: BookOpen,
     iconBg: 'orange',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=320&q=80',
-    thumbnailAlt: 'Course curriculum modules and structured assignments',
   },
   {
     id: 'step-2',
@@ -44,9 +39,6 @@ const TIMELINE_STEPS: TimelineItem[] = [
       'Attend classes on alternate days to get enough time to practise, complete assignments, and apply what you learn.',
     icon: CalendarDays,
     iconBg: 'blue',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1506784365847-bbad939e9335?auto=format&fit=crop&w=320&q=80',
-    thumbnailAlt: 'Alternate day schedule planner for deliberate practice',
   },
   {
     id: 'step-3',
@@ -56,9 +48,6 @@ const TIMELINE_STEPS: TimelineItem[] = [
       'Learn to use AI tools to improve productivity, simplify tasks, and build smarter marketing workflows.',
     icon: Cpu,
     iconBg: 'orange',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=320&q=80',
-    thumbnailAlt: 'AI marketing workflows and performance dashboards',
   },
   {
     id: 'step-4',
@@ -68,9 +57,6 @@ const TIMELINE_STEPS: TimelineItem[] = [
       'Learn in small groups with more opportunities to interact, ask questions, and receive individual attention.',
     icon: Users,
     iconBg: 'blue',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=320&q=80',
-    thumbnailAlt: 'Interactive focused batch learning and mentoring',
   },
   {
     id: 'step-5',
@@ -80,9 +66,6 @@ const TIMELINE_STEPS: TimelineItem[] = [
       'Attend extra sessions on sales, communication, and planning to develop skills that matter in real workplaces and business.',
     icon: Briefcase,
     iconBg: 'orange',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=320&q=80',
-    thumbnailAlt: 'Sales, executive communication and business skills mentoring',
   },
 ];
 
@@ -92,13 +75,6 @@ export const HowWeTeachSection: React.FC<HowWeTeachSectionProps> = () => {
     'home-4-grow-your-career',
     '/assets/cbm_photos/grow_your_career_man.jpg'
   );
-  const stepSlotIds = [
-    'home-5-learn-step-1',
-    'home-6-learn-step-2',
-    'home-7-learn-step-3',
-    'home-8-learn-step-4',
-    'home-9-learn-step-5',
-  ];
 
   return (
     <section
@@ -177,7 +153,7 @@ export const HowWeTeachSection: React.FC<HowWeTeachSectionProps> = () => {
                       </div>
 
                       {/* Content block: icon + title + description */}
-                      <div className="flex-1 min-w-0 pr-2">
+                      <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1.5">
                           {/* Alternating subtle warm-orange and pale-blue icon backgrounds */}
                           <span
@@ -196,16 +172,6 @@ export const HowWeTeachSection: React.FC<HowWeTeachSectionProps> = () => {
                         <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-md">
                           {item.description}
                         </p>
-                      </div>
-
-                      {/* Small relevant rectangular thumbnail aligned to the far right */}
-                      <div className="shrink-0 self-center">
-                        <img
-                          src={getImageUrl(stepSlotIds[index], item.thumbnailUrl)}
-                          alt={item.thumbnailAlt}
-                          className="w-16 h-12 sm:w-22 sm:h-16 rounded-lg object-cover shadow-xs border border-slate-200/70"
-                          loading="lazy"
-                        />
                       </div>
                     </div>
                   );

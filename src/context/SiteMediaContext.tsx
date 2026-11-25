@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import {
+  ALLOWED_SITE_MEDIA_SLOT_IDS,
   DEFAULT_SITE_LOGO_URL,
   SITE_LOGO_SLOT_ID,
   SITE_MEDIA_SLOT_MAP,
@@ -22,7 +23,15 @@ interface SiteMediaContextValue extends SiteMediaState {
   refreshSiteMedia: () => Promise<void>;
 }
 
-const CACHE_KEY = 'cbm_site_media_cache_v1';
+const SITE_MEDIA_BUCKET = 'site-media';
+const SITE_MEDIA_TABLE = 'site_media';
+const SLOT_FILE_REGEX = /^([a-z0-9-]+)_(\d+)_[a-f0-9]+\.(png|jpg|jpeg|webp|gif)$/i;
+
+const DEFAULT_STATE: SiteMediaState = {
+  logoUrl: DEFAULT_SITE_LOGO_URL,
+  slots: {},
+  updatedAtMap: {},
+};
 
 function sanitizeState(raw: unknown): SiteMediaState {
   const result: SiteMediaState = {
@@ -57,24 +66,128 @@ function sanitizeState(raw: unknown): SiteMediaState {
   return result;
 }
 
-function readCachedMedia(): SiteMediaState {
+function parseTimestampMs(iso?: string): number {
+  if (!iso) return 0;
+  const ms = Date.parse(iso);
+  return Number.isNaN(ms) ? 0 : ms;
+}
+
+interface ResolvedMediaEntry {
+  url: string;
+  updatedAt: string;
+  tsMs: number;
+}
+
+async function fetchStorageSlotEntries(): Promise<{
+  ok: boolean;
+  entries: Record<string, ResolvedMediaEntry>;
+}> {
+  const entries: Record<string, ResolvedMediaEntry> = {};
   try {
-    const raw = localStorage.getItem(CACHE_KEY);
-    if (!raw) {
-      return { logoUrl: DEFAULT_SITE_LOGO_URL, slots: {}, updatedAtMap: {} };
+    const { data: files, error } = await supabase.storage
+      .from(SITE_MEDIA_BUCKET)
+      .list('slots', {
+        limit: 500,
+        sortBy: { column: 'updated_at', order: 'desc' },
+      });
+
+    if (error || !Array.isArray(files)) {
+      return { ok: false, entries };
     }
-    return sanitizeState(JSON.parse(raw));
+
+    for (const file of files) {
+      const name = typeof file?.name === 'string' ? file.name.trim() : '';
+      if (!name) continue;
+
+      const match = SLOT_FILE_REGEX.exec(name);
+      if (!match) continue;
+
+      const slotId = match[1];
+      if (!ALLOWED_SITE_MEDIA_SLOT_IDS.has(slotId)) continue;
+
+      const tsFromName = Number(match[2]) || 0;
+      const metaUpdated =
+        (typeof (file as any)?.updated_at === 'string' && (file as any).updated_at) ||
+        (typeof (file as any)?.created_at === 'string' && (file as any).created_at) ||
+        '';
+      const tsFromMeta = parseTimestampMs(metaUpdated);
+      const tsMs = Math.max(tsFromName, tsFromMeta);
+
+      const existing = entries[slotId];
+      if (existing && existing.tsMs >= tsMs) continue;
+
+      const { data: pub } = supabase.storage
+        .from(SITE_MEDIA_BUCKET)
+        .getPublicUrl(`slots/${name}`);
+
+      const publicUrl = pub?.publicUrl;
+      if (!publicUrl || !isSafeMediaUrl(publicUrl)) continue;
+
+      entries[slotId] = {
+        url: publicUrl,
+        updatedAt: metaUpdated || (tsMs > 0 ? new Date(tsMs).toISOString() : new Date().toISOString()),
+        tsMs,
+      };
+    }
+
+    return { ok: true, entries };
   } catch {
-    return { logoUrl: DEFAULT_SITE_LOGO_URL, slots: {}, updatedAtMap: {} };
+    return { ok: false, entries };
   }
 }
 
-function writeCachedMedia(state: SiteMediaState) {
+async function fetchTableSlotEntries(): Promise<{
+  ok: boolean;
+  entries: Record<string, ResolvedMediaEntry>;
+}> {
+  const entries: Record<string, ResolvedMediaEntry> = {};
   try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify(state));
+    const { data: rows, error } = await supabase
+      .from(SITE_MEDIA_TABLE)
+      .select('slot_id, url, updated_at');
+
+    if (error || !Array.isArray(rows)) {
+      return { ok: false, entries };
+    }
+
+    for (const row of rows) {
+      const slotId = typeof row?.slot_id === 'string' ? row.slot_id.trim() : '';
+      const url = typeof row?.url === 'string' ? row.url.trim() : '';
+      if (!slotId || !ALLOWED_SITE_MEDIA_SLOT_IDS.has(slotId) || !isSafeMediaUrl(url)) {
+        continue;
+      }
+
+      const updatedAt = typeof row?.updated_at === 'string' ? row.updated_at : new Date().toISOString();
+      entries[slotId] = {
+        url,
+        updatedAt,
+        tsMs: parseTimestampMs(updatedAt),
+      };
+    }
+
+    return { ok: true, entries };
   } catch {
-    // ignore storage quota errors
+    return { ok: false, entries };
   }
+}
+
+function buildStateFromEntries(merged: Record<string, ResolvedMediaEntry>): SiteMediaState {
+  let logoUrl = DEFAULT_SITE_LOGO_URL;
+  const slots: Record<string, string> = {};
+  const updatedAtMap: Record<string, string> = {};
+
+  for (const [slotId, entry] of Object.entries(merged)) {
+    if (!isSafeMediaUrl(entry.url)) continue;
+    if (slotId === SITE_LOGO_SLOT_ID) {
+      logoUrl = entry.url;
+      updatedAtMap[slotId] = entry.updatedAt;
+    } else if (SITE_MEDIA_SLOT_MAP[slotId]) {
+      slots[slotId] = entry.url;
+      updatedAtMap[slotId] = entry.updatedAt;
+    }
+  }
+
+  return sanitizeState({ logoUrl, slots, updatedAtMap });
 }
 
 function syncFavicon(logoUrl: string) {
@@ -96,103 +209,121 @@ function syncFavicon(logoUrl: string) {
 const SiteMediaContext = createContext<SiteMediaContextValue | null>(null);
 
 export const SiteMediaProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [state, setState] = useState<SiteMediaState>(() => readCachedMedia());
+  const [state, setState] = useState<SiteMediaState>(DEFAULT_STATE);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
   const refreshSiteMedia = useCallback(async () => {
-    let loadedFromApi = false;
+    let loadedFromSupabase = false;
 
+    // 1. Primary source of truth: live Supabase (site_media table + site-media Storage bucket)
     try {
-      const res = await fetch('/api/public/site-media', {
-        method: 'GET',
-        cache: 'no-store',
-      });
-      if (res.ok) {
-        const rawText = await res.text();
-        const trimmed = rawText.trim();
-        const contentType = (res.headers.get('content-type') || '').toLowerCase();
-        if (trimmed && (!trimmed.startsWith('<') || contentType.includes('application/json'))) {
-          const data = JSON.parse(trimmed);
-          if (data?.success) {
-            const next = sanitizeState({
-              logoUrl: data.logoUrl,
-              slots: data.slots,
-              updatedAtMap: data.updatedAtMap,
-            });
-            setState(next);
-            writeCachedMedia(next);
-            loadedFromApi = true;
+      const [tableResult, storageResult] = await Promise.all([
+        fetchTableSlotEntries(),
+        fetchStorageSlotEntries(),
+      ]);
+
+      if (tableResult.ok || storageResult.ok) {
+        const merged: Record<string, ResolvedMediaEntry> = { ...storageResult.entries };
+
+        for (const [slotId, rowEntry] of Object.entries(tableResult.entries)) {
+          const storageEntry = merged[slotId];
+          if (!storageEntry || rowEntry.tsMs >= storageEntry.tsMs) {
+            merged[slotId] = rowEntry;
           }
         }
+
+        setState(buildStateFromEntries(merged));
+        loadedFromSupabase = true;
       }
     } catch {
-      // Fall back to direct Supabase query below
+      // Fall back to backend API below
     }
 
-    if (!loadedFromApi) {
+    // 2. Secondary fallback: backend API (which itself queries Supabase with no-store)
+    if (!loadedFromSupabase) {
       try {
-        const { data: rows, error } = await supabase
-          .from('site_media')
-          .select('slot_id, url, updated_at');
-
-        if (!error && Array.isArray(rows)) {
-          let logoUrl = DEFAULT_SITE_LOGO_URL;
-          const slots: Record<string, string> = {};
-          const updatedAtMap: Record<string, string> = {};
-
-          for (const row of rows) {
-            const slotId = typeof row?.slot_id === 'string' ? row.slot_id.trim() : '';
-            const url = typeof row?.url === 'string' ? row.url.trim() : '';
-            if (!slotId || !isSafeMediaUrl(url)) continue;
-
-            if (slotId === SITE_LOGO_SLOT_ID) {
-              logoUrl = url;
-              if (typeof row?.updated_at === 'string') {
-                updatedAtMap[slotId] = row.updated_at;
-              }
-            } else if (SITE_MEDIA_SLOT_MAP[slotId]) {
-              slots[slotId] = url;
-              if (typeof row?.updated_at === 'string') {
-                updatedAtMap[slotId] = row.updated_at;
-              }
+        const res = await fetch('/api/public/site-media', {
+          method: 'GET',
+          cache: 'no-store',
+        });
+        if (res.ok) {
+          const rawText = await res.text();
+          const trimmed = rawText.trim();
+          const contentType = (res.headers.get('content-type') || '').toLowerCase();
+          if (trimmed && (!trimmed.startsWith('<') || contentType.includes('application/json'))) {
+            const data = JSON.parse(trimmed);
+            if (data?.success) {
+              setState(
+                sanitizeState({
+                  logoUrl: data.logoUrl,
+                  slots: data.slots,
+                  updatedAtMap: data.updatedAtMap,
+                })
+              );
             }
           }
-
-          const next = sanitizeState({ logoUrl, slots, updatedAtMap });
-          setState(next);
-          writeCachedMedia(next);
         }
       } catch {
-        // Keep cached or default images gracefully
+        // Keep current state gracefully
       }
     }
 
     setIsLoaded(true);
   }, []);
 
+  // Initial load + Realtime sync + focus/visibility/interval global sync across devices
   useEffect(() => {
     refreshSiteMedia();
+
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    try {
+      channel = supabase
+        .channel('cbm-site-media-sync')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: SITE_MEDIA_TABLE },
+          () => {
+            refreshSiteMedia();
+          }
+        )
+        .subscribe();
+    } catch {
+      // Non-fatal if Realtime isn't enabled yet
+    }
+
+    const handleFocus = () => {
+      refreshSiteMedia();
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        refreshSiteMedia();
+      }
+    };
+
+    const intervalId = window.setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        refreshSiteMedia();
+      }
+    }, 20000);
+
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.clearInterval(intervalId);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
   }, [refreshSiteMedia]);
 
   // Keep browser favicon and apple-touch-icon synced with live logo
   useEffect(() => {
     syncFavicon(state.logoUrl);
   }, [state.logoUrl]);
-
-  // Keep multiple browser tabs synced when Admin updates media
-  useEffect(() => {
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key === CACHE_KEY && e.newValue) {
-        try {
-          setState(sanitizeState(JSON.parse(e.newValue)));
-        } catch {
-          // ignore
-        }
-      }
-    };
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
-  }, []);
 
   const getImageUrl = useCallback(
     (slotId: string, fallbackUrl?: string): string => {
@@ -226,16 +357,13 @@ export const SiteMediaProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         ...prev.updatedAtMap,
         [slotId]: updatedAt || new Date().toISOString(),
       };
-      const next: SiteMediaState =
-        slotId === SITE_LOGO_SLOT_ID
-          ? { ...prev, logoUrl: url, updatedAtMap: nextUpdatedAt }
-          : {
-              ...prev,
-              slots: { ...prev.slots, [slotId]: url },
-              updatedAtMap: nextUpdatedAt,
-            };
-      writeCachedMedia(next);
-      return next;
+      return slotId === SITE_LOGO_SLOT_ID
+        ? { ...prev, logoUrl: url, updatedAtMap: nextUpdatedAt }
+        : {
+            ...prev,
+            slots: { ...prev.slots, [slotId]: url },
+            updatedAtMap: nextUpdatedAt,
+          };
     });
   }, []);
 
@@ -245,24 +373,20 @@ export const SiteMediaProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       delete nextUpdatedAt[slotId];
 
       if (slotId === SITE_LOGO_SLOT_ID) {
-        const next: SiteMediaState = {
+        return {
           ...prev,
           logoUrl: DEFAULT_SITE_LOGO_URL,
           updatedAtMap: nextUpdatedAt,
         };
-        writeCachedMedia(next);
-        return next;
       }
 
       const nextSlots = { ...prev.slots };
       delete nextSlots[slotId];
-      const next: SiteMediaState = {
+      return {
         ...prev,
         slots: nextSlots,
         updatedAtMap: nextUpdatedAt,
       };
-      writeCachedMedia(next);
-      return next;
     });
   }, []);
 

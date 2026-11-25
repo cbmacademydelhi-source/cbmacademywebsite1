@@ -8,7 +8,12 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { Webinar } from '../types';
-import { getWebinars, fetchWebinarsFromDb, WEBINAR_UPDATE_EVENT } from '../services/webinarStorage';
+import {
+  getWebinars,
+  fetchWebinarsFromDb,
+  subscribeToWebinarChanges,
+  WEBINAR_UPDATE_EVENT,
+} from '../services/webinarStorage';
 import { WebinarDetailsModal } from './webinars/WebinarDetailsModal';
 import { WebinarRegisterModal } from './webinars/WebinarRegisterModal';
 
@@ -64,20 +69,39 @@ export const WebinarsPage: React.FC<WebinarsPageProps> = ({
   useEffect(() => {
     loadWebinars();
 
-    // Fetch live webinars from database
-    fetchWebinarsFromDb().then((fresh) => {
-      if (fresh && fresh.length > 0) {
+    const syncLiveWebinars = () => {
+      fetchWebinarsFromDb().then((fresh) => {
         setWebinars(fresh);
-      }
-    });
+      });
+    };
+
+    syncLiveWebinars();
+
+    const unsubscribeRealtime = subscribeToWebinarChanges(syncLiveWebinars);
 
     const handleUpdate = () => {
       loadWebinars();
     };
 
+    const handleFocus = () => {
+      syncLiveWebinars();
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        syncLiveWebinars();
+      }
+    };
+
     window.addEventListener(WEBINAR_UPDATE_EVENT, handleUpdate);
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     return () => {
       window.removeEventListener(WEBINAR_UPDATE_EVENT, handleUpdate);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      unsubscribeRealtime();
     };
   }, []);
 

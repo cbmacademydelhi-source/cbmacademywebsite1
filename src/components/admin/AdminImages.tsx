@@ -31,6 +31,8 @@ interface AdminImagesProps {
 }
 
 const ACCEPTED_IMAGE_TYPES = 'image/png,image/jpeg,image/webp,image/gif';
+const ADMIN_MEDIA_PAGES = SITE_MEDIA_PAGES.filter((page) => page.key !== 'about');
+const ADMIN_MEDIA_SLOTS = SITE_MEDIA_SLOTS.filter((slot) => slot.page !== 'about');
 
 export const AdminImages: React.FC<AdminImagesProps> = ({ onRefresh }) => {
   const {
@@ -102,7 +104,7 @@ export const AdminImages: React.FC<AdminImagesProps> = ({ onRefresh }) => {
             'CBM Academy Logo updated! The new logo is now live across the entire website.'
           );
         } else {
-          const slot = SITE_MEDIA_SLOTS.find((s) => s.id === slotId);
+          const slot = ADMIN_MEDIA_SLOTS.find((s) => s.id === slotId);
           const label = slot
             ? `${slot.pageLabel} — Image ${slot.imageNumber}`
             : 'Website image';
@@ -161,24 +163,24 @@ export const AdminImages: React.FC<AdminImagesProps> = ({ onRefresh }) => {
   };
 
   const customizedCount = useMemo(() => {
-    return SITE_MEDIA_SLOTS.filter((slot) => hasOverride(slot.id)).length;
+    return ADMIN_MEDIA_SLOTS.filter((slot) => hasOverride(slot.id)).length;
   }, [hasOverride]);
 
   const pageCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: SITE_MEDIA_SLOTS.length };
-    for (const page of SITE_MEDIA_PAGES) {
-      counts[page.key] = SITE_MEDIA_SLOTS.filter((s) => s.page === page.key).length;
+    const counts: Record<string, number> = { all: ADMIN_MEDIA_SLOTS.length };
+    for (const page of ADMIN_MEDIA_PAGES) {
+      counts[page.key] = ADMIN_MEDIA_SLOTS.filter((s) => s.page === page.key).length;
     }
     return counts;
   }, []);
 
   const filteredPagesWithSlots = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
-    return SITE_MEDIA_PAGES.filter(
+    return ADMIN_MEDIA_PAGES.filter(
       (page) => selectedPage === 'all' || page.key === selectedPage
     )
       .map((page) => {
-        const slots = SITE_MEDIA_SLOTS.filter((slot) => {
+        const slots = ADMIN_MEDIA_SLOTS.filter((slot) => {
           if (slot.page !== page.key) return false;
           if (!q) return true;
           const imageTitle = `${slot.pageLabel} image ${slot.imageNumber}`.toLowerCase();
@@ -236,7 +238,7 @@ export const AdminImages: React.FC<AdminImagesProps> = ({ onRefresh }) => {
 
         <div className="flex items-center gap-2.5 self-start sm:self-auto">
           <div className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-semibold text-slate-600 shadow-2xs">
-            <span className="font-extrabold text-[#072B57]">{SITE_MEDIA_SLOTS.length}</span> Slots
+            <span className="font-extrabold text-[#072B57]">{ADMIN_MEDIA_SLOTS.length}</span> Slots
             <span className="mx-1.5 text-slate-300">•</span>
             <span className="font-extrabold text-[#FF6B00]">{customizedCount}</span> Replaced
           </div>
@@ -418,7 +420,7 @@ export const AdminImages: React.FC<AdminImagesProps> = ({ onRefresh }) => {
             All Pages ({pageCounts.all})
           </button>
 
-          {SITE_MEDIA_PAGES.map((page) => (
+          {ADMIN_MEDIA_PAGES.map((page) => (
             <button
               key={page.key}
               type="button"

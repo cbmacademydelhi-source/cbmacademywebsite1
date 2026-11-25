@@ -74,6 +74,7 @@ import {
   SITE_MEDIA_UPLOAD_DIR,
   getPublicSiteMedia,
   saveUploadedSiteMedia,
+  saveUploadedWebinarImage,
   resetSiteMediaSlot,
 } from './server/siteMediaServer.ts';
 
@@ -325,6 +326,46 @@ app.post(
   }
 );
 
+// Dedicated admin-only upload route for Webinar Masterclass poster images (20 MB JSON limit)
+app.post(
+  '/api/admin/webinars/upload-image',
+  (req, res, next) => {
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    siteMediaUploadJsonParser(req, res, (err: any) => {
+      if (err) {
+        const isTooLarge = err?.type === 'entity.too.large' || err?.status === 413;
+        return res.status(isTooLarge ? 413 : 400).json({
+          success: false,
+          message: isTooLarge
+            ? 'Image payload exceeds the 10 MB maximum file size.'
+            : 'Invalid JSON upload payload.',
+        });
+      }
+      next();
+    });
+  },
+  requireAdminAuth,
+  async (req, res) => {
+    try {
+      const { imageData } = req.body || {};
+      const bearerToken = extractBearerToken(req);
+      const result = await saveUploadedWebinarImage(imageData, bearerToken);
+      return res.status(200).json({
+        success: true,
+        url: result.url,
+        updatedAt: result.updatedAt,
+        storage: result.storage,
+      });
+    } catch (err: any) {
+      const status = typeof err?.status === 'number' ? err.status : 500;
+      return res.status(status).json({
+        success: false,
+        message: err?.message || 'Failed to upload webinar image.',
+      });
+    }
+  }
+);
+
 app.use(
   express.json({
     verify: (req: any, _res, buf) => {
@@ -363,6 +404,7 @@ app.get('/api/webinars/config-status', async (_req, res) => {
 // List all active webinars with updated capacity & details
 app.get('/api/webinars/list', async (_req, res) => {
   try {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
     const list = await getAllWebinars();
     res.status(200).json({ success: true, webinars: list });
   } catch (err: any) {
@@ -1178,21 +1220,34 @@ app.post('/api/webinars/update', requireAdminAuth, async (req, res) => {
       return res.status(400).json({ success: false, message: 'Webinar ID required' });
     }
 
-    const updated = await updateWebinarDetails(id, {
-      title,
-      description,
-      start_datetime,
-      duration_minutes: duration_minutes ? Number(duration_minutes) : undefined,
-      price: price !== undefined ? Number(price) : undefined,
-      capacity: capacity ? Number(capacity) : undefined,
-      status,
-      meeting_url,
-      whatsapp_group_url,
-      thumbnail_url,
-    });
+    const safeThumb =
+      typeof thumbnail_url === 'string' && thumbnail_url.trim()
+        ? thumbnail_url.trim().startsWith('https://') ||
+          thumbnail_url.trim().startsWith('http://') ||
+          thumbnail_url.trim().startsWith('/uploads/')
+          ? thumbnail_url.trim()
+          : undefined
+        : undefined;
+
+    const updated = await updateWebinarDetails(
+      id,
+      {
+        title,
+        description,
+        start_datetime,
+        duration_minutes: duration_minutes ? Number(duration_minutes) : undefined,
+        price: price !== undefined ? Number(price) : undefined,
+        capacity: capacity ? Number(capacity) : undefined,
+        status,
+        meeting_url,
+        whatsapp_group_url,
+        thumbnail_url: safeThumb,
+      },
+      extractBearerToken(req)
+    );
 
     if (!updated.success) {
-      return res.status(400).json({ success: false, message: 'Could not update webinar' });
+      return res.status(400).json({ success: false, message: updated.error || 'Could not update webinar' });
     }
 
     return res.status(200).json({ success: true, webinar: updated.webinar, message: 'Webinar updated successfully' });
@@ -1400,9 +1455,10 @@ app.get('/api/public/blogs', async (_req, res) => {
 });
 
 // CERTIFICATES ADMIN
-app.get('/api/admin/certificates', requireAdminAuth, async (_req, res) => {
+app.get('/api/admin/certificates', requireAdminAuth, async (req, res) => {
   try {
-    const certificates = await getAdminCertificates();
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+    const certificates = await getAdminCertificates(extractBearerToken(req));
     return res.status(200).json({ success: true, certificates });
   } catch (err: any) {
     return res.status(500).json({ success: false, message: err.message });
@@ -1411,7 +1467,7 @@ app.get('/api/admin/certificates', requireAdminAuth, async (_req, res) => {
 
 app.post('/api/admin/certificates', requireAdminAuth, async (req, res) => {
   try {
-    const saved = await saveAdminCertificate(req.body);
+    const saved = await saveAdminCertificate(req.body, extractBearerToken(req));
     return res.status(200).json({ success: true, certificate: saved });
   } catch (err: any) {
     return res.status(500).json({ success: false, message: err.message });
@@ -1420,7 +1476,7 @@ app.post('/api/admin/certificates', requireAdminAuth, async (req, res) => {
 
 app.delete('/api/admin/certificates/:id', requireAdminAuth, async (req, res) => {
   try {
-    await deleteAdminCertificate(req.params.id);
+    await deleteAdminCertificate(req.params.id, extractBearerToken(req));
     return res.status(200).json({ success: true, message: 'Certificate deleted successfully' });
   } catch (err: any) {
     return res.status(500).json({ success: false, message: err.message });
@@ -1430,6 +1486,7 @@ app.delete('/api/admin/certificates/:id', requireAdminAuth, async (req, res) => 
 // IMAGES & BANNERS ADMIN
 app.get('/api/admin/images', requireAdminAuth, async (_req, res) => {
   try {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
     const images = await getAdminImages();
     return res.status(200).json({ success: true, images });
   } catch (err: any) {
@@ -1459,7 +1516,7 @@ app.delete('/api/admin/images/:id', requireAdminAuth, async (req, res) => {
 app.get('/api/public/site-media', async (_req, res) => {
   try {
     const media = await getPublicSiteMedia();
-    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
     return res.status(200).json({
       success: true,
       ...media,
@@ -1571,6 +1628,7 @@ app.delete('/api/admin/enquiries/:id', requireAdminAuth, async (req, res) => {
 app.post('/api/webinars/create', requireAdminAuth, async (req, res) => {
   try {
     const {
+      id,
       title,
       description,
       start_datetime,
@@ -1587,18 +1645,38 @@ app.post('/api/webinars/create', requireAdminAuth, async (req, res) => {
       return res.status(400).json({ success: false, message: 'Webinar title is required' });
     }
 
-    const result = await createWebinar({
-      title: title.trim(),
-      description: description?.trim() || '',
-      start_datetime: start_datetime || new Date().toISOString(),
-      duration_minutes: duration_minutes ? Number(duration_minutes) : 60,
-      price: price !== undefined ? Number(price) : 0,
-      capacity: capacity ? Number(capacity) : 100,
-      status: status || 'published',
-      meeting_url: meeting_url?.trim() || null,
-      whatsapp_group_url: whatsapp_group_url?.trim() || null,
-      thumbnail_url: thumbnail_url?.trim() || null,
-    });
+    const cleanThumb = typeof thumbnail_url === 'string' ? thumbnail_url.trim() : '';
+    const safeThumb =
+      cleanThumb &&
+      (cleanThumb.startsWith('https://') ||
+        cleanThumb.startsWith('http://') ||
+        cleanThumb.startsWith('/uploads/'))
+        ? cleanThumb
+        : null;
+
+    const result = await createWebinar(
+      {
+        ...(typeof id === 'string' && id.trim() ? { id: id.trim() } : {}),
+        title: title.trim(),
+        description: description?.trim() || '',
+        start_datetime: start_datetime || new Date().toISOString(),
+        duration_minutes: duration_minutes ? Number(duration_minutes) : 60,
+        price: price !== undefined ? Number(price) : 0,
+        capacity: capacity ? Number(capacity) : 100,
+        status: status || 'published',
+        meeting_url: meeting_url?.trim() || null,
+        whatsapp_group_url: whatsapp_group_url?.trim() || null,
+        thumbnail_url: safeThumb,
+      },
+      extractBearerToken(req)
+    );
+
+    if (!result.success || !result.webinar) {
+      return res.status(500).json({
+        success: false,
+        message: result.error || 'Could not save webinar to Supabase.',
+      });
+    }
 
     return res.status(201).json({
       success: true,
@@ -1620,7 +1698,10 @@ app.post('/api/webinars/delete', requireAdminAuth, async (req, res) => {
       return res.status(400).json({ success: false, message: 'Webinar ID is required' });
     }
 
-    await deleteWebinarServer(id);
+    const del = await deleteWebinarServer(id, extractBearerToken(req));
+    if (!del.success) {
+      return res.status(500).json({ success: false, message: del.error || 'Could not delete webinar' });
+    }
     return res.status(200).json({ success: true, message: 'Webinar removed successfully' });
   } catch (err: any) {
     return res.status(500).json({ success: false, message: err.message || 'Server error deleting webinar' });

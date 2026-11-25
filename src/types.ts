@@ -131,6 +131,7 @@ export interface Webinar {
   capacity?: number;
   current_registrations?: number;
   createdAt: string;
+  publishedAt?: string;
   start_datetime?: string;
   timezone?: string;
   duration_minutes?: number;

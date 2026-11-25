@@ -3,6 +3,7 @@ import { X, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Webinar } from '../../types';
 import { useScrollLock } from '../../utils/useScrollLock';
 import { useSiteImage } from '../../context/SiteMediaContext';
+import { isSafeMediaUrl } from '../../data/siteMediaSlots';
 
 interface WebinarPromoPopupProps {
   upcomingWebinar?: Webinar | null;
@@ -35,15 +36,62 @@ export const ORIGINAL_POPUP_WEBINAR: Webinar = {
   createdAt: '2026-10-01T10:00:00.000Z',
 };
 
+const MONTH_ABBR = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
 function parseDateBadge(dateStr: string) {
-  const parts = dateStr.trim().split(' ');
-  if (parts.length >= 3) {
+  const trimmed = (dateStr || '').trim();
+
+  // ISO format from <input type="date" /> e.g. "2026-11-30"
+  const isoMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(trimmed);
+  if (isoMatch) {
+    const monthIdx = parseInt(isoMatch[2], 10) - 1;
+    const dayNum = parseInt(isoMatch[3], 10);
+    if (monthIdx >= 0 && monthIdx < 12 && dayNum >= 1 && dayNum <= 31) {
+      return {
+        day: String(dayNum),
+        month: MONTH_ABBR[monthIdx],
+      };
+    }
+  }
+
+  // Try native Date parsing for strings like "Sat, Oct 24, 2026" or "Nov 30, 2026"
+  const parsedDate = new Date(trimmed);
+  if (!Number.isNaN(parsedDate.getTime())) {
     return {
-      day: parts[0],
-      month: parts[1].slice(0, 3).toUpperCase(),
+      day: String(parsedDate.getDate()),
+      month: MONTH_ABBR[parsedDate.getMonth()],
+    };
+  }
+
+  // Fallback for "24 Oct 2026"
+  const parts = trimmed.split(/\s+/);
+  if (parts.length >= 2) {
+    return {
+      day: parts[0].replace(/[^0-9]/g, '') || '24',
+      month: parts[1].replace(/[^A-Za-z]/g, '').slice(0, 3).toUpperCase() || 'OCT',
     };
   }
   return { day: '24', month: 'OCT' };
+}
+
+function formatDisplayDate(dateStr: string): string {
+  const trimmed = (dateStr || '').trim();
+  const isoMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(trimmed);
+  if (isoMatch) {
+    const year = parseInt(isoMatch[1], 10);
+    const monthIdx = parseInt(isoMatch[2], 10) - 1;
+    const day = parseInt(isoMatch[3], 10);
+    const localDate = new Date(year, monthIdx, day);
+    if (!Number.isNaN(localDate.getTime())) {
+      return localDate.toLocaleDateString('en-IN', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
+    }
+  }
+  return trimmed || 'Upcoming Session';
 }
 
 export const WebinarPromoPopup: React.FC<WebinarPromoPopupProps> = ({
@@ -56,8 +104,14 @@ export const WebinarPromoPopup: React.FC<WebinarPromoPopupProps> = ({
   // Completely disable scrolling on background page while popup is open
   useScrollLock(isOpen);
 
-  // The active webinar: use passed webinar or restore original popup webinar
+  // The active webinar: use passed most recently published webinar or fallback
   const activeWebinar = upcomingWebinar || ORIGINAL_POPUP_WEBINAR;
+
+  // Use the most recently published webinar's uploaded image automatically when available
+  const displayImageUrl =
+    upcomingWebinar && isSafeMediaUrl(upcomingWebinar.posterUrl)
+      ? upcomingWebinar.posterUrl
+      : popupImageUrl;
 
   // Show the popup automatically when the website opens
   useEffect(() => {
@@ -95,6 +149,7 @@ export const WebinarPromoPopup: React.FC<WebinarPromoPopupProps> = ({
   const priceDisplay = isFree ? 'FREE' : `PAID • ₹${priceValue}`;
 
   const dateParts = parseDateBadge(activeWebinar.date);
+  const formattedDate = formatDisplayDate(activeWebinar.date);
 
   return (
     <div
@@ -124,7 +179,8 @@ export const WebinarPromoPopup: React.FC<WebinarPromoPopupProps> = ({
         <div className="flex flex-col sm:flex-row items-stretch">
           <div className="relative w-full sm:w-[190px] shrink-0 bg-slate-900 min-h-[160px] sm:min-h-full overflow-hidden">
             <img
-              src={popupImageUrl}
+              key={`${activeWebinar.id}-${displayImageUrl}`}
+              src={displayImageUrl}
               alt={activeWebinar.title ? `${activeWebinar.title} - CBM Academy Featured Live Webinar` : 'CBM Academy Featured Live Webinar'}
               title={activeWebinar.title || 'CBM Academy Featured Live Webinar'}
               width={800}
@@ -167,7 +223,7 @@ export const WebinarPromoPopup: React.FC<WebinarPromoPopupProps> = ({
               <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600">
                 <span className="inline-flex items-center gap-1 font-medium text-slate-700">
                   <Calendar className="h-3.5 w-3.5 text-[#FF6B00]" />
-                  {activeWebinar.date}
+                  {formattedDate}
                 </span>
                 <span className="inline-flex items-center gap-1 text-slate-500">
                   <Clock className="h-3.5 w-3.5 text-[#FF6B00]" />
