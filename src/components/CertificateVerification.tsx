@@ -509,56 +509,6 @@ export const CertificateVerification: React.FC = () => {
           </div>
         )}
 
-        {/* Trust & Verification Features Grid */}
-        <div className="mt-8 pt-10 border-t border-slate-200/80">
-          <div className="text-center mb-8">
-            <span className="text-xs font-extrabold uppercase tracking-widest text-slate-400 block mb-1">
-              Guaranteed Authenticity
-            </span>
-            <h3 className="text-xl sm:text-2xl font-extrabold text-[#072B57]">
-              Why CBM Academy Credentials Stand Out
-            </h3>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white rounded-xl border border-slate-200/80 p-6 shadow-2xs hover:shadow-sm transition-shadow">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#072B57] flex items-center justify-center mb-4">
-                <ShieldCheck className="w-5 h-5 text-[#072B57]" />
-              </div>
-              <h4 className="font-bold text-[#072B57] text-base mb-1.5">
-                Instant Recruiter Verification
-              </h4>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                HR managers and hiring agencies can verify candidate skills, marks, and project transcripts in seconds without delays.
-              </p>
-            </div>
-
-            <div className="bg-white rounded-xl border border-slate-200/80 p-6 shadow-2xs hover:shadow-sm transition-shadow">
-              <div className="w-10 h-10 rounded-xl bg-orange-50 text-[#FF6B00] flex items-center justify-center mb-4">
-                <Lock className="w-5 h-5 text-[#FF6B00]" />
-              </div>
-              <h4 className="font-bold text-[#072B57] text-base mb-1.5">
-                Tamper-Proof Registry
-              </h4>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                Every certificate is cryptographically keyed to our central academic registry, preventing falsification or unauthorized duplicates.
-              </p>
-            </div>
-
-            <div className="bg-white rounded-xl border border-slate-200/80 p-6 shadow-2xs hover:shadow-sm transition-shadow">
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-4">
-                <GraduationCap className="w-5 h-5 text-emerald-700" />
-              </div>
-              <h4 className="font-bold text-[#072B57] text-base mb-1.5">
-                Lifetime Validity
-              </h4>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                Credentials remain publicly accessible and permanently verifiable throughout the graduate's entire professional career.
-              </p>
-            </div>
-          </div>
-        </div>
-
       </div>
     </section>
   );
