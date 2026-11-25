@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import { ArrowRight, Download, Play, Volume2, VolumeX } from 'lucide-react';
+import { ArrowRight, Download, Pause, Play, Volume2, VolumeX } from 'lucide-react';
 
 interface HeroProps {
   onOpenApply?: () => void;
@@ -11,9 +11,13 @@ interface HeroProps {
 const HERO_VIDEO_URL =
   'https://ik.imagekit.io/jhnyo0yy5/Academy%20LOW%20BIT.mp4';
 const HERO_POSTER_URL =
-  'https://ik.imagekit.io/jhnyo0yy5/Academy%20LOW%20BIT.mp4/ik-thumbnail.jpg?tr=so-1,w-1200,q-80';
+  'https://ik.imagekit.io/jhnyo0yy5/Academy%20LOW%20BIT.mp4/ik-thumbnail.jpg?tr=so-1,w-1080,q-80';
 const HERO_FALLBACK_POSTER_URL =
   'https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1200&auto=format&fit=crop';
+
+// Initial intrinsic dimensions matching Academy LOW BIT.mp4 (2160x2880 -> 3:4) to prevent CLS;
+// updated dynamically from video.videoWidth / video.videoHeight once metadata loads.
+const INITIAL_VIDEO_DIMENSIONS = { width: 2160, height: 2880 };
 
 export const Hero: React.FC<HeroProps> = ({
   onOpenApply,
@@ -26,9 +30,13 @@ export const Hero: React.FC<HeroProps> = ({
   const [hasStarted, setHasStarted] = useState<boolean>(false);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [showFallbackPlay, setShowFallbackPlay] = useState<boolean>(false);
+  const [videoDimensions, setVideoDimensions] = useState(INITIAL_VIDEO_DIMENSIONS);
+  const [progressPercent, setProgressPercent] = useState<number>(0);
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const userInitiatedPlayRef = useRef<boolean>(false);
+  const userPausedRef = useRef<boolean>(false);
 
   const attemptAutoplay = useCallback(() => {
     const video = videoRef.current;
@@ -83,13 +91,16 @@ export const Hero: React.FC<HeroProps> = ({
     const container = containerRef.current;
     if (!video || !container) return;
 
+    const canAutoResume = () =>
+      !userPausedRef.current &&
+      !showFallbackPlay &&
+      (!shouldReduceMotion || userInitiatedPlayRef.current);
+
     const handleVisibilityChange = () => {
       if (document.hidden) {
         if (!video.paused) video.pause();
-      } else if (!shouldReduceMotion || userInitiatedPlayRef.current) {
-        if (video.paused && !showFallbackPlay) {
-          video.play().catch(() => {});
-        }
+      } else if (canAutoResume() && video.paused) {
+        video.play().catch(() => {});
       }
     };
 
@@ -103,10 +114,8 @@ export const Hero: React.FC<HeroProps> = ({
           if (!entry) return;
           if (!entry.isIntersecting) {
             if (!video.paused) video.pause();
-          } else if (!shouldReduceMotion || userInitiatedPlayRef.current) {
-            if (video.paused && !showFallbackPlay) {
-              video.play().catch(() => {});
-            }
+          } else if (canAutoResume() && video.paused) {
+            video.play().catch(() => {});
           }
         },
         { threshold: 0.1 }
@@ -120,11 +129,30 @@ export const Hero: React.FC<HeroProps> = ({
     };
   }, [shouldReduceMotion, showFallbackPlay]);
 
+  const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    const { videoWidth, videoHeight } = e.currentTarget;
+    if (videoWidth > 0 && videoHeight > 0) {
+      setVideoDimensions((prev) =>
+        prev.width === videoWidth && prev.height === videoHeight
+          ? prev
+          : { width: videoWidth, height: videoHeight }
+      );
+    }
+  };
+
+  const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    const { currentTime, duration } = e.currentTarget;
+    if (duration && Number.isFinite(duration) && duration > 0) {
+      setProgressPercent(Math.min(100, Math.max(0, (currentTime / duration) * 100)));
+    }
+  };
+
   const handleManualPlay = () => {
     const video = videoRef.current;
     if (!video) return;
 
     userInitiatedPlayRef.current = true;
+    userPausedRef.current = false;
     video.muted = isMuted;
     video.playsInline = true;
 
@@ -147,6 +175,32 @@ export const Hero: React.FC<HeroProps> = ({
             .catch(() => {});
         });
     }
+  };
+
+  const handleTogglePlayPause = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (video.paused) {
+      handleManualPlay();
+    } else {
+      userPausedRef.current = true;
+      video.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    const video = videoRef.current;
+    if (!video || !video.duration || !Number.isFinite(video.duration)) return;
+
+    const rect = e.currentTarget.getBoundingClientRect();
+    if (rect.width <= 0) return;
+    const ratio = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+    video.currentTime = ratio * video.duration;
+    setProgressPercent(ratio * 100);
   };
 
   const handleToggleMute = (e: React.MouseEvent) => {
@@ -302,20 +356,22 @@ export const Hero: React.FC<HeroProps> = ({
             </motion.div>
           </div>
 
-          {/* Right Column: 1:1 Welcome Video Preview & Inline Player */}
+          {/* Right Column: Intrinsic Aspect-Ratio Promotional Video Player */}
           <div className="lg:col-span-5 relative flex items-center justify-center">
             <div className="relative w-full max-w-md lg:max-w-[440px]">
-              
-              {/* 1:1 Video Container */}
+
+              {/* Responsive Video Container matching original videoWidth / videoHeight */}
               <motion.div
                 ref={containerRef}
                 initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.22, ease: 'easeOut' }}
-                className="relative w-full aspect-square rounded-3xl overflow-hidden border border-slate-200/90 shadow-2xl bg-slate-950 group"
-                style={{ aspectRatio: '1 / 1' }}
+                className="relative w-full rounded-3xl overflow-hidden border border-slate-200/90 shadow-2xl bg-slate-950 group"
+                style={{
+                  aspectRatio: `${videoDimensions.width} / ${videoDimensions.height}`,
+                }}
               >
-                {/* Immediate Poster Image (visible while video loads or under prefers-reduced-motion) */}
+                {/* Immediate Poster Image with matching intrinsic ratio (prevents layout shift while loading) */}
                 <img
                   src={posterSrc}
                   onError={() => {
@@ -325,17 +381,17 @@ export const Hero: React.FC<HeroProps> = ({
                   }}
                   alt="CBM Academy Digital Marketing Training & Live Session in Okhla, New Delhi"
                   title="CBM Academy Digital Marketing Training & Live Session in Okhla, New Delhi"
-                  width={1200}
-                  height={1200}
+                  width={videoDimensions.width}
+                  height={videoDimensions.height}
                   decoding="async"
                   fetchPriority="high"
                   aria-hidden={hasStarted}
-                  className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-500 ${
+                  className={`absolute inset-0 w-full h-full object-contain object-center transition-opacity duration-500 ${
                     hasStarted ? 'opacity-0 pointer-events-none' : 'opacity-100'
                   }`}
                 />
 
-                {/* Promotional Hero Video */}
+                {/* Promotional Hero Video (object-contain so 100% of frame is visible without crop or stretch) */}
                 <video
                   ref={videoRef}
                   src={HERO_VIDEO_URL}
@@ -348,13 +404,16 @@ export const Hero: React.FC<HeroProps> = ({
                   preload={shouldReduceMotion ? 'none' : 'metadata'}
                   disablePictureInPicture
                   disableRemotePlayback
+                  onLoadedMetadata={handleLoadedMetadata}
+                  onTimeUpdate={handleTimeUpdate}
                   onPlaying={() => {
                     setHasStarted(true);
                     setIsPlaying(true);
                     setShowFallbackPlay(false);
                   }}
                   onPause={() => setIsPlaying(false)}
-                  className={`relative z-10 block w-full h-full object-cover object-center transition-opacity duration-500 ${
+                  onClick={handleTogglePlayPause}
+                  className={`relative z-10 block w-full h-full object-contain object-center cursor-pointer transition-opacity duration-500 ${
                     hasStarted ? 'opacity-100' : 'opacity-0'
                   }`}
                 />
@@ -384,20 +443,59 @@ export const Hero: React.FC<HeroProps> = ({
                   </div>
                 )}
 
-                {/* Sound Mute / Unmute Toggle (muted by default) */}
-                <button
-                  type="button"
-                  onClick={handleToggleMute}
-                  aria-label={isMuted ? 'Enable sound' : 'Mute sound'}
-                  title={isMuted ? 'Sound Muted (Click to Unmute)' : 'Sound On (Click to Mute)'}
-                  className="absolute top-3.5 right-3.5 z-30 p-2 rounded-full bg-black/55 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 shadow-md transition-all duration-150 hover:scale-105 active:scale-95 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
+                {/* In-Bounds Player Controls: Play/Pause, Playback Progress Bar, and Sound Toggle */}
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="absolute bottom-0 inset-x-0 z-30 bg-gradient-to-t from-black/75 via-black/35 to-transparent px-3.5 pt-7 pb-3 flex items-center gap-2.5"
                 >
-                  {isMuted ? (
-                    <VolumeX className="w-4 h-4 text-slate-200" />
-                  ) : (
-                    <Volume2 className="w-4 h-4 text-[#FF6B00]" />
-                  )}
-                </button>
+                  <button
+                    type="button"
+                    onClick={handleTogglePlayPause}
+                    aria-label={isPlaying ? 'Pause video' : 'Play video'}
+                    title={isPlaying ? 'Pause' : 'Play'}
+                    className="p-1.5 rounded-full bg-black/55 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 shadow-sm transition-all duration-150 hover:scale-105 active:scale-95 cursor-pointer shrink-0 focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
+                  >
+                    {isPlaying ? (
+                      <Pause className="w-3.5 h-3.5" />
+                    ) : (
+                      <Play className="w-3.5 h-3.5 fill-white translate-x-[0.5px]" />
+                    )}
+                  </button>
+
+                  {/* Playback Progress Bar */}
+                  <div
+                    role="slider"
+                    aria-label="Video playback progress"
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={Math.round(progressPercent)}
+                    tabIndex={0}
+                    onClick={handleSeek}
+                    className="flex-1 h-4 flex items-center cursor-pointer group/progress"
+                  >
+                    <div className="w-full h-1.5 rounded-full bg-white/30 overflow-hidden backdrop-blur-xs">
+                      <div
+                        className="h-full bg-[#FF6B00] rounded-full transition-[width] duration-100"
+                        style={{ width: `${progressPercent}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Sound Mute / Unmute Toggle (muted by default) */}
+                  <button
+                    type="button"
+                    onClick={handleToggleMute}
+                    aria-label={isMuted ? 'Enable sound' : 'Mute sound'}
+                    title={isMuted ? 'Sound Muted (Click to Unmute)' : 'Sound On (Click to Mute)'}
+                    className="p-1.5 rounded-full bg-black/55 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 shadow-sm transition-all duration-150 hover:scale-105 active:scale-95 cursor-pointer shrink-0 focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
+                  >
+                    {isMuted ? (
+                      <VolumeX className="w-3.5 h-3.5 text-slate-200" />
+                    ) : (
+                      <Volume2 className="w-3.5 h-3.5 text-[#FF6B00]" />
+                    )}
+                  </button>
+                </div>
               </motion.div>
 
             </div>
