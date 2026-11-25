@@ -281,21 +281,38 @@ app.use(
   }
 );
 
-// Dedicated admin-only upload route for Images & Banners (15 MB JSON limit for base64 images up to 10 MB)
+// Dedicated admin-only upload route for Images & Banners (20 MB JSON limit for base64 images up to 10 MB)
+const siteMediaUploadJsonParser = express.json({ limit: '20mb' });
 app.post(
   '/api/admin/site-media/upload',
-  express.json({ limit: '15mb' }),
+  (req, res, next) => {
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    siteMediaUploadJsonParser(req, res, (err: any) => {
+      if (err) {
+        const isTooLarge = err?.type === 'entity.too.large' || err?.status === 413;
+        return res.status(isTooLarge ? 413 : 400).json({
+          success: false,
+          message: isTooLarge
+            ? 'Image payload exceeds the 10 MB maximum file size.'
+            : 'Invalid JSON upload payload.',
+        });
+      }
+      next();
+    });
+  },
   requireAdminAuth,
-  (req, res) => {
+  async (req, res) => {
     try {
       const { slotId, imageData } = req.body || {};
-      const result = saveUploadedSiteMedia(slotId, imageData);
-      const media = getPublicSiteMedia();
+      const bearerToken = extractBearerToken(req);
+      const result = await saveUploadedSiteMedia(slotId, imageData, bearerToken);
+      const media = await getPublicSiteMedia();
       return res.status(200).json({
         success: true,
         slotId,
         url: result.url,
         updatedAt: result.updatedAt,
+        storage: result.storage,
         media,
       });
     } catch (err: any) {
@@ -1439,9 +1456,9 @@ app.delete('/api/admin/images/:id', requireAdminAuth, async (req, res) => {
 });
 
 // PUBLIC SITE MEDIA (Live website images & CBM Academy logo)
-app.get('/api/public/site-media', (_req, res) => {
+app.get('/api/public/site-media', async (_req, res) => {
   try {
-    const media = getPublicSiteMedia();
+    const media = await getPublicSiteMedia();
     res.setHeader('Cache-Control', 'no-store');
     return res.status(200).json({
       success: true,
@@ -1456,11 +1473,12 @@ app.get('/api/public/site-media', (_req, res) => {
 });
 
 // ADMIN: Reset a site media slot or logo back to its default asset
-app.post('/api/admin/site-media/reset', requireAdminAuth, (req, res) => {
+app.post('/api/admin/site-media/reset', requireAdminAuth, async (req, res) => {
   try {
     const { slotId } = req.body || {};
-    const { defaultUrl } = resetSiteMediaSlot(slotId);
-    const media = getPublicSiteMedia();
+    const bearerToken = extractBearerToken(req);
+    const { defaultUrl } = await resetSiteMediaSlot(slotId, bearerToken);
+    const media = await getPublicSiteMedia();
     return res.status(200).json({
       success: true,
       slotId,

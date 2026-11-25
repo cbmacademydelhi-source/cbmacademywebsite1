@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { AdminLogin } from './admin/AdminLogin';
 import { AdminLayout, AdminTab } from './admin/AdminLayout';
-import { getAdminToken, checkAdminSession } from '../services/adminService';
+import {
+  getAdminToken,
+  checkAdminSession,
+  ADMIN_SESSION_EXPIRED_EVENT,
+} from '../services/adminService';
 import { RefreshCw } from 'lucide-react';
 
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(() => {
     const token = getAdminToken();
-    return token ? true : false;
+    return token ? null : false;
   });
   const [activeTab, setActiveTab] = useState<AdminTab>('webinars');
 
@@ -27,17 +31,11 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const verifyAuth = async () => {
-      const token = getAdminToken();
-      if (!token) {
-        setIsAuthenticated(false);
-        return;
-      }
       try {
         const valid = await checkAdminSession();
         setIsAuthenticated(valid);
       } catch {
-        // If checking session fails due to transient connection, keep session if token exists
-        setIsAuthenticated(true);
+        setIsAuthenticated(false);
       }
     };
 
@@ -48,8 +46,16 @@ export default function AdminDashboard() {
       setActiveTab(determineTabFromHash());
     };
 
+    const handleSessionExpired = () => {
+      setIsAuthenticated(false);
+    };
+
     window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    window.addEventListener(ADMIN_SESSION_EXPIRED_EVENT, handleSessionExpired);
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+      window.removeEventListener(ADMIN_SESSION_EXPIRED_EVENT, handleSessionExpired);
+    };
   }, []);
 
   if (isAuthenticated === null) {

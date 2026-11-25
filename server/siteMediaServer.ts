@@ -1,12 +1,15 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import {
   ALLOWED_SITE_MEDIA_SLOT_IDS,
   DEFAULT_SITE_LOGO_URL,
   SITE_LOGO_SLOT_ID,
   SITE_MEDIA_SLOT_MAP,
+  isSafeMediaUrl,
 } from '../src/data/siteMediaSlots.ts';
+import { getSupabaseServer, isSupabaseConfiguredOnServer } from './supabaseServer.ts';
 
 export const SITE_MEDIA_UPLOAD_DIR = path.resolve(
   process.cwd(),
@@ -22,14 +25,70 @@ const SITE_MEDIA_STORE_PATH = path.resolve(
 );
 
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10 MB
+export const SITE_MEDIA_BUCKET = (
+  process.env.SUPABASE_STORAGE_BUCKET || 'site-media'
+).trim() || 'site-media';
+
+const SITE_MEDIA_TABLE = 'site_media';
 
 interface StoredMediaEntry {
   url: string;
   updatedAt: string;
+  storagePath?: string;
 }
 
 interface StoredSiteMediaFile {
   entries: Record<string, StoredMediaEntry>;
+}
+
+function getSupabaseClientForMedia(authToken?: string): {
+  client: SupabaseClient | null;
+  hasServiceRole: boolean;
+} {
+  const hasServiceRole = Boolean((process.env.SUPABASE_SERVICE_ROLE_KEY || '').trim());
+  if (hasServiceRole) {
+    return { client: getSupabaseServer(), hasServiceRole: true };
+  }
+
+  // If caller provided a Supabase Auth JWT (3-part JWT), use it so Storage/Table RLS authorizes the admin
+  if (authToken && authToken.split('.').length === 3 && isSupabaseConfiguredOnServer()) {
+    const url = (
+      process.env.SUPABASE_URL ||
+      process.env.VITE_SUPABASE_URL ||
+      'https://cxeztssvgaeytdljoned.supabase.co'
+    ).trim();
+    const anonKey = (
+      process.env.SUPABASE_ANON_KEY ||
+      process.env.VITE_SUPABASE_ANON_KEY ||
+      'sb_publishable_sO0rnN9MJzQmBiq-Lm6p3w_EAYKjVOb'
+    ).trim();
+
+    if (url && anonKey) {
+      return {
+        client: createClient(url, anonKey, {
+          global: {
+            headers: { Authorization: `Bearer ${authToken}` },
+          },
+          auth: {
+            persistSession: false,
+            autoRefreshToken: false,
+          },
+        }),
+        hasServiceRole: false,
+      };
+    }
+  }
+
+  return { client: getSupabaseServer(), hasServiceRole: false };
+}
+
+function withTimeout<T>(promise: PromiseLike<T>, ms = 4000): Promise<T> {
+  return Promise.race([
+    Promise.resolve(promise),
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error('Supabase media request timed out')), ms)
+    ),
+  ]);
 }
 
 function ensureStorageDirs() {
@@ -140,21 +199,134 @@ function safeDeleteOldUpload(oldUrl?: string) {
   }
 }
 
-export function getPublicSiteMedia(): {
+async function fetchSupabaseSiteMediaEntries(): Promise<Record<string, StoredMediaEntry>> {
+  const entries: Record<string, StoredMediaEntry> = {};
+  const supabase = getSupabaseServer();
+  if (!supabase) return entries;
+
+  try {
+    const { data, error } = await withTimeout(
+      supabase
+        .from(SITE_MEDIA_TABLE)
+        .select('slot_id, url, storage_path, updated_at'),
+      3000
+    );
+
+    if (!error && Array.isArray(data)) {
+      for (const row of data) {
+        const slotId = typeof row?.slot_id === 'string' ? row.slot_id.trim() : '';
+        const url = typeof row?.url === 'string' ? row.url.trim() : '';
+        if (!ALLOWED_SITE_MEDIA_SLOT_IDS.has(slotId) || !isSafeMediaUrl(url)) continue;
+        entries[slotId] = {
+          url,
+          updatedAt:
+            typeof row?.updated_at === 'string' && row.updated_at
+              ? row.updated_at
+              : new Date().toISOString(),
+          storagePath: typeof row?.storage_path === 'string' ? row.storage_path : undefined,
+        };
+      }
+    }
+  } catch {
+    // Table may not exist yet; gracefully rely on local store
+  }
+
+  return entries;
+}
+
+async function tryUploadToSupabaseStorage(
+  slotId: string,
+  safeFilename: string,
+  buffer: Buffer,
+  mime: string,
+  updatedAt: string,
+  authToken?: string
+): Promise<{ url: string; storagePath: string } | null> {
+  const { client, hasServiceRole } = getSupabaseClientForMedia(authToken);
+  if (!client) return null;
+
+  const storagePath = `slots/${safeFilename}`;
+
+  const attemptUpload = async () =>
+    withTimeout(
+      client.storage.from(SITE_MEDIA_BUCKET).upload(storagePath, buffer, {
+        contentType: mime,
+        cacheControl: '31536000',
+        upsert: true,
+      }),
+      15000
+    );
+
+  try {
+    let { error } = await attemptUpload();
+
+    // Auto-create public bucket if missing and service role key is configured
+    if (error && hasServiceRole && /bucket not found/i.test(error.message || '')) {
+      const { error: createErr } = await withTimeout(
+        client.storage.createBucket(SITE_MEDIA_BUCKET, {
+          public: true,
+          fileSizeLimit: MAX_IMAGE_BYTES,
+          allowedMimeTypes: ['image/png', 'image/jpeg', 'image/webp', 'image/gif'],
+        }),
+        5000
+      );
+      if (!createErr || /already exists/i.test(createErr.message || '')) {
+        const retry = await attemptUpload();
+        error = retry.error;
+      }
+    }
+
+    if (error) {
+      console.warn('[SiteMedia] Supabase Storage upload skipped, falling back to local storage:', error.message);
+      return null;
+    }
+
+    const { data: pubData } = client.storage.from(SITE_MEDIA_BUCKET).getPublicUrl(storagePath);
+    const publicUrl = pubData?.publicUrl;
+    if (!publicUrl || !isSafeMediaUrl(publicUrl)) {
+      return null;
+    }
+
+    // Best-effort persist mapping to Supabase site_media table if it exists
+    try {
+      await withTimeout(
+        client.from(SITE_MEDIA_TABLE).upsert(
+          {
+            slot_id: slotId,
+            url: publicUrl,
+            storage_path: storagePath,
+            updated_at: updatedAt,
+          },
+          { onConflict: 'slot_id' }
+        ),
+        4000
+      );
+    } catch {
+      // Non-fatal if site_media table has not been created yet
+    }
+
+    return { url: publicUrl, storagePath };
+  } catch (err: any) {
+    console.warn('[SiteMedia] Supabase Storage unavailable, falling back to local storage:', err?.message || err);
+    return null;
+  }
+}
+
+export async function getPublicSiteMedia(): Promise<{
   logoUrl: string;
   slots: Record<string, string>;
   updatedAtMap: Record<string, string>;
-} {
-  const store = readStoreFile();
-  let logoUrl = DEFAULT_SITE_LOGO_URL;
-  const slots: Record<string, string> = {};
-  const updatedAtMap: Record<string, string> = {};
+}> {
+  const localStore = readStoreFile();
+  const remoteEntries = await fetchSupabaseSiteMediaEntries();
 
-  for (const [slotId, entry] of Object.entries(store.entries)) {
+  const mergedEntries: Record<string, StoredMediaEntry> = {};
+
+  // Start with verified local store entries
+  for (const [slotId, entry] of Object.entries(localStore.entries)) {
     if (!ALLOWED_SITE_MEDIA_SLOT_IDS.has(slotId)) continue;
-    if (!entry || typeof entry.url !== 'string') continue;
+    if (!entry || typeof entry.url !== 'string' || !isSafeMediaUrl(entry.url)) continue;
 
-    // Verify local uploaded file still exists on disk before serving it
     if (entry.url.startsWith('/uploads/site-media/')) {
       const diskPath = resolveSafeUploadedFilePath(entry.url);
       if (!diskPath || !fs.existsSync(diskPath)) {
@@ -162,6 +334,28 @@ export function getPublicSiteMedia(): {
       }
     }
 
+    mergedEntries[slotId] = entry;
+  }
+
+  // Merge Supabase site_media rows (prefer newer updatedAt when both exist)
+  for (const [slotId, remoteEntry] of Object.entries(remoteEntries)) {
+    const existing = mergedEntries[slotId];
+    if (!existing) {
+      mergedEntries[slotId] = remoteEntry;
+    } else {
+      const existingTs = Date.parse(existing.updatedAt || '') || 0;
+      const remoteTs = Date.parse(remoteEntry.updatedAt || '') || 0;
+      if (remoteTs >= existingTs) {
+        mergedEntries[slotId] = remoteEntry;
+      }
+    }
+  }
+
+  let logoUrl = DEFAULT_SITE_LOGO_URL;
+  const slots: Record<string, string> = {};
+  const updatedAtMap: Record<string, string> = {};
+
+  for (const [slotId, entry] of Object.entries(mergedEntries)) {
     if (slotId === SITE_LOGO_SLOT_ID) {
       logoUrl = entry.url;
       updatedAtMap[slotId] = entry.updatedAt;
@@ -174,10 +368,17 @@ export function getPublicSiteMedia(): {
   return { logoUrl, slots, updatedAtMap };
 }
 
-export function saveUploadedSiteMedia(
+export async function saveUploadedSiteMedia(
   slotId: string,
-  base64Payload: string
-): { url: string; updatedAt: string; mime: string; sizeBytes: number } {
+  base64Payload: string,
+  authToken?: string
+): Promise<{
+  url: string;
+  updatedAt: string;
+  mime: string;
+  sizeBytes: number;
+  storage: 'supabase' | 'local';
+}> {
   const cleanSlotId = String(slotId || '').trim();
   if (!ALLOWED_SITE_MEDIA_SLOT_IDS.has(cleanSlotId)) {
     const err = new Error('Invalid image slot identifier.');
@@ -223,35 +424,70 @@ export function saveUploadedSiteMedia(
     throw err;
   }
 
-  ensureStorageDirs();
-
   // Generate strictly server-controlled filename (never trust user filename)
   const safeToken = crypto.randomBytes(6).toString('hex');
   const safeFilename = `${cleanSlotId}_${Date.now()}_${safeToken}.${detected.ext}`;
-  const targetPath = path.resolve(SITE_MEDIA_UPLOAD_DIR, safeFilename);
-
-  if (!targetPath.startsWith(SITE_MEDIA_UPLOAD_DIR + path.sep)) {
-    const err = new Error('Invalid target upload path.');
-    (err as any).status = 400;
-    throw err;
-  }
-
-  fs.writeFileSync(targetPath, buffer);
+  const updatedAt = new Date().toISOString();
 
   const store = readStoreFile();
-  const previousUrl = store.entries[cleanSlotId]?.url;
-  const publicUrl = `/uploads/site-media/${safeFilename}`;
-  const updatedAt = new Date().toISOString();
+  const previousEntry = store.entries[cleanSlotId];
+
+  // 1. Prefer Supabase Storage when configured and accessible
+  const supaUploaded = await tryUploadToSupabaseStorage(
+    cleanSlotId,
+    safeFilename,
+    buffer,
+    detected.mime,
+    updatedAt,
+    authToken
+  );
+
+  let publicUrl: string;
+  let storagePath: string | undefined;
+  let storage: 'supabase' | 'local';
+
+  if (supaUploaded) {
+    publicUrl = supaUploaded.url;
+    storagePath = supaUploaded.storagePath;
+    storage = 'supabase';
+  } else {
+    // 2. Fallback to local disk storage so preview/self-hosted deployments always work
+    ensureStorageDirs();
+    const targetPath = path.resolve(SITE_MEDIA_UPLOAD_DIR, safeFilename);
+    if (!targetPath.startsWith(SITE_MEDIA_UPLOAD_DIR + path.sep)) {
+      const err = new Error('Invalid target upload path.');
+      (err as any).status = 400;
+      throw err;
+    }
+
+    fs.writeFileSync(targetPath, buffer);
+    publicUrl = `/uploads/site-media/${safeFilename}`;
+    storage = 'local';
+  }
 
   store.entries[cleanSlotId] = {
     url: publicUrl,
     updatedAt,
+    ...(storagePath ? { storagePath } : {}),
   };
   writeStoreFile(store);
 
   // Clean up previous uploaded image file for this slot if any
-  if (previousUrl && previousUrl !== publicUrl) {
-    safeDeleteOldUpload(previousUrl);
+  if (previousEntry?.url && previousEntry.url !== publicUrl) {
+    safeDeleteOldUpload(previousEntry.url);
+  }
+  if (previousEntry?.storagePath && previousEntry.storagePath !== storagePath) {
+    try {
+      const { client } = getSupabaseClientForMedia(authToken);
+      if (client) {
+        await withTimeout(
+          client.storage.from(SITE_MEDIA_BUCKET).remove([previousEntry.storagePath]),
+          3000
+        );
+      }
+    } catch {
+      // Non-critical cleanup
+    }
   }
 
   return {
@@ -259,10 +495,14 @@ export function saveUploadedSiteMedia(
     updatedAt,
     mime: detected.mime,
     sizeBytes: buffer.length,
+    storage,
   };
 }
 
-export function resetSiteMediaSlot(slotId: string): { defaultUrl: string } {
+export async function resetSiteMediaSlot(
+  slotId: string,
+  authToken?: string
+): Promise<{ defaultUrl: string }> {
   const cleanSlotId = String(slotId || '').trim();
   if (!ALLOWED_SITE_MEDIA_SLOT_IDS.has(cleanSlotId)) {
     const err = new Error('Invalid image slot identifier.');
@@ -271,14 +511,50 @@ export function resetSiteMediaSlot(slotId: string): { defaultUrl: string } {
   }
 
   const store = readStoreFile();
-  const previousUrl = store.entries[cleanSlotId]?.url;
+  const previousEntry = store.entries[cleanSlotId];
 
   if (store.entries[cleanSlotId]) {
     delete store.entries[cleanSlotId];
     writeStoreFile(store);
   }
 
-  safeDeleteOldUpload(previousUrl);
+  safeDeleteOldUpload(previousEntry?.url);
+
+  // Best-effort cleanup in Supabase Storage & site_media table
+  try {
+    const { client } = getSupabaseClientForMedia(authToken);
+    if (client) {
+      let remoteStoragePath = previousEntry?.storagePath;
+      try {
+        const { data: existingRow } = await withTimeout(
+          client
+            .from(SITE_MEDIA_TABLE)
+            .select('storage_path')
+            .eq('slot_id', cleanSlotId)
+            .maybeSingle(),
+          3000
+        );
+        if (existingRow?.storage_path) {
+          remoteStoragePath = existingRow.storage_path;
+        }
+        await withTimeout(
+          client.from(SITE_MEDIA_TABLE).delete().eq('slot_id', cleanSlotId),
+          3000
+        );
+      } catch {
+        // Table may not exist yet
+      }
+
+      if (remoteStoragePath) {
+        await withTimeout(
+          client.storage.from(SITE_MEDIA_BUCKET).remove([remoteStoragePath]),
+          3000
+        );
+      }
+    }
+  } catch {
+    // Non-critical cleanup
+  }
 
   const defaultUrl =
     cleanSlotId === SITE_LOGO_SLOT_ID

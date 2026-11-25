@@ -5,6 +5,7 @@ import {
   SITE_MEDIA_SLOT_MAP,
   isSafeMediaUrl,
 } from '../data/siteMediaSlots';
+import { supabase } from '../lib/supabase';
 
 export interface SiteMediaState {
   logoUrl: string;
@@ -99,27 +100,74 @@ export const SiteMediaProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
   const refreshSiteMedia = useCallback(async () => {
+    let loadedFromApi = false;
+
     try {
       const res = await fetch('/api/public/site-media', {
         method: 'GET',
         cache: 'no-store',
       });
-      if (!res.ok) return;
-      const data = await res.json();
-      if (data?.success) {
-        const next = sanitizeState({
-          logoUrl: data.logoUrl,
-          slots: data.slots,
-          updatedAtMap: data.updatedAtMap,
-        });
-        setState(next);
-        writeCachedMedia(next);
+      if (res.ok) {
+        const rawText = await res.text();
+        const trimmed = rawText.trim();
+        const contentType = (res.headers.get('content-type') || '').toLowerCase();
+        if (trimmed && (!trimmed.startsWith('<') || contentType.includes('application/json'))) {
+          const data = JSON.parse(trimmed);
+          if (data?.success) {
+            const next = sanitizeState({
+              logoUrl: data.logoUrl,
+              slots: data.slots,
+              updatedAtMap: data.updatedAtMap,
+            });
+            setState(next);
+            writeCachedMedia(next);
+            loadedFromApi = true;
+          }
+        }
       }
     } catch {
-      // Keep cached or default images gracefully
-    } finally {
-      setIsLoaded(true);
+      // Fall back to direct Supabase query below
     }
+
+    if (!loadedFromApi) {
+      try {
+        const { data: rows, error } = await supabase
+          .from('site_media')
+          .select('slot_id, url, updated_at');
+
+        if (!error && Array.isArray(rows)) {
+          let logoUrl = DEFAULT_SITE_LOGO_URL;
+          const slots: Record<string, string> = {};
+          const updatedAtMap: Record<string, string> = {};
+
+          for (const row of rows) {
+            const slotId = typeof row?.slot_id === 'string' ? row.slot_id.trim() : '';
+            const url = typeof row?.url === 'string' ? row.url.trim() : '';
+            if (!slotId || !isSafeMediaUrl(url)) continue;
+
+            if (slotId === SITE_LOGO_SLOT_ID) {
+              logoUrl = url;
+              if (typeof row?.updated_at === 'string') {
+                updatedAtMap[slotId] = row.updated_at;
+              }
+            } else if (SITE_MEDIA_SLOT_MAP[slotId]) {
+              slots[slotId] = url;
+              if (typeof row?.updated_at === 'string') {
+                updatedAtMap[slotId] = row.updated_at;
+              }
+            }
+          }
+
+          const next = sanitizeState({ logoUrl, slots, updatedAtMap });
+          setState(next);
+          writeCachedMedia(next);
+        }
+      } catch {
+        // Keep cached or default images gracefully
+      }
+    }
+
+    setIsLoaded(true);
   }, []);
 
   useEffect(() => {

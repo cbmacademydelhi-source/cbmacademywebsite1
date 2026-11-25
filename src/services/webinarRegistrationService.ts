@@ -1,5 +1,9 @@
 import { WebinarRegistration } from '../types';
 import { apiFetch } from '../utils/apiConfig';
+import {
+  getFreshAdminToken,
+  notifyAdminSessionExpired,
+} from './adminService';
 
 declare global {
   interface Window {
@@ -101,6 +105,7 @@ async function safeFetchJson<T = any>(
   if (!res.ok) {
     const errorMsg = data?.message || fallbackMessage;
     const err: any = new Error(errorMsg);
+    err.status = res.status;
     if (data?.code) err.code = data.code;
     throw err;
   }
@@ -341,15 +346,52 @@ export async function fetchAdminRegistrations(
   if (filters?.type) params.append('type', filters.type);
   if (filters?.status) params.append('status', filters.status);
 
-  const json = await safeFetchJson<{ registrations?: WebinarRegistration[] }>(
-    `/api/webinars/registrations?${params.toString()}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
-    'Failed to fetch registrations.'
-  );
+  const queryUrl = `/api/webinars/registrations?${params.toString()}`;
+  const activeToken = (await getFreshAdminToken(false)) || token;
 
-  return json.registrations || [];
+  if (!activeToken) {
+    notifyAdminSessionExpired();
+    const err: any = new Error('Your admin session has expired. Please sign in again.');
+    err.status = 401;
+    throw err;
+  }
+
+  try {
+    const json = await safeFetchJson<{ registrations?: WebinarRegistration[] }>(
+      queryUrl,
+      {
+        headers: {
+          Authorization: `Bearer ${activeToken}`,
+        },
+      },
+      'Failed to fetch registrations.'
+    );
+
+    return json.registrations || [];
+  } catch (err: any) {
+    if (err?.status === 401) {
+      const refreshedToken = await getFreshAdminToken(true);
+      if (refreshedToken && refreshedToken !== activeToken) {
+        try {
+          const retryJson = await safeFetchJson<{ registrations?: WebinarRegistration[] }>(
+            queryUrl,
+            {
+              headers: {
+                Authorization: `Bearer ${refreshedToken}`,
+              },
+            },
+            'Failed to fetch registrations.'
+          );
+          return retryJson.registrations || [];
+        } catch (retryErr: any) {
+          if (retryErr?.status === 401) {
+            notifyAdminSessionExpired();
+          }
+          throw retryErr;
+        }
+      }
+      notifyAdminSessionExpired();
+    }
+    throw err;
+  }
 }

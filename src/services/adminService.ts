@@ -1,4 +1,10 @@
 import { supabase } from '../lib/supabase';
+import {
+  ALLOWED_SITE_MEDIA_SLOT_IDS,
+  DEFAULT_SITE_LOGO_URL,
+  SITE_LOGO_SLOT_ID,
+  SITE_MEDIA_SLOT_MAP,
+} from '../data/siteMediaSlots';
 import type {
   AdminCourse,
   AdminJob,
@@ -46,6 +52,8 @@ const USER_KEY = 'cbm_admin_user_data';
 
 export let lastAdminApiError: string | null = null;
 
+export const ADMIN_SESSION_EXPIRED_EVENT = 'cbm-admin-session-expired';
+
 export function getAdminToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
@@ -60,6 +68,58 @@ export function clearAdminSession() {
   localStorage.removeItem(USER_KEY);
 }
 
+export function notifyAdminSessionExpired() {
+  clearAdminSession();
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent(ADMIN_SESSION_EXPIRED_EVENT));
+  }
+}
+
+// Keep stored admin token synced whenever Supabase automatically refreshes the session
+if (typeof window !== 'undefined') {
+  try {
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.access_token && (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN')) {
+        localStorage.setItem(TOKEN_KEY, session.access_token);
+      } else if (event === 'SIGNED_OUT') {
+        clearAdminSession();
+      }
+    });
+  } catch {
+    // ignore listener errors
+  }
+}
+
+export async function getFreshAdminToken(forceRefresh = false): Promise<string | null> {
+  try {
+    if (forceRefresh) {
+      const { data: refreshed, error: refreshErr } = await supabase.auth.refreshSession();
+      if (!refreshErr && refreshed?.session?.access_token) {
+        localStorage.setItem(TOKEN_KEY, refreshed.session.access_token);
+        return refreshed.session.access_token;
+      }
+    } else {
+      const { data } = await supabase.auth.getSession();
+      const session = data?.session;
+      if (session?.access_token) {
+        const expiresAtMs = (session.expires_at || 0) * 1000;
+        if (expiresAtMs > 0 && expiresAtMs - Date.now() < 60_000) {
+          const { data: refreshed } = await supabase.auth.refreshSession();
+          if (refreshed?.session?.access_token) {
+            localStorage.setItem(TOKEN_KEY, refreshed.session.access_token);
+            return refreshed.session.access_token;
+          }
+        }
+        localStorage.setItem(TOKEN_KEY, session.access_token);
+        return session.access_token;
+      }
+    }
+  } catch {
+    // Fall back to stored server-issued token if Supabase session isn't active
+  }
+  return getAdminToken();
+}
+
 export function getAdminUser() {
   try {
     const raw = localStorage.getItem(USER_KEY);
@@ -69,17 +129,8 @@ export function getAdminUser() {
   }
 }
 
-async function authHeaders(): Promise<HeadersInit> {
-  let token = getAdminToken();
-  if (!token) {
-    try {
-      const { data } = await supabase.auth.getSession();
-      token = data?.session?.access_token || null;
-      if (token) {
-        localStorage.setItem(TOKEN_KEY, token);
-      }
-    } catch {}
-  }
+async function authHeaders(forceRefresh = false): Promise<HeadersInit> {
+  const token = await getFreshAdminToken(forceRefresh);
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
@@ -149,13 +200,35 @@ export async function logoutAdmin(): Promise<void> {
 }
 
 export async function checkAdminSession(): Promise<boolean> {
-  const token = getAdminToken();
+  const token = await getFreshAdminToken(false);
   if (!token) return false;
   try {
     const res = await fetchWithTimeout('/api/admin/session', {
-      headers: await authHeaders(),
-    }, 3000);
-    return res.ok;
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    }, 4000);
+    if (res.ok) return true;
+
+    if (res.status === 401) {
+      const refreshedToken = await getFreshAdminToken(true);
+      if (refreshedToken && refreshedToken !== token) {
+        const retryRes = await fetchWithTimeout('/api/admin/session', {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${refreshedToken}`,
+          },
+        }, 4000);
+        if (retryRes.ok) return true;
+      }
+      clearAdminSession();
+      return false;
+    }
+
+    // On static hosting (e.g. GitHub Pages where /api returns 404/405), fall back to active Supabase session
+    const { data } = await supabase.auth.getSession();
+    return Boolean(data?.session?.access_token);
   } catch {
     return false;
   }
@@ -556,13 +629,210 @@ export interface SiteMediaUploadResult {
   message?: string;
 }
 
+const SITE_MEDIA_BUCKET = 'site-media';
+const SITE_MEDIA_TABLE = 'site_media';
+
+async function safeParseJsonResponse(
+  res: Response
+): Promise<{ isJson: boolean; data: any; rawText: string }> {
+  const rawText = await res.text();
+  const trimmed = rawText.trim();
+  if (!trimmed) {
+    return { isJson: false, data: null, rawText };
+  }
+  const contentType = (res.headers.get('content-type') || '').toLowerCase();
+  const looksLikeHtml = trimmed.startsWith('<');
+  if (looksLikeHtml && !contentType.includes('application/json')) {
+    return { isJson: false, data: null, rawText };
+  }
+  try {
+    return { isJson: true, data: JSON.parse(trimmed), rawText };
+  } catch {
+    return { isJson: false, data: null, rawText };
+  }
+}
+
+async function detectClientImageFormat(
+  file: File
+): Promise<{ ext: string; mime: string } | null> {
+  try {
+    const headerBuf = await file.slice(0, 12).arrayBuffer();
+    const bytes = new Uint8Array(headerBuf);
+    if (bytes.length < 12) return null;
+
+    // PNG: 89 50 4E 47 0D 0A 1A 0A
+    if (
+      bytes[0] === 0x89 &&
+      bytes[1] === 0x50 &&
+      bytes[2] === 0x4e &&
+      bytes[3] === 0x47 &&
+      bytes[4] === 0x0d &&
+      bytes[5] === 0x0a &&
+      bytes[6] === 0x1a &&
+      bytes[7] === 0x0a
+    ) {
+      return { ext: 'png', mime: 'image/png' };
+    }
+
+    // JPEG: FF D8 FF
+    if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) {
+      return { ext: 'jpg', mime: 'image/jpeg' };
+    }
+
+    // WebP: RIFF....WEBP
+    if (
+      bytes[0] === 0x52 &&
+      bytes[1] === 0x49 &&
+      bytes[2] === 0x46 &&
+      bytes[3] === 0x46 &&
+      bytes[8] === 0x57 &&
+      bytes[9] === 0x45 &&
+      bytes[10] === 0x42 &&
+      bytes[11] === 0x50
+    ) {
+      return { ext: 'webp', mime: 'image/webp' };
+    }
+
+    // GIF: GIF87a or GIF89a
+    if (
+      bytes[0] === 0x47 &&
+      bytes[1] === 0x49 &&
+      bytes[2] === 0x46 &&
+      bytes[3] === 0x38 &&
+      (bytes[4] === 0x37 || bytes[4] === 0x39) &&
+      bytes[5] === 0x61
+    ) {
+      return { ext: 'gif', mime: 'image/gif' };
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+async function uploadSiteMediaViaSupabase(
+  cleanSlotId: string,
+  file: File,
+  detected: { ext: string; mime: string }
+): Promise<SiteMediaUploadResult> {
+  try {
+    const randomBytes = new Uint8Array(6);
+    crypto.getRandomValues(randomBytes);
+    const token = Array.from(randomBytes, (b) => b.toString(16).padStart(2, '0')).join('');
+    const storagePath = `slots/${cleanSlotId}_${Date.now()}_${token}.${detected.ext}`;
+
+    // Lookup previous storage path so we can clean up after replacement
+    let previousStoragePath: string | null = null;
+    try {
+      const { data: prevRow } = await supabase
+        .from(SITE_MEDIA_TABLE)
+        .select('storage_path')
+        .eq('slot_id', cleanSlotId)
+        .maybeSingle();
+      if (prevRow?.storage_path) {
+        previousStoragePath = prevRow.storage_path;
+      }
+    } catch {
+      // Table may not exist yet
+    }
+
+    const { error: uploadError } = await supabase.storage
+      .from(SITE_MEDIA_BUCKET)
+      .upload(storagePath, file, {
+        contentType: detected.mime,
+        cacheControl: '31536000',
+        upsert: true,
+      });
+
+    if (uploadError) {
+      const msg = uploadError.message || 'Supabase Storage upload failed.';
+      if (/bucket not found/i.test(msg)) {
+        return {
+          success: false,
+          message:
+            "Supabase Storage bucket 'site-media' is not created yet. Run supabase_site_media_schema.sql in your Supabase SQL Editor to enable cloud image uploads.",
+        };
+      }
+      if (/row-level security|unauthorized|permission|not allowed/i.test(msg)) {
+        return {
+          success: false,
+          message:
+            'Supabase Storage blocked the upload due to permissions. Sign in with your Supabase Admin account and ensure storage policies from supabase_site_media_schema.sql are applied.',
+        };
+      }
+      return {
+        success: false,
+        message: `Storage upload failed: ${msg}`,
+      };
+    }
+
+    const { data: pubData } = supabase.storage
+      .from(SITE_MEDIA_BUCKET)
+      .getPublicUrl(storagePath);
+
+    const publicUrl = pubData?.publicUrl;
+    if (!publicUrl) {
+      return {
+        success: false,
+        message: 'Image uploaded but public URL could not be generated.',
+      };
+    }
+
+    const updatedAt = new Date().toISOString();
+
+    // Persist slot mapping in Supabase site_media table so all visitors load the new image
+    const { error: upsertError } = await supabase.from(SITE_MEDIA_TABLE).upsert(
+      {
+        slot_id: cleanSlotId,
+        url: publicUrl,
+        storage_path: storagePath,
+        updated_at: updatedAt,
+      },
+      { onConflict: 'slot_id' }
+    );
+
+    if (upsertError) {
+      console.warn('[SiteMedia] Uploaded to Storage, but site_media table upsert failed:', upsertError.message);
+    }
+
+    if (previousStoragePath && previousStoragePath !== storagePath) {
+      try {
+        await supabase.storage.from(SITE_MEDIA_BUCKET).remove([previousStoragePath]);
+      } catch {
+        // Non-critical cleanup
+      }
+    }
+
+    return {
+      success: true,
+      slotId: cleanSlotId,
+      url: publicUrl,
+      updatedAt,
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err?.message || 'Image upload failed while connecting to Supabase Storage.',
+    };
+  }
+}
+
 export async function uploadSiteMediaFile(
   slotId: string,
   file: File
 ): Promise<SiteMediaUploadResult> {
   try {
+    const cleanSlotId = String(slotId || '').trim();
+    if (!ALLOWED_SITE_MEDIA_SLOT_IDS.has(cleanSlotId)) {
+      return {
+        success: false,
+        message: 'Invalid image slot identifier.',
+      };
+    }
+
     const allowedMimes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif'];
-    if (!allowedMimes.includes(file.type.toLowerCase())) {
+    if (file.type && !allowedMimes.includes(file.type.toLowerCase())) {
       return {
         success: false,
         message: 'Only PNG, JPG, WebP, or GIF images are allowed.',
@@ -574,6 +844,14 @@ export async function uploadSiteMediaFile(
       return {
         success: false,
         message: 'Image size must be 10 MB or smaller.',
+      };
+    }
+
+    const detected = await detectClientImageFormat(file);
+    if (!detected) {
+      return {
+        success: false,
+        message: 'Unsupported file format. Only valid PNG, JPG, WebP, or GIF images are allowed.',
       };
     }
 
@@ -590,29 +868,56 @@ export async function uploadSiteMediaFile(
       reader.readAsDataURL(file);
     });
 
-    const res = await fetchWithTimeout(
-      '/api/admin/site-media/upload',
-      {
-        method: 'POST',
-        headers: await authHeaders(),
-        body: JSON.stringify({ slotId, imageData }),
-      },
-      30000
-    );
+    // 1. Try backend Express API endpoint first
+    let shouldFallbackToSupabase = false;
+    try {
+      const res = await fetchWithTimeout(
+        '/api/admin/site-media/upload',
+        {
+          method: 'POST',
+          headers: await authHeaders(),
+          body: JSON.stringify({ slotId: cleanSlotId, imageData }),
+        },
+        30000
+      );
 
-    const data = await res.json();
-    if (res.ok && data.success && data.url) {
-      return {
-        success: true,
-        slotId: data.slotId,
-        url: data.url,
-        updatedAt: data.updatedAt,
-      };
+      const { isJson, data } = await safeParseJsonResponse(res);
+
+      if (isJson) {
+        if (res.ok && data?.success && data?.url) {
+          return {
+            success: true,
+            slotId: data.slotId || cleanSlotId,
+            url: data.url,
+            updatedAt: data.updatedAt,
+          };
+        }
+
+        // Return explicit validation / auth errors directly from the JSON API
+        if (res.status === 400 || res.status === 401 || res.status === 403) {
+          return {
+            success: false,
+            message: data?.message || 'Image upload failed.',
+          };
+        }
+
+        shouldFallbackToSupabase = true;
+      } else {
+        // Non-JSON response (e.g., HTML 404/405/413/502 on static hosting or proxy)
+        shouldFallbackToSupabase = true;
+      }
+    } catch {
+      shouldFallbackToSupabase = true;
+    }
+
+    // 2. Fallback to direct Supabase Storage upload when /api backend is unavailable or returns HTML
+    if (shouldFallbackToSupabase) {
+      return await uploadSiteMediaViaSupabase(cleanSlotId, file, detected);
     }
 
     return {
       success: false,
-      message: data?.message || 'Image upload failed.',
+      message: 'Image upload failed.',
     };
   } catch (err: any) {
     return {
@@ -626,27 +931,79 @@ export async function resetSiteMediaFile(
   slotId: string
 ): Promise<{ success: boolean; defaultUrl?: string; message?: string }> {
   try {
-    const res = await fetchWithTimeout(
-      '/api/admin/site-media/reset',
-      {
-        method: 'POST',
-        headers: await authHeaders(),
-        body: JSON.stringify({ slotId }),
-      },
-      10000
-    );
+    const cleanSlotId = String(slotId || '').trim();
+    if (!ALLOWED_SITE_MEDIA_SLOT_IDS.has(cleanSlotId)) {
+      return {
+        success: false,
+        message: 'Invalid image slot identifier.',
+      };
+    }
 
-    const data = await res.json();
-    if (res.ok && data.success) {
+    let shouldFallbackToSupabase = false;
+    try {
+      const res = await fetchWithTimeout(
+        '/api/admin/site-media/reset',
+        {
+          method: 'POST',
+          headers: await authHeaders(),
+          body: JSON.stringify({ slotId: cleanSlotId }),
+        },
+        10000
+      );
+
+      const { isJson, data } = await safeParseJsonResponse(res);
+      if (isJson) {
+        if (res.ok && data?.success) {
+          return {
+            success: true,
+            defaultUrl: data.defaultUrl,
+          };
+        }
+        if (res.status === 400 || res.status === 401 || res.status === 403) {
+          return {
+            success: false,
+            message: data?.message || 'Failed to reset image.',
+          };
+        }
+        shouldFallbackToSupabase = true;
+      } else {
+        shouldFallbackToSupabase = true;
+      }
+    } catch {
+      shouldFallbackToSupabase = true;
+    }
+
+    if (shouldFallbackToSupabase) {
+      try {
+        const { data: existingRow } = await supabase
+          .from(SITE_MEDIA_TABLE)
+          .select('storage_path')
+          .eq('slot_id', cleanSlotId)
+          .maybeSingle();
+
+        await supabase.from(SITE_MEDIA_TABLE).delete().eq('slot_id', cleanSlotId);
+
+        if (existingRow?.storage_path) {
+          await supabase.storage.from(SITE_MEDIA_BUCKET).remove([existingRow.storage_path]);
+        }
+      } catch {
+        // Non-fatal if table/bucket not provisioned yet
+      }
+
+      const defaultUrl =
+        cleanSlotId === SITE_LOGO_SLOT_ID
+          ? DEFAULT_SITE_LOGO_URL
+          : SITE_MEDIA_SLOT_MAP[cleanSlotId]?.defaultUrl || '';
+
       return {
         success: true,
-        defaultUrl: data.defaultUrl,
+        defaultUrl,
       };
     }
 
     return {
       success: false,
-      message: data?.message || 'Failed to reset image.',
+      message: 'Failed to reset image.',
     };
   } catch (err: any) {
     return {

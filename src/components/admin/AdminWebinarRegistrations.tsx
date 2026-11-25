@@ -52,8 +52,12 @@ export const AdminWebinarRegistrations: React.FC<AdminWebinarRegistrationsProps>
       });
       setRegistrations(data);
     } catch (err: any) {
-      console.error('Failed to load admin registrations:', err);
-      setError(err?.message || 'Could not load registrations from server.');
+      if (err?.status === 401) {
+        setError('Your admin session expired. Please sign in again.');
+      } else {
+        console.error('Failed to load admin registrations:', err);
+        setError(err?.message || 'Could not load registrations from server.');
+      }
     } finally {
       setLoading(false);
     }
