@@ -329,16 +329,16 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
           whileInView={{ opacity: 1, y: 0 }}
           viewport={VIEWPORT_ONCE}
           transition={{ duration: 0.5, delay: 0.25, ease: SMOOTH_EASE_OUT }}
-          className="mt-10 sm:mt-12 relative rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/90 bg-white shadow-md group"
+          className="mt-8 sm:mt-12 relative rounded-xl sm:rounded-2xl lg:rounded-3xl overflow-hidden border border-slate-200/90 bg-white shadow-md group"
         >
-          {/* Same Aspect Ratio Landscape Frame */}
-          <div className="relative w-full aspect-[16/7.5] sm:aspect-[16/6.5] lg:aspect-[21/8] min-h-[240px] sm:min-h-[340px] lg:min-h-[420px] overflow-hidden bg-slate-900">
+          {/* Responsive Landscape Frame: full uncropped banner on phone/tablet, same wide frame on desktop */}
+          <div className="relative w-full lg:aspect-[21/8] lg:min-h-[420px] overflow-hidden bg-white">
             <img
               src={courseBannerUrl}
               alt="CBM Academy AI Pro Digital Marketing Course Banner in Delhi"
               loading="lazy"
               decoding="async"
-              className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.01]"
+              className="block w-full h-auto lg:h-full lg:object-cover object-center transition-transform duration-500 group-hover:scale-[1.01]"
             />
           </div>
         </motion.div>
