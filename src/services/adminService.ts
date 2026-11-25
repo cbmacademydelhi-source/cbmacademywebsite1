@@ -545,3 +545,115 @@ export async function deleteAdminImage(id: string): Promise<boolean> {
   }
 }
 
+// -----------------------------------------------------------------------------
+// LIVE SITE MEDIA (Page-wise Website Images, Banners & CBM Academy Logo)
+// -----------------------------------------------------------------------------
+export interface SiteMediaUploadResult {
+  success: boolean;
+  slotId?: string;
+  url?: string;
+  updatedAt?: string;
+  message?: string;
+}
+
+export async function uploadSiteMediaFile(
+  slotId: string,
+  file: File
+): Promise<SiteMediaUploadResult> {
+  try {
+    const allowedMimes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif'];
+    if (!allowedMimes.includes(file.type.toLowerCase())) {
+      return {
+        success: false,
+        message: 'Only PNG, JPG, WebP, or GIF images are allowed.',
+      };
+    }
+
+    const MAX_BYTES = 10 * 1024 * 1024;
+    if (file.size > MAX_BYTES) {
+      return {
+        success: false,
+        message: 'Image size must be 10 MB or smaller.',
+      };
+    }
+
+    const imageData = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          resolve(reader.result);
+        } else {
+          reject(new Error('Failed to read image file.'));
+        }
+      };
+      reader.onerror = () => reject(new Error('Failed to read image file.'));
+      reader.readAsDataURL(file);
+    });
+
+    const res = await fetchWithTimeout(
+      '/api/admin/site-media/upload',
+      {
+        method: 'POST',
+        headers: await authHeaders(),
+        body: JSON.stringify({ slotId, imageData }),
+      },
+      30000
+    );
+
+    const data = await res.json();
+    if (res.ok && data.success && data.url) {
+      return {
+        success: true,
+        slotId: data.slotId,
+        url: data.url,
+        updatedAt: data.updatedAt,
+      };
+    }
+
+    return {
+      success: false,
+      message: data?.message || 'Image upload failed.',
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err?.message || 'Network error while uploading image.',
+    };
+  }
+}
+
+export async function resetSiteMediaFile(
+  slotId: string
+): Promise<{ success: boolean; defaultUrl?: string; message?: string }> {
+  try {
+    const res = await fetchWithTimeout(
+      '/api/admin/site-media/reset',
+      {
+        method: 'POST',
+        headers: await authHeaders(),
+        body: JSON.stringify({ slotId }),
+      },
+      10000
+    );
+
+    const data = await res.json();
+    if (res.ok && data.success) {
+      return {
+        success: true,
+        defaultUrl: data.defaultUrl,
+      };
+    }
+
+    return {
+      success: false,
+      message: data?.message || 'Failed to reset image.',
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err?.message || 'Network error while resetting image.',
+    };
+  }
+}
+
+

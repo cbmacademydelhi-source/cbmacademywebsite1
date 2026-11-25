@@ -112,7 +112,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     },
     {
       id: 'images',
-      label: 'Website & Banner Images',
+      label: 'Images & Banners',
       icon: ImageIcon,
     },
     {
@@ -246,9 +246,9 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
               <span className="text-xs uppercase font-bold text-slate-400 tracking-wider">
                 Admin Panel /
               </span>
-              <h2 className="text-base font-bold text-slate-900 capitalize">
+              <h2 className="text-base font-bold text-slate-900">
                 {activeTab === 'webinars' && 'Webinars & Masterclasses'}
-                {activeTab === 'images' && 'Website & Banner Images'}
+                {activeTab === 'images' && 'Images & Banners'}
                 {activeTab === 'certificates' && 'Certificates Registry'}
               </h2>
             </div>

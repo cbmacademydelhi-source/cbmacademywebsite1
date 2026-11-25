@@ -5,6 +5,7 @@ import { BlogPost } from '../types';
 import { Calendar, Clock, ArrowRight, User, X } from 'lucide-react';
 import { SMOOTH_EASE_OUT, VIEWPORT_ONCE } from '../lib/animations';
 import { fetchPublicBlogs } from '../services/adminService';
+import { useSiteMedia } from '../context/SiteMediaContext';
 
 interface BlogSectionProps {
   isStandalonePage?: boolean;
@@ -16,6 +17,17 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
   const [postsList, setPostsList] = useState<BlogPost[]>(BLOG_POSTS);
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const shouldReduceMotion = useReducedMotion();
+  const { getImageUrl } = useSiteMedia();
+
+  const blogSlotIds = ['blog-1-geo-seo', 'blog-2-meta-ads', 'blog-3-ai-stack'];
+  const resolveBlogImage = (post: BlogPost, index?: number): string => {
+    const idx =
+      typeof index === 'number'
+        ? index
+        : postsList.findIndex((p) => p.id === post.id);
+    const slotId = idx >= 0 && idx < blogSlotIds.length ? blogSlotIds[idx] : '';
+    return slotId ? getImageUrl(slotId, post.imageUrl) : post.imageUrl;
+  };
 
   useEffect(() => {
     fetchPublicBlogs().then((liveBlogs) => {
@@ -104,7 +116,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
                 {/* Featured Image */}
                 <div className="relative aspect-[16/9] overflow-hidden bg-slate-100">
                   <img
-                    src={post.imageUrl}
+                    src={resolveBlogImage(post, index)}
                     alt={`${post.title} - CBM Academy Digital Marketing Guide`}
                     title={post.title}
                     width={800}
@@ -206,7 +218,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
             {/* Image */}
             <div className="aspect-[16/9] rounded-xl overflow-hidden mb-6 bg-slate-100">
               <img
-                src={selectedPost.imageUrl}
+                src={resolveBlogImage(selectedPost)}
                 alt={`${selectedPost.title} - CBM Academy Industry Insights`}
                 title={selectedPost.title}
                 width={800}

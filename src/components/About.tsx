@@ -12,12 +12,30 @@ import {
   ArrowRight,
   Sparkles,
 } from 'lucide-react';
+import { useSiteMedia } from '../context/SiteMediaContext';
 
 interface AboutProps {
   isServicesPage?: boolean;
 }
 
 export const About: React.FC<AboutProps> = ({ isServicesPage = false }) => {
+  const { getImageUrl } = useSiteMedia();
+  const aboutHeroUrl = getImageUrl(
+    'about-1-hero-students',
+    '/assets/cbm_photos/about_cbm_students_together.jpg'
+  );
+  const whoWeAreUrl = getImageUrl(
+    'about-2-who-we-are',
+    '/assets/cbm_photos/who_we_are_empty_classroom.jpg'
+  );
+  const aiMeetsDmUrl = getImageUrl(
+    'about-3-ai-meets-dm',
+    'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop'
+  );
+  const agencyServicesUrl = getImageUrl(
+    'about-4-agency-services',
+    'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1000&auto=format&fit=crop'
+  );
   // Scroll to services section if requested
   useEffect(() => {
     if (isServicesPage) {
@@ -276,7 +294,7 @@ export const About: React.FC<AboutProps> = ({ isServicesPage = false }) => {
           <div className="lg:col-span-6 space-y-4">
             <div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-xl bg-white group">
               <img
-                src="/assets/cbm_photos/about_cbm_students_together.jpg"
+                src={aboutHeroUrl}
                 alt="Students collaborating on digital marketing projects and laptops at CBM Academy in Okhla, New Delhi"
                 title="CBM Academy Digital Marketing Training in Okhla, New Delhi"
                 width={1000}
@@ -344,7 +362,7 @@ export const About: React.FC<AboutProps> = ({ isServicesPage = false }) => {
           <div className="lg:col-span-6 order-2 lg:order-1 h-full">
             <div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-md group h-full min-h-[300px] sm:min-h-[340px]">
               <img
-                src="/assets/cbm_photos/who_we_are_empty_classroom.jpg"
+                src={whoWeAreUrl}
                 alt="Digital marketing classroom training session with mentor and learners at CBM Academy in New Delhi"
                 title="CBM Academy Classroom Training & Mentorship"
                 width={1000}
@@ -418,7 +436,7 @@ export const About: React.FC<AboutProps> = ({ isServicesPage = false }) => {
             <div className="lg:col-span-6">
               <div className="relative rounded-xl overflow-hidden border border-slate-200 shadow-md group">
                 <img
-                  src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop"
+                  src={aiMeetsDmUrl}
                   alt="AI-powered digital marketing automation, analytics and intelligent campaign optimization"
                   title="AI Meets Digital Marketing at CBM Academy"
                   width={1000}
@@ -509,7 +527,7 @@ export const About: React.FC<AboutProps> = ({ isServicesPage = false }) => {
             <div className="lg:col-span-5">
               <div className="relative rounded-xl overflow-hidden border border-slate-200 shadow-xs group">
                 <img
-                  src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1000&auto=format&fit=crop"
+                  src={agencyServicesUrl}
                   alt="Digital marketing agency performance charts, SEO metrics and growth analytics in Delhi"
                   title="CBM Academy Digital Marketing Agency Services in Okhla, New Delhi"
                   width={1000}

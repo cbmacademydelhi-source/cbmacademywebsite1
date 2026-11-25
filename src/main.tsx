@@ -1,6 +1,7 @@
 import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
+import { SiteMediaProvider } from './context/SiteMediaContext';
 import './index.css';
 
 // Whenever the website is reloaded/refreshed, always redirect to the Home page ('/')
@@ -25,7 +26,9 @@ try {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <SiteMediaProvider>
+      <App />
+    </SiteMediaProvider>
   </StrictMode>,
 );
 

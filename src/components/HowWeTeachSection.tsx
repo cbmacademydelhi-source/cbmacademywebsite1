@@ -6,6 +6,7 @@ import {
   Users,
   Briefcase,
 } from 'lucide-react';
+import { useSiteMedia } from '../context/SiteMediaContext';
 
 interface HowWeTeachSectionProps {
   onExploreMethod?: () => void;
@@ -86,6 +87,18 @@ const TIMELINE_STEPS: TimelineItem[] = [
 ];
 
 export const HowWeTeachSection: React.FC<HowWeTeachSectionProps> = () => {
+  const { getImageUrl } = useSiteMedia();
+  const mainPhotoUrl = getImageUrl(
+    'home-4-grow-your-career',
+    '/assets/cbm_photos/grow_your_career_man.jpg'
+  );
+  const stepSlotIds = [
+    'home-5-learn-step-1',
+    'home-6-learn-step-2',
+    'home-7-learn-step-3',
+    'home-8-learn-step-4',
+    'home-9-learn-step-5',
+  ];
 
   return (
     <section
@@ -116,7 +129,7 @@ export const HowWeTeachSection: React.FC<HowWeTeachSectionProps> = () => {
             {/* 4. Large, authentic classroom photograph with asymmetrical frame */}
             <div className="relative rounded-3xl rounded-tl-xl overflow-hidden shadow-xl border border-slate-100 bg-slate-900 aspect-[4/3] sm:aspect-[16/11]">
               <img
-                src="/assets/cbm_photos/grow_your_career_man.jpg"
+                src={mainPhotoUrl}
                 alt="CBM Academy trainer mentoring students in a hands-on digital marketing and AI session"
                 className="w-full h-full object-cover object-center filter saturate-[1.05] contrast-[1.02]"
                 loading="lazy"
@@ -188,7 +201,7 @@ export const HowWeTeachSection: React.FC<HowWeTeachSectionProps> = () => {
                       {/* Small relevant rectangular thumbnail aligned to the far right */}
                       <div className="shrink-0 self-center">
                         <img
-                          src={item.thumbnailUrl}
+                          src={getImageUrl(stepSlotIds[index], item.thumbnailUrl)}
                           alt={item.thumbnailAlt}
                           className="w-16 h-12 sm:w-22 sm:h-16 rounded-lg object-cover shadow-xs border border-slate-200/70"
                           loading="lazy"

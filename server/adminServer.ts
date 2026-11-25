@@ -6,7 +6,6 @@ import path from 'path';
 // Seed data defaults for initial synchronization
 import {
   COURSE_MODULES,
-  JOB_OPPORTUNITIES,
   BLOG_POSTS,
   VERIFIED_CERTIFICATES,
 } from '../src/data/cbmData.ts';
@@ -157,27 +156,8 @@ function getInitialStore(): AdminStore {
     updated_at: new Date().toISOString(),
   }));
 
-  // Convert JOB_OPPORTUNITIES to AdminJob list
-  const jobs: AdminJob[] = JOB_OPPORTUNITIES.map((j) => ({
-    id: j.id,
-    company_name: j.companyCategory,
-    hr_name: 'Placement Office',
-    hr_email: j.hrEmail || 'office@cbmacademy.in',
-    hr_phone: '+91-92115-83150',
-    job_title: j.role,
-    job_description: `${j.role} opportunity in ${j.location}. Full practical exposure to performance marketing and brand campaigns.`,
-    location: j.location,
-    salary: j.salary,
-    experience: j.experience,
-    skills: j.skills || [],
-    work_type: j.type,
-    is_remote: Boolean(j.isRemote),
-    status: 'approved',
-    approved_at: new Date().toISOString(),
-    approved_by: 'CBM Placement Directorate',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  }));
+  // Start with no demo jobs; only genuine jobs added through the system are stored
+  const jobs: AdminJob[] = [];
 
   // Convert BLOG_POSTS to AdminBlog list
   const blogs: AdminBlog[] = BLOG_POSTS.map((b) => ({
@@ -289,6 +269,13 @@ function loadStore() {
       const data = fs.readFileSync(CACHE_FILE, 'utf8');
       const parsed = JSON.parse(data);
       if (parsed && Array.isArray(parsed.courses)) {
+        if (Array.isArray(parsed.jobs)) {
+          parsed.jobs = parsed.jobs.filter(
+            (j: AdminJob) =>
+              !/^JOB-10[1-6]$/i.test(String(j?.id || '')) &&
+              !/^demo\.hr\./i.test(String(j?.hr_email || ''))
+          );
+        }
         store = parsed;
       }
     }

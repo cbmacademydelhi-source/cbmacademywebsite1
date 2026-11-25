@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
 import { SMOOTH_EASE_OUT, VIEWPORT_ONCE } from '../lib/animations';
+import { useSiteMedia } from '../context/SiteMediaContext';
 
 export interface TestimonialItem {
   id: string;
@@ -182,10 +183,27 @@ const renderCardDeco = (type: TestimonialItem['cornerDeco']) => {
 /**
  * Individual Testimonial Card with Student Image, Fallback, and Hover Animation
  */
+const TESTIMONIAL_SLOT_MAP: Record<string, string> = {
+  'testimonial-ayesha-khan': 'home-10-testimonial-1',
+  'testimonial-rahul-sharma': 'home-11-testimonial-2',
+  'testimonial-simran-kapoor': 'home-12-testimonial-3',
+  'testimonial-rohan-verma': 'home-13-testimonial-4',
+  'testimonial-amit-joshi': 'home-14-testimonial-5',
+  'testimonial-priya-patel': 'home-15-testimonial-6',
+  'testimonial-vikram-malhotra': 'home-16-testimonial-7',
+  'testimonial-neha-gupta': 'home-17-testimonial-8',
+};
+
 const TestimonialCard: React.FC<{
   item: TestimonialItem;
 }> = ({ item }) => {
+  const { getImageUrl } = useSiteMedia();
+  const resolvedAvatarUrl = getImageUrl(TESTIMONIAL_SLOT_MAP[item.id] || '', item.image);
   const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [resolvedAvatarUrl]);
 
   return (
     <article
@@ -223,7 +241,7 @@ const TestimonialCard: React.FC<{
         <div className="relative w-12 h-12 rounded-full overflow-hidden shrink-0 border border-[#E5E7EB] bg-slate-100 shadow-xs">
           {!imgError ? (
             <img
-              src={item.image}
+              src={resolvedAvatarUrl}
               alt={`${item.name} - ${item.role} at CBM Academy`}
               title={`${item.name} - CBM Academy Student Review`}
               width={48}

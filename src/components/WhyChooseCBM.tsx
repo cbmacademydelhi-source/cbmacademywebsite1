@@ -13,6 +13,7 @@ import {
   Users,
 } from 'lucide-react';
 import { SMOOTH_EASE_OUT, VIEWPORT_ONCE } from '../lib/animations';
+import { useSiteMedia } from '../context/SiteMediaContext';
 
 interface WhyChooseCBMProps {
   onOpenApply?: () => void;
@@ -65,9 +66,19 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
 }) => {
   const shouldReduceMotion = useReducedMotion();
   const bannerInputRef = useRef<HTMLInputElement>(null);
+  const { getImageUrl, hasOverride } = useSiteMedia();
 
   const DEFAULT_BANNER =
     'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1600&auto=format&fit=crop';
+
+  const whyChooseClassroomUrl = getImageUrl(
+    'home-2-why-choose-cbm',
+    '/assets/cbm_photos/why_choose_cbm_students.jpg'
+  );
+  const adminHasBannerOverride = hasOverride('home-3-why-choose-banner');
+  const adminBannerUrl = adminHasBannerOverride
+    ? getImageUrl('home-3-why-choose-banner', DEFAULT_BANNER)
+    : null;
 
   const [bannerUrl, setBannerUrl] = useState<string>(DEFAULT_BANNER);
   const [isCustomBanner, setIsCustomBanner] = useState<boolean>(false);
@@ -168,7 +179,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
             >
               <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/90 shadow-xl bg-white group">
                 <img
-                  src="/assets/cbm_photos/why_choose_cbm_students.jpg"
+                  src={whyChooseClassroomUrl}
                   alt="Students working on laptops in a modern digital marketing classroom at CBM Academy"
                   title="CBM Academy Digital Marketing Classroom Training"
                   width={1200}
@@ -391,7 +402,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
           {/* Same Aspect Ratio Landscape Frame */}
           <div className="relative w-full aspect-[16/7.5] sm:aspect-[16/6.5] lg:aspect-[21/8] min-h-[240px] sm:min-h-[340px] lg:min-h-[420px] overflow-hidden bg-slate-900">
             <img
-              src={bannerUrl}
+              src={adminBannerUrl || bannerUrl}
               alt="CBM Academy AI Pro Digital Marketing Course Banner in Delhi"
               loading="lazy"
               decoding="async"
@@ -399,7 +410,7 @@ export const WhyChooseCBM: React.FC<WhyChooseCBMProps> = ({
             />
 
             {/* If not custom banner yet, show helpful upload invite overlay */}
-            {!isCustomBanner ? (
+            {!adminHasBannerOverride && !isCustomBanner ? (
               <div
                 onClick={() => bannerInputRef.current?.click()}
                 className="absolute inset-0 bg-[#072B57]/60 backdrop-blur-[2px] flex flex-col items-center justify-center p-6 text-center text-white cursor-pointer hover:bg-[#072B57]/50 transition-colors"

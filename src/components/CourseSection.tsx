@@ -459,78 +459,64 @@ const MODULES: CurriculumModule[] = [
 interface BusinessOpportunity {
   title: string;
   description: string;
-  image: string;
 }
 
 const BUSINESS_OPPORTUNITIES: BusinessOpportunity[] = [
   {
     title: 'Digital Marketing Agency',
     description: 'Offer marketing services to businesses.',
-    image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=600&q=80',
   },
   {
     title: 'AI Automation Agency',
     description: 'Help businesses automate and grow.',
-    image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=600&q=80',
   },
   {
     title: 'E-commerce Business',
     description: 'Launch and grow your online store.',
-    image: 'https://images.unsplash.com/photo-1556742044-3c52d6e88c62?auto=format&fit=crop&w=600&q=80',
   },
   {
     title: 'Digital Products',
     description: 'Sell e-books, templates, and online courses.',
-    image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=600&q=80',
   },
   {
     title: 'Website Development',
     description: 'Build websites and landing pages for clients.',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&q=80',
   },
   {
     title: 'Freelancing & Consulting',
     description: 'Work independently with clients.',
-    image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80',
   },
 ];
 
 interface CareerRoleItem {
   title: string;
   description: string;
-  image: string;
 }
 
 const CAREER_ROLES: CareerRoleItem[] = [
   {
     title: 'Digital Marketing Executive',
     description: 'Work on campaigns and growth strategies.',
-    image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80',
   },
   {
     title: 'SEO / GEO / AEO Specialist',
     description: 'Improve website visibility and traffic.',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&q=80',
   },
   {
     title: 'Performance Marketing Specialist',
     description: 'Run and optimise paid ad campaigns.',
-    image: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=600&q=80',
   },
   {
     title: 'Social Media Manager',
     description: 'Plan and manage social media growth.',
-    image: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=600&q=80',
   },
   {
     title: 'AI Content Creator',
     description: 'Create engaging content using AI tools.',
-    image: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=600&q=80',
   },
   {
     title: 'Website Developer',
     description: 'Build and maintain websites for businesses.',
-    image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80',
   },
 ];
 
@@ -566,8 +552,8 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
     }
   };
 
- 
- 
+  const activeModule = MODULES[activeModuleIndex];
+
   const handleNext = () => {
     setActiveModuleIndex((prev) => (prev < MODULES.length - 1 ? prev + 1 : 0));
   };
@@ -1216,19 +1202,11 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
                   key={biz.title}
                   className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-slate-300 transition-all overflow-hidden flex flex-col group"
                 >
-                  <div className="relative w-full aspect-[4/3] overflow-hidden bg-slate-100">
-                    <img
-                      src={biz.image}
-                      alt={biz.title}
-                      loading="lazy"
-                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                  <div className="p-3 sm:p-3.5 flex flex-col justify-between flex-1">
+                  <div className="p-4 sm:p-5 flex flex-col justify-between flex-1">
                     <h4 className="text-xs sm:text-[13px] font-bold text-[#072B57] leading-tight group-hover:text-[#FF6B00] transition-colors">
                       {biz.title}
                     </h4>
-                    <p className="mt-1 text-[11px] sm:text-xs text-slate-500 leading-snug font-normal">
+                    <p className="mt-1.5 text-[11px] sm:text-xs text-slate-500 leading-snug font-normal">
                       {biz.description}
                     </p>
                   </div>
@@ -1259,19 +1237,11 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
                   key={role.title}
                   className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-slate-300 transition-all overflow-hidden flex flex-col group"
                 >
-                  <div className="relative w-full aspect-[4/3] overflow-hidden bg-slate-100">
-                    <img
-                      src={role.image}
-                      alt={role.title}
-                      loading="lazy"
-                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                  <div className="p-3 sm:p-3.5 flex flex-col justify-between flex-1">
+                  <div className="p-4 sm:p-5 flex flex-col justify-between flex-1">
                     <h4 className="text-xs sm:text-[13px] font-bold text-[#072B57] leading-tight group-hover:text-[#FF6B00] transition-colors">
                       {role.title}
                     </h4>
-                    <p className="mt-1 text-[11px] sm:text-xs text-slate-500 leading-snug font-normal">
+                    <p className="mt-1.5 text-[11px] sm:text-xs text-slate-500 leading-snug font-normal">
                       {role.description}
                     </p>
                   </div>

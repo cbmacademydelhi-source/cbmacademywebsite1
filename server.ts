@@ -70,6 +70,12 @@ import {
   saveAdminImage,
   deleteAdminImage,
 } from './server/adminServer.ts';
+import {
+  SITE_MEDIA_UPLOAD_DIR,
+  getPublicSiteMedia,
+  saveUploadedSiteMedia,
+  resetSiteMediaSlot,
+} from './server/siteMediaServer.ts';
 
 dotenv.config();
 
@@ -257,6 +263,50 @@ app.get('/Digital_Marketing_Course_Brochure.pdf', brochurePdfHandler);
 app.get('/brochure.pdf', brochurePdfHandler);
 app.get('/assets/aistudio/Digital_Marketing_Course_Brochure__ab42c061.pdf', brochurePdfHandler);
 app.get('/api/brochure', brochurePdfHandler);
+
+// Serve uploaded website images & logo securely in both dev and production
+app.use(
+  '/uploads/site-media',
+  express.static(SITE_MEDIA_UPLOAD_DIR, {
+    dotfiles: 'deny',
+    index: false,
+    fallthrough: true,
+    setHeaders: (res) => {
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    },
+  }),
+  (_req, res) => {
+    res.status(404).end();
+  }
+);
+
+// Dedicated admin-only upload route for Images & Banners (15 MB JSON limit for base64 images up to 10 MB)
+app.post(
+  '/api/admin/site-media/upload',
+  express.json({ limit: '15mb' }),
+  requireAdminAuth,
+  (req, res) => {
+    try {
+      const { slotId, imageData } = req.body || {};
+      const result = saveUploadedSiteMedia(slotId, imageData);
+      const media = getPublicSiteMedia();
+      return res.status(200).json({
+        success: true,
+        slotId,
+        url: result.url,
+        updatedAt: result.updatedAt,
+        media,
+      });
+    } catch (err: any) {
+      const status = typeof err?.status === 'number' ? err.status : 500;
+      return res.status(status).json({
+        success: false,
+        message: err?.message || 'Failed to upload image.',
+      });
+    }
+  }
+);
 
 app.use(
   express.json({
@@ -1385,6 +1435,44 @@ app.delete('/api/admin/images/:id', requireAdminAuth, async (req, res) => {
     return res.status(200).json({ success: true, message: 'Image deleted successfully' });
   } catch (err: any) {
     return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// PUBLIC SITE MEDIA (Live website images & CBM Academy logo)
+app.get('/api/public/site-media', (_req, res) => {
+  try {
+    const media = getPublicSiteMedia();
+    res.setHeader('Cache-Control', 'no-store');
+    return res.status(200).json({
+      success: true,
+      ...media,
+    });
+  } catch (err: any) {
+    return res.status(500).json({
+      success: false,
+      message: err?.message || 'Failed to load site media.',
+    });
+  }
+});
+
+// ADMIN: Reset a site media slot or logo back to its default asset
+app.post('/api/admin/site-media/reset', requireAdminAuth, (req, res) => {
+  try {
+    const { slotId } = req.body || {};
+    const { defaultUrl } = resetSiteMediaSlot(slotId);
+    const media = getPublicSiteMedia();
+    return res.status(200).json({
+      success: true,
+      slotId,
+      defaultUrl,
+      media,
+    });
+  } catch (err: any) {
+    const status = typeof err?.status === 'number' ? err.status : 500;
+    return res.status(status).json({
+      success: false,
+      message: err?.message || 'Failed to reset image.',
+    });
   }
 });
 

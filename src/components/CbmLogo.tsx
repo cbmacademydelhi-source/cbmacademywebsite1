@@ -1,7 +1,9 @@
 import React, { useRef } from 'react';
 import { getAdminToken } from '../services/adminService';
+import { useSiteLogo } from '../context/SiteMediaContext';
+import { DEFAULT_SITE_LOGO_URL } from '../data/siteMediaSlots';
 
-export const CBM_LOGO_URL = '/assets/aistudio/CBM_Agency_Logo.png_ae66f4fb.png';
+export const CBM_LOGO_URL = DEFAULT_SITE_LOGO_URL;
 
 interface CbmLogoProps {
   className?: string;
@@ -27,6 +29,7 @@ export const CbmLogo: React.FC<CbmLogoProps> = ({
 }) => {
   const isDark = variant === 'dark' || variant === 'footer';
   const computedHeight = typeof height === 'number' ? `${height}px` : height;
+  const logoUrl = useSiteLogo();
 
   const clickCountRef = useRef(0);
   const clickTimerRef = useRef<any>(null);
@@ -66,7 +69,7 @@ export const CbmLogo: React.FC<CbmLogoProps> = ({
         className={`inline-flex items-center justify-center bg-white px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl border border-white/20 shadow-xs max-w-full flex-shrink-0 select-none ${className}`}
       >
         <img
-          src={CBM_LOGO_URL}
+          src={logoUrl}
           alt="CBM Academy - AI Integrated Digital Marketing Institute"
           style={{ height: computedHeight, width: 'auto' }}
           className="max-w-full object-contain block"
@@ -83,7 +86,7 @@ export const CbmLogo: React.FC<CbmLogoProps> = ({
       className={`inline-flex items-center flex-shrink-0 select-none ${className}`}
     >
       <img
-        src={CBM_LOGO_URL}
+        src={logoUrl}
         alt="CBM Academy - AI Integrated Digital Marketing Institute"
         style={{ height: computedHeight, width: 'auto' }}
         className="max-w-full object-contain block"

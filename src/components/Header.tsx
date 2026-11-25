@@ -34,7 +34,6 @@ export const Header: React.FC<HeaderProps> = ({
     { name: 'Webinars', href: '#webinars', id: 'webinars' },
     { name: 'Jobs', href: '#jobs', id: 'jobs' },
     { name: 'Certificate Verification', href: '#certificate', id: 'certificate' },
-  
     { name: 'Blog', href: '#blogs', id: 'blogs' },
     { name: 'Contact', href: '#contact', id: 'contact' },
   ];
@@ -150,7 +149,7 @@ export const Header: React.FC<HeaderProps> = ({
 
             <span className="hidden md:inline-flex items-center gap-1 text-emerald-300">
               <ShieldCheck className="w-3.5 h-3.5" />
-              ISO 9001:2015
+              Udyam Registered
             </span>
           </div>
         </div>

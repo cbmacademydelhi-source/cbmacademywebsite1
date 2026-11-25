@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Webinar } from '../../types';
 import { useScrollLock } from '../../utils/useScrollLock';
+import { useSiteImage } from '../../context/SiteMediaContext';
 
 interface WebinarPromoPopupProps {
   upcomingWebinar?: Webinar | null;
@@ -50,6 +51,7 @@ export const WebinarPromoPopup: React.FC<WebinarPromoPopupProps> = ({
   onRegister,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const popupImageUrl = useSiteImage('popup-1-promo-webinar', ORIGINAL_AI_ROBOT_IMAGE);
 
   // Completely disable scrolling on background page while popup is open
   useScrollLock(isOpen);
@@ -122,7 +124,7 @@ export const WebinarPromoPopup: React.FC<WebinarPromoPopupProps> = ({
         <div className="flex flex-col sm:flex-row items-stretch">
           <div className="relative w-full sm:w-[190px] shrink-0 bg-slate-900 min-h-[160px] sm:min-h-full overflow-hidden">
             <img
-              src={ORIGINAL_AI_ROBOT_IMAGE}
+              src={popupImageUrl}
               alt={activeWebinar.title ? `${activeWebinar.title} - CBM Academy Featured Live Webinar` : 'CBM Academy Featured Live Webinar'}
               title={activeWebinar.title || 'CBM Academy Featured Live Webinar'}
               width={800}

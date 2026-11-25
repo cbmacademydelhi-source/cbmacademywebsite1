@@ -186,9 +186,6 @@ export const CertificateVerification: React.FC = () => {
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#072B57] tracking-tight">
             Certificate Verification
           </h1>
-          <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
-            Instantly authenticate authentic credentials, track specializations, and verify academic records issued by CBM Academy.
-          </p>
         </div>
 
         {/* Search Console Card */}
@@ -416,7 +413,7 @@ export const CertificateVerification: React.FC = () => {
                           Cryptographic Seed: {verificationResult.data.qrCodeSeed}
                         </span>
                         <span className="text-slate-600 font-semibold text-[11px]">
-                          Udyam Registered • MSME Registration
+                          Udyam Registered • Permanent Digital Registry
                         </span>
                       </div>
                     </div>

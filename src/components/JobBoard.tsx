@@ -23,31 +23,36 @@ export const JobBoard: React.FC<JobBoardProps> = ({
   onPostJob,
 }) => {
   const [filter, setFilter] = useState<'ALL' | 'REMOTE' | 'DELHI'>('ALL');
- const [jobsList, setJobsList] = useState([]);
+  const [jobsList, setJobsList] = useState<any[]>([]);
 
   useEffect(() => {
+    const isDemoJob = (j: any) =>
+      /^JOB-10[1-6]$/i.test(String(j?.id || '')) ||
+      /^demo\.hr\./i.test(String(j?.hr_email || ''));
+
     fetchPublicJobs().then((liveJobs) => {
-      if (liveJobs && liveJobs.length > 0) {
-        const mapped = liveJobs.map((j) => ({
-          id: j.id,
-          role: j.job_title || j.title || 'Digital Marketing Specialist',
-          companyCategory: j.company_name || j.company || 'Hiring Partner',
-          location: j.location,
-          isRemote: Boolean(j.is_remote || j.location.toLowerCase().includes('remote')),
-          type: j.work_type || j.type || 'Full-time',
-          salary: j.salary || 'Best in Industry',
-          experience: j.experience || '0-2 Years',
-          postedDaysAgo: Math.max(
-            1,
-            Math.floor((Date.now() - new Date(j.created_at || j.posted_date || Date.now()).getTime()) / (1000 * 60 * 60 * 24))
-          ),
-          skills: Array.isArray(j.skills) && j.skills.length > 0 ? j.skills : (Array.isArray(j.requirements) && j.requirements.length > 0 ? j.requirements : ['Digital Marketing', 'Growth']),
-          hrEmail: j.hr_email || 'careers@cbmacademy.in',
-        }));
-        setJobsList(mapped);
-      }
+      const genuineJobs = Array.isArray(liveJobs)
+        ? liveJobs.filter((j) => !isDemoJob(j))
+        : [];
+      const mapped = genuineJobs.map((j) => ({
+        id: j.id,
+        role: j.job_title || j.title || 'Digital Marketing Specialist',
+        companyCategory: j.company_name || j.company || 'Hiring Partner',
+        location: j.location || 'Delhi NCR',
+        isRemote: Boolean(j.is_remote || String(j.location || '').toLowerCase().includes('remote')),
+        type: j.work_type || j.type || 'Full-time',
+        salary: j.salary || 'Best in Industry',
+        experience: j.experience || '0-2 Years',
+        postedDaysAgo: Math.max(
+          1,
+          Math.floor((Date.now() - new Date(j.created_at || j.posted_date || Date.now()).getTime()) / (1000 * 60 * 60 * 24))
+        ),
+        skills: Array.isArray(j.skills) && j.skills.length > 0 ? j.skills : (Array.isArray(j.requirements) && j.requirements.length > 0 ? j.requirements : ['Digital Marketing', 'Growth']),
+        hrEmail: j.hr_email || 'careers@cbmacademy.in',
+      }));
+      setJobsList(mapped);
     }).catch(() => {
-      // Gracefully maintain JOB_OPPORTUNITIES on network error
+      setJobsList([]);
     });
   }, []);
 
@@ -269,7 +274,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({
 
                 </div>
 
-                {/* Demo HR Email */}
+                {/* HR Email */}
                 <div className="flex items-center gap-2 rounded-lg bg-orange-50 border border-orange-100 px-3 py-2">
 
                   <Mail className="w-4 h-4 text-[#FF6B00] shrink-0" />
@@ -277,7 +282,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({
                   <div className="min-w-0">
 
                     <p className="text-[9px] font-bold uppercase tracking-wider text-orange-600">
-                      Demo HR Email
+                      HR Email
                     </p>
 
                     <p className="text-[11px] font-semibold text-[#072B57] truncate">
