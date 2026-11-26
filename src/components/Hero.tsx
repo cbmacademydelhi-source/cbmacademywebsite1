@@ -11,7 +11,7 @@ interface HeroProps {
 const HERO_VIDEO_URL =
   'https://ik.imagekit.io/jhnyo0yy5/Academy%20LOW%20BIT.mp4';
 const HERO_POSTER_URL =
-  'https://ik.imagekit.io/jhnyo0yy5/Academy%20LOW%20BIT.mp4/ik-thumbnail.jpg?tr=so-1,w-1080,q-80';
+  'https://ik.imagekit.io/jhnyo0yy5/Academy%20LOW%20BIT.mp4/ik-thumbnail.jpg';
 const HERO_FALLBACK_POSTER_URL =
   'https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1200&auto=format&fit=crop';
 
@@ -53,6 +53,7 @@ export const Hero: React.FC<HeroProps> = ({
     if (playPromise && typeof playPromise.then === 'function') {
       playPromise
         .then(() => {
+          setHasStarted(true);
           setIsPlaying(true);
           setShowFallbackPlay(false);
         })
@@ -142,6 +143,9 @@ export const Hero: React.FC<HeroProps> = ({
 
   const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const { currentTime, duration } = e.currentTarget;
+    if (currentTime > 0) {
+      setHasStarted(true);
+    }
     if (duration && Number.isFinite(duration) && duration > 0) {
       setProgressPercent(Math.min(100, Math.max(0, (currentTime / duration) * 100)));
     }
@@ -160,6 +164,7 @@ export const Hero: React.FC<HeroProps> = ({
     if (playPromise && typeof playPromise.then === 'function') {
       playPromise
         .then(() => {
+          setHasStarted(true);
           setIsPlaying(true);
           setShowFallbackPlay(false);
         })
@@ -169,6 +174,7 @@ export const Hero: React.FC<HeroProps> = ({
           video
             .play()
             .then(() => {
+              setHasStarted(true);
               setIsPlaying(true);
               setShowFallbackPlay(false);
             })
@@ -386,8 +392,8 @@ export const Hero: React.FC<HeroProps> = ({
                   decoding="async"
                   fetchPriority="high"
                   aria-hidden={hasStarted}
-                  className={`absolute inset-0 w-full h-full object-contain object-center transition-opacity duration-500 ${
-                    hasStarted ? 'opacity-0 pointer-events-none' : 'opacity-100'
+                  className={`absolute inset-0 z-10 w-full h-full object-contain object-center pointer-events-none transition-opacity duration-500 ${
+                    hasStarted ? 'opacity-0' : 'opacity-100'
                   }`}
                 />
 
@@ -401,10 +407,11 @@ export const Hero: React.FC<HeroProps> = ({
                   loop
                   playsInline
                   controls={false}
-                  preload={shouldReduceMotion ? 'none' : 'metadata'}
+                  preload={shouldReduceMotion ? 'none' : 'auto'}
                   disablePictureInPicture
                   disableRemotePlayback
                   onLoadedMetadata={handleLoadedMetadata}
+                  onLoadedData={() => setHasStarted(true)}
                   onTimeUpdate={handleTimeUpdate}
                   onPlaying={() => {
                     setHasStarted(true);
@@ -413,9 +420,7 @@ export const Hero: React.FC<HeroProps> = ({
                   }}
                   onPause={() => setIsPlaying(false)}
                   onClick={handleTogglePlayPause}
-                  className={`relative z-10 block w-full h-full object-contain object-center cursor-pointer transition-opacity duration-500 ${
-                    hasStarted ? 'opacity-100' : 'opacity-0'
-                  }`}
+                  className="relative z-0 block w-full h-full object-contain object-center cursor-pointer"
                 />
 
                 {/* Graceful fallback overlay when autoplay is restricted or reduced motion is enabled */}
