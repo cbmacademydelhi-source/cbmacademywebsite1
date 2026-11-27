@@ -97,8 +97,8 @@ export const HowWeTeachSection: React.FC<HowWeTeachSectionProps> = () => {
             {/* 2. Main heading */}
             <div className="relative mb-6">
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.12]">
-                <span className="block text-[#172E59]">Learn Skills. Build Projects.</span>
-                <span className="block text-[#F4772B]">Grow Your Career.</span>
+                <span className="block text-[#172E59]">Learn New Skills Through{' '}</span>
+                <span className="block text-[#F4772B]">Practice, Projects, and Guidance.</span>
               </h2>
             </div>
 
