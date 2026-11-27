@@ -33,6 +33,16 @@ const DEFAULT_WEBINAR_POSTER =
   'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&q=80&w=1200';
 const ACCEPTED_IMAGE_TYPES = 'image/png,image/jpeg,image/webp,image/gif';
 
+const TIME_SLOT_OPTIONS: string[] = Array.from({ length: 24 * 4 }, (_, index) => {
+  const totalMinutes = index * 15;
+  const hour24 = Math.floor(totalMinutes / 60);
+  const minute = totalMinutes % 60;
+  const period = hour24 < 12 ? 'AM' : 'PM';
+  const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
+  const minuteStr = String(minute).padStart(2, '0');
+  return `${hour12}:${minuteStr} ${period} IST`;
+});
+
 export const AdminWebinars: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'sessions' | 'registrations'>('sessions');
   const [webinars, setWebinars] = useState<Webinar[]>([]);
@@ -603,14 +613,24 @@ export const AdminWebinars: React.FC = () => {
                 </div>
                 <div>
                   <label className="font-semibold text-slate-700 block mb-1">Time *</label>
-                  <input
-                    type="text"
+                  <select
                     required
                     value={editWebinar.time || ''}
                     onChange={(e) => setEditWebinar({ ...editWebinar, time: e.target.value })}
-                    placeholder="11:00 AM IST"
-                    className="w-full p-2 border border-slate-200 rounded-lg"
-                  />
+                    className="w-full p-2 border border-slate-200 rounded-lg bg-white"
+                  >
+                    <option value="" disabled>
+                      Select time slot
+                    </option>
+                    {editWebinar.time && !TIME_SLOT_OPTIONS.includes(editWebinar.time) && (
+                      <option value={editWebinar.time}>{editWebinar.time}</option>
+                    )}
+                    {TIME_SLOT_OPTIONS.map((slot) => (
+                      <option key={slot} value={slot}>
+                        {slot}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
 

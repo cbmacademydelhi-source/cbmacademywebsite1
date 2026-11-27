@@ -7,9 +7,7 @@ interface ContactProps {
   isStandalonePage?: boolean;
 }
 
-export const Contact: React.FC<ContactProps> = ({
-  isStandalonePage = false,
-}) => {
+export const Contact: React.FC<ContactProps> = () => {
   const shouldReduceMotion = useReducedMotion();
 
   return (
@@ -21,27 +19,6 @@ export const Contact: React.FC<ContactProps> = ({
         
         {/* Section Header */}
         <div className="max-w-3xl mx-auto text-center space-y-3 mb-10 sm:mb-12">
-          {isStandalonePage ? (
-            <motion.h1
-              initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={VIEWPORT_ONCE}
-              transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
-              className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#072B57] tracking-tight"
-            >
-              Get in Touch with CBM Academy
-            </motion.h1>
-          ) : (
-            <motion.h2
-              initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={VIEWPORT_ONCE}
-              transition={{ duration: 0.6, delay: 0.08, ease: SMOOTH_EASE_OUT }}
-              className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#072B57] tracking-tight"
-            >
-              Get in Touch with CBM Academy
-            </motion.h2>
-          )}
           <motion.p
             initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -167,16 +144,18 @@ export const Contact: React.FC<ContactProps> = ({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={VIEWPORT_ONCE}
             transition={{ duration: 0.6, delay: 0.16, ease: SMOOTH_EASE_OUT }}
-            className="lg:col-span-6"
+            className="lg:col-span-6 flex flex-col"
           >
-            <div className="h-full min-h-[360px] lg:min-h-full rounded-[20px] overflow-hidden border border-orange-200/80 shadow-sm bg-white relative">
+            <div className="w-full h-[360px] sm:h-[420px] lg:h-full lg:min-h-[420px] rounded-[20px] overflow-hidden border border-orange-200/80 shadow-sm bg-white relative">
               <iframe
                 title="CBM Academy Delhi Location"
-               src="https://www.google.com/maps?q=CBM+Academy+-+AI+Integrated+Digital+Marketing+Institute&output=embed"
+                src="https://www.google.com/maps?q=CBM+Academy+-+AI+Integrated+Digital+Marketing+Institute&output=embed"
+                className="absolute inset-0 w-full h-full border-0 block"
                 loading="lazy"
+                allowFullScreen
                 referrerPolicy="no-referrer-when-downgrade"
               />
-              <div className="absolute bottom-3 left-3 bg-[#072B57]/90 backdrop-blur-xs px-3.5 py-1.5 rounded-lg text-xs font-bold text-white shadow-md">
+              <div className="absolute bottom-3 left-3 z-10 bg-[#072B57]/90 backdrop-blur-xs px-3.5 py-1.5 rounded-lg text-xs font-bold text-white shadow-md">
                📍 E-111, Hari Kothi, Abul Fazal Enclave, Okhla, New Delhi 110025
               </div>
             </div>

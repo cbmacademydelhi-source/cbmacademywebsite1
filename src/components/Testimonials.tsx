@@ -408,20 +408,10 @@ export const Testimonials: React.FC = () => {
           transition={{ duration: 0.4, ease: SMOOTH_EASE_OUT }}
           className="text-center max-w-2xl mx-auto mb-6 sm:mb-7"
         >
-          {/* Small orange eyebrow text */}
-          <p className="text-xs font-bold tracking-wider uppercase text-[#FF6B00]">
-            WHAT OUR STUDENTS SAY
-          </p>
-
           {/* Main heading */}
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#072B57] tracking-tight mt-1.5">
-            Real Learning. Real Growth.
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#072B57] tracking-tight">
+            Hear It From Our Students
           </h2>
-
-          {/* Short description */}
-          <p className="text-xs sm:text-sm text-[#64748B] mt-1.5 leading-relaxed">
-            Hear from learners who are building practical digital marketing skills with CBM Academy.
-          </p>
         </motion.div>
 
         {/* COMPACT HORIZONTAL CAROUSEL CONTAINER */}
