@@ -1215,7 +1215,7 @@ app.get('/api/webinars/registrations', requireAdminAuth, async (req, res) => {
  */
 app.post('/api/webinars/update', requireAdminAuth, async (req, res) => {
   try {
-    const { id, title, description, start_datetime, duration_minutes, price, capacity, status, meeting_url, whatsapp_group_url, thumbnail_url } = req.body;
+    const { id, title, description, date, display_date, display_time, start_datetime, duration_minutes, price, capacity, status, meeting_url, whatsapp_group_url, thumbnail_url } = req.body;
     if (!id) {
       return res.status(400).json({ success: false, message: 'Webinar ID required' });
     }
@@ -1229,12 +1229,22 @@ app.post('/api/webinars/update', requireAdminAuth, async (req, res) => {
           : undefined
         : undefined;
 
+    const normalizedDate =
+      date === null || date === ''
+        ? null
+        : typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date.trim())
+        ? date.trim()
+        : undefined;
+
     const updated = await updateWebinarDetails(
       id,
       {
         title,
         description,
-        start_datetime,
+        date: normalizedDate,
+        display_date: display_date === '' ? null : display_date,
+        display_time: display_time === '' ? null : display_time,
+        start_datetime: start_datetime === '' ? null : start_datetime,
         duration_minutes: duration_minutes ? Number(duration_minutes) : undefined,
         price: price !== undefined ? Number(price) : undefined,
         capacity: capacity ? Number(capacity) : undefined,
@@ -1631,6 +1641,7 @@ app.post('/api/webinars/create', requireAdminAuth, async (req, res) => {
       id,
       title,
       description,
+      date,
       start_datetime,
       duration_minutes,
       price,
@@ -1654,12 +1665,18 @@ app.post('/api/webinars/create', requireAdminAuth, async (req, res) => {
         ? cleanThumb
         : null;
 
+    const normalizedDate =
+      typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date.trim())
+        ? date.trim()
+        : null;
+
     const result = await createWebinar(
       {
         ...(typeof id === 'string' && id.trim() ? { id: id.trim() } : {}),
         title: title.trim(),
         description: description?.trim() || '',
-        start_datetime: start_datetime || new Date().toISOString(),
+        date: normalizedDate,
+        start_datetime: start_datetime || null,
         duration_minutes: duration_minutes ? Number(duration_minutes) : 60,
         price: price !== undefined ? Number(price) : 0,
         capacity: capacity ? Number(capacity) : 100,

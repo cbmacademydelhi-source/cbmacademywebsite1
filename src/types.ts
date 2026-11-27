@@ -117,6 +117,8 @@ export interface Webinar {
   id: string;
   title: string;
   description: string;
+  introduction?: string;
+  whatYouWillExplore?: string[];
   posterUrl: string;
   type: WebinarType;
   price?: number | string;
@@ -132,7 +134,7 @@ export interface Webinar {
   current_registrations?: number;
   createdAt: string;
   publishedAt?: string;
-  start_datetime?: string;
+  start_datetime?: string | null;
   timezone?: string;
   duration_minutes?: number;
   registration_deadline?: string;

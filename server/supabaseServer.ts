@@ -151,7 +151,10 @@ export interface ServerWebinarRecord {
   id: string;
   title: string;
   description?: string;
-  start_datetime: string;
+  date?: string | null;
+  display_date?: string | null;
+  display_time?: string | null;
+  start_datetime: string | null;
   timezone: string;
   duration_minutes: number;
   price: number;
@@ -651,12 +654,30 @@ export async function updateWebinarDetails(
   const supabase = getSupabaseForRequest(authToken);
   if (supabase) {
     try {
-      const { data, error } = await supabase
-        .from('webinars')
-        .update(cleanUpdates)
-        .eq('id', id)
-        .select()
-        .maybeSingle();
+      const runUpdate = async (payload: Record<string, any>) =>
+        supabase
+          .from('webinars')
+          .update(payload)
+          .eq('id', id)
+          .select()
+          .maybeSingle();
+
+      let payload: Record<string, any> = { ...cleanUpdates };
+      let { data, error } = await runUpdate(payload);
+
+      if (error && (error.code === 'PGRST204' || error.code === '42703' || /column/i.test(error.message || ''))) {
+        const stripped = { ...payload };
+        delete stripped.display_date;
+        delete stripped.display_time;
+        ({ data, error } = await runUpdate(stripped));
+        payload = stripped;
+      }
+
+      if (error && error.code === '23502' && /start_datetime/i.test(error.message || '') && payload.start_datetime === null) {
+        const withoutStart = { ...payload };
+        delete withoutStart.start_datetime;
+        ({ data, error } = await runUpdate(withoutStart));
+      }
 
       if (!error && data) {
         const inMem = memoryWebinars.find((w) => w.id === id);
@@ -694,11 +715,17 @@ export async function createWebinar(
   const newId = data.id || `webinar-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
   const nowIso = new Date().toISOString();
 
+  const cleanDate =
+    typeof data.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(data.date.trim())
+      ? data.date.trim()
+      : null;
+
   const newWebinar: ServerWebinarRecord = {
     id: newId,
     title: (data.title || 'Untitled Webinar').trim(),
     description: (data.description || '').trim(),
-    start_datetime: data.start_datetime || nowIso,
+    date: cleanDate,
+    start_datetime: data.start_datetime ?? null,
     timezone: data.timezone || 'Asia/Kolkata',
     duration_minutes: data.duration_minutes ? Number(data.duration_minutes) : 60,
     price: data.price !== undefined ? Number(data.price) : 0,
@@ -713,11 +740,31 @@ export async function createWebinar(
   const supabase = getSupabaseForRequest(authToken);
   if (supabase) {
     try {
-      const { data: dbData, error } = await supabase
-        .from('webinars')
-        .upsert([newWebinar], { onConflict: 'id' })
-        .select()
-        .single();
+      const runUpsert = async (payload: Record<string, any>) =>
+        supabase
+          .from('webinars')
+          .upsert([payload], { onConflict: 'id' })
+          .select()
+          .single();
+
+      let payload: Record<string, any> = { ...newWebinar };
+      let { data: dbData, error } = await runUpsert(payload);
+
+      if (error && (error.code === 'PGRST204' || error.code === '42703' || /column/i.test(error.message || ''))) {
+        const stripped = { ...payload };
+        delete stripped.date;
+        ({ data: dbData, error } = await runUpsert(stripped));
+        payload = stripped;
+      }
+
+      if (error && error.code === '23502' && /start_datetime/i.test(error.message || '') && payload.start_datetime === null) {
+        const withoutStart = { ...payload };
+        delete withoutStart.start_datetime;
+        ({ data: dbData, error } = await runUpsert(withoutStart));
+        if (error && error.code === '23502' && /start_datetime/i.test(error.message || '')) {
+          ({ data: dbData, error } = await runUpsert({ ...payload, start_datetime: nowIso }));
+        }
+      }
 
       if (!error && dbData) {
         const idx = memoryWebinars.findIndex((w) => w.id === dbData.id);

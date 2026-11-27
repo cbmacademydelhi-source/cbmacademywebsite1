@@ -14,6 +14,8 @@ import {
   Upload,
   Image as ImageIcon,
   RefreshCw,
+  ArrowUp,
+  ArrowDown,
 } from 'lucide-react';
 import { Webinar } from '../../types';
 import {
@@ -28,6 +30,11 @@ import {
 import { AdminWebinarRegistrations } from './AdminWebinarRegistrations';
 import { getAdminToken, uploadWebinarImageFile } from '../../services/adminService';
 import { useScrollLock } from '../../utils/useScrollLock';
+import {
+  parseWebinarContent,
+  composeStructuredDescription,
+  splitExploreTopic,
+} from '../../utils/webinarContent';
 
 const DEFAULT_WEBINAR_POSTER =
   'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&q=80&w=1200';
@@ -51,6 +58,8 @@ export const AdminWebinars: React.FC = () => {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [saving, setSaving] = useState(false);
   const [imageUploadError, setImageUploadError] = useState<string | null>(null);
+  const [newExploreTopic, setNewExploreTopic] = useState('');
+  const [newTakeaway, setNewTakeaway] = useState('');
   const imageInputRef = useRef<HTMLInputElement>(null);
 
   useScrollLock(Boolean(selectedWebinar || editWebinar));
@@ -83,15 +92,103 @@ export const AdminWebinars: React.FC = () => {
   }, []);
 
   const openEditModal = (webinarDraft: Partial<Webinar>) => {
+    const parsed = parseWebinarContent(
+      webinarDraft.description,
+      webinarDraft.whatYouWillExplore,
+      webinarDraft.whatYouWillLearn
+    );
     setImageUploadError(null);
     setUploadingImage(false);
-    setEditWebinar(webinarDraft);
+    setNewExploreTopic('');
+    setNewTakeaway('');
+    setEditWebinar({
+      ...webinarDraft,
+      introduction:
+        typeof webinarDraft.introduction === 'string'
+          ? webinarDraft.introduction
+          : parsed.introduction,
+      whatYouWillExplore: Array.isArray(webinarDraft.whatYouWillExplore)
+        ? webinarDraft.whatYouWillExplore
+        : parsed.whatYouWillExplore,
+      whatYouWillLearn: Array.isArray(webinarDraft.whatYouWillLearn)
+        ? webinarDraft.whatYouWillLearn
+        : parsed.keyTakeaways,
+    });
   };
 
   const closeEditModal = () => {
     setEditWebinar(null);
     setImageUploadError(null);
     setUploadingImage(false);
+    setNewExploreTopic('');
+    setNewTakeaway('');
+  };
+
+  const handleAddExploreTopic = () => {
+    const trimmed = newExploreTopic.trim();
+    if (!trimmed) return;
+    setEditWebinar((curr) =>
+      curr
+        ? { ...curr, whatYouWillExplore: [...(curr.whatYouWillExplore || []), trimmed] }
+        : curr
+    );
+    setNewExploreTopic('');
+  };
+
+  const handleUpdateExploreTopic = (index: number, value: string) => {
+    setEditWebinar((curr) => {
+      if (!curr) return curr;
+      const next = [...(curr.whatYouWillExplore || [])];
+      next[index] = value;
+      return { ...curr, whatYouWillExplore: next };
+    });
+  };
+
+  const handleMoveExploreTopic = (index: number, direction: -1 | 1) => {
+    setEditWebinar((curr) => {
+      if (!curr) return curr;
+      const list = [...(curr.whatYouWillExplore || [])];
+      const target = index + direction;
+      if (target < 0 || target >= list.length) return curr;
+      [list[index], list[target]] = [list[target], list[index]];
+      return { ...curr, whatYouWillExplore: list };
+    });
+  };
+
+  const handleRemoveExploreTopic = (index: number) => {
+    setEditWebinar((curr) => {
+      if (!curr) return curr;
+      const next = (curr.whatYouWillExplore || []).filter((_, i) => i !== index);
+      return { ...curr, whatYouWillExplore: next };
+    });
+  };
+
+  const handleAddTakeaway = () => {
+    const trimmed = newTakeaway.trim();
+    if (!trimmed) return;
+    setEditWebinar((curr) =>
+      curr
+        ? { ...curr, whatYouWillLearn: [...(curr.whatYouWillLearn || []), trimmed] }
+        : curr
+    );
+    setNewTakeaway('');
+  };
+
+  const handleUpdateTakeaway = (index: number, value: string) => {
+    setEditWebinar((curr) => {
+      if (!curr) return curr;
+      const next = [...(curr.whatYouWillLearn || [])];
+      next[index] = value;
+      return { ...curr, whatYouWillLearn: next };
+    });
+  };
+
+  const handleRemoveTakeaway = (index: number) => {
+    setEditWebinar((curr) => {
+      if (!curr) return curr;
+      const next = (curr.whatYouWillLearn || []).filter((_, i) => i !== index);
+      return { ...curr, whatYouWillLearn: next };
+    });
   };
 
   const handleTriggerImagePicker = () => {
@@ -147,32 +244,60 @@ export const AdminWebinars: React.FC = () => {
     e.preventDefault();
     if (uploadingImage || saving) return;
 
-    if (!editWebinar || !editWebinar.title || !editWebinar.date || !editWebinar.time) {
-      showToast('error', 'Title, date, and time are required.');
+    if (!editWebinar || !editWebinar.title || !editWebinar.time) {
+      showToast('error', 'Title and time are required.');
       return;
     }
+
+    const normalizedDate = typeof editWebinar.date === 'string' ? editWebinar.date.trim() : '';
+    const cleanIntro = (editWebinar.introduction || '').trim();
+    const pendingExplore = newExploreTopic.trim();
+    const cleanExplore = [
+      ...(Array.isArray(editWebinar.whatYouWillExplore) ? editWebinar.whatYouWillExplore : []),
+      ...(pendingExplore ? [pendingExplore] : []),
+    ]
+      .map((item) => item.trim())
+      .filter(Boolean);
+
+    const pendingTakeaway = newTakeaway.trim();
+    const cleanTakeaways = [
+      ...(Array.isArray(editWebinar.whatYouWillLearn)
+        ? editWebinar.whatYouWillLearn
+        : typeof editWebinar.whatYouWillLearn === 'string'
+        ? (editWebinar.whatYouWillLearn as string).split('\n')
+        : []),
+      ...(pendingTakeaway ? [pendingTakeaway] : []),
+    ]
+      .map((item) => item.trim())
+      .filter(Boolean);
+
+    const composedDescription = composeStructuredDescription(
+      cleanIntro,
+      cleanExplore,
+      cleanTakeaways,
+      true
+    );
 
     const payload: Omit<Webinar, 'id' | 'createdAt'> & { id?: string } = {
       ...(editWebinar.id ? { id: editWebinar.id } : {}),
       title: editWebinar.title.trim(),
-      description: editWebinar.description || '',
+      description: composedDescription,
+      introduction: cleanIntro,
+      whatYouWillExplore: cleanExplore,
       posterUrl: editWebinar.posterUrl?.trim() || DEFAULT_WEBINAR_POSTER,
       type: editWebinar.type || 'free',
       price: editWebinar.price || undefined,
-      date: editWebinar.date,
+      date: normalizedDate,
       time: editWebinar.time,
       duration: editWebinar.duration || '60 Minutes',
       host: editWebinar.host || 'CBM Academy Expert Mentor',
-      whatYouWillLearn: Array.isArray(editWebinar.whatYouWillLearn)
-        ? editWebinar.whatYouWillLearn
-        : typeof editWebinar.whatYouWillLearn === 'string'
-        ? (editWebinar.whatYouWillLearn as string).split('\n').filter(Boolean)
-        : [],
+      whatYouWillLearn: cleanTakeaways,
       registrationLink: editWebinar.registrationLink || '',
       capacity: editWebinar.capacity || 100,
       current_registrations: editWebinar.current_registrations || 0,
       status: editWebinar.status || 'published',
       publishedAt: editWebinar.publishedAt,
+      start_datetime: normalizedDate ? undefined : null,
     };
 
     setSaving(true);
@@ -262,9 +387,11 @@ export const AdminWebinars: React.FC = () => {
                 openEditModal({
                   title: '',
                   description: '',
+                  introduction: '',
+                  whatYouWillExplore: [],
                   posterUrl: '',
                   type: 'free',
-                  date: new Date().toISOString().slice(0, 10),
+                  date: '',
                   time: '11:00 AM IST',
                   duration: '60 Minutes',
                   host: 'Lead Growth Marketer, CBM Academy',
@@ -329,7 +456,7 @@ export const AdminWebinars: React.FC = () => {
                           <div className="min-w-0">
                             <div className="font-semibold text-slate-900 line-clamp-1">{w.title}</div>
                             <div className="text-xs text-slate-400 line-clamp-1 mt-0.5">
-                              {w.description || 'Interactive live masterclass'}
+                              {w.introduction || w.description || 'Interactive live masterclass'}
                             </div>
                           </div>
                         </div>
@@ -337,7 +464,7 @@ export const AdminWebinars: React.FC = () => {
                       <td className="px-6 py-4 text-xs whitespace-nowrap">
                         <div className="flex items-center gap-1.5 text-slate-700 font-medium">
                           <Calendar className="w-3.5 h-3.5 text-[#072B57]" />
-                          {w.date}
+                          {w.date || 'Date TBA'}
                         </div>
                         <div className="flex items-center gap-1.5 text-slate-500 mt-0.5">
                           <Clock className="w-3.5 h-3.5 text-slate-400" />
@@ -435,36 +562,83 @@ export const AdminWebinars: React.FC = () => {
                   />
                 </div>
               )}
-              <h3 className="text-base font-bold text-slate-900">{selectedWebinar.title}</h3>
-              <p className="text-slate-600 leading-relaxed">{selectedWebinar.description}</p>
-              <div className="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
-                <div>
-                  <span className="text-slate-400 block text-[10px]">Date</span>
-                  <span className="font-semibold text-slate-800">{selectedWebinar.date}</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block text-[10px]">Time & Duration</span>
-                  <span className="font-semibold text-slate-800">{selectedWebinar.time} ({selectedWebinar.duration})</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block text-[10px]">Host</span>
-                  <span className="font-semibold text-slate-800">{selectedWebinar.host}</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block text-[10px]">Seats / Capacity</span>
-                  <span className="font-semibold text-slate-800">{selectedWebinar.capacity || 'Unlimited'}</span>
-                </div>
-              </div>
-              {Array.isArray(selectedWebinar.whatYouWillLearn) && selectedWebinar.whatYouWillLearn.length > 0 && (
-                <div>
-                  <span className="font-semibold text-slate-700 block mb-1">Key Takeaways:</span>
-                  <ul className="list-disc pl-4 space-y-0.5 text-slate-600">
-                    {selectedWebinar.whatYouWillLearn.map((pt, i) => (
-                      <li key={i}>{pt}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+              {(() => {
+                const parsedPreview = parseWebinarContent(
+                  selectedWebinar.description,
+                  selectedWebinar.whatYouWillExplore,
+                  selectedWebinar.whatYouWillLearn
+                );
+                const previewIntro = selectedWebinar.introduction ?? parsedPreview.introduction;
+                const previewExplore =
+                  selectedWebinar.whatYouWillExplore && selectedWebinar.whatYouWillExplore.length > 0
+                    ? selectedWebinar.whatYouWillExplore
+                    : parsedPreview.whatYouWillExplore;
+                const previewTakeaways =
+                  selectedWebinar.whatYouWillLearn && selectedWebinar.whatYouWillLearn.length > 0
+                    ? selectedWebinar.whatYouWillLearn
+                    : parsedPreview.keyTakeaways;
+
+                return (
+                  <>
+                    <h3 className="text-base font-bold text-slate-900">{selectedWebinar.title}</h3>
+                    {previewIntro && (
+                      <div>
+                        <span className="font-semibold text-slate-700 block mb-1">Introduction</span>
+                        <p className="text-slate-600 leading-relaxed whitespace-pre-line">{previewIntro}</p>
+                      </div>
+                    )}
+                    <div className="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                      <div>
+                        <span className="text-slate-400 block text-[10px]">Date</span>
+                        <span className="font-semibold text-slate-800">{selectedWebinar.date || 'Date TBA'}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 block text-[10px]">Time & Duration</span>
+                        <span className="font-semibold text-slate-800">{selectedWebinar.time} ({selectedWebinar.duration})</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 block text-[10px]">Host</span>
+                        <span className="font-semibold text-slate-800">{selectedWebinar.host}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 block text-[10px]">Seats / Capacity</span>
+                        <span className="font-semibold text-slate-800">{selectedWebinar.capacity || 'Unlimited'}</span>
+                      </div>
+                    </div>
+                    {previewExplore.length > 0 && (
+                      <div>
+                        <span className="font-semibold text-slate-700 block mb-1.5">What You&apos;ll Explore</span>
+                        <ol className="space-y-1.5 text-slate-600">
+                          {previewExplore.map((topic, i) => {
+                            const { label, detail } = splitExploreTopic(topic);
+                            return (
+                              <li key={i} className="flex items-start gap-2">
+                                <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-orange-50 text-[#FF6B00] font-bold text-[10px] shrink-0 mt-0.5">
+                                  {i + 1}
+                                </span>
+                                <span className="leading-relaxed">
+                                  <span className="font-semibold text-slate-800">{label}</span>
+                                  {detail ? ` — ${detail}` : ''}
+                                </span>
+                              </li>
+                            );
+                          })}
+                        </ol>
+                      </div>
+                    )}
+                    {previewTakeaways.length > 0 && (
+                      <div>
+                        <span className="font-semibold text-slate-700 block mb-1.5">Key Takeaways</span>
+                        <ul className="list-disc pl-4 space-y-1 text-slate-600">
+                          {previewTakeaways.map((pt, i) => (
+                            <li key={i}>{pt}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
             </div>
           </div>
         </div>
@@ -503,15 +677,163 @@ export const AdminWebinars: React.FC = () => {
                 />
               </div>
 
-              <div>
-                <label className="font-semibold text-slate-700 block mb-1">Description *</label>
-                <textarea
-                  rows={3}
-                  value={editWebinar.description || ''}
-                  onChange={(e) => setEditWebinar({ ...editWebinar, description: e.target.value })}
-                  placeholder="Brief synopsis of what will be covered..."
-                  className="w-full p-2.5 border border-slate-200 rounded-lg"
-                />
+              {/* Description: 1) Short Masterclass Introduction + 2) What You'll Explore */}
+              <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50/60 p-3.5">
+                <div>
+                  <label className="font-semibold text-slate-700 block mb-1">
+                    Masterclass Introduction
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={editWebinar.introduction || ''}
+                    onChange={(e) =>
+                      setEditWebinar({ ...editWebinar, introduction: e.target.value })
+                    }
+                    placeholder="Write a short introduction to this masterclass and who it is for..."
+                    className="w-full p-2.5 border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#072B57]"
+                  />
+                </div>
+
+                <div className="pt-2 border-t border-slate-200/80">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="font-semibold text-slate-700">
+                      What You&apos;ll Explore
+                    </label>
+                    <span className="text-[11px] text-slate-400">
+                      Arrange topics in a clear learning sequence
+                    </span>
+                  </div>
+
+                  {(editWebinar.whatYouWillExplore || []).length > 0 && (
+                    <div className="space-y-1.5 mb-2">
+                      {(editWebinar.whatYouWillExplore || []).map((topic, index) => (
+                        <div key={index} className="flex items-center gap-1.5">
+                          <span className="w-5 h-5 rounded-md bg-orange-50 border border-orange-200 text-[#FF6B00] font-bold text-[10px] flex items-center justify-center shrink-0">
+                            {index + 1}
+                          </span>
+                          <input
+                            type="text"
+                            value={topic}
+                            onChange={(e) => handleUpdateExploreTopic(index, e.target.value)}
+                            placeholder="e.g. ChatGPT – AI prompting, content creation and brainstorming"
+                            className="flex-1 p-2 border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#072B57]"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleMoveExploreTopic(index, -1)}
+                            disabled={index === 0}
+                            title="Move up"
+                            className="p-1.5 text-slate-400 hover:text-[#072B57] hover:bg-slate-100 rounded-lg transition cursor-pointer disabled:opacity-30"
+                          >
+                            <ArrowUp className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleMoveExploreTopic(index, 1)}
+                            disabled={index === (editWebinar.whatYouWillExplore || []).length - 1}
+                            title="Move down"
+                            className="p-1.5 text-slate-400 hover:text-[#072B57] hover:bg-slate-100 rounded-lg transition cursor-pointer disabled:opacity-30"
+                          >
+                            <ArrowDown className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveExploreTopic(index)}
+                            title="Remove topic"
+                            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="text"
+                      value={newExploreTopic}
+                      onChange={(e) => setNewExploreTopic(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleAddExploreTopic();
+                        }
+                      }}
+                      placeholder="Add topic (e.g. ChatGPT – AI prompting and content creation)"
+                      className="flex-1 p-2 border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#072B57]"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddExploreTopic}
+                      className="inline-flex items-center gap-1 px-3 py-2 rounded-lg bg-[#072B57] hover:bg-[#0A3D78] text-white text-[11px] font-semibold transition cursor-pointer shrink-0"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Add Topic</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Key Takeaways: Editable Multiple Bullet Points */}
+              <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3.5 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="font-semibold text-slate-700">
+                    Key Takeaways
+                  </label>
+                  <span className="text-[11px] text-slate-400">
+                    Add, edit or remove bullet points
+                  </span>
+                </div>
+
+                {(editWebinar.whatYouWillLearn || []).length > 0 && (
+                  <div className="space-y-1.5">
+                    {(editWebinar.whatYouWillLearn || []).map((point, index) => (
+                      <div key={index} className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 ml-1" />
+                        <input
+                          type="text"
+                          value={point}
+                          onChange={(e) => handleUpdateTakeaway(index, e.target.value)}
+                          placeholder="Enter key takeaway..."
+                          className="flex-1 p-2 border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#072B57]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveTakeaway(index)}
+                          title="Remove takeaway"
+                          className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex items-center gap-1.5">
+                  <input
+                    type="text"
+                    value={newTakeaway}
+                    onChange={(e) => setNewTakeaway(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddTakeaway();
+                      }
+                    }}
+                    placeholder="Add a key takeaway bullet point..."
+                    className="flex-1 p-2 border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#072B57]"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddTakeaway}
+                    className="inline-flex items-center gap-1 px-3 py-2 rounded-lg bg-[#FF6B00] hover:bg-[#E05E00] text-white text-[11px] font-semibold transition cursor-pointer shrink-0"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Bullet</span>
+                  </button>
+                </div>
               </div>
 
               {/* Webinar Cover / Poster Image Upload */}
@@ -602,11 +924,14 @@ export const AdminWebinars: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-semibold text-slate-700 block mb-1">Date *</label>
+                  <label className="font-semibold text-slate-700 block mb-1">Date (Optional)</label>
                   <input
                     type="date"
-                    required
-                    value={editWebinar.date || ''}
+                    value={
+                      editWebinar.date && /^\d{4}-\d{2}-\d{2}$/.test(editWebinar.date)
+                        ? editWebinar.date
+                        : ''
+                    }
                     onChange={(e) => setEditWebinar({ ...editWebinar, date: e.target.value })}
                     className="w-full p-2 border border-slate-200 rounded-lg"
                   />

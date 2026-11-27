@@ -2,6 +2,7 @@ import React from 'react';
 import { X, Calendar, Clock, Timer, UserCheck, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Webinar } from '../../types';
 import { useScrollLock } from '../../utils/useScrollLock';
+import { parseWebinarContent, splitExploreTopic } from '../../utils/webinarContent';
 
 interface WebinarDetailsModalProps {
   webinar: Webinar | null;
@@ -143,11 +144,13 @@ export const WebinarDetailsModal: React.FC<WebinarDetailsModalProps> = ({
             <div className="relative z-10 mt-24 md:mt-auto space-y-3 pt-6 border-t border-white/10 text-white text-xs">
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-[#FF6B00]" />
-                <span className="text-slate-200">{webinar.date}</span>
+                <span className="text-slate-200">{webinar.date || 'Date TBA'}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4 text-[#FF6B00]" />
-                <span className="text-slate-200">{webinar.time} IST</span>
+                <span className="text-slate-200">
+                  {/\bIST\b/i.test(webinar.time || '') ? webinar.time : `${webinar.time} IST`}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <Timer className="h-4 w-4 text-[#FF6B00]" />
@@ -181,26 +184,80 @@ export const WebinarDetailsModal: React.FC<WebinarDetailsModalProps> = ({
                 {webinar.title}
               </h2>
 
-              <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed">
-                {webinar.description}
-              </p>
+              {(() => {
+                const parsed = parseWebinarContent(
+                  webinar.description,
+                  webinar.whatYouWillExplore,
+                  webinar.whatYouWillLearn
+                );
+                const introText = webinar.introduction ?? parsed.introduction;
+                const exploreTopics =
+                  webinar.whatYouWillExplore && webinar.whatYouWillExplore.length > 0
+                    ? webinar.whatYouWillExplore
+                    : parsed.whatYouWillExplore;
+                const takeaways =
+                  webinar.whatYouWillLearn && webinar.whatYouWillLearn.length > 0
+                    ? webinar.whatYouWillLearn
+                    : parsed.keyTakeaways;
 
-              {/* What You Will Learn */}
-              {webinar.whatYouWillLearn && webinar.whatYouWillLearn.length > 0 && (
-                <div className="mt-6 pt-5 border-t border-slate-100">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
-                    Curriculum & Key Takeaways
-                  </h3>
-                  <ul className="space-y-2.5">
-                    {webinar.whatYouWillLearn.map((point, index) => (
-                      <li key={index} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-700">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                        <span className="leading-relaxed">{point}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+                return (
+                  <>
+                    {/* 1. Masterclass Introduction */}
+                    {introText && (
+                      <div className="mt-3">
+                        <p className="text-sm sm:text-base text-slate-600 leading-relaxed whitespace-pre-line">
+                          {introText}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* 2. What You'll Explore */}
+                    {exploreTopics.length > 0 && (
+                      <div className="mt-6 pt-5 border-t border-slate-100">
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-[#FF6B00] mb-3">
+                          What You&apos;ll Explore
+                        </h3>
+                        <ol className="space-y-2.5">
+                          {exploreTopics.map((topic, index) => {
+                            const { label, detail } = splitExploreTopic(topic);
+                            return (
+                              <li
+                                key={index}
+                                className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-700"
+                              >
+                                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-orange-50 border border-orange-200 text-[#FF6B00] font-bold text-[11px] shrink-0 mt-0.5">
+                                  {index + 1}
+                                </span>
+                                <span className="leading-relaxed">
+                                  <span className="font-semibold text-[#072B57]">{label}</span>
+                                  {detail ? ` — ${detail}` : ''}
+                                </span>
+                              </li>
+                            );
+                          })}
+                        </ol>
+                      </div>
+                    )}
+
+                    {/* 3. Key Takeaways */}
+                    {takeaways.length > 0 && (
+                      <div className="mt-6 pt-5 border-t border-slate-100">
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-[#072B57] mb-3">
+                          Key Takeaways
+                        </h3>
+                        <ul className="space-y-2.5">
+                          {takeaways.map((point, index) => (
+                            <li key={index} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-700">
+                              <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                              <span className="leading-relaxed">{point}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
 
               {/* Real student perks */}
               <div className="mt-6 rounded-2xl bg-[#FFF5EC]/70 border border-[#FED7AA] p-4 text-xs text-slate-700 space-y-1.5">

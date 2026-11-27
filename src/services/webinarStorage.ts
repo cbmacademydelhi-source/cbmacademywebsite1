@@ -2,6 +2,10 @@ import { Webinar, WebinarRegistration, FormSubmissionResult, WebinarType } from 
 import { supabase } from '../lib/supabase';
 import { apiFetch } from '../utils/apiConfig';
 import { getFreshAdminToken } from './adminService';
+import {
+  parseWebinarContent,
+  composeStructuredDescription,
+} from '../utils/webinarContent';
 
 /**
  * CBM ACADEMY WEBINAR STORAGE
@@ -73,33 +77,62 @@ function sortWebinarsNewestFirst(list: Webinar[]): Webinar[] {
   return [...list].sort((a, b) => getWebinarRecencyMs(b) - getWebinarRecencyMs(a));
 }
 
-function computeStartDatetimeIso(dateStr?: string, timeStr?: string): string {
-  if (dateStr) {
-    // Support YYYY-MM-DD or readable date strings
-    const combined = timeStr ? `${dateStr} ${timeStr.replace(/\bIST\b/i, '+05:30')}` : dateStr;
-    const parsedCombined = Date.parse(combined);
-    if (!Number.isNaN(parsedCombined)) {
-      return new Date(parsedCombined).toISOString();
-    }
-    const parsedDate = Date.parse(dateStr);
-    if (!Number.isNaN(parsedDate)) {
-      return new Date(parsedDate).toISOString();
+function computeStartDatetimeIso(dateStr?: string, timeStr?: string): string | null {
+  const cleanDate = typeof dateStr === 'string' ? dateStr.trim() : '';
+  if (!cleanDate) {
+    return null;
+  }
+  // Support YYYY-MM-DD or readable date strings
+  const combined = timeStr ? `${cleanDate} ${timeStr.replace(/\bIST\b/i, '+05:30')}` : cleanDate;
+  const parsedCombined = Date.parse(combined);
+  if (!Number.isNaN(parsedCombined)) {
+    return new Date(parsedCombined).toISOString();
+  }
+  const parsedDate = Date.parse(cleanDate);
+  if (!Number.isNaN(parsedDate)) {
+    return new Date(parsedDate).toISOString();
+  }
+  return null;
+}
+
+function formatSqlTimeForDisplay(rawTime?: string | null): string {
+  if (typeof rawTime !== 'string') return '';
+  const trimmed = rawTime.trim();
+  if (!trimmed) return '';
+  const sqlMatch = /^(\d{1,2}):(\d{2})(?::\d{2})?$/.exec(trimmed);
+  if (sqlMatch) {
+    const hour24 = parseInt(sqlMatch[1], 10);
+    const minute = sqlMatch[2];
+    if (hour24 >= 0 && hour24 <= 23) {
+      const period = hour24 < 12 ? 'AM' : 'PM';
+      const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
+      return `${hour12}:${minute} ${period} IST`;
     }
   }
-  return new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+  return trimmed;
 }
 
 function mapRemoteWebinar(sw: any): Webinar {
   const isFree = Number(sw.price) === 0;
 
-  let dateStr = typeof sw.display_date === 'string' && sw.display_date.trim() ? sw.display_date.trim() : '';
-  let timeStr = typeof sw.display_time === 'string' && sw.display_time.trim() ? sw.display_time.trim() : '';
+  const hasExplicitNullDate =
+    ('date' in sw && sw.date === null && !sw.display_date) ||
+    ('display_date' in sw && sw.display_date === null && !sw.date);
 
-  if ((!dateStr || !timeStr) && sw.start_datetime) {
+  let dateStr =
+    (typeof sw.display_date === 'string' && sw.display_date.trim()) ||
+    (typeof sw.date === 'string' && sw.date.trim()) ||
+    '';
+  let timeStr =
+    (typeof sw.display_time === 'string' && sw.display_time.trim()) ||
+    formatSqlTimeForDisplay(sw.time) ||
+    '';
+
+  if (((!dateStr && !hasExplicitNullDate) || !timeStr) && sw.start_datetime) {
     try {
       const d = new Date(sw.start_datetime);
       if (!Number.isNaN(d.getTime())) {
-        if (!dateStr) {
+        if (!dateStr && !hasExplicitNullDate) {
           dateStr = d.toLocaleDateString('en-IN', {
             weekday: 'short',
             month: 'short',
@@ -127,24 +160,48 @@ function mapRemoteWebinar(sw: any): Webinar {
       ? sw.updated_at || sw.created_at || createdAt
       : undefined);
 
-  const learnPoints = Array.isArray(sw.what_you_will_learn)
-    ? sw.what_you_will_learn.filter((item: unknown) => typeof item === 'string' && item.trim())
+  const parsedContent = parseWebinarContent(
+    sw.description,
+    sw.what_you_will_explore,
+    sw.what_you_will_learn ?? sw.key_takeaways
+  );
+
+  const hasAnyStructuredContent =
+    Boolean(parsedContent.introduction) ||
+    parsedContent.whatYouWillExplore.length > 0 ||
+    parsedContent.keyTakeaways.length > 0 ||
+    Array.isArray(sw.what_you_will_learn) ||
+    Array.isArray(sw.key_takeaways);
+
+  const learnPoints = hasAnyStructuredContent
+    ? parsedContent.keyTakeaways
     : [
         'Comprehensive live practical industry breakdown',
         'Interactive Q&A with CBM Academy mentors',
         'Take-home resources and practical frameworks',
       ];
 
+  const normalizedDescription =
+    (typeof sw.description === 'string' && sw.description.trim()) ||
+    composeStructuredDescription(
+      parsedContent.introduction,
+      parsedContent.whatYouWillExplore,
+      learnPoints,
+      true
+    );
+
   return {
     id: sw.id,
     title: sw.title,
-    description: sw.description || '',
+    description: normalizedDescription,
+    introduction: parsedContent.introduction,
+    whatYouWillExplore: parsedContent.whatYouWillExplore,
     posterUrl:
       sw.thumbnail_url ||
       'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80',
     type: (isFree ? 'free' : 'paid') as WebinarType,
     price: isFree ? 'FREE' : Number(sw.price),
-    date: dateStr || 'Upcoming Session',
+    date: dateStr,
     time: timeStr || '6:00 PM IST',
     duration: sw.duration_minutes ? `${sw.duration_minutes} mins` : '60 mins',
     host: (typeof sw.host === 'string' && sw.host.trim()) || 'CBM Academy Faculty',
@@ -153,7 +210,7 @@ function mapRemoteWebinar(sw: any): Webinar {
     capacity: sw.capacity || 100,
     createdAt,
     publishedAt,
-    start_datetime: sw.start_datetime,
+    start_datetime: sw.start_datetime ?? null,
     meeting_url: sw.meeting_url,
     whatsapp_group_url: sw.whatsapp_group_url,
   };
@@ -302,14 +359,41 @@ export async function saveWebinar(
       : Number(String(webinar.price || '').replace(/[^0-9]/g, '')) || 499;
 
   const durationMins = Number(String(webinar.duration || '').replace(/[^0-9]/g, '')) || 60;
-  const startDatetimeIso =
-    webinar.start_datetime || computeStartDatetimeIso(webinar.date, webinar.time);
+  const cleanDate = typeof webinar.date === 'string' ? webinar.date.trim() : '';
+  const isoDateOrNull = /^\d{4}-\d{2}-\d{2}$/.test(cleanDate) ? cleanDate : null;
+  const startDatetimeIso = cleanDate
+    ? webinar.start_datetime || computeStartDatetimeIso(cleanDate, webinar.time)
+    : null;
+
+  const parsedDraft = parseWebinarContent(
+    webinar.description,
+    webinar.whatYouWillExplore,
+    webinar.whatYouWillLearn
+  );
+  const finalIntro =
+    typeof webinar.introduction === 'string'
+      ? webinar.introduction.trim()
+      : parsedDraft.introduction;
+  const finalExplore = Array.isArray(webinar.whatYouWillExplore)
+    ? webinar.whatYouWillExplore.map((item) => item.trim()).filter(Boolean)
+    : parsedDraft.whatYouWillExplore;
+  const finalTakeaways = Array.isArray(webinar.whatYouWillLearn)
+    ? webinar.whatYouWillLearn.map((item) => item.trim()).filter(Boolean)
+    : parsedDraft.keyTakeaways;
+
+  const structuredDescription = composeStructuredDescription(
+    finalIntro,
+    finalExplore,
+    finalTakeaways,
+    true
+  );
 
   const basePayload: Record<string, any> = {
     id,
     title: webinar.title.trim(),
-    description: webinar.description || '',
+    description: structuredDescription,
     thumbnail_url: webinar.posterUrl || null,
+    date: isoDateOrNull,
     start_datetime: startDatetimeIso,
     price: numericPrice,
     duration_minutes: durationMins,
@@ -321,33 +405,67 @@ export async function saveWebinar(
 
   const extendedPayload: Record<string, any> = {
     ...basePayload,
-    display_date: webinar.date || null,
+    display_date: cleanDate || null,
     display_time: webinar.time || null,
     host: webinar.host || 'CBM Academy Faculty',
-    what_you_will_learn: Array.isArray(webinar.whatYouWillLearn)
-      ? webinar.whatYouWillLearn
-      : [],
+    what_you_will_explore: finalExplore,
+    what_you_will_learn: finalTakeaways,
     published_at: publishedAt,
     updated_at: now,
+  };
+
+  const isStartDatetimeNotNullError = (err: any): boolean => {
+    const code = String(err?.code || '');
+    const msg = String(err?.message || '');
+    return code === '23502' && /start_datetime/i.test(msg);
+  };
+
+  const upsertWithNullDateFallback = async (payloadToSave: Record<string, any>) => {
+    let attempt = await supabase
+      .from('webinars')
+      .upsert([payloadToSave], { onConflict: 'id' })
+      .select()
+      .maybeSingle();
+
+    if (attempt.error && isStartDatetimeNotNullError(attempt.error) && payloadToSave.start_datetime === null) {
+      // Allow Postgres column DEFAULT to populate start_datetime while keeping date NULL
+      const withoutStart = { ...payloadToSave };
+      delete withoutStart.start_datetime;
+      attempt = await supabase
+        .from('webinars')
+        .upsert([withoutStart], { onConflict: 'id' })
+        .select()
+        .maybeSingle();
+
+      if (attempt.error && isStartDatetimeNotNullError(attempt.error)) {
+        attempt = await supabase
+          .from('webinars')
+          .upsert([{ ...payloadToSave, start_datetime: now }], { onConflict: 'id' })
+          .select()
+          .maybeSingle();
+      }
+    }
+
+    return attempt;
   };
 
   // 1. Primary: Direct Supabase upsert (auto-fallback to base columns if extended columns don't exist yet)
   let supaError: any = null;
   try {
-    let { data, error } = await supabase
-      .from('webinars')
-      .upsert([extendedPayload], { onConflict: 'id' })
-      .select()
-      .maybeSingle();
+    let { data, error } = await upsertWithNullDateFallback(extendedPayload);
 
     if (error && isMissingColumnError(error)) {
-      const retry = await supabase
-        .from('webinars')
-        .upsert([basePayload], { onConflict: 'id' })
-        .select()
-        .maybeSingle();
+      const retry = await upsertWithNullDateFallback(basePayload);
       data = retry.data;
       error = retry.error;
+
+      if (error && isMissingColumnError(error) && 'date' in basePayload) {
+        const withoutDateCol = { ...basePayload };
+        delete withoutDateCol.date;
+        const retryNoDate = await upsertWithNullDateFallback(withoutDateCol);
+        data = retryNoDate.data;
+        error = retryNoDate.error;
+      }
     }
 
     if (!error) {
@@ -355,6 +473,8 @@ export async function saveWebinar(
         ? mapRemoteWebinar({
             ...extendedPayload,
             ...data,
+            date: cleanDate ? (data.date ?? isoDateOrNull) : null,
+            display_date: cleanDate || null,
           })
         : mapRemoteWebinar(extendedPayload);
 
